@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\DGM.h" />
+    <ClInclude Include="..\include\macroses.h" />
+    <ClInclude Include="..\include\types.h" />
+    <ClInclude Include="BaseGraph.h" />
+    <ClInclude Include="BaseRandomModel.h" />
+    <ClInclude Include="CMat.h" />
+    <ClInclude Include="FeaturesConcatenator.h" />
+    <ClInclude Include="GraphBoost.h" />
+    <ClInclude Include="GraphExt.h" />
+    <ClInclude Include="GraphLayered.h" />
+    <ClInclude Include="InferChain.h" />
+    <ClInclude Include="InferExact.h" />
+    <ClInclude Include="InferTree.h" />
+    <ClInclude Include="MarkerGraph.h" />
+    <ClInclude Include="MarkerHistogram.h" />
+    <ClInclude Include="MessagePassing.h" />
+    <ClInclude Include="opencv\DTrees.h" />
+    <ClInclude Include="opencv\RTrees.h" />
+    <ClInclude Include="PDF.h" />
+    <ClInclude Include="PDFGaussian.h" />
+    <ClInclude Include="PDFHistogram.h" />
+    <ClInclude Include="PriorTriplet.h" />
+    <ClInclude Include="Decode.h" />
+    <ClInclude Include="DecodeExact.h" />
+    <ClInclude Include="DecodeTRW.h" />
+    <ClInclude Include="Graph.h" />
+    <ClInclude Include="Graph3.h" />
+    <ClInclude Include="Infer.h" />
+    <ClInclude Include="InferLBP.h" />
+    <ClInclude Include="InferViterbi.h" />
+    <ClInclude Include="Marker.h" />
+    <ClInclude Include="NDGauss.h" />
+    <ClInclude Include="Powell.h" />
+    <ClInclude Include="Prior.h" />
+    <ClInclude Include="PriorEdge.h" />
+    <ClInclude Include="PriorNode.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="RForest.h" />
+    <ClInclude Include="SamplesAccumulator.h" />
+    <ClInclude Include="sherwood\utilities\DataPointCollection.h" />
+    <ClInclude Include="sherwood\utilities\FeatureResponseFunctions.h" />
+    <ClInclude Include="sherwood\utilities\StatisticsAggregators.h" />
+    <ClInclude Include="sherwood\utilities\TrainingContexts.h" />
+    <ClInclude Include="Train.h" />
+    <ClInclude Include="TrainEdgeConcat.h" />
+    <ClInclude Include="TrainEdgePotts.h" />
+    <ClInclude Include="TrainEdgePottsCS.h" />
+    <ClInclude Include="TrainEdgePrior.h" />
+    <ClInclude Include="TrainLink.h" />
+    <ClInclude Include="TrainLinkNested.h" />
+    <ClInclude Include="TrainNodeCvGM.h" />
+    <ClInclude Include="TrainNodeCvGMM.h" />
+    <ClInclude Include="TrainNodeCvRF.h" />
+    <ClInclude Include="TrainEdge.h" />
+    <ClInclude Include="TrainNodeGM.h" />
+    <ClInclude Include="TrainNodeGMM.h" />
+    <ClInclude Include="TrainNodeMsRF.h" />
+    <ClInclude Include="TrainNodeNaiveBayes.h" />
+    <ClInclude Include="TrainNode.h" />
+    <ClInclude Include="TrainTriplet.h" />
+    <ClInclude Include="TRW_S\instances.h" />
+    <ClInclude Include="TRW_S\MRFEnergy.h" />
+    <ClInclude Include="TRW_S\typeBinary.h" />
+    <ClInclude Include="TRW_S\typeBinaryFast.h" />
+    <ClInclude Include="TRW_S\typeGeneral.h" />
+    <ClInclude Include="TRW_S\typePotts.h" />
+    <ClInclude Include="TRW_S\typeTruncatedLinear.h" />
+    <ClInclude Include="TRW_S\typeTruncatedLinear2D.h" />
+    <ClInclude Include="TRW_S\typeTruncatedQuadratic.h" />
+    <ClInclude Include="TRW_S\typeTruncatedQuadratic2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BaseRandomModel.cpp" />
+    <ClCompile Include="CMat.cpp" />
+    <ClCompile Include="GraphBoost.cpp" />
+    <ClCompile Include="GraphLayered.cpp" />
+    <ClCompile Include="InferChain.cpp" />
+    <ClCompile Include="InferExact.cpp" />
+    <ClCompile Include="InferTree.cpp" />
+    <ClCompile Include="MarkerGraph.cpp" />
+    <ClCompile Include="MarkerHistogram.cpp" />
+    <ClCompile Include="MessagePassing.cpp" />
+    <ClCompile Include="opencv\DTrees.cpp" />
+    <ClCompile Include="opencv\RTrees.cpp" />
+    <ClCompile Include="PDFGaussian.cpp" />
+    <ClCompile Include="PDFHistogram.cpp" />
+    <ClCompile Include="Prior.cpp" />
+    <ClCompile Include="PriorTriplet.cpp" />
+    <ClCompile Include="Decode.cpp" />
+    <ClCompile Include="DecodeExact.cpp" />
+    <ClCompile Include="DecodeTRW.cpp" />
+    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="Graph3.cpp" />
+    <ClCompile Include="InferLBP.cpp" />
+    <ClCompile Include="Marker.cpp" />
+    <ClCompile Include="NDGauss.cpp" />
+    <ClCompile Include="Powell.cpp" />
+    <ClCompile Include="PriorEdge.cpp" />
+    <ClCompile Include="PriorNode.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="RForest.cpp" />
+    <ClCompile Include="SamplesAccumulator.cpp" />
+    <ClCompile Include="sherwood\utilities\DataPointCollection.cpp" />
+    <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp" />
+    <ClCompile Include="sherwood\utilities\StatisticsAggregators.cpp" />
+    <ClCompile Include="sherwood\utilities\TrainingContexts.cpp" />
+    <ClCompile Include="TrainEdgePotts.cpp" />
+    <ClCompile Include="TrainEdgePottsCS.cpp" />
+    <ClCompile Include="TrainEdgePrior.cpp" />
+    <ClCompile Include="TrainLink.cpp" />
+    <ClCompile Include="TrainNode.cpp" />
+    <ClCompile Include="TrainNodeCvGMM.cpp" />
+    <ClCompile Include="TrainNodeCvRF.cpp" />
+    <ClCompile Include="TrainEdge.cpp" />
+    <ClCompile Include="TrainNodeGMM.cpp" />
+    <ClCompile Include="TrainNodeMsRF.cpp" />
+    <ClCompile Include="TrainNodeNaiveBayes.cpp" />
+    <ClCompile Include="TrainTriplet.cpp" />
+    <ClCompile Include="TRW_S\example.cpp" />
+    <ClCompile Include="TRW_S\minimize.cpp" />
+    <ClCompile Include="TRW_S\MRFEnergy.cpp" />
+    <ClCompile Include="TRW_S\ordering.cpp" />
+    <ClCompile Include="TRW_S\treeProbabilities.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5E2B8F9E-4760-477E-A5C1-AEAC95D7CB89}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>DGM</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)142d</TargetName>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)142d</TargetName>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)142</TargetName>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)142</TargetName>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;DGM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;%OPENCVDIR%\build\include;C:\OpenCV\build\include;%OPENCVDIR%\build\include\opencv2;C:\OpenCV\build\include\opencv2</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%OPENCVDIR%\build\x86\vc14\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core310d.lib;opencv_highgui310d.lib;opencv_imgproc310d.lib;opencv_ml310d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\$(Configuration)\$(ProjectName)142d.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;DGM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;%OPENCVDIR%\build\include;C:\OpenCV\build\include;%OPENCVDIR%\build\include\opencv2;C:\OpenCV\build\include\opencv2</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%OPENCVDIR%\build\x64\vc14\lib\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core310d.lib;opencv_highgui310d.lib;opencv_imgproc310d.lib;opencv_ml310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\x64\$(Configuration)\$(ProjectName)142d.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;DGM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;%OPENCVDIR%\build\include;C:\OpenCV\build\include;%OPENCVDIR%\build\include\opencv2;C:\OpenCV\build\include\opencv2</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%OPENCVDIR%\build\x86\vc14\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core310.lib;opencv_highgui310.lib;opencv_imgproc310.lib;opencv_ml310.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\$(Configuration)\$(ProjectName)142.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;DGM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;%OPENCVDIR%\build\include;C:\OpenCV\build\include;%OPENCVDIR%\build\include\opencv2;C:\OpenCV\build\include\opencv2</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%OPENCVDIR%\build\x64\vc14\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core310.lib;opencv_highgui310.lib;opencv_imgproc310.lib;opencv_ml310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\x64\$(Configuration)\$(ProjectName)142.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
