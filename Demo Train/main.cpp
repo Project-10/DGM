@@ -68,8 +68,7 @@ int main(int argv, char *argc[])
 		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
 		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
 		case 4:	
-			CFeaturesConcatenator *pConcatenator = new CDiffFeaturesConcatenator(nFeatures);
-			edgeTrainer = new CTrainEdgeConcat(nStates, nFeatures, pConcatenator);		
+			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
 	}
