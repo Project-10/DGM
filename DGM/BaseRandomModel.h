@@ -7,8 +7,8 @@
 namespace DirectGraphicalModels
 {
 	/**
-	* @brief Random model types.
-	* @details Define the maximal number of nodes in the cliques.
+	* @brief Random model types
+	* @details Define the maximal number of nodes in the cliques
 	*/
 	enum RandomModelType {
 		RM_UNARY = 1,	///< Unary random model: no iteraction between nodes.
