@@ -1,23 +1,24 @@
 # Direct Graphical Models C++ library
 
-[![Build Status](http://research.project-10.de/dgm/DGMx64.exe)](DGMx64.exe)
-[![License](https://github.com/Project-10/DGM/blob/master/License.txt)](LICENSE)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](License.txt)
 
 DGM is a C++ library implementing various tasks in probabilistic graphical models with pairwise 
 dependencies. The library aims to be used for the Markov and Conditional Random Fields (MRF / CRF),
-Markov Chains, Bayesian Networks, etc. 
+Markov Chains, Bayesian Networks, _etc_. 
 
-## Modules:
+Check out the [project site](http://research.project-10.de/dgm/) for all the details like
 
-- DGM - the main library
-- FEX - feature extraction module
-
-## Installation and description:
-
-- [Project site](http://research.project-10.de/dgm/)
 - [Online documentation](http://www.project-10.de/research/dgm/doc/)
 - [Installation guide](http://research.project-10.de/dgm/doc/a00002.html)
 - [Tutorials](http://research.project-10.de/dgm/doc/a00004.html)
+
+Please join the [DGM-user Q&A forum](http://project-10.de/forum/viewforum.php?f=31) to ask questions and talk about methods and models.
+Framework development discussions and thorough bug reports are collected on [Issues](https://github.com/Project-10/DGM/issues).
+
+## Modules:
+
+- __DGM__ - the main library
+- __FEX__ - feature extraction module
 
 ## License and Citation
 
