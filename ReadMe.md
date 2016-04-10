@@ -1,5 +1,6 @@
 # Direct Graphical Models C++ library
 
+[![Version](https://img.shields.io/github/release/qubyte/rubidium.svg)]
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](License.txt)
 
 DGM is a C++ library implementing various tasks in probabilistic graphical models with pairwise 
