@@ -27,9 +27,6 @@
     <Filter Include="Source Files\FeatureExtractor\NDVI">
       <UniqueIdentifier>{c2c3732c-1260-4bbf-9083-b6f0c84b7efe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\FeatureExtractor\Saturation">
-      <UniqueIdentifier>{cd8f1f3e-0179-4ae2-937f-4b7c5d4e2b2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\FeatureExtractor\Variance">
       <UniqueIdentifier>{d245d202-ab77-46e1-b627-2221e0953fdb}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     <Filter Include="Source Files\FeatureExtractor\Coordinate">
       <UniqueIdentifier>{36d3029c-341b-4d25-9ac5-61ce1bef0e69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\FeatureExtractor\HSV">
+      <UniqueIdentifier>{cbc5c15e-c38e-4b5d-9827-93cd4fef239e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NDVI.cpp">
@@ -52,9 +52,6 @@
     </ClCompile>
     <ClCompile Include="Gradient.cpp">
       <Filter>Source Files\FeatureExtractor\Gradient</Filter>
-    </ClCompile>
-    <ClCompile Include="Saturation.cpp">
-      <Filter>Source Files\FeatureExtractor\Saturation</Filter>
     </ClCompile>
     <ClCompile Include="Variance.cpp">
       <Filter>Source Files\FeatureExtractor\Variance</Filter>
@@ -74,6 +71,9 @@
     <ClCompile Include="Coordinate.cpp">
       <Filter>Source Files\FeatureExtractor\Coordinate</Filter>
     </ClCompile>
+    <ClCompile Include="HSV.cpp">
+      <Filter>Source Files\FeatureExtractor\HSV</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NDVI.h">
@@ -84,9 +84,6 @@
     </ClInclude>
     <ClInclude Include="Gradient.h">
       <Filter>Source Files\FeatureExtractor\Gradient</Filter>
-    </ClInclude>
-    <ClInclude Include="Saturation.h">
-      <Filter>Source Files\FeatureExtractor\Saturation</Filter>
     </ClInclude>
     <ClInclude Include="Variance.h">
       <Filter>Source Files\FeatureExtractor\Variance</Filter>
@@ -114,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="..\include\FEX.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="HSV.h">
+      <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

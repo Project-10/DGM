@@ -13,15 +13,17 @@ The main idea of this preprocessing is to reduce the variability of input data f
 different classes. This preprocessing stage is also called feature extraction. Note that new test data must be preprocessed using the same steps as the training data.
 
 
-- <b>Coordinate:</b> DirectGraphicalModels::fex::CCoordinate
-- <b>Distance:</b> DirectGraphicalModels::fex::CDistance
-- <b>Gradient:</b> DirectGraphicalModels::fex::CGradient
-- <b>HOG:</b> DirectGraphicalModels::fex::CHOG
-- <b>Intensity:</b> DirectGraphicalModels::fex::CIntensity
-- <b>NDVI:</b> DirectGraphicalModels::fex::CNDVI
-- <b>Saturation:</b> DirectGraphicalModels::fex::CSaturation
-- <b>Scale:</b> DirectGraphicalModels::fex::CScale
-- <b>Variance:</b> DirectGraphicalModels::fex::CVariance
+ Method               | Class                                   | Input              | Output
+ -------------------- | --------------------------------------- | :----------------: | :-----:
+ Coordinate           | DirectGraphicalModels::fex::CCoordinate | any                | <style="color:#FF0000">CV_8UC1</style>
+ Distance             | DirectGraphicalModels::fex::CDistance	| CV_8UC1 or CV_8UC3 | CV_8UC1
+ Gradient             | DirectGraphicalModels::fex::CGradient	| CV_8UC1 or CV_8UC3 | CV_8UC1
+ HOG                  | DirectGraphicalModels::fex::CHOG		| CV_8UC1 or CV_8UC3 | CV_8UC1
+ Intensity            | DirectGraphicalModels::fex::CIntensity  | CV_8UC3            | CV_8UC1
+ NDVI                 | DirectGraphicalModels::fex::CNDVI		| CV_8UC3            | CV_8UC1
+ Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV        | CV_8UC3            | CV_8UC3
+ Scale                | DirectGraphicalModels::fex::CScale	    | any                | CV_8UC1
+ Variance             | DirectGraphicalModels::fex::CVariance	| CV_8UC1 or CV_8UC3 | CV_8UC1
 
 There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of \a coordinate feature.
 

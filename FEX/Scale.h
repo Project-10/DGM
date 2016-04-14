@@ -29,7 +29,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Extracts the scale feature.
 		* @details For each pixel of the source image this function calculates the mean value within the pixel's neighbourhood \a nbhd.
 		* Using different neighbourhood radii, it alows for different scale representations of the features.
-		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
+		* @param img Input image of type \b CV_8Uxx with arbitrary number of channels.
 		* @param nbhd Neighborhood around the pixel, where the mean is estimated. (Ref. @ref SqNeighbourhood).
 		* @return The scale feature image of the same type as input image.
 		*/

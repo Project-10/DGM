@@ -53,7 +53,7 @@ namespace DirectGraphicalModels { namespace fex
 	* @param R Distance from the base point to the neighborhood's boundaries (radius)
 	* @returns Initialized square neighborhood of the size \f$(2R + 1)\times(2R + 1)\f$ (Ref. @ref SqNeighbourhood)
 	*/
-	inline SqNeighbourhood sqNeighbourhoodAll(int R) {return sqNeighbourhood(R, R, R, R);}
+	inline SqNeighbourhood sqNeighbourhoodAll(int R) { return sqNeighbourhood(R, R, R, R); }
 	/**
 	* @brief Initializes the square neighborhood structure with a pre-define shape
 	* @param R Distance from the base point to the neighborhood's boundaries

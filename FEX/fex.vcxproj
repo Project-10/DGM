@@ -170,9 +170,9 @@
     <ClCompile Include="Distance.cpp" />
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="HOG.cpp" />
+    <ClCompile Include="HSV.cpp" />
     <ClCompile Include="Intensity.cpp" />
     <ClCompile Include="NDVI.cpp" />
-    <ClCompile Include="Saturation.cpp" />
     <ClCompile Include="Scale.cpp" />
     <ClCompile Include="Variance.cpp" />
   </ItemGroup>
@@ -184,9 +184,9 @@
     <ClInclude Include="Distance.h" />
     <ClInclude Include="Gradient.h" />
     <ClInclude Include="HOG.h" />
+    <ClInclude Include="HSV.h" />
     <ClInclude Include="Intensity.h" />
     <ClInclude Include="NDVI.h" />
-    <ClInclude Include="Saturation.h" />
     <ClInclude Include="Scale.h" />
     <ClInclude Include="SquareNeighborhood.h" />
     <ClInclude Include="Variance.h" />

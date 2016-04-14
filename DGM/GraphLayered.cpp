@@ -249,6 +249,9 @@ namespace DirectGraphicalModels
 	void CGraphLayered::marginalize(vec_size_t nodes)
 	{
 
+
+
+
 	}
 
 }

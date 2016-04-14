@@ -22,7 +22,7 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CVariance(const Mat &img) : CBaseFeatureExtractor(img) {}
 		DllExport virtual ~CVariance(void) {}
 
-		DllExport virtual Mat	get(void) const {return get(m_img);}
+		DllExport virtual Mat	get(void) const { return get(m_img); }
 
 		/**
 		* @brief Extracts the variance feature.
