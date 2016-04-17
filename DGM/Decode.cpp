@@ -8,12 +8,11 @@ byte * CDecode::decode(const CGraph *pGraph, Mat &lossMatrix)
 {
 	size_t	  nNodes	= pGraph->getNumNodes();				// number of nodes
 	byte	* state		= new byte[nNodes]; 
+	Mat		  pot;
 	bool	  ifLossMat	= !lossMatrix.empty();
 
 	// Getting optimal state
 	for (size_t n = 0; n < nNodes; n++) {						// all nodes
-
-		Mat pot; 
 		pGraph->getNode(n, pot);
 		if (ifLossMat) gemm(lossMatrix, pot, 1.0, Mat(), 0.0, pot);
 		

@@ -501,5 +501,8 @@
     <ClCompile Include="TrainLink.cpp">
       <Filter>Source Files\Random Model\Training\Link</Filter>
     </ClCompile>
+    <ClCompile Include="Infer.cpp">
+      <Filter>Source Files\Inference</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

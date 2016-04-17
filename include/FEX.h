@@ -15,7 +15,7 @@ different classes. This preprocessing stage is also called feature extraction. N
 
  Method               | Class                                   | Input              | Output
  -------------------- | --------------------------------------- | :----------------: | :-----:
- Coordinate           | DirectGraphicalModels::fex::CCoordinate | any                | <style="color:#FF0000">CV_8UC1</style>
+ Coordinate           | DirectGraphicalModels::fex::CCoordinate | any                | CV_8UC1
  Distance             | DirectGraphicalModels::fex::CDistance	| CV_8UC1 or CV_8UC3 | CV_8UC1
  Gradient             | DirectGraphicalModels::fex::CGradient	| CV_8UC1 or CV_8UC3 | CV_8UC1
  HOG                  | DirectGraphicalModels::fex::CHOG		| CV_8UC1 or CV_8UC3 | CV_8UC1

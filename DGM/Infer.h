@@ -1,6 +1,7 @@
 // Base abstract class for random model inference
 // Written by Sergey G. Kosov in 2013 for Chronos Vision GmbH
 // Adopted by Sergey G. Kosov in 2015 for Project X
+// Expanded by Sergey G. Kosov in 2016 for Project X
 #pragma once
 
 #include "Decode.h"
@@ -46,7 +47,7 @@ namespace DirectGraphicalModels
 		*	inferer->decode() == decoder->decode();		// This statement is not always true!
 		* @endcode
 		*/
-		DllExport virtual byte			* decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) {
+		DllExport virtual byte	* decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) {
 			if (nIt) infer(nIt); 
 			return CDecode::decode(m_pGraph, lossMatrix);
 		}
@@ -59,5 +60,12 @@ namespace DirectGraphicalModels
 		* @note This function substitutes the graph nodes' potentials with estimated marginal potentials
 		*/
 		DllExport virtual void	  infer(unsigned int nIt = 1) = 0;
+		/**
+		* @brief Returns the confidence of the prediction
+		* @details This function calculates the confidence values for the predicted states (classes) in the graph via CInfer::decode().
+		* The confidence values lie in range [0; 1].
+		* @return The confidence values for each node of graph.
+		*/
+		DllExport vec_float_t	  getConfidence(void);
 	};
 }

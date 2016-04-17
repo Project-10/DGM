@@ -95,6 +95,7 @@
     <ClCompile Include="CMat.cpp" />
     <ClCompile Include="GraphBoost.cpp" />
     <ClCompile Include="GraphLayered.cpp" />
+    <ClCompile Include="Infer.cpp" />
     <ClCompile Include="InferChain.cpp" />
     <ClCompile Include="InferExact.cpp" />
     <ClCompile Include="InferTree.cpp" />
