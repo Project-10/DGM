@@ -80,7 +80,7 @@ namespace DirectGraphicalModels {
 		* @brief Returns the edge potential
 		* @param[in] srcNode index of the source node
 		* @param[in] dstNode index of the destination node
-		* @param[out] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		* @param[out] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1) if exists, empty Mat otherwise
 		*/
 		DllExport virtual void		getEdge(size_t srcNode, size_t dstNode, Mat &pot) const = 0;
 		/**

@@ -72,17 +72,15 @@ namespace DirectGraphicalModels
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
 		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
-
-		/**
-		* @brief Marginalizes out one node
-		* @param node %Node to be marginalized out from the graph
-		*/
-		DllExport virtual void marginalize(size_t node);
 		/**
 		* @brief Marginalizes a set of nodes
+		* @details This function separates the marginalized graph nodes by removing all the edges connecting them with the remaining nodes.
+		* New edges are added if they correspond to the inducing pathes. The potentials of new esges are calculated as the sum of edge potentials from the 
+		* corresponding inducing path.
+		* > This functions operates with inducing pathes with maximal length of 3 nodes.
 		* @param nodes Set of nodes to be marginalized out from the graph
 		*/
-		DllExport virtual void marginalize(vec_size_t nodes);
+		DllExport virtual void marginalize(const vec_size_t &nodes);
 
 
 

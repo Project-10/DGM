@@ -210,47 +210,59 @@ namespace DirectGraphicalModels
 #endif
 	}
 	
-	/// @todo: Implement edge potential transfer
-	void CGraphLayered::marginalize(size_t node)
+	void CGraphLayered::marginalize(const vec_size_t &nodes)
 	{
-		// search all incoming edges
-		vec_size_t parentNodes, childNodes;
-		getParentNodes(node, parentNodes);
-		getChildNodes(node, childNodes);
-		
-		for (size_t &parent : parentNodes) {
+		Mat pot, pot1, pot2;
 
-			// Filter those incoming edges, which are parts of arcs
-			auto isArk = std::find(childNodes.begin(), childNodes.end(), parent);
-			if (isArk != childNodes.end()) continue;
-
-			// here all incoming edges are direct edges
+		for (size_t node : nodes) {
+			vec_size_t parentNodes, childNodes, managers;
+			getParentNodes(node, parentNodes);
+			getChildNodes(node, childNodes);
 			
-			// Connect with arks
-			for (size_t &parent2 : parentNodes) {
-				if (parent == parent2) continue;
+			// find all managers for the node
+			for (size_t child : childNodes) {
+				// Looking for those child nodes, which are managers
+				auto isArc = std::find(parentNodes.begin(), parentNodes.end(), child);	// If there is a return edge => the child is a neighbor
+				if (isArc != parentNodes.end()) continue;								
+				// Here the child is a manager
+				auto isInZ = std::find(nodes.begin(), nodes.end(), child);				// If the manager is to be also marginalized 
+				if (isInZ != nodes.end()) continue;
 
-				auto isArk = std::find(childNodes.begin(), childNodes.end(), parent2);
-				if (isArk != childNodes.end()) continue;
+				managers.push_back(child);
 
-				addArk(parent, parent2);
+				// Add new edges (from any other neighboring node to the manager)
+				for (size_t parent : parentNodes) {
+					auto isInZ = std::find(nodes.begin(), nodes.end(), parent);			// If the parent is to be also marginalized 
+					if (isInZ != nodes.end()) continue;
+					
+					getEdge(parent, node, pot1);
+					getEdge(node, child, pot2);
+					if (pot1.empty() && pot2.empty()) addEdge(parent, child);
+					else {
+						pot1.empty() ? pot = pot2 + pot1 : pot = pot1 + pot2;
+						addEdge(parent, child, pot);
+					}
+				}
 			}
-			
-			// Connect to childs with edges
-			for (size_t &child : childNodes) addEdge(parent, child);
-		}
 
-		// Delete all	
-		for (size_t &parent : parentNodes) removeEdge(parent, node);
-		for (size_t &child : childNodes)  removeEdge(node, child);
-	}
+			// Add new arcs (between two managers)
+			if (managers.size() >= 2)
+				for (size_t i = 0; i < managers.size() - 1; i++)
+					for (size_t j = i + 1; j < managers.size(); j++) {
+						getEdge(node, managers[i], pot1);
+						getEdge(node, managers[j], pot2);
+						if (pot1.empty() && pot2.empty())	addArk(managers[i], managers[j]);
+						else {
+							pot1.empty() ? pot = pot2 + pot1 : pot = pot1 + pot2;
+							addArk(managers[i], managers[j], pot);
+						}
+					}
 
-	/// @todo: Implement this function
-	void CGraphLayered::marginalize(vec_size_t nodes)
-	{
 
-
-
+			// Delete all	
+			for (size_t &parent : parentNodes) removeEdge(parent, node);
+			for (size_t &child : childNodes)  removeEdge(node, child);
+		} // n
 
 	}
 
