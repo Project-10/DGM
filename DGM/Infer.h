@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		*	inferer->decode() == decoder->decode();		// This statement is not always true!
 		* @endcode
 		*/
-		DllExport virtual byte	* decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) {
+		DllExport virtual vec_byte_t	decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) {
 			if (nIt) infer(nIt); 
 			return CDecode::decode(m_pGraph, lossMatrix);
 		}

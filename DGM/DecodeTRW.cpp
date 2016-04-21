@@ -5,11 +5,11 @@
 
 namespace DirectGraphicalModels
 {
-byte *CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
+vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 {
-	byte			  nStates	= m_pGraph->m_nStates;					// number of states (classes)
-	size_t			  nNodes	= m_pGraph->getNumNodes();				// number of nodes
-	byte			* res		= new byte[nNodes];
+	byte			nStates	= m_pGraph->m_nStates;					// number of states (classes)
+	size_t			nNodes	= m_pGraph->getNumNodes();				// number of nodes
+	vec_byte_t		res(nNodes);
 
 	DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 	

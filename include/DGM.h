@@ -266,15 +266,15 @@ int main(int argv, char *argc[])
 			nodePot.at<float>(0, 0) = p;
 			nodePot.at<float>(1, 0) = 1.0f - p;
 			size_t idx = graph->addNode(nodePot);
-			if (y > 0) graph->addArk(idx, idx - 1, edgePot);
-			if (x > 0) graph->addArk(idx, idx - width, edgePot);
-			if ((y > 0) && (x > 0)) graph->addArk(idx, idx - width - 1, edgePot);
+			if (y > 0) graph->addArc(idx, idx - 1, edgePot);
+			if (x > 0) graph->addArc(idx, idx - width, edgePot);
+			if ((y > 0) && (x > 0)) graph->addArc(idx, idx - width - 1, edgePot);
 		} // y
 
 	// =============================== Decoding ===============================
 	printf("Decoding... ");
 	int64 ticks = getTickCount();
-	byte *optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder->decode(100);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -393,8 +393,8 @@ int main(int argv, char *argc[])
 	for (int y = 0; y < height; y++) 
 		for (int x = 0; x < width; x++) {
 			size_t idx = graph->addNode();
-			if (x > 0) 	 graph->addArk(idx, idx - 1);
-			if (y > 0) 	 graph->addArk(idx, idx - width); 
+			if (x > 0) 	 graph->addArc(idx, idx - 1);
+			if (y > 0) 	 graph->addArc(idx, idx - width); 
 		} // x
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
@@ -447,12 +447,12 @@ int main(int argv, char *argc[])
 			if (x > 0) {
 				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArk(idx, idx - 1, edgePot);
+				graph->setArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArk(idx, idx - width, edgePot);
+				graph->setArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
 	} // y
@@ -462,12 +462,12 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	byte *optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = decoder->decode(10);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
 	// ====================== Evaluation =======================	
-	Mat solution(imgSize, CV_8UC1, optimalDecoding);
+	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
@@ -562,8 +562,8 @@ int main(int argv, char *argc[])
 	for (int y = 0; y < height; y++) 
 		for (int x = 0; x < width; x++) {
 			size_t idx = graph->addNode();
-			if (x > 0) 	 graph->addArk(idx, idx - 1);
-			if (y > 0) 	 graph->addArk(idx, idx - width); 
+			if (x > 0) 	 graph->addArc(idx, idx - 1);
+			if (y > 0) 	 graph->addArc(idx, idx - width); 
 		} // x
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
@@ -593,12 +593,12 @@ int main(int argv, char *argc[])
 			if (x > 0) {
 				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArk(idx, idx - 1, edgePot);
+				graph->setArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArk(idx, idx - width, edgePot);
+				graph->setArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
 	} // y
@@ -608,12 +608,12 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	byte *optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = decoder->decode(10);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
 	// ====================== Evaluation =======================	
-	Mat solution(imgSize, CV_8UC1, optimalDecoding);
+	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());

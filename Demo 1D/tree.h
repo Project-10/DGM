@@ -96,7 +96,7 @@ The edge potential matrix is represented here as a transition matrix:
 After the tree was created, its edges had symmetric potentials: 
 \f$\frac{1}{2}edgePot^\top+\frac{1}{2}edgePot\f$. Now, we have to re-initialize the edge potentials with the 
 original nonsymmetrical \f$edgePot\f$: set them in the direction from the source nodes to the tap nodes
-DirectGraphicalModels::CGraph::setArk(size_t src, size_t dst, const Mat& edgePot):
+DirectGraphicalModels::CGraph::setArc(size_t src, size_t dst, const Mat& edgePot):
 @code
 	std::vector<size_t> vChilds;
 	std::vector<bool>	ifSource(nNodes, false);
@@ -114,7 +114,7 @@ DirectGraphicalModels::CGraph::setArk(size_t src, size_t dst, const Mat& edgePot
 		graph->getChildNodes(n1, vChilds);
 		std::for_each(vChilds.begin(), vChilds.end(), [&, n1](size_t n2) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
-				graph->setArk(n1, n2, edgePot);		// set the potential,
+				graph->setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}

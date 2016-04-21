@@ -53,7 +53,7 @@ CGraph * CTree::buildTree()
 		while ((it = std::find_if(edges.begin(), edges.end(), [&](std::pair<Edge, float> edge) { return N[edge.first.node1] ^ N[edge.first.node2]; })) != edges.end()) {
 			size_t n1 = it->first.node1;
 			size_t n2 = it->first.node2;
-			graph->addArk(n1, n2, edgePot);						// Add an arc to the tree
+			graph->addArc(n1, n2, edgePot);						// Add an arc to the tree
 			N[n1] = N[n2] = true;								// Now both nodes are accounted
 		}
 	} 
@@ -106,7 +106,7 @@ void CTree::Main(void)
 		graph->getChildNodes(n1, vChilds);
 		std::for_each(vChilds.begin(), vChilds.end(), [&, n1](size_t n2) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
-				graph->setArk(n1, n2, edgePot);		// set the potential,
+				graph->setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}

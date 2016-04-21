@@ -108,10 +108,8 @@ int main(int argv, char *argc[])
 		} // x
 	} // y
 
-	concurrency::parallel_invoke(
-		[&]() {nodeTrainer->train(); },
-		[&]() {edgeTrainer->train(); }
-	);
+	nodeTrainer->train(); 
+	edgeTrainer->train(); 
 
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
@@ -127,12 +125,12 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	byte *optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = decoder->decode(10);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
 	// ====================== Evaluation =======================	
-	Mat solution(imgSize, CV_8UC1, optimalDecoding);
+	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());

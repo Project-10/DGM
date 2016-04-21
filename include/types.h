@@ -25,6 +25,7 @@ using qword	= unsigned __int64;
 
 using vec_mat_t		= std::vector<Mat>;
 using vec_bool_t	= std::vector<bool>;
+using vec_byte_t	= std::vector<byte>;
 using vec_int_t		= std::vector<int>;
 using vec_float_t	= std::vector<float>;
 using vec_size_t	= std::vector<size_t>;

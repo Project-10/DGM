@@ -48,7 +48,7 @@ with undirected arcs:
 
 	Mat edgePot = getEdgePot();
 	for (size_t i = 0; i < nNodes - 1; i++) 
-		graph->addArk(i, i + 1, edgePot);	// add arks
+		graph->addArc(i, i + 1, edgePot);	// add arcs
 @endcode
 
 The edge potential matrix is represented here as a transition matrix:

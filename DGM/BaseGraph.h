@@ -90,15 +90,15 @@ namespace DirectGraphicalModels {
 		*/		
 		DllExport virtual void		removeEdge(size_t srcNode, size_t dstNode) = 0;
 		/**
-		* @brief Adds an additional udirected edge (ark)
-		* @details The ark is emulated by adding two directed edges
+		* @brief Adds an additional udirected edge (arc)
+		* @details The arc is emulated by adding two directed edges
 		* @param Node1 index of the first node
 		* @param Node2 index of the second node
 		*/
-		DllExport virtual void		addArk(size_t Node1, size_t Node2) = 0;
+		DllExport virtual void		addArc(size_t Node1, size_t Node2) = 0;
 		/**
-		* @brief Adds an additional udirected edge (ark) with specified potentional
-		* @details The ark is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
+		* @brief Adds an additional udirected edge (arc) with specified potentional
+		* @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
 		* @code
 		* addEdge(Node1, Node2, sqrt(pot));
 		* addEdge(Node2, Node1, sqrt(pot));
@@ -107,10 +107,10 @@ namespace DirectGraphicalModels {
 		* @param Node2 index of the second node
 		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void		addArk(size_t Node1, size_t Node2, const Mat &pot) = 0;
+		DllExport virtual void		addArc(size_t Node1, size_t Node2, const Mat &pot) = 0;
 		/**
-		* @brief Sets or changes the potentional of udirected edge (ark)
-		* @details The ark is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
+		* @brief Sets or changes the potentional of udirected edge (arc)
+		* @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
 		* @code
 		* addEdge(Node1, Node2, sqrt(pot));
 		* addEdge(Node2, Node1, sqrt(pot));
@@ -119,13 +119,13 @@ namespace DirectGraphicalModels {
 		* @param Node2 index of the second node
 		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void		setArk(size_t Node1, size_t Node2, const Mat &pot) = 0;
+		DllExport virtual void		setArc(size_t Node1, size_t Node2, const Mat &pot) = 0;
 		/**
 		* @brief Removes the specified arc
 		* @param Node1 index of the first node
 		* @param Node2 index of the second node
 		*/
-		DllExport virtual void		removeArk(size_t Node1, size_t Node2) = 0;
+		DllExport virtual void		removeArc(size_t Node1, size_t Node2) = 0;
 		/**
 		* @brief Returns the number of nodes in the graph
 		* @returns number of nodes

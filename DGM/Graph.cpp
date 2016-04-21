@@ -128,15 +128,15 @@ namespace DirectGraphicalModels
 		removeEdge(*e_t);
 	}
 
-	// Add a new (undirected edge) ark to the graph
-	void CGraph::addArk(size_t Node1, size_t Node2)
+	// Add a new (undirected edge) arc to the graph
+	void CGraph::addArc(size_t Node1, size_t Node2)
 	{
 		addEdge(Node1, Node2);
 		addEdge(Node2, Node1);
 	}
 
-	// Add a new (undirected edge) ark to the graph with specified potentional
-	void CGraph::addArk(size_t Node1, size_t Node2, const Mat &pot)
+	// Add a new (undirected edge) arc to the graph with specified potentional
+	void CGraph::addArc(size_t Node1, size_t Node2, const Mat &pot)
 	{
 		Mat Pot;
 		sqrt(pot, Pot);
@@ -145,8 +145,8 @@ namespace DirectGraphicalModels
 		Pot.release();
 	}
 
-	// Add a new (undirected edge) ark to the graph with specified potentional
-	void CGraph::setArk(size_t Node1, size_t Node2, const Mat &pot)
+	// Add a new (undirected edge) arc to the graph with specified potentional
+	void CGraph::setArc(size_t Node1, size_t Node2, const Mat &pot)
 	{
 		Mat Pot;
 		sqrt(pot, Pot);
@@ -155,7 +155,7 @@ namespace DirectGraphicalModels
 		Pot.release();
 	}
 
-	void CGraph::removeArk(size_t Node1, size_t Node2)
+	void CGraph::removeArc(size_t Node1, size_t Node2)
 	{
 		removeEdge(Node1, Node2);
 		removeEdge(Node2, Node1);

@@ -38,10 +38,10 @@ every graph node will have 2 states:
 	CGraph *graph = new CGraph(nStates);
 
 	for (size_t i = 0; i < nNodes; i++)     graph->addNode();				// add nodes
-	for (size_t i = 0; i < nNodes - 1; i++) graph->addArk(i, i + 1);		// add arks
+	for (size_t i = 0; i < nNodes - 1; i++) graph->addArc(i, i + 1);		// add arcs
 @endcode
 
-Next we fill the potentials of nodes and arks of the graph. We assume that four studens are sitting in a row, and even studens have 25% chance to answer right,
+Next we fill the potentials of nodes and arcs of the graph. We assume that four studens are sitting in a row, and even studens have 25% chance to answer right,
 whereas odd students have 90% chance. The edge potential describes that two neighbouring students are more likely to give the same answer. We fill the potentials 
 by hand in the \b fillGraph() function:
 @code
@@ -66,7 +66,7 @@ by hand in the \b fillGraph() function:
 
 	// Setting the edge potentials
 	for (size_t i = 0; i < nNodes - 1; i++) 
-		graph->setArk(i, i + 1, edgePot);
+		graph->setArc(i, i + 1, edgePot);
 @endcode
 
 We end up with the followiung graphical model:

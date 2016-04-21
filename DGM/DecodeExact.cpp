@@ -5,12 +5,12 @@
 
 namespace DirectGraphicalModels
 {
-byte * CDecodeExact::decode(unsigned int, Mat &lossMatrix) const
+vec_byte_t CDecodeExact::decode(unsigned int, Mat &lossMatrix) const
 {
 	DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 
-	size_t			  nNodes = m_pGraph->getNumNodes();
-	byte			* state = new byte[nNodes];
+	size_t			nNodes = m_pGraph->getNumNodes();
+	vec_byte_t		state(nNodes);
 
 	// Calculating the potentials for every possible configuration
 	vec_float_t		  P = calculatePotentials();

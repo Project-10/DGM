@@ -4,12 +4,12 @@
 
 namespace DirectGraphicalModels
 {
-byte * CDecode::decode(const CGraph *pGraph, Mat &lossMatrix) 
+vec_byte_t CDecode::decode(const CGraph *pGraph, Mat &lossMatrix) 
 {
-	size_t	  nNodes	= pGraph->getNumNodes();				// number of nodes
-	byte	* state		= new byte[nNodes]; 
-	Mat		  pot;
-	bool	  ifLossMat	= !lossMatrix.empty();
+	size_t		nNodes		= pGraph->getNumNodes();			// number of nodes
+	vec_byte_t	state(nNodes);
+	Mat			pot;
+	bool		ifLossMat	= !lossMatrix.empty();
 
 	// Getting optimal state
 	for (size_t n = 0; n < nNodes; n++) {						// all nodes
@@ -33,7 +33,7 @@ Mat	CDecode::getDefaultLossMatrix(byte nStates)
 }
 
 // Sets the <state> according to the configuration number <c>
-void CDecode::setState(byte *&state, qword c) const
+void CDecode::setState(vec_byte_t &state, qword c) const
 {
 	size_t nNodes = m_pGraph->getNumNodes();
 	for (size_t n = 0; n < nNodes; n++) {
@@ -43,7 +43,7 @@ void CDecode::setState(byte *&state, qword c) const
 }
 
 // Increases the <state> by one
-void CDecode::incState(byte *&state) const
+void CDecode::incState(vec_byte_t &state) const
 {
 	size_t nNodes = m_pGraph->getNumNodes();
 	for (size_t n = 0; n < nNodes; n++)
@@ -54,9 +54,9 @@ void CDecode::incState(byte *&state) const
 // Calculates potentials for all possible configurations
 vec_float_t CDecode::calculatePotentials(void) const
 {
-	size_t			  nNodes = m_pGraph->getNumNodes();
-	size_t			  nConfigurations = static_cast<size_t> (powl(m_pGraph->m_nStates, static_cast<long double>(nNodes)));
-	byte			* state = new byte[nNodes];
+	size_t		nNodes = m_pGraph->getNumNodes();
+	size_t		nConfigurations = static_cast<size_t> (powl(m_pGraph->m_nStates, static_cast<long double>(nNodes)));
+	vec_byte_t	state(nNodes);
 
 	vec_float_t		  res;
 	DGM_ASSERT_MSG(nConfigurations < res.max_size(), "The number of configurations %d^%Zu exceeds the maximal possible size of container.", m_pGraph->m_nStates, nNodes);
@@ -76,7 +76,6 @@ vec_float_t CDecode::calculatePotentials(void) const
 		incState(state);
 	}); 
 
-	delete[] state;
 	return res;
 }
 }

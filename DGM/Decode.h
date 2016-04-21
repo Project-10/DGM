@@ -36,7 +36,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport virtual byte	* decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) const { return decode(m_pGraph, lossMatrix); }
+		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) const { return decode(m_pGraph, lossMatrix); }
 		/**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport static byte	* decode(const CGraph *pGraph, Mat &lossMatrix = Mat());
+		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = Mat());
 		/**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)
@@ -70,13 +70,13 @@ namespace DirectGraphicalModels
 		* @param state Array of \a nNodes elements with the current configuration (states destributed along the nodes)
 		* @param configuration Configuration index \f$\in[0; nStates^{nNodes}]\f$
 		*/
-		void		setState(byte *&state, qword configuration) const;
+		void		setState(vec_byte_t &state, qword configuration) const;
 		/**
 		* @brief Increases the \a state by one, \a i.e. switches the \a state array to the consequent configuration
 		* @details This function is used in exact inference / decoding
 		* @param state Array of \a nNodes elements with the current configuration (states destributed along the nodes)
 		*/
-		void		incState(byte *&state) const;
+		void		incState(vec_byte_t &state) const;
 		/**
 		* @brief Calculates potentials for all possible configurations
 		* @details This function is used in exact inference / decoding

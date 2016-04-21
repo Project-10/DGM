@@ -43,15 +43,15 @@ int main(int argc, char *argv[])
 			nodePot.at<float>(0, 0) = p;
 			nodePot.at<float>(1, 0) = 1.0f - p;
 			size_t idx = graph->addNode(nodePot);
-			if (y > 0) graph->addArk(idx, idx - 1, edgePot);
-			if (x > 0) graph->addArk(idx, idx - width, edgePot);
-			if ((y > 0) && (x > 0)) graph->addArk(idx, idx - width - 1, edgePot);
+			if (y > 0) graph->addArc(idx, idx - 1, edgePot);
+			if (x > 0) graph->addArc(idx, idx - width, edgePot);
+			if ((y > 0) && (x > 0)) graph->addArc(idx, idx - width - 1, edgePot);
 		} // y
 
 	// =============================== Decoding ===============================
 	printf("Decoding... ");
 	int64 ticks = getTickCount();
-	byte *optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder->decode(100);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 

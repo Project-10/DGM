@@ -32,7 +32,7 @@ namespace DirectGraphicalModels
 		* @param lossMatrix is not used
 		* @return The most probable configuration
 		*/
-		DllExport virtual byte * decode(unsigned int nIt = 10, Mat &lossMatrix = Mat()) const;
+		DllExport virtual vec_byte_t decode(unsigned int nIt = 10, Mat &lossMatrix = Mat()) const;
 	};
 }
 

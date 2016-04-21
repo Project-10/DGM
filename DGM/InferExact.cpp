@@ -6,11 +6,11 @@ namespace DirectGraphicalModels
 {
 void CInferExact::infer(unsigned int)
 {
-	size_t			  nNodes = m_pGraph->getNumNodes();		
-	byte			* state = new byte[nNodes];				
+	size_t		nNodes = m_pGraph->getNumNodes();		
+	vec_byte_t	state(nNodes);				
 	
 	// Calculating the potentials for every possible configuration
-	vec_float_t		  P = calculatePotentials();
+	vec_float_t	P = calculatePotentials();
 
 	// Calculating the partition function
 	float Z = std::accumulate(P.cbegin(), P.cend(), 0.0f);
@@ -24,7 +24,5 @@ void CInferExact::infer(unsigned int)
 		});
 		incState(state);
 	});
-	
-	delete [] state;
 }
 }

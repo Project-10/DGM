@@ -44,7 +44,7 @@ void CChain::Main(void)
 
 	Mat edgePot = getEdgePot();
 	for (i = 0; i < nNodes - 1; i++)
-		graph->addArk(i, i + 1, edgePot);	// add arks
+		graph->addArc(i, i + 1, edgePot);	// add arcs
 
 	// Inference
 	inferer->infer();
