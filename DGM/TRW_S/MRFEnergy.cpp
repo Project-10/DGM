@@ -39,22 +39,13 @@ template <class T> MRFEnergy<T>::~MRFEnergy()
 
 template <class T> typename MRFEnergy<T>::NodeId MRFEnergy<T>::AddNode(LocalSize K, NodeData data)
 {
-	if (m_isEnergyConstructionCompleted)
-	{
-		m_errorFn("Error in AddNode(): graph construction completed - nodes cannot be added");
-	}
-
+	if (m_isEnergyConstructionCompleted) m_errorFn("Error in AddNode(): graph construction completed - nodes cannot be added");
 	int actualVectorSize = Vector::GetSizeInBytes(m_Kglobal, K);
-	if (actualVectorSize < 0)
-	{
-		m_errorFn("Error in AddNode() (invalid parameter?)");
-	}
-	if (m_vectorMaxSizeInBytes < actualVectorSize)
-	{
-		m_vectorMaxSizeInBytes = actualVectorSize;
-	}
+	if (actualVectorSize < 0) m_errorFn("Error in AddNode() (invalid parameter?)");
+	if (m_vectorMaxSizeInBytes < actualVectorSize) m_vectorMaxSizeInBytes = actualVectorSize;
+
 	int nodeSize = sizeof(Node) - sizeof(Vector) + actualVectorSize;
-	Node* i = (Node *) Malloc(nodeSize);
+	Node *i = (Node *) Malloc(nodeSize);
 
 	i->m_K = K;
 	i->m_D.Initialize(m_Kglobal, K, data);
@@ -62,18 +53,12 @@ template <class T> typename MRFEnergy<T>::NodeId MRFEnergy<T>::AddNode(LocalSize
 	i->m_firstForward = NULL;
 	i->m_firstBackward = NULL;
 	i->m_prev = m_nodeLast;
-	if (m_nodeLast)
-	{
-		m_nodeLast->m_next = i;
-	}
-	else
-	{
-		m_nodeFirst = i;
-	}
-	m_nodeLast = i;
 	i->m_next = NULL;
-
 	i->m_ordering = m_nodeNum ++;
+
+	if (m_nodeLast)	m_nodeLast->m_next = i;
+	else m_nodeFirst = i;
+	m_nodeLast = i;
 
 	return i;
 }
