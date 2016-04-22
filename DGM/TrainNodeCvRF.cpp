@@ -116,7 +116,13 @@ void CTrainNodeCvRF::train(void)
 	var_type.setTo(Scalar(ml::VAR_NUMERICAL)); // all inputs are numerical
 	var_type.at<uchar>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
 
-	m_pRF->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+	try {
+		m_pRF->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+	} 
+	catch (Exception &e) {
+		printf("Exception: %s\n", e.msg);
+		getchar();
+	}
 }
 
 Mat	CTrainNodeCvRF::getFeatureImportance(void) const
