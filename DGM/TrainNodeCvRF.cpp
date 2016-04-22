@@ -118,10 +118,11 @@ void CTrainNodeCvRF::train(void)
 
 	try {
 		m_pRF->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
-	} 
-	catch (Exception &e) {
-		printf("Exception: %s\n", e.msg);
+	} catch (std::exception &e) {
+		printf("EXCEPTION: %s\n", e.what());
+		printf("Try to reduce the maximal depth of the forest or switch to x64.\n");
 		getchar();
+		exit(-1);
 	}
 }
 
