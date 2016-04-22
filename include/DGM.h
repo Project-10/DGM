@@ -274,7 +274,7 @@ int main(int argv, char *argc[])
 	// =============================== Decoding ===============================
 	printf("Decoding... ");
 	int64 ticks = getTickCount();
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	std::vector<byte> optimalDecoding = decoder->decode(100);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -462,7 +462,7 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	vec_byte_t optimalDecoding = decoder->decode(10);
+	std::vector<byte> optimalDecoding = decoder->decode(10);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -608,7 +608,7 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	vec_byte_t optimalDecoding = decoder->decode(10);
+	std::vector<byte> optimalDecoding = decoder->decode(10);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
