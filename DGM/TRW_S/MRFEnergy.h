@@ -10,7 +10,6 @@ vnk@microsoft.com
 
 #include "instances.h"
 
-
 // After MRFEnergy is allocated, there are two phases:
 // 1. Energy construction. Only AddNode(), AddNodeData() and AddEdge() may be called.
 // 
@@ -34,14 +33,12 @@ public:
 	typedef typename T::NodeData   NodeData;
 	typedef typename T::EdgeData   EdgeData;
 
-	typedef Node* NodeId;
+	typedef Node * NodeId;
 	typedef void (*ErrorFunction)(char* msg);
 
 	// Constructor. Function errorFn is called with an error message, if an error occurs.
 	MRFEnergy(GlobalSize Kglobal, ErrorFunction errorFn = NULL);
-
-	// Destructor.
-	~MRFEnergy();
+	~MRFEnergy(void);
 
 	//////////////////////////////////////////////////////////
 	//                 Energy construction                  //
@@ -69,7 +66,7 @@ public:
 	//////////////////////////////////////////////////////////
 
 	// Clears all messages. Completes energy construction (if not completed yet).
-	void ZeroMessages();
+	void ZeroMessages(void);
 
 	// Adds to all message entries a value drawn uniformly from [min_value, max_value].
 	// Normally, min_value can be set to 0 (except for TypeBinaryFast, in which case min_value = -max_value)
@@ -82,7 +79,7 @@ public:
 	// 
 	// Completes energy construction.
 	// Cannot be called after energy construction is completed.
-	void SetAutomaticOrdering();
+	void SetAutomaticOrdering(void);
 
 	// The structure below specifies (1) stopping criteria and 
 	// (2) how often to compute solution and print its energy.
@@ -121,18 +118,6 @@ public:
 	// Returns an integer in [0,Ki). Can be called only after Minimize().
 	Label GetSolution(NodeId i);
 
-
-
-
-
-
-
-
-
-
-
-
-
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
@@ -148,57 +133,49 @@ private:
 	struct MRFEdge;
 	struct MallocBlock;
 
-	ErrorFunction	m_errorFn;
-	MallocBlock*	m_mallocBlockFirst;
-	Node*			m_nodeFirst;
-	Node*			m_nodeLast;
-	int				m_nodeNum;
-	int				m_edgeNum;
-	GlobalSize		m_Kglobal;
-	int				m_vectorMaxSizeInBytes;
+	ErrorFunction	  m_errorFn;
+	MallocBlock	* m_mallocBlockFirst;
+	Node		* m_nodeFirst;
+	Node		* m_nodeLast;
+	int		  m_nodeNum;
+	int		  m_edgeNum;
+	GlobalSize	  m_Kglobal;
+	int		  m_vectorMaxSizeInBytes;
+	bool		  m_isEnergyConstructionCompleted;
+	char		* m_buf; 		// buffer of size m_vectorMaxSizeInBytes 
+					       	//              + max(m_vectorMaxSizeInBytes, Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes))
 
-	bool			m_isEnergyConstructionCompleted;
+	void CompleteGraphConstruction(void); 	// nodes and edges cannot be added after calling this function
+	void SetMonotonicTrees(void);
 
-	char*			m_buf; // buffer of size m_vectorMaxSizeInBytes 
-					       //              + max(m_vectorMaxSizeInBytes, Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes))
-
-	void CompleteGraphConstruction(); // nodes and edges cannot be added after calling this function
-	void SetMonotonicTrees();
-
-	REAL ComputeSolutionAndEnergy(); // sets Node::m_solution, returns value of the energy
+	REAL ComputeSolutionAndEnergy(void); 	// sets Node::m_solution, returns value of the energy
 
 
 
 	struct Node
 	{
-		int			m_ordering; // unique integer in [0,m_nodeNum-1)
-
-		MRFEdge*	m_firstForward; // first edge going to nodes with greater m_ordering
-		MRFEdge*	m_firstBackward; // first edge going to nodes with smaller m_ordering
-
-		Node*		m_prev; // previous and next
-		Node*		m_next; // nodes according to m_ordering
-
-		Label		m_solution; // integer in [0,m_D.m_K)
-		LocalSize	m_K; // local information about number of labels
-
-		Vector		m_D; // must be the last member in the struct since its size is not fixed
+		int		  m_ordering; 		///< unique integer in [0,m_nodeNum-1)
+		MRFEdge		* m_firstForward; 	///< first edge going to nodes with greater m_ordering
+		MRFEdge		* m_firstBackward; 	///< first edge going to nodes with smaller m_ordering
+		Node		* m_prev; 		///< previous and next
+		Node		* m_next; 		///< nodes according to m_ordering
+		Label		  m_solution; 		///< integer in [0,m_D.m_K)
+		LocalSize	  m_K; 			///< local information about number of labels
+		Vector		  m_D;			///< must be the last member in the struct since its size is not fixed
 	};
 
 	struct MRFEdge
 	{
-		MRFEdge*	m_nextForward; // next forward edge with the same tail
-		MRFEdge*	m_nextBackward; // next backward edge with the same head
-		Node*		m_tail;
-		Node*		m_head;
-
-		REAL		m_gammaForward; // = rho_{ij} / rho_{i} where i=m_tail, j=m_head
-		REAL		m_gammaBackward; // = rho_{ij} / rho_{j} where i=m_tail, j=m_head
-
-		Edge		m_message; // must be the last member in the struct since its size is not fixed.
-					           // Stores edge information and either forward or backward message.
-					           // Most of the time it's the backward message; it gets replaced
-					           // by the forward message only temporarily inside Minimize_TRW_S() and Minimize_BP().
+		MRFEdge		* m_nextForward; 	///< next forward edge with the same tail
+		MRFEdge		* m_nextBackward; 	///< next backward edge with the same head
+		Node		* m_tail;
+		Node		* m_head;
+		REAL		  m_gammaForward; 	///< = rho_{ij} / rho_{i} where i=m_tail, j=m_head
+		REAL		  m_gammaBackward; 	///< = rho_{ij} / rho_{j} where i=m_tail, j=m_head
+		Edge		  m_message; 		///< must be the last member in the struct since its size is not fixed.
+					           	///< Stores edge information and either forward or backward message.
+					           	///< Most of the time it's the backward message; it gets replaced
+					           	///< by the forward message only temporarily inside Minimize_TRW_S() and Minimize_BP().
 	};
 
 	// Use our own Malloc since 
@@ -211,7 +188,7 @@ private:
 		char*			m_current; // first element of available memory in this block
 		char*			m_last; // first element outside of allocated memory for this block
 	};
-	char* Malloc(int bytesNum); 
+	char * Malloc(int bytesNum); 
 };
 
 
