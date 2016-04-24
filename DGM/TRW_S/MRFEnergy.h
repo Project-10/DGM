@@ -4,21 +4,18 @@ vnk@microsoft.com
 
 (c) Microsoft Corporation. All rights reserved. 
 *******************************************************************/
+#pragma once
 
-#ifndef __MRFENERGY_H__
-#define __MRFENERGY_H__
-
-#include "instances.h"
+#include "typeGeneral.h"
 
 // After MRFEnergy is allocated, there are two phases:
 // 1. Energy construction. Only AddNode(), AddNodeData() and AddEdge() may be called.
 // 
-// Any call ZeroMessages(), SetAutomaticOrdering(), Minimize_TRW_S() or Minimize_BP()
+// Any call ZeroMessages(), Minimize_TRW_S() or Minimize_BP()
 // completes graph construction; MRFEnergy goes to the second phase:
 // 2. Only functions AddNodeData(), ZeroMessages(), Minimize_TRW_S(), Minimize_BP()
 // or GetSolution() may be called. (The last function can be called only after
 // Minimize_TRW_S() or Minimize_BP()).
-
 
 template <class T> class MRFEnergy
 {
@@ -71,15 +68,6 @@ public:
 	// Adds to all message entries a value drawn uniformly from [min_value, max_value].
 	// Normally, min_value can be set to 0 (except for TypeBinaryFast, in which case min_value = -max_value)
 	void AddRandomMessages(unsigned int random_seed, REAL min_value, REAL max_value);
-
-	// The algorithm depends on the order of nodes.
-	// By default nodes are processed in the order in which they were added.
-	// The function below permutes this order using certain heuristics.
-	// It may speed up the algorithm if, for example, the original order is random.
-	// 
-	// Completes energy construction.
-	// Cannot be called after energy construction is completed.
-	void SetAutomaticOrdering(void);
 
 	// The structure below specifies (1) stopping criteria and 
 	// (2) how often to compute solution and print its energy.
@@ -134,16 +122,16 @@ private:
 	struct MallocBlock;
 
 	ErrorFunction	  m_errorFn;
-	MallocBlock	* m_mallocBlockFirst;
-	Node		* m_nodeFirst;
-	Node		* m_nodeLast;
-	int		  m_nodeNum;
-	int		  m_edgeNum;
-	GlobalSize	  m_Kglobal;
-	int		  m_vectorMaxSizeInBytes;
-	bool		  m_isEnergyConstructionCompleted;
-	char		* m_buf; 		// buffer of size m_vectorMaxSizeInBytes 
-					       	//              + max(m_vectorMaxSizeInBytes, Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes))
+	MallocBlock		* m_mallocBlockFirst;
+	Node			* m_nodeFirst;
+	Node			* m_nodeLast;
+	int				  m_nodeNum;
+	int				  m_edgeNum;
+	GlobalSize		  m_Kglobal;
+	int				  m_vectorMaxSizeInBytes;
+	bool			  m_isEnergyConstructionCompleted;
+	char			* m_buf; 				// buffer of size m_vectorMaxSizeInBytes 
+					       					//              + max(m_vectorMaxSizeInBytes, Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes))
 
 	void CompleteGraphConstruction(void); 	// nodes and edges cannot be added after calling this function
 	void SetMonotonicTrees(void);
@@ -154,14 +142,14 @@ private:
 
 	struct Node
 	{
-		int		  m_ordering; 		///< unique integer in [0,m_nodeNum-1)
+		int			  m_ordering; 		///< unique integer in [0,m_nodeNum-1)
 		MRFEdge		* m_firstForward; 	///< first edge going to nodes with greater m_ordering
 		MRFEdge		* m_firstBackward; 	///< first edge going to nodes with smaller m_ordering
-		Node		* m_prev; 		///< previous and next
-		Node		* m_next; 		///< nodes according to m_ordering
+		Node		* m_prev; 			///< previous and next
+		Node		* m_next; 			///< nodes according to m_ordering
 		Label		  m_solution; 		///< integer in [0,m_D.m_K)
-		LocalSize	  m_K; 			///< local information about number of labels
-		Vector		  m_D;			///< must be the last member in the struct since its size is not fixed
+		LocalSize	  m_K; 				///< local information about number of labels
+		Vector		  m_D;				///< must be the last member in the struct since its size is not fixed
 	};
 
 	struct MRFEdge
@@ -191,10 +179,7 @@ private:
 	char * Malloc(int bytesNum); 
 };
 
-
-
-
-template <class T> inline char* MRFEnergy<T>::Malloc(int bytesNum)
+template <class T> inline char * MRFEnergy<T>::Malloc(int bytesNum)
 {
 	if (!m_mallocBlockFirst || m_mallocBlockFirst->m_current+bytesNum > m_mallocBlockFirst->m_last)
 	{
@@ -217,5 +202,3 @@ template <class T> inline typename T::Label MRFEnergy<T>::GetSolution(NodeId i)
 {
 	return i->m_solution;
 }
-
-#endif

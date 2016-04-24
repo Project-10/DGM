@@ -79,16 +79,8 @@
     <ClInclude Include="TrainNodeNaiveBayes.h" />
     <ClInclude Include="TrainNode.h" />
     <ClInclude Include="TrainTriplet.h" />
-    <ClInclude Include="TRW_S\instances.h" />
     <ClInclude Include="TRW_S\MRFEnergy.h" />
-    <ClInclude Include="TRW_S\typeBinary.h" />
-    <ClInclude Include="TRW_S\typeBinaryFast.h" />
     <ClInclude Include="TRW_S\typeGeneral.h" />
-    <ClInclude Include="TRW_S\typePotts.h" />
-    <ClInclude Include="TRW_S\typeTruncatedLinear.h" />
-    <ClInclude Include="TRW_S\typeTruncatedLinear2D.h" />
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic.h" />
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseRandomModel.cpp" />
@@ -138,11 +130,7 @@
     <ClCompile Include="TrainNodeMsRF.cpp" />
     <ClCompile Include="TrainNodeNaiveBayes.cpp" />
     <ClCompile Include="TrainTriplet.cpp" />
-    <ClCompile Include="TRW_S\example.cpp" />
-    <ClCompile Include="TRW_S\minimize.cpp" />
     <ClCompile Include="TRW_S\MRFEnergy.cpp" />
-    <ClCompile Include="TRW_S\ordering.cpp" />
-    <ClCompile Include="TRW_S\treeProbabilities.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5E2B8F9E-4760-477E-A5C1-AEAC95D7CB89}</ProjectGuid>

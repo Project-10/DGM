@@ -148,34 +148,10 @@
     <ClInclude Include="sherwood\utilities\TrainingContexts.h">
       <Filter>External\Sherwood Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="TRW_S\instances.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
     <ClInclude Include="TRW_S\MRFEnergy.h">
       <Filter>External\TRW</Filter>
     </ClInclude>
-    <ClInclude Include="TRW_S\typeBinary.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeBinaryFast.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
     <ClInclude Include="TRW_S\typeGeneral.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typePotts.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedLinear.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedLinear2D.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic2D.h">
       <Filter>External\TRW</Filter>
     </ClInclude>
     <ClInclude Include="TrainEdge.h">
@@ -360,19 +336,7 @@
     <ClCompile Include="sherwood\utilities\TrainingContexts.cpp">
       <Filter>External\Sherwood Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="TRW_S\example.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\minimize.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
     <ClCompile Include="TRW_S\MRFEnergy.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\ordering.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\treeProbabilities.cpp">
       <Filter>External\TRW</Filter>
     </ClCompile>
     <ClCompile Include="TrainNode.cpp">
