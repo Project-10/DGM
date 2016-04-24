@@ -47,7 +47,7 @@ int main(int argv, char *argc[])
 	CTrainNode		* nodeTrainer	= NULL; 
 	CTrainEdge		* edgeTrainer	= NULL;
 	CGraphExt		* graph			= new CGraphExt(nStates);
-	CInfer			* decoder		= new CInferLBP(graph);
+	CDecode			* decoder		= new CDecodeTRW(graph);
 	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat		= new CCMat(nStates);
 	float			  params[]		= {100, 0.01f};						
@@ -125,7 +125,7 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	vec_byte_t optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = decoder->decode(100);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 

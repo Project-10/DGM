@@ -13,19 +13,19 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 
 	DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 	
-	MRFEnergy<TypeGeneral>			* mrf	= new MRFEnergy<TypeGeneral>(TypeGeneral::GlobalSize());
-	MRFEnergy<TypeGeneral>::NodeId	* nodes = new MRFEnergy<TypeGeneral>::NodeId[nNodes];;
-	TypeGeneral::REAL				* nPot	= new TypeGeneral::REAL[nStates];
-	TypeGeneral::REAL				* ePot	= new TypeGeneral::REAL[nStates * nStates];
+	MRFEnergy<TypeGeneral>			* mrf	= new MRFEnergy<TypeGeneral>();
+	MRFEnergy<TypeGeneral>::Node*	* nodes = new MRFEnergy<TypeGeneral>::Node*[nNodes];;
+	double							* nPot	= new double[nStates];
+	double							* ePot	= new double[nStates * nStates];
 
 	MRFEnergy<TypeGeneral>::Options	  options;
-	TypeGeneral::REAL				  energy;
-	TypeGeneral::REAL				  lowerBound;
+	double							  energy;
+	double							  lowerBound;
 
 	// Add Nodes
 	for (Node &node : m_pGraph->m_vNodes) {
 		for (byte s = 0; s < nStates; s++) nPot[s] = -logf(MAX(FLT_EPSILON, node.Pot.at<float>(s, 0)));
-		nodes[node.id] = mrf->AddNode(TypeGeneral::LocalSize(nStates), TypeGeneral::NodeData(nPot));
+		nodes[node.id] = mrf->AddNode(nStates, TypeGeneral::NodeData(nPot));
 	}
 
 	// Add edges

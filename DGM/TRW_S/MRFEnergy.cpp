@@ -6,21 +6,16 @@
 
 #include "instances.inc"
 
-void DefaultErrorFn(char* msg)
-{
-	fprintf(stderr, "%s\n", msg);
-	exit(1);
-}
+#include "..\..\include\types.h"
+#include "..\..\include\macroses.h"
 
 // Constructor
-template <class T> MRFEnergy<T>::MRFEnergy(GlobalSize Kglobal, ErrorFunction errorFn)
-	: m_errorFn(errorFn ? errorFn : DefaultErrorFn),
-	  m_mallocBlockFirst(NULL),
+template <class T> MRFEnergy<T>::MRFEnergy()
+	: m_mallocBlockFirst(NULL),
 	  m_nodeFirst(NULL),
 	  m_nodeLast(NULL),
 	  m_nodeNum(0),
 	  m_edgeNum(0),
-	  m_Kglobal(Kglobal),
 	  m_vectorMaxSizeInBytes(0),
 	  m_isEnergyConstructionCompleted(false),
 	  m_buf(NULL)
@@ -36,18 +31,18 @@ template <class T> MRFEnergy<T>::~MRFEnergy()
 	}
 }
 
-template <class T> typename MRFEnergy<T>::NodeId MRFEnergy<T>::AddNode(LocalSize K, NodeData data)
+template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, NodeData data)
 {
-	if (m_isEnergyConstructionCompleted) m_errorFn("Error in AddNode(): graph construction completed - nodes cannot be added");
-	int actualVectorSize = Vector::GetSizeInBytes(m_Kglobal, K);
-	if (actualVectorSize < 0) m_errorFn("Error in AddNode() (invalid parameter?)");
+	DGM_ASSERT_MSG(!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
+	int actualVectorSize = Vector::GetSizeInBytes(K);
+	DGM_ASSERT_MSG(actualVectorSize >= 0, "Error in AddNode() (invalid parameter?)");
 	if (m_vectorMaxSizeInBytes < actualVectorSize) m_vectorMaxSizeInBytes = actualVectorSize;
 
 	int nodeSize = sizeof(Node) - sizeof(Vector) + actualVectorSize;
 	Node *i = (Node *) Malloc(nodeSize);
 
 	i->m_K = K;
-	i->m_D.Initialize(m_Kglobal, K, data);
+	i->m_D.Initialize(K, data);
 
 	i->m_firstForward = NULL;
 	i->m_firstBackward = NULL;
@@ -62,21 +57,22 @@ template <class T> typename MRFEnergy<T>::NodeId MRFEnergy<T>::AddNode(LocalSize
 	return i;
 }
 
-template <class T> void MRFEnergy<T>::AddNodeData(NodeId i, NodeData data)
+template <class T> void MRFEnergy<T>::AddNodeData(Node * i, NodeData data)
 {
-	i->m_D.Add(m_Kglobal, i->m_K, data);
+	i->m_D.Add(i->m_K, data);
 }
 
-template <class T> void MRFEnergy<T>::AddEdge(NodeId i, NodeId j, EdgeData data)
+template <class T> void MRFEnergy<T>::AddEdge(Node * i, Node * j, EdgeData data)
 {
-	if (m_isEnergyConstructionCompleted) m_errorFn("Error in AddNode(): graph construction completed - nodes cannot be added");
-	int actualEdgeSize = Edge::GetSizeInBytes(m_Kglobal, i->m_K, j->m_K, data);
-	if (actualEdgeSize < 0) m_errorFn("Error in AddEdge() (invalid parameter?)");
+
+	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
+	int actualEdgeSize = Edge::GetSizeInBytes(i->m_K, j->m_K, data);
+	DGM_ASSERT_MSG (actualEdgeSize != 0, "Error in AddEdge() (invalid parameter?)");
 	
 	int MRFedgeSize = sizeof(MRFEdge) - sizeof(Edge) + actualEdgeSize;
 	MRFEdge *e = (MRFEdge*) Malloc(MRFedgeSize);
 
-	e->m_message.Initialize(m_Kglobal, i->m_K, j->m_K, data, &i->m_D, &j->m_D);
+	e->m_message.Initialize(i->m_K, j->m_K, data, &i->m_D, &j->m_D);
 
 	e->m_tail = i;
 	e->m_nextForward = i->m_firstForward;
@@ -99,10 +95,10 @@ template <class T> void MRFEnergy<T>::ZeroMessages()
 	if (!m_isEnergyConstructionCompleted) CompleteGraphConstruction();
 	for (i = m_nodeFirst; i; i = i->m_next)
 		for (e = i->m_firstForward; e; e = e->m_nextForward)
-			e->m_message.GetMessagePtr()->SetZero(m_Kglobal, i->m_K);
+			e->m_message.GetMessagePtr()->SetZero(i->m_K);
 }
 
-template <class T> void MRFEnergy<T>::AddRandomMessages(unsigned int random_seed, REAL min_value, REAL max_value)
+template <class T> void MRFEnergy<T>::AddRandomMessages(unsigned int random_seed, double min_value, double max_value) 
 {
 	Node	* i;
 	MRFEdge	* e;
@@ -115,23 +111,23 @@ template <class T> void MRFEnergy<T>::AddRandomMessages(unsigned int random_seed
 	for (i = m_nodeFirst; i; i = i->m_next) 
 		for (e = i->m_firstForward; e; e = e->m_nextForward) {
 			Vector* M = e->m_message.GetMessagePtr();
-			for (k = 0; k<M->GetArraySize(m_Kglobal, i->m_K); k++) {
-				REAL x = (REAL)( min_value + rand()/((double)RAND_MAX) * (max_value - min_value) );
-				x += M->GetArrayValue(m_Kglobal, i->m_K, k);
-				M->SetArrayValue(m_Kglobal, i->m_K, k, x);
+			for (k = 0; k < i->m_K; k++) {
+				double x = (double)( min_value + rand()/((double)RAND_MAX) * (max_value - min_value) );
+				x += M->GetArrayValue(i->m_K, k);
+				M->SetArrayValue(i->m_K, k, x);
 			}
 		}
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowerBound, REAL &energy, REAL *min_marginals)
+template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, double &lowerBound, double &energy, double *min_marginals)
 {
 	Node	* i;
 	Node	* j;
 	MRFEdge	* e;
-	REAL	  vMin;
-	REAL	  lowerBoundPrev;
+	double	  vMin;
+	double	  lowerBoundPrev;
 
 	if (!m_isEnergyConstructionCompleted) CompleteGraphConstruction();
 
@@ -152,14 +148,14 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowe
 		////////////////////////////////////////////////
 		//                forward pass                //
 		////////////////////////////////////////////////
-		REAL * min_marginals_ptr = min_marginals;
+		double * min_marginals_ptr = min_marginals;
 
 		for (i = m_nodeFirst; i; i = i->m_next) {					// all nodes
-			Di->Copy(m_Kglobal, i->m_K, &i->m_D);
+			Di->Copy(i->m_K, &i->m_D);
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 
 			// normalize Di, update lower bound
 			// vMin = Di->ComputeAndSubtractMin(m_Kglobal, i->m_K); // do not compute lower bound
@@ -170,13 +166,13 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowe
 				assert(e->m_tail == i);
 				j = e->m_head;
 
-				vMin = e->m_message.UpdateMessage(m_Kglobal, i->m_K, j->m_K, Di, e->m_gammaForward, 0, buf);
+				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, e->m_gammaForward, 0, buf);
 
 				// lowerBound += vMin; // do not compute lower bound during the forward pass
 			}
 
 			if (lastIter && min_marginals)
-				min_marginals_ptr += Di->GetArraySize(m_Kglobal, i->m_K);
+				min_marginals_ptr += i->m_K;
 		} // i
 
 		  ////////////////////////////////////////////////
@@ -185,14 +181,14 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowe
 		lowerBound = 0;
 
 		for (i = m_nodeLast; i; i = i->m_prev) {
-			Di->Copy(m_Kglobal, i->m_K, &i->m_D);
+			Di->Copy(i->m_K, &i->m_D);
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 
 			// normalize Di, update lower bound
-			vMin = Di->ComputeAndSubtractMin(m_Kglobal, i->m_K);
+			vMin = Di->ComputeAndSubtractMin(i->m_K);
 			lowerBound += vMin;
 
 			// pass messages from i to nodes with smaller m_ordering
@@ -200,15 +196,15 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowe
 				assert(e->m_head == i);
 				j = e->m_tail;
 
-				vMin = e->m_message.UpdateMessage(m_Kglobal, i->m_K, j->m_K, Di, e->m_gammaBackward, 1, buf);
+				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, e->m_gammaBackward, 1, buf);
 
 				lowerBound += vMin;
 			}
 
 			if (lastIter && min_marginals) {
-				min_marginals_ptr -= Di->GetArraySize(m_Kglobal, i->m_K);
-				for (int k = 0; k < Di->GetArraySize(m_Kglobal, i->m_K); k++)
-					min_marginals_ptr[k] = Di->GetArrayValue(m_Kglobal, i->m_K, k);
+				min_marginals_ptr -= i->m_K;
+				for (int k = 0; k < i->m_K; k++)
+					min_marginals_ptr[k] = Di->GetArrayValue(i->m_K, k);
 			}
 		}
 
@@ -235,12 +231,12 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, REAL &lowe
 	return iter;
 }
 
-template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy, REAL* min_marginals)
+template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, double& energy, double* min_marginals)
 {
 	Node* i;
 	Node* j;
 	MRFEdge* e;
-	REAL vMin;
+	double vMin;
 	int iter;
 
 	if (!m_isEnergyConstructionCompleted)
@@ -264,18 +260,18 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy,
 		////////////////////////////////////////////////
 		//                forward pass                //
 		////////////////////////////////////////////////
-		REAL* min_marginals_ptr = min_marginals;
+		double* min_marginals_ptr = min_marginals;
 
 		for (i = m_nodeFirst; i; i = i->m_next)
 		{
-			Di->Copy(m_Kglobal, i->m_K, &i->m_D);
+			Di->Copy(i->m_K, &i->m_D);
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
 			{
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			}
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
 			{
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			}
 
 			// pass messages from i to nodes with higher m_ordering
@@ -284,15 +280,13 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy,
 				assert(i == e->m_tail);
 				j = e->m_head;
 
-				const REAL gamma = 1;
+				const double gamma = 1;
 
-				e->m_message.UpdateMessage(m_Kglobal, i->m_K, j->m_K, Di, gamma, 0, buf);
+				e->m_message.UpdateMessage(i->m_K, j->m_K, Di, gamma, 0, buf);
 			}
 
 			if (lastIter && min_marginals)
-			{
-				min_marginals_ptr += Di->GetArraySize(m_Kglobal, i->m_K);
-			}
+				min_marginals_ptr += i->m_K;
 		}
 
 		////////////////////////////////////////////////
@@ -301,14 +295,14 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy,
 
 		for (i = m_nodeLast; i; i = i->m_prev)
 		{
-			Di->Copy(m_Kglobal, i->m_K, &i->m_D);
+			Di->Copy(i->m_K, &i->m_D);
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
 			{
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			}
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
 			{
-				Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+				Di->Add(i->m_K, e->m_message.GetMessagePtr());
 			}
 
 			// pass messages from i to nodes with smaller m_ordering
@@ -317,18 +311,16 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy,
 				assert(i == e->m_head);
 				j = e->m_tail;
 
-				const REAL gamma = 1;
+				const double gamma = 1;
 
-				vMin = e->m_message.UpdateMessage(m_Kglobal, i->m_K, j->m_K, Di, gamma, 1, buf);
+				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, gamma, 1, buf);
 			}
 
 			if (lastIter && min_marginals)
 			{
-				min_marginals_ptr -= Di->GetArraySize(m_Kglobal, i->m_K);
-				for (int k = 0; k<Di->GetArraySize(m_Kglobal, i->m_K); k++)
-				{
-					min_marginals_ptr[k] = Di->GetArrayValue(m_Kglobal, i->m_K, k);
-				}
+				min_marginals_ptr -= i->m_K;
+				for (int k = 0; k < i->m_K; k++)
+					min_marginals_ptr[k] = Di->GetArrayValue(i->m_K, k);
 			}
 		}
 
@@ -353,12 +345,12 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, REAL& energy,
 	return iter;
 }
 
-template <class T> typename T::REAL MRFEnergy<T>::ComputeSolutionAndEnergy()
+template <class T> typename double MRFEnergy<T>::ComputeSolutionAndEnergy()
 {
 	Node	* i;
 	Node	* j;
 	MRFEdge	* e;
-	REAL 	  E = 0;
+	double 	  E = 0;
 
 	Vector	* DiBackward = (Vector*)m_buf; 					// cost of backward edges plus Di at the node
 	Vector	* Di = (Vector*)(m_buf + m_vectorMaxSizeInBytes); 	// all edges plus Di at the node
@@ -369,23 +361,23 @@ template <class T> typename T::REAL MRFEnergy<T>::ComputeSolutionAndEnergy()
 		// part of the graph considered so far, assuming that nodes u
 		// in this subgraph are fixed to u->m_solution
 
-		DiBackward->Copy(m_Kglobal, i->m_K, &i->m_D);
+		DiBackward->Copy(i->m_K, &i->m_D);
 		for (e = i->m_firstBackward; e; e = e->m_nextBackward) {
 			assert(i == e->m_head);
 			j = e->m_tail;
-			e->m_message.AddColumn(m_Kglobal, j->m_K, i->m_K, j->m_solution, DiBackward, 0);
+			e->m_message.AddColumn(j->m_K, i->m_K, j->m_solution, DiBackward, 0);
 		}
 
 		// add forward edges
-		Di->Copy(m_Kglobal, i->m_K, DiBackward);
+		Di->Copy(i->m_K, DiBackward);
 
 		for (e = i->m_firstForward; e; e = e->m_nextForward)
-			Di->Add(m_Kglobal, i->m_K, e->m_message.GetMessagePtr());
+			Di->Add(i->m_K, e->m_message.GetMessagePtr());
 
-		Di->ComputeMin(m_Kglobal, i->m_K, i->m_solution);
+		Di->ComputeMin(i->m_K, i->m_solution);
 
 		// update energy
-		E += DiBackward->GetValue(m_Kglobal, i->m_K, i->m_solution);
+		E += DiBackward->GetValue(i->m_K, i->m_solution);
 	}
 
 	return E;
@@ -400,11 +392,9 @@ template <class T> void MRFEnergy<T>::CompleteGraphConstruction()
 	MRFEdge	* e;
 	MRFEdge	* ePrev;
 
-	if (m_isEnergyConstructionCompleted) m_errorFn("Fatal error in CompleteGraphConstruction");
-
+	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Fatal error in CompleteGraphConstruction");
 	printf("Completing graph construction... ");
-
-	if (m_buf) m_errorFn("CompleteGraphConstruction(): fatal error");
+	DGM_ASSERT_MSG(!m_buf, "CompleteGraphConstruction(): fatal error");
 
 	m_buf = (char *) Malloc(m_vectorMaxSizeInBytes + 
 		( m_vectorMaxSizeInBytes > Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes) ?
@@ -438,7 +428,7 @@ template <class T> void MRFEnergy<T>::CompleteGraphConstruction()
 				ePrev = e;
 				e = e->m_nextForward;
 			} else {
-				e->m_message.Swap(m_Kglobal, i->m_K, j->m_K);
+				e->m_message.Swap(i->m_K, j->m_K);
 				e->m_tail = j;
 				e->m_head = i;
 
@@ -479,7 +469,7 @@ template <class T> void MRFEnergy<T>::SetMonotonicTrees()
 
 		int ni = (nForward > nBackward) ? nForward : nBackward;
 
-		REAL mu = (REAL)1 / ni;
+		double mu = (double)1 / ni;
 		for (e = i->m_firstBackward; e; e = e->m_nextBackward)	e->m_gammaBackward = mu;
 		for (e = i->m_firstForward; e; e = e->m_nextForward)	e->m_gammaForward = mu;
 	}
