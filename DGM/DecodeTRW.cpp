@@ -13,14 +13,14 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 
 	DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 	
-	MRFEnergy<TypeGeneral>			* mrf	= new MRFEnergy<TypeGeneral>();
-	MRFEnergy<TypeGeneral>::Node*	* nodes = new MRFEnergy<TypeGeneral>::Node*[nNodes];;
-	double							* nPot	= new double[nStates];
-	double							* ePot	= new double[nStates * nStates];
+	MRFEnergy			* mrf	= new MRFEnergy();
+	MRFEnergy::Node*	* nodes = new MRFEnergy::Node*[nNodes];;
+	double				* nPot	= new double[nStates];
+	double				* ePot	= new double[nStates * nStates];
 
-	MRFEnergy<TypeGeneral>::Options	  options;
-	double							  energy;
-	double							  lowerBound;
+	MRFEnergy::Options	  options;
+	double				  energy;
+	double				  lowerBound;
 
 	// Add Nodes
 	for (Node &node : m_pGraph->m_vNodes) {

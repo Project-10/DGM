@@ -3,8 +3,6 @@
 #include <string.h>
 #include <assert.h>
 
-template <class T> class MRFEnergy;
-
 class TypeGeneral
 {
 private:
@@ -16,7 +14,7 @@ private:
 	//////////////////////////////////////////////////////////////////////////////////
 
 private:
-	friend class MRFEnergy<TypeGeneral>;
+	friend class MRFEnergy;
 
 	struct Vector
 	{

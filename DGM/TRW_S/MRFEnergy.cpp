@@ -10,7 +10,7 @@
 #include "..\..\include\macroses.h"
 
 // Constructor
-template <class T> MRFEnergy<T>::MRFEnergy()
+MRFEnergy::MRFEnergy()
 	: m_mallocBlockFirst(NULL),
 	  m_nodeFirst(NULL),
 	  m_nodeLast(NULL),
@@ -22,7 +22,7 @@ template <class T> MRFEnergy<T>::MRFEnergy()
 { }
 
 // Destructor
-template <class T> MRFEnergy<T>::~MRFEnergy()
+MRFEnergy::~MRFEnergy()
 {
 	while (m_mallocBlockFirst) {
 		MallocBlock* next = m_mallocBlockFirst->m_next;
@@ -31,7 +31,7 @@ template <class T> MRFEnergy<T>::~MRFEnergy()
 	}
 }
 
-template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, double * data)
+MRFEnergy::Node * MRFEnergy::AddNode(int K, double *data)
 {
 	DGM_ASSERT_MSG(!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
 	int actualVectorSize = Vector::GetSizeInBytes(K);
@@ -57,7 +57,7 @@ template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, do
 	return i;
 }
 
-template <class T> void MRFEnergy<T>::AddEdge(Node * i, Node * j, double * data)
+void MRFEnergy::AddEdge(Node *i, Node *j, double *data)
 {
 
 	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
@@ -82,7 +82,7 @@ template <class T> void MRFEnergy<T>::AddEdge(Node * i, Node * j, double * data)
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template <class T> void MRFEnergy<T>::ZeroMessages()
+void MRFEnergy::ZeroMessages()
 {
 	Node	* i;
 	MRFEdge	* e;
@@ -93,7 +93,7 @@ template <class T> void MRFEnergy<T>::ZeroMessages()
 			e->m_message.GetMessagePtr()->SetZero(i->m_K);
 }
 
-template <class T> void MRFEnergy<T>::AddRandomMessages(unsigned int random_seed, double min_value, double max_value) 
+void MRFEnergy::AddRandomMessages(unsigned int random_seed, double min_value, double max_value) 
 {
 	Node	* i;
 	MRFEdge	* e;
@@ -116,7 +116,7 @@ template <class T> void MRFEnergy<T>::AddRandomMessages(unsigned int random_seed
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, double &lowerBound, double &energy, double *min_marginals)
+int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &energy, double *min_marginals)
 {
 	Node	* i;
 	Node	* j;
@@ -226,7 +226,7 @@ template <class T> int MRFEnergy<T>::Minimize_TRW_S(Options &options, double &lo
 	return iter;
 }
 
-template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, double& energy, double* min_marginals)
+int MRFEnergy::Minimize_BP(Options &options, double &energy, double *min_marginals)
 {
 	Node* i;
 	Node* j;
@@ -340,7 +340,7 @@ template <class T> int MRFEnergy<T>::Minimize_BP(Options& options, double& energ
 	return iter;
 }
 
-template <class T> typename double MRFEnergy<T>::ComputeSolutionAndEnergy()
+double MRFEnergy::ComputeSolutionAndEnergy()
 {
 	Node	* i;
 	Node	* j;
@@ -380,7 +380,7 @@ template <class T> typename double MRFEnergy<T>::ComputeSolutionAndEnergy()
 
 /////////////////////////////////////////////////////////////////////////////////
 
-template <class T> void MRFEnergy<T>::CompleteGraphConstruction()
+void MRFEnergy::CompleteGraphConstruction()
 {
 	Node	* i;
 	Node	* j;
@@ -450,7 +450,7 @@ template <class T> void MRFEnergy<T>::CompleteGraphConstruction()
 	printf("done\n");
 }
 
-template <class T> void MRFEnergy<T>::SetMonotonicTrees()
+void MRFEnergy::SetMonotonicTrees()
 {
 	Node	* i;
 	MRFEdge	* e;

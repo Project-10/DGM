@@ -15,7 +15,7 @@ vnk@microsoft.com
 // 2. Only functions ZeroMessages(), Minimize_TRW_S(), Minimize_BP()
 // or GetSolution() may be called. (The last function can be called only after Minimize_TRW_S() or Minimize_BP()).
 
-template <class T> class MRFEnergy
+class MRFEnergy
 {
 public:
 	struct Node;
@@ -95,10 +95,10 @@ public:
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
-private:
+public:
 
-	typedef typename T::Vector Vector;
-	typedef typename T::Edge   Edge;
+	typedef TypeGeneral::Vector Vector;
+	typedef TypeGeneral::Edge   Edge;
 
 	struct MRFEdge;
 	struct MallocBlock;
