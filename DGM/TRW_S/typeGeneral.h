@@ -11,45 +11,6 @@ private:
 	struct Vector;		// node parameters and messages
 	struct Edge;		// stores edge information and either forward or backward message
 
-
-public:
-	typedef enum
-	{
-		GENERAL,		// edge information is stored as Ki*Kj matrix. Inefficient!
-		POTTS			// edge information is stored as one number (lambdaPotts).
-	} Type;
-
-	struct NodeData;	// argument to MRFEnergy::AddNode()
-	struct EdgeData;	// argument to MRFEnergy::AddEdge()
-
-	struct NodeData
-	{
-		NodeData(double* data); // data = pointer to array of size MRFEnergy::m_Kglobal
-
-	private:
-	friend struct Vector;
-	friend struct Edge;
-		double * m_data;
-	};
-
-	struct EdgeData
-	{
-		EdgeData(Type type, double lambdaPotts);	// type must be POTTS
-		EdgeData(Type type, double * data);			// type must be GENERAL. data = pointer to array of size Ki*Kj
-													// such that V(ki,kj) = data[ki + Ki*kj]
-
-	private:
-	friend struct Vector;
-	friend struct Edge;
-		Type		m_type;
-		union
-		{
-			double	m_lambdaPotts;
-			double*	m_dataGeneral;
-		};
-	};
-
-
 	//////////////////////////////////////////////////////////////////////////////////
 	////////////////////////// Visible only to MRFEnergy /////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
@@ -60,8 +21,7 @@ private:
 	struct Vector
 	{
 		static int	GetSizeInBytes(int K);				// returns -1 if invalid K's
-		void		Initialize(int K, NodeData data);	// called once when user adds a node
-		void		Add(int K, NodeData data);			// called once when user calls MRFEnergy::AddNodeData()
+		void		Initialize(int K, double * data);	// called once when user adds a node
 
 		void		SetZero(int K);                     // set this[k] = 0
 		void		Copy(int K, Vector* V);             // set this[k] = V[k]
@@ -82,9 +42,9 @@ private:
 
 	struct Edge
 	{
-		static int	GetSizeInBytes(int Ki, int Kj, EdgeData data);	// returns -1 if invalid data
+		static int	GetSizeInBytes(int Ki, int Kj, double * data);	// returns -1 if invalid data
 		static int	GetBufSizeInBytes(int vectorMaxSizeInBytes);									// returns size of buffer need for UpdateMessage()
-		void		Initialize(int Ki, int Kj, EdgeData data, Vector* Di, Vector* Dj); // called once when user adds an edge
+		void		Initialize(int Ki, int Kj, double * data, Vector* Di, Vector* Dj); // called once when user adds an edge
 		Vector	  * GetMessagePtr();
 		void		Swap(int Ki, int Kj);							// if the client calls this function, then the meaning of 'dir'
 																									// in distance transform functions is swapped
@@ -121,53 +81,17 @@ private:
 		void AddColumn(int Ksource, int Kdest, int ksource, Vector* dest, int dir);
 
 	protected:
-
-		Type		m_type;
-
-		// message
 		Vector	* m_message;
-	};
 
-	struct EdgePotts : Edge
-	{
 	private:
-	friend struct Edge;
-		double	m_lambdaPotts;
-	};
-
-	struct EdgeGeneral : Edge
-	{
-	private:
-	friend struct Edge;
 		int		m_dir;				// 0 if Swap() was called even number of times, 1 otherwise
-		double	m_data[1];			// array of size Ki*Kj
+		double	m_data[1];			// array of size Ki * Kj
 	};
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Implementation ///////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
-
-///////////////////// NodeData and EdgeData ///////////////////////
-
-inline TypeGeneral::NodeData::NodeData(double* data)
-{
-	m_data = data;
-}
-
-inline TypeGeneral::EdgeData::EdgeData(Type type, double lambdaPotts)
-{
-	assert(type == POTTS);
-	m_type = type;
-	m_lambdaPotts = lambdaPotts;
-}
-
-inline TypeGeneral::EdgeData::EdgeData(Type type, double* data)
-{
-	assert(type == GENERAL);
-	m_type = type;
-	m_dataGeneral = data;
-}
 
 ///////////////////// Vector ///////////////////////
 
@@ -176,15 +100,9 @@ inline int TypeGeneral::Vector::GetSizeInBytes(int K)
 	return (K < 1) ? -1 : K * sizeof(double);
 }
 
-inline void TypeGeneral::Vector::Initialize(int K, NodeData data)
+inline void TypeGeneral::Vector::Initialize(int K, double * data)
 {
-	memcpy(m_data, data.m_data, K * sizeof(double));
-}
-
-inline void TypeGeneral::Vector::Add(int K, NodeData data)
-{
-	for (int k = 0; k < K; k++)
-		m_data[k] += data.m_data[k];
+	memcpy(m_data, data, K * sizeof(double));
 }
 
 inline void TypeGeneral::Vector::SetZero(int K)
@@ -192,12 +110,12 @@ inline void TypeGeneral::Vector::SetZero(int K)
 	memset(m_data, 0, K * sizeof(double));
 }
 
-inline void TypeGeneral::Vector::Copy(int K, Vector* V)
+inline void TypeGeneral::Vector::Copy(int K, Vector * V)
 {
 	memcpy(m_data, V->m_data, K * sizeof(double));
 }
 
-inline void TypeGeneral::Vector::Add(int K, Vector* V)
+inline void TypeGeneral::Vector::Add(int K, Vector * V)
 {
 	for (int k = 0; k < K; k++)
 		m_data[k] += V->m_data[k];
@@ -252,23 +170,10 @@ inline void TypeGeneral::Vector::SetArrayValue(int K, int k, double x)
 
 ///////////////////// EdgeDataAndMessage implementation /////////////////////////
 
-inline int TypeGeneral::Edge::GetSizeInBytes(int Ki, int Kj, EdgeData data)
+inline int TypeGeneral::Edge::GetSizeInBytes(int Ki, int Kj, double * data)
 {
 	int messageSizeInBytes = ((Ki > Kj) ? Ki : Kj) * sizeof(double);
-
-	switch (data.m_type)
-	{
-		case POTTS:
-			if (Ki != Kj || data.m_lambdaPotts < 0)
-			{
-				return -1;
-			}
-			return sizeof(EdgePotts) + messageSizeInBytes;
-		case GENERAL:
-			return sizeof(EdgeGeneral) - sizeof(double) + Ki * Kj * sizeof(double) + messageSizeInBytes;
-		default:
-			return -1;
-	}
+	return sizeof(Edge) - sizeof(double) + Ki * Kj * sizeof(double) + messageSizeInBytes;
 }
 
 inline int TypeGeneral::Edge::GetBufSizeInBytes(int vectorMaxSizeInBytes)
@@ -276,133 +181,80 @@ inline int TypeGeneral::Edge::GetBufSizeInBytes(int vectorMaxSizeInBytes)
 	return vectorMaxSizeInBytes;
 }
 
-inline void TypeGeneral::Edge::Initialize(int Ki, int Kj, EdgeData data, Vector* Di, Vector* Dj)
+inline void TypeGeneral::Edge::Initialize(int Ki, int Kj, double * data, Vector* Di, Vector* Dj)
 {
-	m_type = data.m_type;
-
-	switch (m_type)
-	{
-		case POTTS:
-			((EdgePotts*)this)->m_lambdaPotts = data.m_lambdaPotts;
-			m_message = (Vector*)((char*)this + sizeof(EdgePotts));
-			break;
-		case GENERAL:
-			((EdgeGeneral*)this)->m_dir = 0;
-			memcpy(((EdgeGeneral*)this)->m_data, data.m_dataGeneral, Ki * Kj * sizeof(double));
-			m_message = (Vector*)((char*)this + sizeof(EdgeGeneral) - sizeof(double) + Ki * Kj * sizeof(double));
-			break;
-		default:
-			assert(0);
-	}
+	m_dir = 0;
+	memcpy(this->m_data, data, Ki * Kj * sizeof(double));
+	m_message = (Vector*)((char*)this + sizeof(Edge) - sizeof(double) + Ki * Kj * sizeof(double));
 
 	memset(m_message->m_data, 0, ((Ki > Kj) ? Ki : Kj)*sizeof(double));
 }
 
-inline TypeGeneral::Vector* TypeGeneral::Edge::GetMessagePtr()
+inline TypeGeneral::Vector * TypeGeneral::Edge::GetMessagePtr()
 {
 	return m_message;
 }
 
 inline void TypeGeneral::Edge::Swap(int Ki, int Kj)
 {
-	if (m_type == GENERAL)
-	{
-		((EdgeGeneral*)this)->m_dir = 1 - ((EdgeGeneral*)this)->m_dir;
-	}
+	m_dir = 1 - m_dir;
 }
 
-inline double TypeGeneral::Edge::UpdateMessage(int Ksource, int Kdest, Vector* source, double gamma, int dir, void* _buf)
+inline double TypeGeneral::Edge::UpdateMessage(int Ksource, int Kdest, Vector * source, double gamma, int dir, void * _buf)
 {
-	Vector* buf = (Vector*) _buf;
+	Vector * buf = (Vector *) _buf;
 	double vMin;
 
-	if (m_type == POTTS)
+	int ksource, kdest;
+
+	for (ksource = 0; ksource < Ksource; ksource++)
 	{
-		assert(Ksource.m_K == Kdest.m_K);
+		buf->m_data[ksource] = gamma*source->m_data[ksource] - m_message->m_data[ksource];
+	}
 
-		int k, kMin;
-
-		m_message->m_data[0] = gamma*source->m_data[0] - m_message->m_data[0];
-		kMin = 0;
-		vMin = m_message->m_data[0];
-
-		for (k = 1; k < Ksource; k++)
+	if (dir == this->m_dir)
+	{
+		for (kdest = 0; kdest < Kdest; kdest++)
 		{
-			m_message->m_data[k] = gamma*source->m_data[k] - m_message->m_data[k];
-			kMin = 0;
-			vMin = buf->m_data[0];
-			if (vMin > m_message->m_data[k])
+			vMin = buf->m_data[0] + m_data[0 + kdest * Ksource];
+			for (ksource=1; ksource < Ksource; ksource++)
 			{
-				kMin = k;
-				vMin = m_message->m_data[k];
+				if (vMin > buf->m_data[ksource] + m_data[ksource + kdest * Ksource])
+				{
+					vMin = buf->m_data[ksource] + m_data[ksource + kdest * Ksource];
+				}
 			}
-		}
-
-		for (k = 0; k < Ksource; k++)
-		{
-			m_message->m_data[k] -= vMin;
-			if (m_message->m_data[k] > ((EdgePotts*)this)->m_lambdaPotts)
-			{
-				m_message->m_data[k] = ((EdgePotts*)this)->m_lambdaPotts;
-			}
+			m_message->m_data[kdest] = vMin;
 		}
 	}
-	else if (m_type == GENERAL)
+	else
 	{
-		int ksource, kdest;
-		double* data = ((EdgeGeneral*)this)->m_data;
-
-		for (ksource = 0; ksource < Ksource; ksource++)
-		{
-			buf->m_data[ksource] = gamma*source->m_data[ksource] - m_message->m_data[ksource];
-		}
-
-		if (dir == ((EdgeGeneral*)this)->m_dir)
-		{
-			for (kdest = 0; kdest < Kdest; kdest++)
-			{
-				vMin = buf->m_data[0] + data[0 + kdest * Ksource];
-				for (ksource=1; ksource < Ksource; ksource++)
-				{
-					if (vMin > buf->m_data[ksource] + data[ksource + kdest * Ksource])
-					{
-						vMin = buf->m_data[ksource] + data[ksource + kdest * Ksource];
-					}
-				}
-				m_message->m_data[kdest] = vMin;
-			}
-		}
-		else
-		{
-			for (kdest=0; kdest < Kdest; kdest++)
-			{
-				vMin = buf->m_data[0] + data[kdest + 0 * Kdest];
-				for (ksource=1; ksource < Ksource; ksource++)
-				{
-					if (vMin > buf->m_data[ksource] + data[kdest + ksource * Kdest])
-					{
-						vMin = buf->m_data[ksource] + data[kdest + ksource * Kdest];
-					}
-				}
-				m_message->m_data[kdest] = vMin;
-			}
-		}
-
-		vMin = m_message->m_data[0];
-		for (kdest = 1; kdest < Kdest; kdest++)
-		{
-			if (vMin > m_message->m_data[kdest])
-			{
-				vMin = m_message->m_data[kdest];
-			}
-		}
-
 		for (kdest=0; kdest < Kdest; kdest++)
-			m_message->m_data[kdest] -= vMin;
-
-	} else {
-		assert(0);
+		{
+			vMin = buf->m_data[0] + m_data[kdest + 0 * Kdest];
+			for (ksource=1; ksource < Ksource; ksource++)
+			{
+				if (vMin > buf->m_data[ksource] + m_data[kdest + ksource * Kdest])
+				{
+					vMin = buf->m_data[ksource] + m_data[kdest + ksource * Kdest];
+				}
+			}
+			m_message->m_data[kdest] = vMin;
+		}
 	}
+
+	vMin = m_message->m_data[0];
+	for (kdest = 1; kdest < Kdest; kdest++)
+	{
+		if (vMin > m_message->m_data[kdest])
+		{
+			vMin = m_message->m_data[kdest];
+		}
+	}
+
+	for (kdest=0; kdest < Kdest; kdest++)
+		m_message->m_data[kdest] -= vMin;
+
 
 	return vMin;
 }
@@ -411,26 +263,12 @@ inline void TypeGeneral::Edge::AddColumn(int Ksource, int Kdest, int ksource, Ve
 {
 	assert(ksource >= 0 && ksource < Ksource);
 
-	int k;
-
-	if (m_type == POTTS) {
-		for (k=0; k < ksource; k++)
-			dest->m_data[k] += ((EdgePotts*)this)->m_lambdaPotts;
-		for (k++; k < Kdest; k++)
-			dest->m_data[k] += ((EdgePotts*)this)->m_lambdaPotts;
-	}
-	else if (m_type == GENERAL)	{
-		double* data = ((EdgeGeneral*)this)->m_data;
-
-		if (dir == ((EdgeGeneral*)this)->m_dir) {
-			for (k = 0; k < Kdest; k++)
-				dest->m_data[k] += data[ksource + k * Ksource];
-		} else {
-			for (k = 0; k < Kdest; k++)
-				dest->m_data[k] += data[k + ksource * Kdest];
-		}
-	} else	{
-		assert(0);
+	if (dir == this->m_dir) {
+		for (int k = 0; k < Kdest; k++)
+			dest->m_data[k] += m_data[ksource + k * Ksource];
+	} else {
+		for (int k = 0; k < Kdest; k++)
+			dest->m_data[k] += m_data[k + ksource * Kdest];
 	}
 }
 

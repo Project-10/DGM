@@ -25,7 +25,7 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 	// Add Nodes
 	for (Node &node : m_pGraph->m_vNodes) {
 		for (byte s = 0; s < nStates; s++) nPot[s] = -logf(MAX(FLT_EPSILON, node.Pot.at<float>(s, 0)));
-		nodes[node.id] = mrf->AddNode(nStates, TypeGeneral::NodeData(nPot));
+		nodes[node.id] = mrf->AddNode(nStates, nPot);
 	}
 
 	// Add edges
@@ -36,7 +36,7 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 				for (byte j = 0; j < nStates; j++)
 					ePot[k++] = -logf(MAX(FLT_EPSILON, edge.Pot.at<float>(j, i)));
 
-			mrf->AddEdge(nodes[edge.node1], nodes[edge.node2], TypeGeneral::EdgeData(TypeGeneral::GENERAL, ePot));
+			mrf->AddEdge(nodes[edge.node1], nodes[edge.node2], ePot);
 		}
 	}
 

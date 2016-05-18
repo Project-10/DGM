@@ -9,18 +9,16 @@ vnk@microsoft.com
 #include "typeGeneral.h"
 
 // After MRFEnergy is allocated, there are two phases:
-// 1. Energy construction. Only AddNode(), AddNodeData() and AddEdge() may be called.
+// 1. Energy construction. Only AddNode() and AddEdge() may be called.
 // Any call ZeroMessages(), Minimize_TRW_S() or Minimize_BP() completes graph construction; 
 // MRFEnergy goes to the second phase:
-// 2. Only functions AddNodeData(), ZeroMessages(), Minimize_TRW_S(), Minimize_BP()
+// 2. Only functions ZeroMessages(), Minimize_TRW_S(), Minimize_BP()
 // or GetSolution() may be called. (The last function can be called only after Minimize_TRW_S() or Minimize_BP()).
 
 template <class T> class MRFEnergy
 {
 public:
 	struct Node;
-	typedef typename T::NodeData   NodeData;
-	typedef typename T::EdgeData   EdgeData;
 
 	// Constructor. Function errorFn is called with an error message, if an error occurs.
 	MRFEnergy(void);
@@ -34,18 +32,13 @@ public:
 	// (see the corresponding message*.h file for description).
 	// Note: information in data is copied into internal memory.
 	// Cannot be called after energy construction is completed.
-	Node * AddNode(int K, NodeData data);
-
-	// Modifies node parameter for existing node (namely, add information
-	// in data to existing parameter). May be called at any time.
-	// Node i must be Node * returned by AddNode().
-	void AddNodeData(Node * i, NodeData data);
+	Node * AddNode(int K, double * data);
 
 	// Adds an edge between i and j. data determins edge parameters
 	// (see the corresponding message*.h file for description).
 	// Note: information in data is copied into internal memory.
 	// Cannot be called after energy construction is completed.
-	void AddEdge(Node * i, Node * j, EdgeData data);
+	void AddEdge(Node * i, Node * j, double * data);
 
 	//////////////////////////////////////////////////////////
 	//                Energy construction end               //

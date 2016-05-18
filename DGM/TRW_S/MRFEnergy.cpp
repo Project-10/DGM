@@ -31,7 +31,7 @@ template <class T> MRFEnergy<T>::~MRFEnergy()
 	}
 }
 
-template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, NodeData data)
+template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, double * data)
 {
 	DGM_ASSERT_MSG(!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
 	int actualVectorSize = Vector::GetSizeInBytes(K);
@@ -57,12 +57,7 @@ template <class T> typename MRFEnergy<T>::Node * MRFEnergy<T>::AddNode(int K, No
 	return i;
 }
 
-template <class T> void MRFEnergy<T>::AddNodeData(Node * i, NodeData data)
-{
-	i->m_D.Add(i->m_K, data);
-}
-
-template <class T> void MRFEnergy<T>::AddEdge(Node * i, Node * j, EdgeData data)
+template <class T> void MRFEnergy<T>::AddEdge(Node * i, Node * j, double * data)
 {
 
 	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
