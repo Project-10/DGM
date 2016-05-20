@@ -21,7 +21,7 @@ public:
 	struct Node;
 
 	// Constructor. Function errorFn is called with an error message, if an error occurs.
-	MRFEnergy(void);
+	MRFEnergy(int nStates);
 	~MRFEnergy(void);
 
 	//////////////////////////////////////////////////////////
@@ -32,24 +32,17 @@ public:
 	// (see the corresponding message*.h file for description).
 	// Note: information in data is copied into internal memory.
 	// Cannot be called after energy construction is completed.
-	Node * AddNode(int K, double * data);
+	Node * AddNode(double *data);
 
 	// Adds an edge between i and j. data determins edge parameters
 	// (see the corresponding message*.h file for description).
 	// Note: information in data is copied into internal memory.
 	// Cannot be called after energy construction is completed.
-	void AddEdge(Node * i, Node * j, double * data);
+	void AddEdge(Node *i, Node *j, double *data);
 
 	//////////////////////////////////////////////////////////
 	//                Energy construction end               //
 	//////////////////////////////////////////////////////////
-
-	// Clears all messages. Completes energy construction (if not completed yet).
-	void ZeroMessages(void);
-
-	// Adds to all message entries a value drawn uniformly from [min_value, max_value].
-	// Normally, min_value can be set to 0 (except for TypeBinaryFast, in which case min_value = -max_value)
-	void AddRandomMessages(unsigned int random_seed, double min_value, double max_value);
 
 	// The structure below specifies (1) stopping criteria and 
 	// (2) how often to compute solution and print its energy.
@@ -65,9 +58,9 @@ public:
 		}
 
 		// stopping criterion
-		double		m_eps;				// stop if the increase in the lower bound during one iteration is less or equal than m_eps.
-										// Used only if m_eps >= 0, and only for TRW-S algorithm.
-		int			m_iterMax;			// maximum number of iterations
+		double	m_eps;				// stop if the increase in the lower bound during one iteration is less or equal than m_eps.
+									// Used only if m_eps >= 0, and only for TRW-S algorithm.
+		int		m_iterMax;			// maximum number of iterations
 
 		// Option for printing lower bound and the energy.
 		// Note: computing solution and its energy is slow
@@ -80,13 +73,17 @@ public:
 	// If the user provides array min_marginals, then the code
 	// sets this array accordingly. (The size of the array depends on the type
 	// used. Normally, it's (# nodes)*(# labels). Exception: for TypeBinaryFast it's (# nodes).
-	int Minimize_TRW_S(Options& options, double& lowerBound, double& energy, double* min_marginals = NULL);
+	int		Minimize_TRW_S(Options& options, double& lowerBound, double& energy, double* min_marginals = NULL);
 
 	// Returns number of iterations. Sets energy.
-	int Minimize_BP(Options& options, double& energy, double* min_marginals = NULL);
+	int		Minimize_BP(Options& options, double& energy, double* min_marginals = NULL);
 
-	// Returns an integer in [0,Ki). Can be called only after Minimize().
-	int GetSolution(Node * i) { return i->m_solution; }
+	void	CompleteGraphConstruction(void); 	// nodes and edges cannot be added after calling this function
+	void	SetMonotonicTrees(void);
+
+	double	ComputeSolutionAndEnergy(void); 	// sets Node::m_solution, returns value of the energy
+
+
 
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
@@ -95,38 +92,27 @@ public:
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////
-public:
 
-	typedef TypeGeneral::Vector Vector;
-	typedef TypeGeneral::Edge   Edge;
 
-	struct MRFEdge;
-	struct MallocBlock;
-
-	MallocBlock		* m_mallocBlockFirst;
+	int				  m_nStates;
 	Node			* m_nodeFirst;
 	Node			* m_nodeLast;
 	int				  m_nodeNum;
-	int				  m_edgeNum;
-	int				  m_vectorMaxSizeInBytes;
 	bool			  m_isEnergyConstructionCompleted;
-	char			* m_buf; 				// buffer of size m_vectorMaxSizeInBytes + max(m_vectorMaxSizeInBytes, Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes))
+	double			* m_buf; 				// buffer of size 2 * m_vectorMaxSizeInBytes )
 
-	void CompleteGraphConstruction(void); 	// nodes and edges cannot be added after calling this function
-	void SetMonotonicTrees(void);
 
-	double ComputeSolutionAndEnergy(void); 	// sets Node::m_solution, returns value of the energy
 
+	struct MRFEdge;
 	struct Node
 	{
-		int			  m_ordering; 		///< unique integer in [0,m_nodeNum-1)
+		int			  m_id; 			///< unique integer in [0,m_nodeNum-1)
 		MRFEdge		* m_firstForward; 	///< first edge going to nodes with greater m_ordering
 		MRFEdge		* m_firstBackward; 	///< first edge going to nodes with smaller m_ordering
 		Node		* m_prev; 			///< previous and next
 		Node		* m_next; 			///< nodes according to m_ordering
 		int			  m_solution; 		///< integer in [0,m_D.m_K)
-		int			  m_K; 				///< local information about number of labels
-		Vector		  m_D;				///< must be the last member in the struct since its size is not fixed
+		double		* m_D;				///< node potential
 	};
 
 	struct MRFEdge
@@ -143,35 +129,4 @@ public:
 									  	///< by the forward message only temporarily inside Minimize_TRW_S() and Minimize_BP().
 	};
 
-	// Use our own Malloc since 
-	// (a) new in C++ is slow and allocates minimum memory of 64 bytes (in Visual C++)
-	// (b) we want simple (one function) deallocation instead of going through every allocated element
-	struct MallocBlock
-	{
-		static const int minBlockSizeInBytes = 4096 - 3*sizeof(void*);
-		MallocBlock	* m_next;
-		char		* m_current;		// first element of available memory in this block
-		char		* m_last;			// first element outside of allocated memory for this block
-	};
-	
-	inline char * Malloc(int bytesNum) 
-	{
-		if (!m_mallocBlockFirst || m_mallocBlockFirst->m_current + bytesNum > m_mallocBlockFirst->m_last) {
-			int size = (bytesNum > MallocBlock::minBlockSizeInBytes) ? bytesNum : MallocBlock::minBlockSizeInBytes;
-			MallocBlock* b = (MallocBlock*) new char[sizeof(MallocBlock) + size];
-			if (!b) {
-				printf("Not enough memory");
-				exit(-1);
-			}
-			b->m_current = (char*)b + sizeof(MallocBlock);
-			b->m_last = b->m_current + size;
-
-			b->m_next = m_mallocBlockFirst;
-			m_mallocBlockFirst = b;
-		}
-
-		char* ptr = m_mallocBlockFirst->m_current;
-		m_mallocBlockFirst->m_current += bytesNum;
-		return ptr;
-	}
 };

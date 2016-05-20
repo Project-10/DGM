@@ -134,6 +134,9 @@
     <Filter Include="Source Files\Random Model\Training\Node\Naive Bayes">
       <UniqueIdentifier>{cbf89c71-62c1-4f46-b57c-a39a289259ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\TRW">
+      <UniqueIdentifier>{30544020-7134-433b-b6f5-fdf8afa2c4ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sherwood\utilities\FeatureResponseFunctions.h">
@@ -322,6 +325,9 @@
     <ClInclude Include="GraphLayered.h">
       <Filter>Source Files\Graph</Filter>
     </ClInclude>
+    <ClInclude Include="InferTRW.h">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
@@ -467,6 +473,9 @@
     </ClCompile>
     <ClCompile Include="Infer.cpp">
       <Filter>Source Files\Inference</Filter>
+    </ClCompile>
+    <ClCompile Include="InferTRW.cpp">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

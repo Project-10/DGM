@@ -4,51 +4,61 @@
 #include <assert.h>
 #include "MRFEnergy.h"
 
-#include "instances.inc"
-
 #include "..\..\include\types.h"
 #include "..\..\include\macroses.h"
 
+double ComputeMin(double *data, int len, int &kMin)
+{
+	double res = data[0];
+	kMin = 0;
+	for (int i = 1; i < len; i++)
+		if (res > data[i]) {
+			res = data[i];
+			kMin = i;
+		}
+	return res;
+}
+
+double ComputeAndSubtractMin(double *data, int len)
+{
+	double res = data[0];
+	for (int i = 1; i < len; i++)
+		if (res > data[i]) res = data[i];
+	for (int i = 0; i < len; i++)
+		data[i] -= res;
+	return res;
+}
+
 // Constructor
-MRFEnergy::MRFEnergy()
-	: m_mallocBlockFirst(NULL),
+MRFEnergy::MRFEnergy(int nStates)
+	: m_nStates(nStates),
 	  m_nodeFirst(NULL),
 	  m_nodeLast(NULL),
 	  m_nodeNum(0),
-	  m_edgeNum(0),
-	  m_vectorMaxSizeInBytes(0),
-	  m_isEnergyConstructionCompleted(false),
-	  m_buf(NULL)
-{ }
+	  m_isEnergyConstructionCompleted(false)
+{
+	m_buf = new double[2 * m_nStates];
+}
 
 // Destructor
 MRFEnergy::~MRFEnergy()
 {
-	while (m_mallocBlockFirst) {
-		MallocBlock* next = m_mallocBlockFirst->m_next;
-		delete m_mallocBlockFirst;
-		m_mallocBlockFirst = next;
-	}
+	// TODO: free memory
+	delete[] m_buf;
 }
 
-MRFEnergy::Node * MRFEnergy::AddNode(int K, double *data)
+MRFEnergy::Node * MRFEnergy::AddNode(double *data)
 {
 	DGM_ASSERT_MSG(!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
-	int actualVectorSize = Vector::GetSizeInBytes(K);
-	DGM_ASSERT_MSG(actualVectorSize >= 0, "Error in AddNode() (invalid parameter?)");
-	if (m_vectorMaxSizeInBytes < actualVectorSize) m_vectorMaxSizeInBytes = actualVectorSize;
-
-	int nodeSize = sizeof(Node) - sizeof(Vector) + actualVectorSize;
-	Node *i = (Node *) Malloc(nodeSize);
-
-	i->m_K = K;
-	i->m_D.Initialize(K, data);
-
+	
+	Node *i = new Node();
+	i->m_id = m_nodeNum++;
 	i->m_firstForward = NULL;
 	i->m_firstBackward = NULL;
 	i->m_prev = m_nodeLast;
 	i->m_next = NULL;
-	i->m_ordering = m_nodeNum ++;
+	i->m_D = new double[m_nStates];						
+	memcpy(i->m_D, data, m_nStates * sizeof(double));
 
 	if (m_nodeLast)	m_nodeLast->m_next = i;
 	else m_nodeFirst = i;
@@ -59,62 +69,19 @@ MRFEnergy::Node * MRFEnergy::AddNode(int K, double *data)
 
 void MRFEnergy::AddEdge(Node *i, Node *j, double *data)
 {
-
 	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Error in AddNode(): graph construction completed - nodes cannot be added");
-	int actualEdgeSize = Edge::GetSizeInBytes(i->m_K, j->m_K, data);
-	DGM_ASSERT_MSG (actualEdgeSize != 0, "Error in AddEdge() (invalid parameter?)");
-	
-	int MRFedgeSize = sizeof(MRFEdge) - sizeof(Edge) + actualEdgeSize;
-	MRFEdge *e = (MRFEdge*) Malloc(MRFedgeSize);
+	DGM_ASSERT(i->m_id < j->m_id);
 
-	e->m_message.Initialize(i->m_K, j->m_K, data, &i->m_D, &j->m_D);
-
-	e->m_tail = i;
+	MRFEdge *e = new MRFEdge();
 	e->m_nextForward = i->m_firstForward;
-	i->m_firstForward = e;
-
-	e->m_head = j;
 	e->m_nextBackward = j->m_firstBackward;
+	e->m_tail = i;
+	e->m_head = j;
+	e->m_message.Initialize(m_nStates, data); // m_dir = 0; m_data = data; m_message = 0;
+	
+	i->m_firstForward = e;
 	j->m_firstBackward = e;
-
-	m_edgeNum ++;
 }
-
-/////////////////////////////////////////////////////////////////////////////////
-
-void MRFEnergy::ZeroMessages()
-{
-	Node	* i;
-	MRFEdge	* e;
-
-	if (!m_isEnergyConstructionCompleted) CompleteGraphConstruction();
-	for (i = m_nodeFirst; i; i = i->m_next)
-		for (e = i->m_firstForward; e; e = e->m_nextForward)
-			e->m_message.GetMessagePtr()->SetZero(i->m_K);
-}
-
-void MRFEnergy::AddRandomMessages(unsigned int random_seed, double min_value, double max_value) 
-{
-	Node	* i;
-	MRFEdge	* e;
-	int 	  k;
-
-	if (!m_isEnergyConstructionCompleted) CompleteGraphConstruction();
-
-	srand(random_seed);
-
-	for (i = m_nodeFirst; i; i = i->m_next) 
-		for (e = i->m_firstForward; e; e = e->m_nextForward) {
-			Vector* M = e->m_message.GetMessagePtr();
-			for (k = 0; k < i->m_K; k++) {
-				double x = (double)( min_value + rand()/((double)RAND_MAX) * (max_value - min_value) );
-				x += M->GetArrayValue(i->m_K, k);
-				M->SetArrayValue(i->m_K, k, x);
-			}
-		}
-}
-
-/////////////////////////////////////////////////////////////////////////////////
 
 int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &energy, double *min_marginals)
 {
@@ -130,10 +97,10 @@ int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &ener
 
 	SetMonotonicTrees();
 
-	Vector	* Di = (Vector *)m_buf;
-	void	* buf = (void *)(m_buf + m_vectorMaxSizeInBytes);
+	double	* Di =  m_buf;
+	double	* buf = m_buf + m_nStates;
 
-	int		iter = 0;
+	int		iter	 = 0;
 	bool	lastIter = false;
 
 	// main loop
@@ -146,11 +113,13 @@ int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &ener
 		double * min_marginals_ptr = min_marginals;
 
 		for (i = m_nodeFirst; i; i = i->m_next) {					// all nodes
-			Di->Copy(i->m_K, &i->m_D);
+			memcpy(Di, i->m_D, m_nStates * sizeof(double));
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 
 			// normalize Di, update lower bound
 			// vMin = Di->ComputeAndSubtractMin(m_Kglobal, i->m_K); // do not compute lower bound
@@ -161,13 +130,13 @@ int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &ener
 				assert(e->m_tail == i);
 				j = e->m_head;
 
-				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, e->m_gammaForward, 0, buf);
+				vMin = e->m_message.UpdateMessage(m_nStates, Di, e->m_gammaForward, 0, buf);
 
 				// lowerBound += vMin; // do not compute lower bound during the forward pass
 			}
 
 			if (lastIter && min_marginals)
-				min_marginals_ptr += i->m_K;
+				min_marginals_ptr += m_nStates;
 		} // i
 
 		  ////////////////////////////////////////////////
@@ -176,14 +145,16 @@ int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &ener
 		lowerBound = 0;
 
 		for (i = m_nodeLast; i; i = i->m_prev) {
-			Di->Copy(i->m_K, &i->m_D);
+			memcpy(Di, i->m_D, m_nStates * sizeof(double));
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 
 			// normalize Di, update lower bound
-			vMin = Di->ComputeAndSubtractMin(i->m_K);
+			vMin = ComputeAndSubtractMin(Di, m_nStates);
 			lowerBound += vMin;
 
 			// pass messages from i to nodes with smaller m_ordering
@@ -191,15 +162,15 @@ int MRFEnergy::Minimize_TRW_S(Options &options, double &lowerBound, double &ener
 				assert(e->m_head == i);
 				j = e->m_tail;
 
-				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, e->m_gammaBackward, 1, buf);
+				vMin = e->m_message.UpdateMessage(m_nStates, Di, e->m_gammaBackward, 1, buf);
 
 				lowerBound += vMin;
 			}
 
 			if (lastIter && min_marginals) {
-				min_marginals_ptr -= i->m_K;
-				for (int k = 0; k < i->m_K; k++)
-					min_marginals_ptr[k] = Di->GetArrayValue(i->m_K, k);
+				min_marginals_ptr -= m_nStates;
+				for (int k = 0; k < m_nStates; k++)
+					min_marginals_ptr[k] = Di[k];
 			}
 		}
 
@@ -235,14 +206,12 @@ int MRFEnergy::Minimize_BP(Options &options, double &energy, double *min_margina
 	int iter;
 
 	if (!m_isEnergyConstructionCompleted)
-	{
 		CompleteGraphConstruction();
-	}
 
 	printf("BP algorithm\n");
 
-	Vector* Di = (Vector*)m_buf;
-	void* buf = (void*)(m_buf + m_vectorMaxSizeInBytes);
+	double * Di =  m_buf;
+	double * buf = m_buf + m_nStates;
 
 	iter = 0;
 	bool lastIter = false;
@@ -259,15 +228,14 @@ int MRFEnergy::Minimize_BP(Options &options, double &energy, double *min_margina
 
 		for (i = m_nodeFirst; i; i = i->m_next)
 		{
-			Di->Copy(i->m_K, &i->m_D);
+			memcpy(Di, i->m_D, m_nStates * sizeof(double));
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-			{
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
-			}
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-			{
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
-			}
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
+
 
 			// pass messages from i to nodes with higher m_ordering
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
@@ -277,28 +245,25 @@ int MRFEnergy::Minimize_BP(Options &options, double &energy, double *min_margina
 
 				const double gamma = 1;
 
-				e->m_message.UpdateMessage(i->m_K, j->m_K, Di, gamma, 0, buf);
+				e->m_message.UpdateMessage(m_nStates, Di, gamma, 0, buf);
 			}
 
 			if (lastIter && min_marginals)
-				min_marginals_ptr += i->m_K;
+				min_marginals_ptr += m_nStates;
 		}
 
 		////////////////////////////////////////////////
 		//               backward pass                //
 		////////////////////////////////////////////////
 
-		for (i = m_nodeLast; i; i = i->m_prev)
-		{
-			Di->Copy(i->m_K, &i->m_D);
+		for (i = m_nodeLast; i; i = i->m_prev) {
+			memcpy(Di, i->m_D, m_nStates * sizeof(double));
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
-			{
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
-			}
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 			for (e = i->m_firstForward; e; e = e->m_nextForward)
-			{
-				Di->Add(i->m_K, e->m_message.GetMessagePtr());
-			}
+				for (int k = 0; k < m_nStates; k++)
+					Di[k] += e->m_message.m_message[k];
 
 			// pass messages from i to nodes with smaller m_ordering
 			for (e = i->m_firstBackward; e; e = e->m_nextBackward)
@@ -308,14 +273,13 @@ int MRFEnergy::Minimize_BP(Options &options, double &energy, double *min_margina
 
 				const double gamma = 1;
 
-				vMin = e->m_message.UpdateMessage(i->m_K, j->m_K, Di, gamma, 1, buf);
+				vMin = e->m_message.UpdateMessage(m_nStates, Di, gamma, 1, buf);
 			}
 
-			if (lastIter && min_marginals)
-			{
-				min_marginals_ptr -= i->m_K;
-				for (int k = 0; k < i->m_K; k++)
-					min_marginals_ptr[k] = Di->GetArrayValue(i->m_K, k);
+			if (lastIter && min_marginals) {
+				min_marginals_ptr -= m_nStates;
+				for (int k = 0; k < m_nStates; k++)
+					min_marginals_ptr[k] = Di[k];
 			}
 		}
 
@@ -347,8 +311,8 @@ double MRFEnergy::ComputeSolutionAndEnergy()
 	MRFEdge	* e;
 	double 	  E = 0;
 
-	Vector	* DiBackward = (Vector*)m_buf; 					// cost of backward edges plus Di at the node
-	Vector	* Di = (Vector*)(m_buf + m_vectorMaxSizeInBytes); 	// all edges plus Di at the node
+	double	* DiBackward = m_buf; 					// cost of backward edges plus Di at the node
+	double	* Di = m_buf + m_nStates; 				// all edges plus Di at the node
 
 	for (i = m_nodeFirst; i; i = i->m_next) {
 		// Set Ebackward[ki] to be the sum of V(ki,j->m_solution) for backward edges (i,j).
@@ -356,23 +320,24 @@ double MRFEnergy::ComputeSolutionAndEnergy()
 		// part of the graph considered so far, assuming that nodes u
 		// in this subgraph are fixed to u->m_solution
 
-		DiBackward->Copy(i->m_K, &i->m_D);
+		memcpy(DiBackward, i->m_D, m_nStates * sizeof(double));
 		for (e = i->m_firstBackward; e; e = e->m_nextBackward) {
 			assert(i == e->m_head);
 			j = e->m_tail;
-			e->m_message.AddColumn(j->m_K, i->m_K, j->m_solution, DiBackward, 0);
+			e->m_message.AddColumn(m_nStates, j->m_solution, DiBackward, 0);
 		}
 
 		// add forward edges
-		Di->Copy(i->m_K, DiBackward);
+		memcpy(Di, DiBackward, m_nStates * sizeof(double));
 
 		for (e = i->m_firstForward; e; e = e->m_nextForward)
-			Di->Add(i->m_K, e->m_message.GetMessagePtr());
+			for (int k = 0; k < m_nStates; k++)
+				Di[k] += e->m_message.m_message[k];
 
-		Di->ComputeMin(i->m_K, i->m_solution);
+		ComputeMin(Di, m_nStates, i->m_solution);
 
 		// update energy
-		E += DiBackward->GetValue(i->m_K, i->m_solution);
+		E += DiBackward[i->m_solution];
 	}
 
 	return E;
@@ -382,70 +347,28 @@ double MRFEnergy::ComputeSolutionAndEnergy()
 
 void MRFEnergy::CompleteGraphConstruction()
 {
-	Node	* i;
-	Node	* j;
-	MRFEdge	* e;
-	MRFEdge	* ePrev;
-
 	DGM_ASSERT_MSG (!m_isEnergyConstructionCompleted, "Fatal error in CompleteGraphConstruction");
 	printf("Completing graph construction... ");
-	DGM_ASSERT_MSG(!m_buf, "CompleteGraphConstruction(): fatal error");
-
-	m_buf = (char *) Malloc(m_vectorMaxSizeInBytes + 
-		( m_vectorMaxSizeInBytes > Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes) ?
-		  m_vectorMaxSizeInBytes : Edge::GetBufSizeInBytes(m_vectorMaxSizeInBytes) ) );
 
 	// set forward and backward edges properly
-#ifdef _DEBUG
-	int ordering;
-	for (i = m_nodeFirst, ordering = 0; i; i = i->m_next, ordering++) {
-		if ( (i->m_ordering != ordering)
-		  || (i->m_ordering == 0 && i->m_prev)
-		  || (i->m_ordering != 0 && i->m_prev->m_ordering != ordering-1) )
-		{
-			m_errorFn("CompleteGraphConstruction(): fatal error (wrong ordering)");
-		}
-	}
-	if (ordering != m_nodeNum) m_errorFn("CompleteGraphConstruction(): fatal error");
+	for (Node *i = m_nodeFirst; i; i = i->m_next) i->m_firstBackward = NULL;
 
-#endif
-	for (i = m_nodeFirst; i; i = i->m_next) i->m_firstBackward = NULL;
-	for (i = m_nodeFirst; i; i = i->m_next) {
-		ePrev = NULL;
-		for (e = i->m_firstForward; e; ) {
-			assert(i == e->m_tail);
-			j = e->m_head;
+	for (Node *i = m_nodeFirst; i; i = i->m_next) {
+		MRFEdge *ePrev = NULL;
+		for (MRFEdge *e = i->m_firstForward; e; ) {		// e : i -> j
+			DGM_ASSERT(i == e->m_tail);
+			Node *j = e->m_head;
+			DGM_ASSERT(i->m_id < j->m_id);				// ordering
 
-			if (i->m_ordering < j->m_ordering) {
-				e->m_nextBackward = j->m_firstBackward;
-				j->m_firstBackward = e;
+			e->m_nextBackward = j->m_firstBackward;
+			j->m_firstBackward = e;
 
-				ePrev = e;
-				e = e->m_nextForward;
-			} else {
-				e->m_message.Swap(i->m_K, j->m_K);
-				e->m_tail = j;
-				e->m_head = i;
-
-				MRFEdge* eNext = e->m_nextForward;
-
-				if (ePrev) ePrev->m_nextForward = e->m_nextForward;
-				else i->m_firstForward = e->m_nextForward;
-
-				e->m_nextForward = j->m_firstForward;
-				j->m_firstForward = e;
-
-				e->m_nextBackward = i->m_firstBackward;
-				i->m_firstBackward = e;
-
-				e = eNext;
-			}
+			ePrev = e;
+			e = e->m_nextForward;
 		}
 	}
 
 	m_isEnergyConstructionCompleted = true;
-
-	// ZeroMessages();
 
 	printf("done\n");
 }
@@ -464,7 +387,7 @@ void MRFEnergy::SetMonotonicTrees()
 
 		int ni = (nForward > nBackward) ? nForward : nBackward;
 
-		double mu = (double)1 / ni;
+		double mu = (double) 1 / ni;
 		for (e = i->m_firstBackward; e; e = e->m_nextBackward)	e->m_gammaBackward = mu;
 		for (e = i->m_firstForward; e; e = e->m_nextForward)	e->m_gammaForward = mu;
 	}

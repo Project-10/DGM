@@ -32,6 +32,7 @@
     <ClInclude Include="InferChain.h" />
     <ClInclude Include="InferExact.h" />
     <ClInclude Include="InferTree.h" />
+    <ClInclude Include="InferTRW.h" />
     <ClInclude Include="MarkerGraph.h" />
     <ClInclude Include="MarkerHistogram.h" />
     <ClInclude Include="MessagePassing.h" />
@@ -91,6 +92,7 @@
     <ClCompile Include="InferChain.cpp" />
     <ClCompile Include="InferExact.cpp" />
     <ClCompile Include="InferTree.cpp" />
+    <ClCompile Include="InferTRW.cpp" />
     <ClCompile Include="MarkerGraph.cpp" />
     <ClCompile Include="MarkerHistogram.cpp" />
     <ClCompile Include="MessagePassing.cpp" />

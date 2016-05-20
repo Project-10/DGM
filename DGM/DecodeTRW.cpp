@@ -13,24 +13,20 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 
 	DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 	
-	MRFEnergy			* mrf	= new MRFEnergy();
-	MRFEnergy::Node*	* nodes = new MRFEnergy::Node*[nNodes];;
+	MRFEnergy			* mrf	= new MRFEnergy(nStates);
+	MRFEnergy::Node*	* nodes = new MRFEnergy::Node*[nNodes];
 	double				* nPot	= new double[nStates];
 	double				* ePot	= new double[nStates * nStates];
-
-	MRFEnergy::Options	  options;
-	double				  energy;
-	double				  lowerBound;
 
 	// Add Nodes
 	for (Node &node : m_pGraph->m_vNodes) {
 		for (byte s = 0; s < nStates; s++) nPot[s] = -logf(MAX(FLT_EPSILON, node.Pot.at<float>(s, 0)));
-		nodes[node.id] = mrf->AddNode(nStates, nPot);
+		nodes[node.id] = mrf->AddNode(nPot);
 	}
 
 	// Add edges
-	for (Edge &edge : m_pGraph->m_vEdges) {
-		if (edge.node2 < edge.node1) {
+	for (Edge &edge : m_pGraph->m_vEdges) 
+		if (edge.node2 > edge.node1) {
 			int k = 0;
 			for (byte i = 0; i < nStates; i++)
 				for (byte j = 0; j < nStates; j++)
@@ -38,17 +34,19 @@ vec_byte_t CDecodeTRW::decode(unsigned int nIt, Mat &lossMatrix) const
 
 			mrf->AddEdge(nodes[edge.node1], nodes[edge.node2], ePot);
 		}
-	}
-
 	
+
 	/////////////////////// TRW-S algorithm //////////////////////
+	MRFEnergy::Options	  options;
+	double				  energy;
+	double				  lowerBound;
+
 	options.m_iterMax = nIt; // maximum number of iterations
 	mrf->Minimize_TRW_S(options, lowerBound, energy);
 
 	// read solution
 	for (size_t n = 0; n < nNodes; n++)		
-		res[n] = static_cast<byte>(mrf->GetSolution(nodes[n]));
-
+		res[n] = static_cast<byte>(nodes[n]->m_solution);
 
 	// done
 	delete mrf;
