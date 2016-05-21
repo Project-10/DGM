@@ -80,8 +80,6 @@
     <ClInclude Include="TrainNodeNaiveBayes.h" />
     <ClInclude Include="TrainNode.h" />
     <ClInclude Include="TrainTriplet.h" />
-    <ClInclude Include="TRW_S\MRFEnergy.h" />
-    <ClInclude Include="TRW_S\typeGeneral.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseRandomModel.cpp" />
@@ -132,7 +130,6 @@
     <ClCompile Include="TrainNodeMsRF.cpp" />
     <ClCompile Include="TrainNodeNaiveBayes.cpp" />
     <ClCompile Include="TrainTriplet.cpp" />
-    <ClCompile Include="TRW_S\MRFEnergy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5E2B8F9E-4760-477E-A5C1-AEAC95D7CB89}</ProjectGuid>

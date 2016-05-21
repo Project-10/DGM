@@ -11,9 +11,6 @@
     <Filter Include="External\Sherwood Utilities">
       <UniqueIdentifier>{b1d27dc9-c725-4965-91e2-c08ffbfba089}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\TRW">
-      <UniqueIdentifier>{3a28221c-a283-438d-9d51-bc3b022d8bff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{ec202d3a-3424-42d3-a863-943eec058c65}</UniqueIdentifier>
     </Filter>
@@ -150,12 +147,6 @@
     </ClInclude>
     <ClInclude Include="sherwood\utilities\TrainingContexts.h">
       <Filter>External\Sherwood Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\MRFEnergy.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeGeneral.h">
-      <Filter>External\TRW</Filter>
     </ClInclude>
     <ClInclude Include="TrainEdge.h">
       <Filter>Source Files\Random Model\Training\Edge</Filter>
@@ -341,9 +332,6 @@
     </ClCompile>
     <ClCompile Include="sherwood\utilities\TrainingContexts.cpp">
       <Filter>External\Sherwood Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\MRFEnergy.cpp">
-      <Filter>External\TRW</Filter>
     </ClCompile>
     <ClCompile Include="TrainNode.cpp">
       <Filter>Source Files\Random Model\Training\Node</Filter>

@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/	
-		DllExport CDecodeTRW(CGraph *pGraph) : CDecode(pGraph) {};
+		DllExport CDecodeTRW(CGraph *pGraph) : CDecode(pGraph), m_nodeFirst(NULL), m_nodeLast(NULL), m_nodeNum(0) {};
 		DllExport virtual ~CDecodeTRW(void) {};
 
 		/**
@@ -32,7 +32,66 @@ namespace DirectGraphicalModels
 		* @param lossMatrix is not used
 		* @return The most probable configuration
 		*/
-		DllExport virtual vec_byte_t decode(unsigned int nIt = 10, Mat &lossMatrix = Mat()) const;
+		DllExport virtual vec_byte_t decode(unsigned int nIt = 10, Mat &lossMatrix = Mat())/* const*/;
+
+	
+	private:
+		/******************************************************************
+		Vladimir Kolmogorov, 2005
+		(c) Microsoft Corporation. All rights reserved.
+		*******************************************************************/
+		struct NODE;
+		struct EDGE;
+		struct Options;
+		
+		NODE	* AddNode(double *data);
+		void	  AddEdge(NODE *i, NODE *j, double *data);
+		
+		int		  Minimize_TRW_S(Options& options, double& lowerBound, double& energy);			// Returns number of iterations. Sets lowerBound and energy.
+		int		  Minimize_BP(Options& options, double& energy);								// Returns number of iterations. Sets energy.
+		
+		double	  ComputeSolutionAndEnergy(void); 												// sets Node::m_solution, returns value of the energy
+		double	  UpdateMessage(EDGE *edge, double *source, double gamma, int dir, double *buf);
+
+		NODE	* m_nodeFirst;
+		NODE	* m_nodeLast;
+		int		  m_nodeNum;
+
+		struct Options {
+			Options()
+			{
+				// default parameters
+				m_eps = -1;				// not used
+				m_iterMax = 1000000;
+				m_printIter = 5;		// After 10 iterations start printing the lower bound
+				m_printMinIter = 10;	// and the energy every 5 iterations.
+			}
+
+			// stopping criterion
+			double	m_eps;				// stop if the increase in the lower bound during one iteration is less or equal than m_eps. Used only if m_eps >= 0, and only for TRW-S algorithm.
+			int		m_iterMax;			// maximum number of iterations
+			int		m_printIter;		// print lower bound and energy every m_printIter iterations
+			int		m_printMinIter;		// do not print lower bound and energy before m_printMinIter iterations
+		};
+
+		struct NODE {
+			int			  m_id; 			///< unique integer in [0,m_nodeNum-1)
+			EDGE		* m_firstForward; 	///< first edge going to nodes with greater m_ordering
+			EDGE		* m_firstBackward; 	///< first edge going to nodes with smaller m_ordering
+			NODE		* m_prev; 			///< previous and next
+			NODE		* m_next; 			///< nodes according to m_ordering
+			int			  m_solution; 		///< integer in [0,m_D.m_K)
+			double		* m_D;				///< node potential
+		};
+
+		struct EDGE {
+			EDGE		* m_nextForward; 	///< next forward edge with the same tail
+			EDGE		* m_nextBackward; 	///< next backward edge with the same head
+			NODE		* m_tail;
+			NODE		* m_head;
+			double		* m_D;				///< edge potential
+			double		* m_msg;			///< message
+		};
 	};
 }
 

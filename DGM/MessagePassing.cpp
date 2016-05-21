@@ -53,7 +53,7 @@ void CMessagePassing::infer(unsigned int nIt)
 		}
 	});
 
-	deleteMessags();
+	deleteMessages();
 }
 
 void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
@@ -103,7 +103,7 @@ void CMessagePassing::createMessages(void)
 	});
 }
 
-void CMessagePassing::deleteMessags(void)
+void CMessagePassing::deleteMessages(void)
 {
 #ifdef USE_PPL
 	concurrency::parallel_for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [](Edge &edge) {

@@ -49,7 +49,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Deletes memory for Edge::msg and Edge::msg_temp containers for all edges in the graph
 		*/
-		void deleteMessags(void);
+		void deleteMessages(void);
 		/**
 		* @brief Swaps Edge::msg and Edge::msg_temp for all edges in the graph 
 		*/
