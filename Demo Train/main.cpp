@@ -47,8 +47,8 @@ int main(int argv, char *argc[])
 	CTrainNode		* nodeTrainer	= NULL; 
 	CTrainEdge		* edgeTrainer	= NULL;
 	CGraphExt		* graph			= new CGraphExt(nStates);
-	CDecode			* decoder		= new CDecodeTRW(graph);
-	//CInfer			* decoder		= new CInferTRW(graph);
+	//CDecode			* decoder		= new CDecodeTRW(graph);
+	CInfer			* decoder		= new CInferTRW(graph);
 	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat		= new CCMat(nStates);
 	float			  params[]		= {100, 0.01f};						

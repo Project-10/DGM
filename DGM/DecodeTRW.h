@@ -44,14 +44,17 @@ namespace DirectGraphicalModels
 		struct EDGE;
 		struct Options;
 		
-		NODE	* AddNode(double *data);
-		void	  AddEdge(NODE *i, NODE *j, double *data);
+		void	  TransformPotentials(void);													// Changes the potentials; pot = -log(pot)
+		void	  TransformPotentialsBack(void);												// Changes the potentials; pot = exp(-pot)
+
+		NODE	* AddNode(float *data);
+		void	  AddEdge(NODE *i, NODE *j, float *data);
 		
-		int		  Minimize_TRW_S(Options& options, double& lowerBound, double& energy);			// Returns number of iterations. Sets lowerBound and energy.
-		int		  Minimize_BP(Options& options, double& energy);								// Returns number of iterations. Sets energy.
+		int		  Minimize_TRW_S(Options& options, float& lowerBound);							// Returns number of iterations. Sets lowerBound and energy.
+		int		  Minimize_BP(Options& options);												// Returns number of iterations. Sets energy.
 		
-		double	  ComputeSolutionAndEnergy(void); 												// sets Node::m_solution, returns value of the energy
-		double	  UpdateMessage(EDGE *edge, double *source, double gamma, int dir, double *buf);
+		void	  ComputeSolution(void); 														// sets Node::m_solution
+		float	  UpdateMessage(EDGE *edge, float *source, float gamma, int dir, float *buf);
 
 		NODE	* m_nodeFirst;
 		NODE	* m_nodeLast;
@@ -68,7 +71,7 @@ namespace DirectGraphicalModels
 			}
 
 			// stopping criterion
-			double	m_eps;				// stop if the increase in the lower bound during one iteration is less or equal than m_eps. Used only if m_eps >= 0, and only for TRW-S algorithm.
+			float	m_eps;				// stop if the increase in the lower bound during one iteration is less or equal than m_eps. Used only if m_eps >= 0, and only for TRW-S algorithm.
 			int		m_iterMax;			// maximum number of iterations
 			int		m_printIter;		// print lower bound and energy every m_printIter iterations
 			int		m_printMinIter;		// do not print lower bound and energy before m_printMinIter iterations
@@ -81,7 +84,7 @@ namespace DirectGraphicalModels
 			NODE		* m_prev; 			///< previous and next
 			NODE		* m_next; 			///< nodes according to m_ordering
 			int			  m_solution; 		///< integer in [0,m_D.m_K)
-			double		* m_D;				///< node potential
+			float		* m_D;				///< node potential
 		};
 
 		struct EDGE {
@@ -89,8 +92,8 @@ namespace DirectGraphicalModels
 			EDGE		* m_nextBackward; 	///< next backward edge with the same head
 			NODE		* m_tail;
 			NODE		* m_head;
-			double		* m_D;				///< edge potential
-			double		* m_msg;			///< message
+			float		* m_D;				///< edge potential
+			float		* m_msg;			///< message
 		};
 	};
 }
