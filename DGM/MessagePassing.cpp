@@ -6,8 +6,8 @@ namespace DirectGraphicalModels
 {
 void CMessagePassing::infer(unsigned int nIt)
 {
-	size_t nNodes  = m_pGraph->getNumNodes();						// number of nodes
-	byte   nStates = m_pGraph->m_nStates;
+	const size_t nNodes  = m_pGraph->getNumNodes();						// number of nodes
+	const byte   nStates = m_pGraph->m_nStates;
 
 	// ====================================== Initialization ======================================			
 	createMessages(); 
@@ -50,7 +50,7 @@ void CMessagePassing::infer(unsigned int nIt)
 				DGM_ASSERT_MSG(!isnan(node.Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 					SUM_pot = %f\nSUM_new_pot = %f\n", node.id, SUM_pot, SUM_new_pot);
 			}
-		}
+		} // e_f
 	});
 
 	deleteMessages();

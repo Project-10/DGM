@@ -241,9 +241,6 @@
     <ClInclude Include="DecodeExact.h">
       <Filter>Source Files\Decoding\Exact</Filter>
     </ClInclude>
-    <ClInclude Include="DecodeTRW.h">
-      <Filter>Source Files\Decoding\TRW</Filter>
-    </ClInclude>
     <ClInclude Include="CMat.h">
       <Filter>Source Files\Common\Confusion Matrix</Filter>
     </ClInclude>
@@ -404,9 +401,6 @@
     </ClCompile>
     <ClCompile Include="DecodeExact.cpp">
       <Filter>Source Files\Decoding\Exact</Filter>
-    </ClCompile>
-    <ClCompile Include="DecodeTRW.cpp">
-      <Filter>Source Files\Decoding\TRW</Filter>
     </ClCompile>
     <ClCompile Include="CMat.cpp">
       <Filter>Source Files\Common\Confusion Matrix</Filter>

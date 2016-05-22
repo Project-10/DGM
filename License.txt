@@ -41,7 +41,3 @@ with extra license agreements.
   * Sherwood library for decision forests.
     License: http://research.microsoft.com/en-us/downloads/
     52d5b9c3-a638-42a1-94a5-d549e2251728/MSR-LA%20-%20Sherwood%20Code%20Library.rtf
-
-  * Tree-reweighted message passing algorithm for energy minimization.
-    License: http://research.microsoft.com/en-us/downloads/
-    dad6c31e-2c04-471f-b724-ded18bf70fe3/License.txt

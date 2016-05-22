@@ -44,7 +44,6 @@
     <ClInclude Include="PriorTriplet.h" />
     <ClInclude Include="Decode.h" />
     <ClInclude Include="DecodeExact.h" />
-    <ClInclude Include="DecodeTRW.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Graph3.h" />
     <ClInclude Include="Infer.h" />
@@ -102,7 +101,6 @@
     <ClCompile Include="PriorTriplet.cpp" />
     <ClCompile Include="Decode.cpp" />
     <ClCompile Include="DecodeExact.cpp" />
-    <ClCompile Include="DecodeTRW.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Graph3.cpp" />
     <ClCompile Include="InferLBP.cpp" />
