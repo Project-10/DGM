@@ -56,12 +56,13 @@ void CMessagePassing::infer(unsigned int nIt)
 	deleteMessages();
 }
 
+// dst: usually edge_to->msg or edge_to->msg_temp
 void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
 {
 	register byte	  s;													// state indexes
 	Node			* node = &m_pGraph->m_vNodes[edge_to->node1];			// source node
 	size_t			  nFromEdges = node->from.size();						// number of incoming eges
-	byte			  nStates = m_pGraph->m_nStates;						// number of states
+	const byte		  nStates = m_pGraph->m_nStates;						// number of states
 
 	// Compute temp = product of all incoming msgs except e_t
 	for (s = 0; s < nStates; s++) temp[s] = node->Pot.at<float>(s, 0);		// temp = node.Pot
@@ -130,6 +131,7 @@ void CMessagePassing::swapMessages(void)
 #endif	
 }
 
+// dst = (M * M)^T x v
 float CMessagePassing::MatMul(const Mat &M, const float *v, float *&dst, bool maxSum)
 {
 	float res = 0;

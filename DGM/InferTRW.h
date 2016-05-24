@@ -32,9 +32,7 @@ namespace DirectGraphicalModels
 
 
 	private:
-		void	transformPotentials(void);													// Changes the potentials; pot = -log(pot)
-		void	transformPotentialsBack(void);												// Changes the potentials; pot = exp(-pot)
-		void	calculateMessage(Edge *edge, float *temp, float *source, float gamma, int dir);
+		void	calculateMessage(Edge *edge, float *temp, float *source, int dir);
 		
 	};
 }
