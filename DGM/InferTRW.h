@@ -25,14 +25,20 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CInferTRW(void) {}
 
 		DllExport virtual void infer(unsigned int nIt = 1);
+		DllExport virtual void infer_log(unsigned int nIt = 1);
 
 
 	protected:
 		DllExport virtual void calculateMessages(unsigned int nIt);
+		void calculateMessage(Edge *edge, float *temp, float *data, int dir);
+		DllExport virtual void calculateMessages_log(unsigned int nIt);
+		void calculateMessage_log(Edge *edge, float *temp, float *data, int dir);
+
 
 
 	private:
-		void	calculateMessage(Edge *edge, float *temp, float *source, int dir);
-		
+		void transformLog(void);		// Pot = -log(Pot)
+		void transformExp(void);		// Pot = exp(-Pot)
+
 	};
 }

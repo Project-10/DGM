@@ -29,9 +29,6 @@
     <Filter Include="Source Files\Decoding\Exact">
       <UniqueIdentifier>{723df4bc-e033-4610-81f4-2ef70c316549}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Decoding\TRW">
-      <UniqueIdentifier>{0404ca65-6cf7-49b4-97e4-fca1680f6370}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Common\NDGauss">
       <UniqueIdentifier>{afc31f32-b024-4c15-b914-f0679df96641}</UniqueIdentifier>
     </Filter>
