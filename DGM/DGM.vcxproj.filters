@@ -11,9 +11,6 @@
     <Filter Include="External\Sherwood Utilities">
       <UniqueIdentifier>{b1d27dc9-c725-4965-91e2-c08ffbfba089}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\TRW">
-      <UniqueIdentifier>{3a28221c-a283-438d-9d51-bc3b022d8bff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{ec202d3a-3424-42d3-a863-943eec058c65}</UniqueIdentifier>
     </Filter>
@@ -31,9 +28,6 @@
     </Filter>
     <Filter Include="Source Files\Decoding\Exact">
       <UniqueIdentifier>{723df4bc-e033-4610-81f4-2ef70c316549}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Decoding\TRW">
-      <UniqueIdentifier>{0404ca65-6cf7-49b4-97e4-fca1680f6370}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Common\NDGauss">
       <UniqueIdentifier>{afc31f32-b024-4c15-b914-f0679df96641}</UniqueIdentifier>
@@ -134,6 +128,9 @@
     <Filter Include="Source Files\Random Model\Training\Node\Naive Bayes">
       <UniqueIdentifier>{cbf89c71-62c1-4f46-b57c-a39a289259ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\TRW">
+      <UniqueIdentifier>{30544020-7134-433b-b6f5-fdf8afa2c4ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sherwood\utilities\FeatureResponseFunctions.h">
@@ -147,36 +144,6 @@
     </ClInclude>
     <ClInclude Include="sherwood\utilities\TrainingContexts.h">
       <Filter>External\Sherwood Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\instances.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\MRFEnergy.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeBinary.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeBinaryFast.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeGeneral.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typePotts.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedLinear.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedLinear2D.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic.h">
-      <Filter>External\TRW</Filter>
-    </ClInclude>
-    <ClInclude Include="TRW_S\typeTruncatedQuadratic2D.h">
-      <Filter>External\TRW</Filter>
     </ClInclude>
     <ClInclude Include="TrainEdge.h">
       <Filter>Source Files\Random Model\Training\Edge</Filter>
@@ -271,9 +238,6 @@
     <ClInclude Include="DecodeExact.h">
       <Filter>Source Files\Decoding\Exact</Filter>
     </ClInclude>
-    <ClInclude Include="DecodeTRW.h">
-      <Filter>Source Files\Decoding\TRW</Filter>
-    </ClInclude>
     <ClInclude Include="CMat.h">
       <Filter>Source Files\Common\Confusion Matrix</Filter>
     </ClInclude>
@@ -346,6 +310,9 @@
     <ClInclude Include="GraphLayered.h">
       <Filter>Source Files\Graph</Filter>
     </ClInclude>
+    <ClInclude Include="InferTRW.h">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
@@ -359,21 +326,6 @@
     </ClCompile>
     <ClCompile Include="sherwood\utilities\TrainingContexts.cpp">
       <Filter>External\Sherwood Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\example.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\minimize.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\MRFEnergy.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\ordering.cpp">
-      <Filter>External\TRW</Filter>
-    </ClCompile>
-    <ClCompile Include="TRW_S\treeProbabilities.cpp">
-      <Filter>External\TRW</Filter>
     </ClCompile>
     <ClCompile Include="TrainNode.cpp">
       <Filter>Source Files\Random Model\Training\Node</Filter>
@@ -447,9 +399,6 @@
     <ClCompile Include="DecodeExact.cpp">
       <Filter>Source Files\Decoding\Exact</Filter>
     </ClCompile>
-    <ClCompile Include="DecodeTRW.cpp">
-      <Filter>Source Files\Decoding\TRW</Filter>
-    </ClCompile>
     <ClCompile Include="CMat.cpp">
       <Filter>Source Files\Common\Confusion Matrix</Filter>
     </ClCompile>
@@ -503,6 +452,9 @@
     </ClCompile>
     <ClCompile Include="Infer.cpp">
       <Filter>Source Files\Inference</Filter>
+    </ClCompile>
+    <ClCompile Include="InferTRW.cpp">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

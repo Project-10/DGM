@@ -5,7 +5,6 @@ namespace DirectGraphicalModels
 {
 void CInferLBP::calculateMessages(unsigned int nIt)
 {
-	const size_t	nNodes	= m_pGraph->getNumNodes();			// number of nodes
 	const byte		nStates = m_pGraph->m_nStates;				// number of states
 	
 	// ======================== Main loop (iterative messages calculation) ========================

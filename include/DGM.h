@@ -47,11 +47,11 @@
 #include "../DGM/InferChain.h"
 #include "../DGM/InferTree.h"
 #include "../DGM/InferLBP.h"
+#include "../DGM/InferTRW.h"
 #include "../DGM/InferViterbi.h"
 
 #include "../DGM/Decode.h"
 #include "../DGM/DecodeExact.h"
-#include "../DGM/DecodeTRW.h"
 
 #include "../DGM/Powell.h"
 
@@ -105,6 +105,7 @@ DGM implements the following inference and decoding methods:
 - <b>Chain:</b> Exact inferece for Markov chains (chain-structured graphs) @ref DirectGraphicalModels::CInferChain
 - <b>Tree:</b> Exact inferece for undirected graphs without loops (tree-structured graphs) @ref DirectGraphicalModels::CInferTree
 - <b>LBP:</b> Approximate inference based on the Loopy Belief Propagation (\a sum-product message-passing) algorithm @ref DirectGraphicalModels::CInferLBP 
+- <b>TRW:</b> Approximate inference based on the (<a href="http://pub.ist.ac.at/~vnk/papers/TRW-S-PAMI.pdf" target="_blank">Convergent Tree-Reweighted</a>) (\a max-sum message-passing) algorithm @ref DirectGraphicalModels::CInferTRW 
 - <b>Viterbi:</b> Approximate inference based on Viterbi (\a max-sum message-passing) algorithm @ref DirectGraphicalModels::CInferViterbi 
 
 The corresponding classes are @b CInfer* (where @b * is the name of the method above). 
@@ -113,8 +114,6 @@ All of the inference classes may be also used for approximate decoding via funct
 
 @subsubsection sec_main_decode_decoding Decoding
 - <b>Exact:</b> Exact decoding for small graphs with an exhaustive search @ref DirectGraphicalModels::CDecodeExact
-- <b>TRW:</b> Approximate decoding using max-product loopy belief propagation (<a href="http://pub.ist.ac.at/~vnk/papers/TRW-S-PAMI.pdf" target="_blank">Convergent Tree-Reweighted Message Passing Algorithm</a>)
-@ref DirectGraphicalModels::CDecodeTRW 
 
 The corresponding classes are @b CDecode* (where @b * is the name of the method above). 
 

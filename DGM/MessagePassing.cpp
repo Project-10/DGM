@@ -6,8 +6,8 @@ namespace DirectGraphicalModels
 {
 void CMessagePassing::infer(unsigned int nIt)
 {
-	size_t nNodes  = m_pGraph->getNumNodes();						// number of nodes
-	byte   nStates = m_pGraph->m_nStates;
+	const size_t nNodes  = m_pGraph->getNumNodes();						// number of nodes
+	const byte   nStates = m_pGraph->m_nStates;
 
 	// ====================================== Initialization ======================================			
 	createMessages(); 
@@ -50,18 +50,19 @@ void CMessagePassing::infer(unsigned int nIt)
 				DGM_ASSERT_MSG(!isnan(node.Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 					SUM_pot = %f\nSUM_new_pot = %f\n", node.id, SUM_pot, SUM_new_pot);
 			}
-		}
+		} // e_f
 	});
 
-	deleteMessags();
+	deleteMessages();
 }
 
+// dst: usually edge_to->msg or edge_to->msg_temp
 void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
 {
 	register byte	  s;													// state indexes
 	Node			* node = &m_pGraph->m_vNodes[edge_to->node1];			// source node
 	size_t			  nFromEdges = node->from.size();						// number of incoming eges
-	byte			  nStates = m_pGraph->m_nStates;						// number of states
+	const byte		  nStates = m_pGraph->m_nStates;						// number of states
 
 	// Compute temp = product of all incoming msgs except e_t
 	for (s = 0; s < nStates; s++) temp[s] = node->Pot.at<float>(s, 0);		// temp = node.Pot
@@ -103,7 +104,7 @@ void CMessagePassing::createMessages(void)
 	});
 }
 
-void CMessagePassing::deleteMessags(void)
+void CMessagePassing::deleteMessages(void)
 {
 #ifdef USE_PPL
 	concurrency::parallel_for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [](Edge &edge) {
@@ -130,6 +131,7 @@ void CMessagePassing::swapMessages(void)
 #endif	
 }
 
+// dst = (M * M)^T x v
 float CMessagePassing::MatMul(const Mat &M, const float *v, float *&dst, bool maxSum)
 {
 	float res = 0;

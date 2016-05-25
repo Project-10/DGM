@@ -15,14 +15,16 @@ namespace DirectGraphicalModels
 	struct Node {
 		size_t		id;		///< %Node ID
 		Mat			Pot;	///< %Node potentials: Mat(size: nStates x 1; type: CV_32FC1)
+		byte		sol;
 		vec_size_t	to;		///< Array of edge ids, pointing to the Child vertices
 		vec_size_t	from;	///< Array of edge ids, coming from the Parent vertices
 
-		Node(void) : Pot(Mat()) {}
 
-		Node(size_t _id) : id(_id), Pot(Mat()) {}
+		Node(void) : Pot(Mat()), sol(0) {}
 
-		Node(size_t _id, const Mat &p) : id(_id) { p.copyTo(Pot); }
+		Node(size_t _id) : id(_id), Pot(Mat()), sol(0) {}
+
+		Node(size_t _id, const Mat &p) : id(_id), sol(0) { p.copyTo(Pot); }
 	};
 
 
@@ -68,6 +70,7 @@ namespace DirectGraphicalModels
 		friend class CInferTree;
 		friend class CInferLBP;
 		friend class CInferViterbi;
+		friend class CInferTRW;
 
 		friend class CDecode;
 		friend class CDecodeTRW;
