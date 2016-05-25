@@ -31,7 +31,7 @@ void CInferTRW::infer(unsigned int nIt)
 			Edge &edge_from = m_pGraph->m_vEdges[e_f];
 			if (edge_from.node1 > edge_from.node2) continue;
 			Node &src = m_pGraph->m_vNodes[edge_from.node1];
-			for (byte s = 0; s < nStates; s++) node.Pot.at<float>(s, 0) *= edge_from.Pot.at<float>(s, src.sol);
+			for (byte s = 0; s < nStates; s++) node.Pot.at<float>(s, 0) *= edge_from.Pot.at<float>(src.sol, s);
 		}
 		// forward edges
 		for (size_t e_t : node.to) {
@@ -85,7 +85,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// pass messages from i to nodes with higher m_ordering
 			for (size_t e_t : node.to) {
 				Edge &edge_to = m_pGraph->m_vEdges[e_t];
-				if (edge_to.node1 < edge_to.node2) calculateMessage(edge_to, temp, data, 0);
+				if (edge_to.node1 < edge_to.node2) calculateMessage(edge_to, temp, data);
 			} // e_t
 		}); 
 
@@ -112,15 +112,13 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// normalize Di
 			float max = data[0];
 			for (byte s = 1; s < nStates; s++) if (max < data[s]) max = data[s];
-			for (byte s = 0; s < nStates; s++) {
-				data[s] /= max;
-				data[s] = powf(data[s], 1.0f / MAX(nForward, nBackward));
-			}
+			for (byte s = 0; s < nStates; s++) data[s] /= max;
+			for (byte s = 0; s < nStates; s++) data[s] = powf(data[s], 1.0f / MAX(nForward, nBackward));
 
 			// pass messages from i to nodes with smaller m_ordering
 			for (size_t e_f : node.from) {
 				Edge &edge_from = m_pGraph->m_vEdges[e_f];
-				if (edge_from.node1 < edge_from.node2) calculateMessage(edge_from, temp, data, 1);
+				if (edge_from.node1 < edge_from.node2) calculateMessage(edge_from, temp, data);
 			} // e_f
 		}); // All Nodes
 
@@ -131,36 +129,25 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 }
 
 // Updates edge->msg = F(data, edge.Pot)
-void CInferTRW::calculateMessage(Edge &edge, float *temp, float *data, int dir)
+void CInferTRW::calculateMessage(Edge &edge, float *temp, float *data)
 {
-	register byte	s;																				// state indexes
 	const byte		nStates = m_pGraph->m_nStates;
 
-	for (s = 0; s < nStates; s++) temp[s] = data[s] / MAX(FLT_EPSILON, edge.msg[s]); 				// tmp = gamma * data / edge.msg
+	for (byte s = 0; s < nStates; s++) temp[s] = data[s] / MAX(FLT_EPSILON, edge.msg[s]); 				// tmp = gamma * data / edge.msg
 
-	if (dir == 0) {
-		for (byte kdest = 0; kdest < nStates; kdest++) {
-			float max = temp[0] * edge.Pot.at<float>(kdest, 0);									// vMin = tmp + edge.Pot(0, kdest)
-			for (byte ksource = 1; ksource < nStates; ksource++) {
-				float val = temp[ksource] * edge.Pot.at<float>(kdest, ksource);
-				if (max < val) max = val;
-			}
-			edge.msg[kdest] = max;
+	for (byte y = 0; y < nStates; y++) {
+		float *pPot = edge.Pot.ptr<float>(y);
+		float max = temp[0] * pPot[0];																// vMin = tmp + edge.Pot(0, kdest)
+		for (byte x = 1; x < nStates; x++) {
+			float val = temp[x] * pPot[x];
+			if (max < val) max = val;
 		}
-	} else {	// TODO: Maybe this is redundant
-		for (byte kdest = 0; kdest < nStates; kdest++) {
-			float max = temp[0] * edge.Pot.at<float>(0, kdest);
-			for (byte ksource = 1; ksource < nStates; ksource++) {
-				float val = temp[ksource] * edge.Pot.at<float>(ksource, kdest);
-				if (max < val) max = val;
-			}
-			edge.msg[kdest] = max;
-		}
+		edge.msg[y] = max;
 	}
 
 	// Normalization
 	float max = edge.msg[0];
-	for (s = 1; s < nStates; s++) if (max < edge.msg[s]) max = edge.msg[s];
-	for (s = 0; s < nStates; s++) edge.msg[s] /= max;
+	for (byte s = 1; s < nStates; s++) if (max < edge.msg[s]) max = edge.msg[s];
+	for (byte s = 0; s < nStates; s++) edge.msg[s] /= max;
 }
 }
