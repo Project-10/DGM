@@ -143,10 +143,10 @@ int main(int argv, char *argc[])
 	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
 	imwrite(argc[6], img);
 	
-	imshow("Image", img);
-	cvWaitKey();
+	//imshow("Image", img);
+	//cvWaitKey();
 
-	getchar();
+	//getchar();
 
 	return 0;
 }

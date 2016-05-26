@@ -73,7 +73,6 @@ namespace DirectGraphicalModels
 		friend class CInferTRW;
 
 		friend class CDecode;
-		friend class CDecodeTRW;
 
 
 	public:
