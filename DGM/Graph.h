@@ -71,6 +71,7 @@ namespace DirectGraphicalModels
 		friend class CInferLBP;
 		friend class CInferViterbi;
 		friend class CInferTRW;
+		friend class CInferTRW_S;
 
 		friend class CDecode;
 

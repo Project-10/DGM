@@ -48,6 +48,7 @@
 #include "../DGM/InferTree.h"
 #include "../DGM/InferLBP.h"
 #include "../DGM/InferTRW.h"
+#include "../DGM/InferTRW_S.h"
 #include "../DGM/InferViterbi.h"
 
 #include "../DGM/Decode.h"

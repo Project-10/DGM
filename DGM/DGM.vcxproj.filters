@@ -313,6 +313,9 @@
     <ClInclude Include="InferTRW.h">
       <Filter>Source Files\Inference\Message Passing\TRW</Filter>
     </ClInclude>
+    <ClInclude Include="InferTRW_S.h">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
@@ -454,6 +457,9 @@
       <Filter>Source Files\Inference</Filter>
     </ClCompile>
     <ClCompile Include="InferTRW.cpp">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClCompile>
+    <ClCompile Include="InferTRW_S.cpp">
       <Filter>Source Files\Inference\Message Passing\TRW</Filter>
     </ClCompile>
   </ItemGroup>
