@@ -72,6 +72,7 @@ namespace DirectGraphicalModels
 		}
 	};
 
+	
 	// ============================= Simple Samples Concatenatenator Class =============================
 	/**
 	* @brief Difference features concatenator class
