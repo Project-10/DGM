@@ -80,7 +80,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 				nBackward++;
 			} // e_f
 
-			for (byte s = 0; s < nStates; s++) data[s] = powf(data[s], 1.0f / MAX(nForward, nBackward));
+			for (byte s = 0; s < nStates; s++) data[s] = static_cast<float>(fastPow(data[s], 1.0f / MAX(nForward, nBackward)));
 
 			// pass messages from i to nodes with higher m_ordering
 			for (size_t e_t : node.to) {
@@ -109,11 +109,11 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 				nBackward++;
 			} // e_f
 
-			// normalize Di
+			// normalize data
 			float max = data[0];
 			for (byte s = 1; s < nStates; s++) if (max < data[s]) max = data[s];
 			for (byte s = 0; s < nStates; s++) data[s] /= max;
-			for (byte s = 0; s < nStates; s++) data[s] = powf(data[s], 1.0f / MAX(nForward, nBackward));
+			for (byte s = 0; s < nStates; s++) data[s] = static_cast<float>(fastPow(data[s], 1.0f / MAX(nForward, nBackward)));
 
 			// pass messages from i to nodes with smaller m_ordering
 			for (size_t e_f : node.from) {
