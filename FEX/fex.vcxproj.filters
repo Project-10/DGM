@@ -42,6 +42,9 @@
     <Filter Include="Source Files\FeatureExtractor\HSV">
       <UniqueIdentifier>{cbc5c15e-c38e-4b5d-9827-93cd4fef239e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Sparse Coding">
+      <UniqueIdentifier>{0aab4f2e-5496-4ff1-91c4-4de2e02b003d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NDVI.cpp">
@@ -73,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="HSV.cpp">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
+    </ClCompile>
+    <ClCompile Include="SC.cpp">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +120,9 @@
     </ClInclude>
     <ClInclude Include="HSV.h">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
+    </ClInclude>
+    <ClInclude Include="SC.h">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

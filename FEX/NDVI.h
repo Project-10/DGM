@@ -21,7 +21,7 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CNDVI(const Mat &img) : CBaseFeatureExtractor(img) {}
 		DllExport virtual ~CNDVI(void) {}
 
-		DllExport virtual Mat	get(void) const {return get(m_img);}
+		DllExport virtual Mat	get(void) const { return get(m_img); }
 		
 		/**
 		* @brief Extracts the NDVI feature.
