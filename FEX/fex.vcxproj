@@ -173,7 +173,7 @@
     <ClCompile Include="HSV.cpp" />
     <ClCompile Include="Intensity.cpp" />
     <ClCompile Include="NDVI.cpp" />
-    <ClCompile Include="SC.cpp" />
+    <ClCompile Include="SparseCode.cpp" />
     <ClCompile Include="Scale.cpp" />
     <ClCompile Include="Variance.cpp" />
   </ItemGroup>
@@ -188,7 +188,7 @@
     <ClInclude Include="HSV.h" />
     <ClInclude Include="Intensity.h" />
     <ClInclude Include="NDVI.h" />
-    <ClInclude Include="SC.h" />
+    <ClInclude Include="SparseCode.h" />
     <ClInclude Include="Scale.h" />
     <ClInclude Include="SquareNeighborhood.h" />
     <ClInclude Include="Variance.h" />

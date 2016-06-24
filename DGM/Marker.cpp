@@ -158,6 +158,35 @@ Mat	CMarker::drawConfusionMatrix(const Mat &confusionMat, byte flag) const
 	return res;
 }
 
+Mat CMarker::drawDictionary(const Mat &dictionary)
+{
+	const int		margin		= 2;
+	const double	k			= 4.0;
+	const int		nWords		= dictionary.cols;
+	const int		blockSize   = static_cast<int>(sqrt(dictionary.rows));
+	
+	int				width		= static_cast<int>(sqrt(nWords));
+	int				height		= nWords / width;
+	if (width * height < nWords) width++;
+
+	Mat res(height * (blockSize + margin) + margin, width * (blockSize + margin) + margin, CV_8UC1, cvScalar(0));
+
+	for (int w = 0; w < nWords; w++) {
+		Mat word = dictionary.col(w).t();
+		word = k * 127.5 * word.reshape(0, blockSize) + 127.5;
+
+		int y = w / width;
+		int x = w % width;
+		
+		int y0 = y * (blockSize + margin) + margin;
+		int x0 = x * (blockSize + margin) + margin;
+
+		word.copyTo(res(cvRect(x0, y0, blockSize, blockSize)));
+	}
+
+	return res;
+}
+
 // ======================================== Private ========================================
 
 Mat CMarker::drawVector(const Mat &potential, byte flag) const

@@ -1,23 +1,21 @@
-#include "SC.h"
+#include "SparseCode.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex 
 {
-	const int DICT_SIZE = 49;
-	const int block_size = 8;
-
-	void CSC::trainDictionary(Mat &X, int dictsize, int batch, unsigned int nIt)
+	void CSparseCode::trainDictionary(const Mat &X, int nWords, int batch, unsigned int nIt)
 	{
-		const int		nSamples = X.cols;
+		const int		nSamples  = X.cols;
 		const int		nFeatures = X.rows;
 
-		const double	lambda = 5e-4;		// 5e-5;  // L1-regularisation parameter (on features)
-		const double	epsilon = 1e-5;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-		const double	gamma = 1e-2;		// 1e-2;  // L2-regularisation parameter (on basis)
+		const double	lambda	 = 5e-4;		// 5e-5;  // L1-regularisation parameter (on features)
+		const double	epsilon	 = 1e-5;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
+		const double	gamma	 = 1e-2;		// 1e-2;  // L2-regularisation parameter (on basis)
 
 		RNG rng;
 		Mat H;
 		if (!m_dict.empty()) m_dict.release();
-		m_dict = Mat(nFeatures, dictsize, CV_64FC1);
+		m_dict = Mat(nFeatures, nWords, CV_64FC1);
 		rng.fill(m_dict, RNG::NORMAL, 0, 1);
 		m_dict = m_dict * 0.12;
 
@@ -46,8 +44,11 @@ namespace DirectGraphicalModels { namespace fex
 		}
 	}
 
-	Mat CSC::decoder(const Mat &X, CvSize imgSize) const 
+	Mat CSparseCode::decoder(const Mat &X, CvSize imgSize) const
 	{
+		DGM_ASSERT_MSG(!m_dict.empty(), "The dictionary must me trained or loaded before using this function");
+
+		const int		blockSize = static_cast<int>(sqrt(m_dict.rows));
 		const double	lambda = 5e-5;		// L1-regularisation parameter (on features)
 		const double	epsilon = 1e-5;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 		const double	gamma = 1e-2;		// L2-regularisation parameter (on basis)
@@ -57,13 +58,13 @@ namespace DirectGraphicalModels { namespace fex
 
 		// for (int s = 0; s < nSamples; s++) {
 #ifdef USE_PPL
-		concurrency::parallel_for(0, imgSize.height - block_size + 1, block_size, [&](int y) {
+		concurrency::parallel_for(0, imgSize.height - blockSize + 1, blockSize, [&](int y) {
 #else
-		for (int y = 0; y < imgSize.height - block_size + 1; y += block_size) {
+		for (int y = 0; y < imgSize.height - blockSize + 1; y += blockSize) {
 #endif
-			for (int x = 0; x < imgSize.width - block_size + 1; x += block_size) {
+			for (int x = 0; x < imgSize.width - blockSize + 1; x += blockSize) {
 
-				int s = y * (imgSize.width - block_size + 1) + x;				// sample index
+				int s = y * (imgSize.width - blockSize + 1) + x;				// sample index
 
 				Mat sample = X.col(s);											// sample
 				Mat H;
@@ -76,10 +77,10 @@ namespace DirectGraphicalModels { namespace fex
 
 				Mat tmp;
 				gemm(m_dict, H, 1.0, Mat(), 0.0, tmp);							// tmp = dict x H
-				tmp = tmp.reshape(0, block_size);
+				tmp = tmp.reshape(0, blockSize);
 
-				res(cvRect(x, y, block_size, block_size)) += tmp;
-				cover(cvRect(x, y, block_size, block_size)) += 1.0;
+				res(cvRect(x, y, blockSize, blockSize)) += tmp;
+				cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
 			}
 		}
 #ifdef USE_PPL
@@ -89,7 +90,31 @@ namespace DirectGraphicalModels { namespace fex
 		return res;
 	}
 
-	void CSC::saveDictionary(const std::string &fileName) const
+	Mat CSparseCode::get(const Mat &img, SqNeighbourhood nbhd)
+	{
+		DGM_ASSERT(nbhd.leftGap + nbhd.rightGap == nbhd.upperGap + nbhd.lowerGap);								// Assume that we have a square
+		DGM_ASSERT_MSG(!m_dict.empty(), "The dictionary must me trained or loaded before using this function");
+
+		const int nWords = m_dict.cols;
+
+		int blockSize = 8; // nbhd.leftGap + nbhd.rightGap + 1;
+		Mat X = img2data(img, blockSize);
+		
+		Mat *pTemp = new Mat[nWords];
+		for (int w = 0; w < nWords; w++) 
+			pTemp[w] = Mat(img.size(), CV_8UC1, cvScalar(0));
+
+
+
+		Mat res;
+		merge(pTemp, nWords, res);
+		
+		delete[] pTemp;
+
+		return res;
+	}
+
+	void CSparseCode::saveDictionary(const std::string &fileName) const
 	{
 		FILE *pOut = fopen(fileName.c_str(), "w");
 
@@ -103,85 +128,67 @@ namespace DirectGraphicalModels { namespace fex
 		fclose(pOut);
 	}
 
-	void CSC::loadDictionary(const std::string &fileName)
+	/// @todo Encode dictionary and block sizes into the file
+	void CSparseCode::loadDictionary(const std::string &fileName)
 	{
+		const int nWords	 = 49;
+		const int block_size = 8;
+
 		if (!m_dict.empty()) m_dict.release();
-		m_dict = Mat(block_size * block_size, DICT_SIZE, CV_64FC1);
+		m_dict = Mat(block_size * block_size, nWords, CV_64FC1);
 
 		FILE *pFile = fopen(fileName.c_str(), "r");
 		double val;
-		for (int counter = 0; ; counter++) {
+		for (int i = 0; ; i++) {
 			if (fscanf(pFile, "%lf", &val) == EOF) break;
-			m_dict.at<double>(counter / DICT_SIZE, counter % DICT_SIZE) = val;
+			m_dict.at<double>(i / nWords, i % nWords) = val;
 		}
 		fclose(pFile);
 	}
 
 	// =================================================================================== static
 	
-	Mat CSC::renderDict(Mat &dict)
+	Mat CSparseCode::img2data(const Mat &img, int blockSize)
 	{
-		const int margin = 2;
-		const int dictLen = dict.cols;
-		int width = static_cast<int>(sqrt(dictLen));	
-		int height = dictLen / width;
-		CvSize imgSize = cvSize(width * block_size + (width + 1) * margin, height * block_size + (height + 1) * margin);
+		const int	dataWidth = img.cols - blockSize + 1;
+		const int	dataHeight = img.rows - blockSize + 1;
 
-		Mat res(imgSize, CV_8UC1, cvScalar(0));
-
-		for (int y = 0; y < height; y++)
-			for (int x = 0; x < width; x++) {
-				int y0 = margin + y * (block_size + margin);
-				int x0 = margin + x * (block_size + margin);
-
-				for (int j = 0; j < block_size; j++)
-					for (int i = 0; i < block_size; i++)
-						res.at<byte>(y0 + j, x0 + i) = static_cast<byte>(127 + 500 * dict.at<double>(j * block_size + i, y * width + x));
-
-			}
-
-		return res;
-	}
-
-	Mat CSC::img2data(const Mat &img)
-	{
-		const int	dataWidth = img.cols - block_size + 1;
-		const int	dataHeight = img.rows - block_size + 1;
-
-		Mat res(block_size * block_size, dataWidth * dataHeight, CV_64FC1);
+		Mat res(blockSize * blockSize, dataWidth * dataHeight, CV_64FC1);
 
 		int sample = 0;
 		for (register int y = 0; y < dataHeight; y++)
 			for (register int x = 0; x < dataWidth; x++) {
-				for (int j = 0; j < block_size; j++)
-					for (int i = 0; i < block_size; i++)
-						res.at<double>(j * block_size + i, sample) = static_cast<double>(img.at<byte>(y + j, x + i)) / 255.0;
+				for (int j = 0; j < blockSize; j++)
+					for (int i = 0; i < blockSize; i++)
+						res.at<double>(j * blockSize + i, sample) = static_cast<double>(img.at<byte>(y + j, x + i)) / 255.0;
 				sample++;
 			}
 		return res;
 	}
 
-	Mat CSC::data2img(Mat &X, CvSize imgSize)
+	Mat CSparseCode::data2img(const Mat &X, CvSize imgSize)
 	{
 		Mat res(imgSize, CV_64FC1, cvScalar(0));
 		Mat cover(imgSize, CV_64FC1, cvScalar(0));
+		
+		const int blockSize = static_cast<int>(sqrt(X.rows));
 
-		for (int y = 0; y < imgSize.height - block_size + 1; y += block_size)
-			for (int x = 0; x < imgSize.width - block_size + 1; x += block_size) {
+		for (int y = 0; y < imgSize.height - blockSize + 1; y += blockSize)
+			for (int x = 0; x < imgSize.width - blockSize + 1; x += blockSize) {
 
-				int s = y * (imgSize.width - block_size + 1) + x;				// sample index
+				int s = y * (imgSize.width - blockSize + 1) + x;				// sample index
 
 				Mat tmp = X.col(s).t();
-				tmp = tmp.reshape(0, block_size);
+				tmp = tmp.reshape(0, blockSize);
 
-				res(cvRect(x, y, block_size, block_size)) += tmp;
-				cover(cvRect(x, y, block_size, block_size)) += 1.0;
+				res(cvRect(x, y, blockSize, blockSize)) += tmp;
+				cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
 			}
 		res /= cover;
 		return res;
 	}
 
-	Mat CSC::shuffleCols(const Mat &matrix)
+	Mat CSparseCode::shuffleCols(const Mat &matrix)
 	{
 		std::vector<int> seeds;
 		for (int x = 0; x < matrix.cols; x++) seeds.push_back(x);
@@ -197,7 +204,7 @@ namespace DirectGraphicalModels { namespace fex
 
 	// =================================================================================== protected
 
-	double CSC::getSparseCodingCost(const Mat &X, const Mat &H, Mat &dictGrad, Mat &hGrad, double lambda, double epsilon, double gamma, sc_cost cond) const
+	double CSparseCode::getSparseCodingCost(const Mat &X, const Mat &H, Mat &grad, double lambda, double epsilon, double gamma, sc_cost cond) const
 	{
 		const int nSamples = X.cols;
 
@@ -224,7 +231,7 @@ namespace DirectGraphicalModels { namespace fex
 			cost += gamma * sum(dict2)[0];
 		}
 
-		if (!hGrad.empty()) {
+		if (cond == H_COST) {
 			Mat p1;
 			gemm(m_dict, H, 1.0, Mat(), 0.0, p1);			// p1 = dict x H
 
@@ -234,11 +241,9 @@ namespace DirectGraphicalModels { namespace fex
 			Mat p3;
 			gemm(m_dict, p1, 2.0, p2, -2.0, p3, GEMM_1_T);	// p3 = 2 * (dict^T x p1) - 2 * p2 
 
-			hGrad = p3 / nSamples;
-			hGrad += lambda * (H / sparsityMatrix);
-		}
-
-		if (!dictGrad.empty()) {
+			grad = p3 / nSamples;
+			grad += lambda * (H / sparsityMatrix);
+		} else {
 			Mat p1;
 			gemm(H, H, 1.0, Mat(), 0.0, p1, GEMM_2_T);		// p1 = H x H^T
 
@@ -248,15 +253,14 @@ namespace DirectGraphicalModels { namespace fex
 			Mat p3;
 			gemm(m_dict, p1, 2.0, p2, -2.0, p3);			// p3 = 2 * (dict x p1) - 2 * p2
 
-			dictGrad = p3 / nSamples;
-			dictGrad += 2 * gamma * m_dict;
+			grad = p3 / nSamples;
+			grad += 2 * gamma * m_dict;
 		}
-
 
 		return cost;
 	}
 
-	double CSC::trainingDict(const Mat &X, Mat &dict, const Mat &H, double lambda, double epsilon, double gamma, unsigned int nIt)
+	double CSparseCode::trainingDict(const Mat &X, Mat &dict, const Mat &H, double lambda, double epsilon, double gamma, unsigned int nIt)
 	{
 		// define the velocity vectors.
 		Mat dictGrad(dict.size(), CV_64FC1, cvScalar(0));
@@ -271,7 +275,7 @@ namespace DirectGraphicalModels { namespace fex
 
 		for (unsigned int i = 0; i < nIt; i++) {
 			momentum = (i > 10) ? finalmomentum : initialmomentum;
-			cost = getSparseCodingCost(X, H, dictGrad, Mat(), lambda, epsilon, gamma, DICT_COST);
+			cost = getSparseCodingCost(X, H, dictGrad, lambda, epsilon, gamma, DICT_COST);
 			// update weights 
 			inc_dict = momentum * inc_dict + lrate * (dictGrad - weightcost * dict);
 			dict -= inc_dict;
@@ -280,7 +284,7 @@ namespace DirectGraphicalModels { namespace fex
 		return cost;
 	}
 
-	double CSC::trainingH(const Mat &X, Mat &H, double lambda, double epsilon, double gamma, unsigned int nIt) const 
+	double CSparseCode::trainingH(const Mat &X, Mat &H, double lambda, double epsilon, double gamma, unsigned int nIt) const
 	{
 		// define the velocity vectors.
 		Mat hGrad(H.size(), CV_64FC1, cvScalar(0));
@@ -295,7 +299,7 @@ namespace DirectGraphicalModels { namespace fex
 
 		for (unsigned int i = 0; i < nIt; i++) {
 			momentum = (i > 10) ? finalmomentum : initialmomentum;
-			cost = getSparseCodingCost(X, H, Mat(), hGrad, lambda, epsilon, gamma, H_COST);
+			cost = getSparseCodingCost(X, H, hGrad, lambda, epsilon, gamma, H_COST);
 			// update weights 
 			inc_h = momentum * inc_h + lrate * (hGrad - weightcost * H);
 			H -= inc_h;

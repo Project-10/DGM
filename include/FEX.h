@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FEX/CommonFeatureExtractor.h"
+#include "../FEX/SparseCode.h"
 
 /**
 @defgroup moduleFEX FEX Module

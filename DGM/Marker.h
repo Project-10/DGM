@@ -112,10 +112,10 @@ namespace DirectGraphicalModels
 			TP_PERCENT	= 128		// This flag may be mixed with the <mark_flags>
 		};
 	public:
-/**
-@brief Constructor with a default palette
-@param palette One of the default palletes (Ref. @ref default_pallete).
-*/
+		/**
+		* @brief Constructor with a default palette
+		* @param palette One of the default palletes (Ref. @ref default_pallete).
+		*/
 		DllExport CMarker(default_pallete palette = DEF_PALETTE_12);
 		/**
 		* @brief Constructor with a custom palette
@@ -125,24 +125,24 @@ namespace DirectGraphicalModels
 		DllExport CMarker(const vec_nColor_t &vPalette);
 		DllExport virtual ~CMarker(void);
 	
-/**
-@brief Visualizes the classes.
-@details Draws the \a classes image on \a base image. 
-@param[in,out] base Base image on which the classes will be mapped. Image of type: CV_8UC3. May be empty.
-@param[in] classes Class map image. Image of type: CV_8UC1.
-@param[in] flag Mapping flag (Ref. @ref mark_flags).
-*/	
-		DllExport void	markClasses(Mat &base, const Mat &classes, byte flag = 0) const;				// Does nothing on error
+		/**
+		* @brief Visualizes the classes.
+		* @details Draws the \a classes image on \a base image. 
+		* @param[in,out] base Base image on which the classes will be mapped. Image of type: CV_8UC3. May be empty.
+		* @param[in] classes Class map image. Image of type: CV_8UC1.
+		* @param[in] flag Mapping flag (Ref. @ref mark_flags).
+		*/	
+		DllExport void			markClasses(Mat &base, const Mat &classes, byte flag = 0) const;				// Does nothing on error
 		/**
 		* @brief Visualizes the potentials
 		* @details Draws <node / edge / triplet> [potential / prior] <vector / matrix / voxel>
-		* > This function is also suit for the confusion matrix visualization, but function markConfusionMatrix() is more preferable for such task
+		* > This function is also suit for the confusion matrix visualization, but function drawConfusionMatrix() is more preferable for such task
 		* @param potential %Node, edge or triplet potential or prior. One, two or tree dimensional Mat of type: CV_32FC1
 		* @param flag Mapping flag (Ref. @ref mark_flags)
 		* @returns Figure with visualized potential or prior
 		* @note This function curently does not support triplet [potential / prior] voxels
 		*/
-		DllExport Mat	drawPotentials(const Mat &potential, byte flag = 0) const;
+		DllExport Mat			drawPotentials(const Mat &potential, byte flag = 0) const;
 		/**
 		* @brief Visualizes a confusion matrix
 		* @details This function visualizes a confusion matrix, where gthe values are given in percents ofthe overall number of estimated samples. 
@@ -152,11 +152,18 @@ namespace DirectGraphicalModels
 		* @param flag Mapping flag (Ref. @ref mark_flags)
 		* @returns Figure with visualized confusion matrix
 		*/
-		DllExport Mat	drawConfusionMatrix(const Mat &confusionMat, byte flag = 0) const;
-
-
+		DllExport Mat			drawConfusionMatrix(const Mat &confusionMat, byte flag = 0) const;
+		/**
+		* @brief Visualizes a sparse coding dictionary
+		* @details This function visualizes a dictionary, that is returned by fex::CSparseCode::getDictionary() fucntion
+		* @param  dictionary Dictionary: Mat of type: CV_64FC1
+		* @returns Figure with visualized dictionary
+		*/
+		DllExport static Mat	drawDictionary(const Mat &dictionary);
+	
+	
 	protected:
-		vec_nColor_t		m_vPalette;					///< Pointer to the container with the palette
+		vec_nColor_t			m_vPalette;						///< Pointer to the container with the palette
 
 
 	private:

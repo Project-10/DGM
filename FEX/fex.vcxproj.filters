@@ -77,7 +77,7 @@
     <ClCompile Include="HSV.cpp">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClCompile>
-    <ClCompile Include="SC.cpp">
+    <ClCompile Include="SparseCode.cpp">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClCompile>
   </ItemGroup>
@@ -121,7 +121,7 @@
     <ClInclude Include="HSV.h">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClInclude>
-    <ClInclude Include="SC.h">
+    <ClInclude Include="SparseCode.h">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClInclude>
   </ItemGroup>
