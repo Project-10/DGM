@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../FEX/CommonFeatureExtractor.h"
-#include "../FEX/SparseCode.h"
+#include "../FEX/SparseCodeDictionary.h"
 
 /**
 @defgroup moduleFEX FEX Module
@@ -19,12 +19,13 @@ different classes. This preprocessing stage is also called feature extraction. N
  Coordinate           | DirectGraphicalModels::fex::CCoordinate | any                | CV_8UC1
  Distance             | DirectGraphicalModels::fex::CDistance	| CV_8UC1 or CV_8UC3 | CV_8UC1
  Gradient             | DirectGraphicalModels::fex::CGradient	| CV_8UC1 or CV_8UC3 | CV_8UC1
- HOG                  | DirectGraphicalModels::fex::CHOG		| CV_8UC1 or CV_8UC3 | CV_8UC1
+ HOG                  | DirectGraphicalModels::fex::CHOG		| CV_8UC1 or CV_8UC3 | CV_8UC{nBins}
  Intensity            | DirectGraphicalModels::fex::CIntensity  | CV_8UC3            | CV_8UC1
  NDVI                 | DirectGraphicalModels::fex::CNDVI		| CV_8UC3            | CV_8UC1
  Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV        | CV_8UC3            | CV_8UC3
  Scale                | DirectGraphicalModels::fex::CScale	    | any                | CV_8UC1
  Variance             | DirectGraphicalModels::fex::CVariance	| CV_8UC1 or CV_8UC3 | CV_8UC1
+ Sparse Coding        | DirectGraphicalModels::fex::CSparseCode | CV_8UC1            | CV_8UC{nWords}
 
 There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of \a coordinate feature.
 

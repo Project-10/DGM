@@ -80,6 +80,9 @@
     <ClCompile Include="SparseCode.cpp">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClCompile>
+    <ClCompile Include="SparseCodeDictionary.cpp">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NDVI.h">
@@ -122,6 +125,9 @@
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClInclude>
     <ClInclude Include="SparseCode.h">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseCodeDictionary.h">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClInclude>
   </ItemGroup>
