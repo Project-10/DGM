@@ -155,11 +155,12 @@ namespace DirectGraphicalModels
 		DllExport Mat			drawConfusionMatrix(const Mat &confusionMat, byte flag = 0) const;
 		/**
 		* @brief Visualizes a sparse coding dictionary
-		* @details This function visualizes a dictionary, that is returned by fex::CSparseCodeDictionary::get() fucntion
+		* @details This function visualizes a dictionary, that is returned by fex::CSparseDictionary::get() fucntion
 		* @param  dictionary Dictionary: Mat of type: CV_64FC1
+		* @param m The magnifier koefficients for scaling the dictionary values
 		* @returns Figure with visualized dictionary
 		*/
-		DllExport static Mat	drawDictionary(const Mat &dictionary);
+		DllExport static Mat	drawDictionary(const Mat &dictionary, double m = 1);
 	
 	
 	protected:

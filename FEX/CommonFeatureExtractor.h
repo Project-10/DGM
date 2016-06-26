@@ -12,7 +12,7 @@
 #include "HOG.h"
 #include "Variance.h"
 #include "Scale.h"
-#include "SparseCode.h"
+#include "SparseCoding.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex

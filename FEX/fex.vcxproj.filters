@@ -77,10 +77,10 @@
     <ClCompile Include="HSV.cpp">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClCompile>
-    <ClCompile Include="SparseCode.cpp">
+    <ClCompile Include="SparseDictionary.cpp">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClCompile>
-    <ClCompile Include="SparseCodeDictionary.cpp">
+    <ClCompile Include="SparseCoding.cpp">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,10 +124,10 @@
     <ClInclude Include="HSV.h">
       <Filter>Source Files\FeatureExtractor\HSV</Filter>
     </ClInclude>
-    <ClInclude Include="SparseCode.h">
+    <ClInclude Include="SparseDictionary.h">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClInclude>
-    <ClInclude Include="SparseCodeDictionary.h">
+    <ClInclude Include="SparseCoding.h">
       <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
     </ClInclude>
   </ItemGroup>

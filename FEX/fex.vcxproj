@@ -173,9 +173,9 @@
     <ClCompile Include="HSV.cpp" />
     <ClCompile Include="Intensity.cpp" />
     <ClCompile Include="NDVI.cpp" />
-    <ClCompile Include="SparseCode.cpp" />
+    <ClCompile Include="SparseCoding.cpp" />
     <ClCompile Include="Scale.cpp" />
-    <ClCompile Include="SparseCodeDictionary.cpp" />
+    <ClCompile Include="SparseDictionary.cpp" />
     <ClCompile Include="Variance.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +189,9 @@
     <ClInclude Include="HSV.h" />
     <ClInclude Include="Intensity.h" />
     <ClInclude Include="NDVI.h" />
-    <ClInclude Include="SparseCode.h" />
+    <ClInclude Include="SparseCoding.h" />
     <ClInclude Include="Scale.h" />
-    <ClInclude Include="SparseCodeDictionary.h" />
+    <ClInclude Include="SparseDictionary.h" />
     <ClInclude Include="SquareNeighborhood.h" />
     <ClInclude Include="Variance.h" />
   </ItemGroup>
