@@ -145,12 +145,12 @@ namespace DirectGraphicalModels { namespace fex
 
 	Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	{
-		Mat res(imgSize, CV_64FC1, cvScalar(0));
+		Mat img(imgSize, CV_64FC1, cvScalar(0));
 		Mat cover(imgSize, CV_64FC1, cvScalar(0));
 
 		const int	blockSize	= static_cast<int>(sqrt(X.rows));
-		const int	dataWidth	= res.cols - blockSize + 1;
-		const int	dataHeight	= res.rows - blockSize + 1;
+		const int	dataWidth	= img.cols - blockSize + 1;
+		const int	dataHeight	= img.rows - blockSize + 1;
 
 		for (int y = 0; y < dataHeight; y++)
 			for (int x = 0; x < dataWidth; x++) {
@@ -159,10 +159,13 @@ namespace DirectGraphicalModels { namespace fex
 				Mat sample = X.col(s).t();															// smple as a row-vector
 				sample = sample.reshape(0, blockSize);												// square sample - data patch
 
-				res(cvRect(x, y, blockSize, blockSize)) += sample;
+				img(cvRect(x, y, blockSize, blockSize)) += sample;
 				cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
 			} // x
-		res /= cover;
+		img /= cover;
+		
+		Mat res;
+		img.convertTo(res, CV_8UC1, 255);
 		return res;
 	}
 

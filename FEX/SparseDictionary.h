@@ -13,7 +13,17 @@ namespace DirectGraphicalModels { namespace fex
 	* \f[ argmin_{\mathbb{D}, \vec{h}_i} \sum^{nSamples}_{i=1}{\left\| \vec{x}_i - \mathbb{D}\times\vec{h}_i\right\|^{2}_{2} + \lambda\left\|\vec{h}_i\right\|_0 }, \f]
 	* where \f$\vec{x}_i\in\mathbb{X}\in\mathbb{R}^{nSamples \times blockSize^2}\f$ is a data sample,
 	* \f$\mathbb{D}\in\mathbb{R}^{nWords \times blockSize^2}\f$ is the dictionary and \f$\vec{h}_i\f$ are weighting coefficients.<br>
-	* The class is based on <a href="http://eric-yuan.me/sc">Xingdi (Eric) Yuan implementation</a> 
+	* The class is based on <a href="http://eric-yuan.me/sc">Xingdi (Eric) Yuan implementation</a><br>
+	* In order to train the dictionary, one may use the code:
+	* @code
+	*	using namespace DirectGraphicalModels::fex;	
+	*
+	*	CSparseCoding *sparseCoding = new CSparseCoding(img);
+	*	Mat data = CSparseDictionary::img2data(img, 7);
+	*	data = CSparseDictionary::shuffleCols(data);
+	*	sparseCoding->train(data, nWords, 1000, 1000);
+	*	sparseCoding->save("dictionary.dic");
+	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CSparseDictionary
@@ -46,7 +56,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Return dictionary \f$\mathbb{D}\f$
 		* @returns Dictionary \f$\mathbb{D}\f$: Mat(size: blockSize^2 x nWords; type: CV_64FC1)
 		*/
-		DllExport Mat get(void) const { return m_dict; }
+		DllExport Mat getDictionary(void) const { return m_dict; }
 		/**
 		* @brief Returns the words' size in dictionary
 		* @returns blockSize
@@ -68,13 +78,18 @@ namespace DirectGraphicalModels { namespace fex
 		* > It is recommended to suffle the samples with shuffleCols() function before dictionary training
 		* @param img The input image
 		* @param blockSize Size of the quadratic patch
-		* > In order to use this calss with fex::CSparseCode the size of the block should be odd
+		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
 		* @returns Dictionary \f$\mathbb{X}\f$: Mat(size: blockSize^2 x nSamples; type: CV_64FC1)
 		*/
 		DllExport static Mat img2data(const Mat &img, int blockSize);
 		/**
 		* @brief Converts data \f$\mathbb{X}\f$ into an image
-		* @details This function performs reverse transformation of img2data() function
+		* @details This function performs reverse transformation of img2data() function, thus the code
+		* @code
+		*		Mat data = CSparseDictionary::img2data(img, 7);
+		*		Mat res  = CSparseDictionary::data2img(data, img.size());
+		* @endcode
+		* gives \a res identical to \a img.
 		* @param X The input data \f$\mathbb{X}\f$
 		* @param imgSize The size of the image to return
 		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1)

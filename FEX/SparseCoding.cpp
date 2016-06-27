@@ -62,7 +62,7 @@ namespace DirectGraphicalModels { namespace fex
 					//if (min > H.at<double>(w, 0)) min = H.at<double>(w, 0);
 					//if (max < H.at<double>(w, 0)) max = H.at<double>(w, 0);
 
-					pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(static_cast<float>(H.at<double>(w, 0)), -5.0f, 5.0f);
+					pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(static_cast<float>(H.at<double>(w, 0)), -2.5f, 2.5f);
 					//printf("%d ", pTemp[w].at<byte>(y, x));
 				}
 				//printf("\n");
