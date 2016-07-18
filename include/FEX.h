@@ -25,7 +25,7 @@ different classes. This preprocessing stage is also called feature extraction. N
  Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV          | CV_8UC3            | CV_8UC3
  Scale                | DirectGraphicalModels::fex::CScale	      | any                | CV_8UC1
  Variance             | DirectGraphicalModels::fex::CVariance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
- Sparse Coding        | DirectGraphicalModels::fex::CSparseCoding | CV_8UC1            | CV_8UC{nWords}
+ Sparse Coding        | DirectGraphicalModels::fex::CSparseCoding | CV_8UC1 or CV_8UC3 | CV_8UC{nWords}
 
 There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of \a coordinate feature.
 

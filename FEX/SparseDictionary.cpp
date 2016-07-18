@@ -9,7 +9,7 @@ namespace DirectGraphicalModels { namespace fex
 		const int		nFeatures	= X.rows;
 
 		const double	epsilon		= 1e-5;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-		const double	lambdaH		= 5e-4;		// 5e-5;  // L1-regularisation parameter (on features)
+		const double	lambdaH		= 5e-5;		// 5e-5;  // L1-regularisation parameter (on features)
 		const double	lambdaDict	= 1e-2;		// 1e-2;  // L2-regularisation parameter (on basis)
 
 		DGM_ASSERT_MSG(batch <= nSamples, "The batch number %d exceeds the length of the training data %d", batch, nSamples);
@@ -40,10 +40,10 @@ namespace DirectGraphicalModels { namespace fex
 			calculateH(randx, m_dict, H, epsilon, lambdaH, 800);
 			calculateDict(randx, m_dict, H, epsilon, lambdaDict, 800);
 
-			//std::string str = "D:\\Dictionaries\\dict_";
-			//str += std::to_string(i / 5);
-			//str += ".txt";
-			//if (i % 5 == 0) save(str);
+			std::string str = "D:\\Dictionaries\\dict_";
+			str += std::to_string(i / 5);
+			str += ".txt";
+			if (i % 5 == 0) save(str);
 		}
 	}
 
@@ -120,7 +120,26 @@ namespace DirectGraphicalModels { namespace fex
 
 	// =================================================================================== static
 
-	Mat CSparseDictionary::img2data(const Mat &img, int blockSize)
+	double getMean(const Mat &m)
+	{
+		double sum = 0.0;
+		for (int i = 0; i < m.cols; i++)
+			sum += m.at<byte>(0, i);
+		return sum / m.cols;
+	}
+
+	double getVariance(const Mat &m)
+	{
+		double mean = getMean(m);
+		double temp = 0.0;
+		for (int i = 0; i < m.cols; i++) {
+			double val = m.at<byte>(0, i);
+			temp += (mean - val) * (mean - val);
+		}
+		return temp / m.cols;
+	}
+
+	Mat CSparseDictionary::img2data(const Mat &img, int blockSize, double varianceThreshold)
 	{
 		DGM_IF_WARNING(blockSize % 2 == 0, "The block size is even");
 
@@ -132,15 +151,23 @@ namespace DirectGraphicalModels { namespace fex
 		const int	dataWidth	= img.cols - blockSize + 1;
 		const int	dataHeight	= img.rows - blockSize + 1;
 
-		Mat res(blockSize * blockSize, dataWidth * dataHeight, CV_64FC1);
-
+		Mat res;
+		Mat sample;
 		for (register int y = 0; y < dataHeight; y++)
 			for (register int x = 0; x < dataWidth; x++) {
 				int s = y * dataWidth + x;															// sample index
-				Mat sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1).t();		// sample as a column-vector
-				sample.convertTo(res.col(s), res.type(), 1.0 / 255);								// res.col(s) = sample
+				Mat _sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);		// sample as a column-vector
+				
+				double variance = getVariance(_sample);
+				//printf("variance = %f\n", var);
+
+				if (variance >= varianceThreshold) {
+					_sample.convertTo(sample, CV_64FC1, 1.0 / 255);
+					res.push_back(sample);
+				}
+			
 			} // x
-		return res;
+		return res.t();
 	}
 
 	Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
@@ -192,9 +219,26 @@ namespace DirectGraphicalModels { namespace fex
 
 		Mat delta;
 		gemm(dict, H, 1.0, X, -1.0, delta);					// delta = dict x H - X	
+		
+		
+		double minval_d, maxval_d;
+		minMaxLoc(dict, &minval_d, &maxval_d);
+
+		double minval_h, maxval_h;
+		minMaxLoc(H, &minval_h, &maxval_h);
+		
+		double minval, maxval;
+		minMaxLoc(delta, &minval, &maxval);
+		
+		//if (minval < -100 || maxval > 100)
+		//	printf("min = %f; max = %f. dict: [%f; %f]; H: [%f; %f]\n", minval, maxval, minval_d, maxval_d, minval_h, maxval_h);
+
+		
 		reduce(delta, delta, 1, CV_REDUCE_AVG);
 		pow(delta, 2, delta);
 		double cost = sum(delta)[0];
+		DGM_ASSERT(!isnan(cost));
+		DGM_ASSERT(!isinf(cost));
 
 		Mat sparsityMatrix;
 		pow(H, 2, sparsityMatrix);
@@ -240,6 +284,8 @@ namespace DirectGraphicalModels { namespace fex
 			Mat dict2;
 			pow(dict, 2, dict2);
 			cost += lambda * sum(dict2)[0];
+			DGM_ASSERT(!isnan(cost));
+			DGM_ASSERT(!isinf(cost));
 		}
 
 		return cost;
@@ -261,8 +307,11 @@ namespace DirectGraphicalModels { namespace fex
 		for (unsigned int i = 0; i < nIt; i++) {
 			momentum = (i > 10) ? finalmomentum : initialmomentum;
 			cost = calculateCost(COST_DICT, X, dict, H, dictGrad, epsilon, lambda);
+			DGM_ASSERT(!isnan(cost));
+			DGM_ASSERT(!isinf(cost));
 			// update weights 
-			inc_dict = momentum * inc_dict + lrate * (dictGrad - weightcost * dict);
+			inc_dict *= momentum;
+			inc_dict += (dictGrad - dict * weightcost) * lrate;
 			dict -= inc_dict;
 		}
 		printf("training dict, Cost function value = %f\n", cost);

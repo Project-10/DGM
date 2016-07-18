@@ -79,9 +79,10 @@ namespace DirectGraphicalModels { namespace fex
 		* @param img The input image
 		* @param blockSize Size of the quadratic patch
 		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
+		* @param varianceThreshold 
 		* @returns Dictionary \f$\mathbb{X}\f$: Mat(size: blockSize^2 x nSamples; type: CV_64FC1)
 		*/
-		DllExport static Mat img2data(const Mat &img, int blockSize);
+		DllExport static Mat img2data(const Mat &img, int blockSize, double varianceThreshold = 0.0);
 		/**
 		* @brief Converts data \f$\mathbb{X}\f$ into an image
 		* @details This function performs reverse transformation of img2data() function, thus the code
