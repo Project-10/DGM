@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
 		* > Must be less then 16
 		* @param nFeatures Number of features
 		*/
-		CTrainEdgeConcat(byte nStates, byte nFeatures) 
+		CTrainEdgeConcat(byte nStates, word nFeatures) 
 			: CTrainEdge(nStates, nFeatures)
 			, CBaseRandomModel(nStates)
 		{
@@ -48,7 +48,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		* @param params Parameters of the nested node potential trainer
 		*/
-		template<class TrainerParams> CTrainEdgeConcat(byte nStates, byte nFeatures, TrainerParams params)
+		template<class TrainerParams> CTrainEdgeConcat(byte nStates, word nFeatures, TrainerParams params)
 			: CTrainEdge(nStates, nFeatures)
 			, CBaseRandomModel(nStates)
 		{

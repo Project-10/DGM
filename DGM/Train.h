@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrain(byte nStates, byte nFeatures) : CBaseRandomModel(nStates), m_nFeatures(nFeatures) {}
+		DllExport CTrain(byte nStates, word nFeatures) : CBaseRandomModel(nStates), m_nFeatures(nFeatures) {}
 		DllExport virtual ~CTrain(void) {}
 
 		/**
@@ -33,11 +33,11 @@ namespace DirectGraphicalModels
 		* @brief Returns number of features
 		* @return Number of features @ref m_nFeatures
 		*/		
-		DllExport byte			getNumFeatures(void) const {return m_nFeatures;}
+		DllExport word			getNumFeatures(void) const {return m_nFeatures;}
 
 
 	protected:
-		byte	m_nFeatures;						///< The number of features (length of the feature vector)
+		word	m_nFeatures;						///< The number of features (length of the feature vector)
 	};
 
 

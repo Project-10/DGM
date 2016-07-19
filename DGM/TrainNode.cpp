@@ -4,7 +4,7 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNode::CTrainNode(byte nStates, byte nFeatures) 
+CTrainNode::CTrainNode(byte nStates, word nFeatures) 
 	: CTrain(nStates, nFeatures)
 	, CBaseRandomModel(nStates)
 	, m_mask(Mat(nStates, 1, CV_8UC1))

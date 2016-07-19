@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		* @param params Random Forest parameters (Ref. @ref TrainNodeCvRFParams)
 		*/
-		DllExport CTrainNodeCvRF(byte nStates, byte nFeatures, TrainNodeCvRFParams params = TRAIN_NODE_CV_RF_PARAMS_DEFAULT);
+		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, TrainNodeCvRFParams params = TRAIN_NODE_CV_RF_PARAMS_DEFAULT);
 		/**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -65,7 +65,7 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-		DllExport CTrainNodeCvRF(byte nStates, byte nFeatures, size_t maxSamples);
+		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples);
 		DllExport ~CTrainNodeCvRF(void);
 
 		DllExport void	reset(void);		

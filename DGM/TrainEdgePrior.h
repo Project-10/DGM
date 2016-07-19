@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		* @param penApproach Flag specifying the penalization approach for the edge potential matrix (Ref. @ref ePotPenalApproach)
 		* @param normApproach Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)	
 		*/
-		DllExport CTrainEdgePrior(byte nStates, byte nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP, ePotNormApproach normApproach = eP_APP_NORM_SYMMETRIC);
+		DllExport CTrainEdgePrior(byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP, ePotNormApproach normApproach = eP_APP_NORM_SYMMETRIC);
 		DllExport virtual ~CTrainEdgePrior(void);
 
 		DllExport virtual void	reset(void);	

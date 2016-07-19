@@ -70,7 +70,7 @@ The function will redraw the fugure, depending on the input color.
 @param activeState Desired state (class).
 @return Figure with visualized feature histogram. Mat(100, 256, CV_8UC1).
 */
-		Mat				drawFeatureHistogram(byte f, int activeState = -1) const;
+		Mat				drawFeatureHistogram(word f, int activeState = -1) const;
 /**
 @brief Draws a legend to the main figure.
 @param maxHeight The maximal height of the legend figure.

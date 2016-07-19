@@ -11,13 +11,13 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, byte nFeatures, TrainNodeMsRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, byte nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
 {
 	TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;
@@ -71,7 +71,7 @@ void CTrainNodeMsRF::addFeatureVec(const Mat &featureVector, byte gt)
 
 	m_pData->m_vLabels.push_back(gt);
 	
-	for (int f = 0; f < m_nFeatures; f++) {
+	for (word f = 0; f < m_nFeatures; f++) {
 		byte fval = featureVector.at<byte>(f, 0);
 		m_pData->m_vData.push_back(fval);
 	}	
@@ -108,7 +108,7 @@ void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 {
 	std::auto_ptr<sw::DataPointCollection> testData = std::auto_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
 	testData->m_dimension = m_nFeatures;
-	for (int f = 0; f < m_nFeatures; f++) {
+	for (word f = 0; f < m_nFeatures; f++) {
 		float feature = static_cast<float>(featureVector.ptr<byte>(f)[0]);
 		testData->m_vData.push_back(feature);
 	}

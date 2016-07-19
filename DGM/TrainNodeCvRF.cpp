@@ -8,13 +8,13 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, byte nFeatures, TrainNodeCvRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, TrainNodeCvRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, byte nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	TrainNodeCvRFParams params	= TRAIN_NODE_CV_RF_PARAMS_DEFAULT;
 	params.maxSamples			= maxSamples;
@@ -79,7 +79,8 @@ void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
 
 void CTrainNodeCvRF::train(void)
 {
-	register byte	s, f;									// state and feature indexes 
+	register byte	s;										// state and feature indexes 
+	register word	f;
 	register size_t	smp;									// sample index
 
 	size_t nAllSamples = 0;

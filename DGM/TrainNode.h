@@ -36,7 +36,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainNode(byte nStates, byte nFeatures);
+		DllExport CTrainNode(byte nStates, word nFeatures);
 		DllExport virtual ~CTrainNode(void);
 	
 		/**

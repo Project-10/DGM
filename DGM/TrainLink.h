@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @param nStatesOccl Number of states (classes) for the occlusion layer of the graphical model
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainLink(byte nStatesBase, byte nStatesOccl, byte nFeatures) 
+		DllExport CTrainLink(byte nStatesBase, byte nStatesOccl, word nFeatures) 
 			: CTrain(nStatesBase * nStatesOccl, nFeatures)
 			, CBaseRandomModel(nStatesBase * nStatesOccl)
 			, m_nStatesBase(nStatesBase)

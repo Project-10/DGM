@@ -13,7 +13,7 @@ const double	CMarkerHistogram::frgWeight		= 0.75;
 Mat CMarkerHistogram::drawHistogram(Scalar color) const
 {
 	const byte		fMaxHeight	= 8;					// The maximal number of feature histograms in a column
-	const byte		nFeatures	= m_pNodeTrainer->getNumFeatures();
+	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
 	const int		activeState = getActiveState(color);
 
 	CvSize			fSize;								// Size of the resulting image in feature histograms
@@ -32,7 +32,7 @@ Mat CMarkerHistogram::drawHistogram(Scalar color) const
 	Mat		res =  Mat(resSize, CV_8UC3);				// Resulting Image
 	res.setTo(bkgIntencity);
 	
-	for (byte f = 0; f < nFeatures; f++) {				// freatures
+	for (word f = 0; f < nFeatures; f++) {				// freatures
 		int dx = f / fMaxHeight;	dx *= (256 + 2 * margin.width);
 		int dy = f % fMaxHeight;	dy *= (100 + margin.height);
 		
@@ -115,7 +115,7 @@ int CMarkerHistogram::getActiveState(Scalar color) const
 	return -1;
 }
 
-Mat CMarkerHistogram::drawFeatureHistogram(byte f, int activeState) const
+Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 {
 	int				x, y;
 	char			str[256];

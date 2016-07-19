@@ -102,54 +102,47 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 
       // Iterate over candidate features
       std::vector<float> thresholds;
-      for (int f = 0; f < parameters_.NumberOfCandidateFeatures; f++)
-      {
-        F feature = trainingContext_.GetRandomFeature(random_);
+		for (int f = 0; f < parameters_.NumberOfCandidateFeatures; f++) {
+			F feature = trainingContext_.GetRandomFeature(random_);
 
-        for (unsigned int b = 0; b < parameters_.NumberOfCandidateThresholdsPerFeature + 1; b++)
-          partitionStatistics_[b].Clear(); // reset statistics
+			for (unsigned int b = 0; b < parameters_.NumberOfCandidateThresholdsPerFeature + 1; b++)
+				partitionStatistics_[b].Clear(); // reset statistics
 
-        // Compute feature response per samples at this node
-        for (DataPointIndex i = i0; i < i1; i++)
-          responses_[i] = feature.GetResponse(data_, indices_[i]);
+			// Compute feature response per samples at this node
+			for (DataPointIndex i = i0; i < i1; i++)
+				responses_[i] = feature.GetResponse(data_, indices_[i]);
 
-        int nThresholds;
-        if ((nThresholds = ChooseCandidateThresholds(random_, &indices_[0], i0, i1, &responses_[0], thresholds)) == 0)
-          continue;
+			int nThresholds;
+			if ((nThresholds = ChooseCandidateThresholds(random_, &indices_[0], i0, i1, &responses_[0], thresholds)) == 0)
+				continue;
 
-        // Aggregate statistics over sample partitions
-        for (DataPointIndex i = i0; i < i1; i++)
-        {
-          int b = 0;
-          while (b < nThresholds && responses_[i] >= thresholds[b])
-            b++;
+			// Aggregate statistics over sample partitions
+			for (DataPointIndex i = i0; i < i1; i++) {
+				int b = 0;
+				while (b < nThresholds && responses_[i] >= thresholds[b])
+				b++;
 
-          partitionStatistics_[b].Aggregate(data_, indices_[i]);
-        }
+				partitionStatistics_[b].Aggregate(data_, indices_[i]);
+			}
 
-        for (int t = 0; t < nThresholds; t++)
-        {
-          leftChildStatistics_.Clear();
-          rightChildStatistics_.Clear();
-          for (int p = 0; p < nThresholds + 1 /*i.e. nBins*/; p++)
-          {
-            if (p <= t)
-              leftChildStatistics_.Aggregate(partitionStatistics_[p]);
-            else
-              rightChildStatistics_.Aggregate(partitionStatistics_[p]);
-          }
+			for (int t = 0; t < nThresholds; t++) {
+				leftChildStatistics_.Clear();
+				rightChildStatistics_.Clear();
+				for (int p = 0; p < nThresholds + 1 /*i.e. nBins*/; p++) {
+					if (p <= t) leftChildStatistics_.Aggregate(partitionStatistics_[p]);
+					else		rightChildStatistics_.Aggregate(partitionStatistics_[p]);
+				}
 
-          // Compute gain over sample partitions
-          double gain = trainingContext_.ComputeInformationGain(parentStatistics_, leftChildStatistics_, rightChildStatistics_);
+				// Compute gain over sample partitions
+				double gain = trainingContext_.ComputeInformationGain(parentStatistics_, leftChildStatistics_, rightChildStatistics_);
 
-          if (gain >= maxGain)
-          {
-            maxGain = gain;
-            bestFeature = feature;
-            bestThreshold = thresholds[t];
-          }
-        }
-      }
+				if (gain >= maxGain) {
+					maxGain = gain;
+					bestFeature = feature;
+					bestThreshold = thresholds[t];
+				}
+			} // t
+		} // f
 
       if (maxGain == 0.0)
       {

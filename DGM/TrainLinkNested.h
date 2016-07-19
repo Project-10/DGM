@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 		* > \b nStatesBase * \b nStatesOccl must be less then 256.
 		* @param nFeatures Number of features
 		*/
-		CTrainLinkNested(byte nStatesBase, byte nStatesOccl, byte nFeatures) 
+		CTrainLinkNested(byte nStatesBase, byte nStatesOccl, word nFeatures) 
 			: CTrainLink(nStatesBase, nStatesOccl, nFeatures)
 			, CBaseRandomModel(nStatesBase * nStatesOccl)
 		{
@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		* @param params Parameters of the nested node potential trainer
 		*/
-		template<class TrainerParams> CTrainLinkNested(byte nStatesBase, byte nStatesOccl, byte nFeatures, TrainerParams params)
+		template<class TrainerParams> CTrainLinkNested(byte nStatesBase, byte nStatesOccl, word nFeatures, TrainerParams params)
 			: CTrainLink(nStatesBase, nStatesOccl, nFeatures)
 			, CBaseRandomModel(nStatesBase * nStatesOccl)
 		{

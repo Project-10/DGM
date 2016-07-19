@@ -20,14 +20,14 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/
-		DllExport CFeaturesConcatenator(byte nFeatures) : m_nFeatures(nFeatures) {}
+		DllExport CFeaturesConcatenator(word nFeatures) : m_nFeatures(nFeatures) {}
 		DllExport virtual ~CFeaturesConcatenator(void) {}
 
 		/**
 		* @brief Returns the length of the concatenated feature vector
 		* @returns Number of features in the concatenated feature vector
 		*/
-		DllExport virtual byte	getNumFeatures(void) const = 0;
+		DllExport virtual word	getNumFeatures(void) const = 0;
 		/**
 		* @brief Concatenated two feature vectors 
 		* @param[in] featureVector1 The first feature vector: Mat(size: nFeatures x 1; type: CV_8UC1) 
@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		byte	m_nFeatures;		///< Number of features in the concatenated feature vector
+		word	m_nFeatures;		///< Number of features in the concatenated feature vector
 	};
 
 
@@ -56,16 +56,16 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/		
-		DllExport CSimpleFeaturesConcatenator(byte nFeatures) : CFeaturesConcatenator(nFeatures) {}
+		DllExport CSimpleFeaturesConcatenator(word nFeatures) : CFeaturesConcatenator(nFeatures) {}
 		DllExport virtual ~CSimpleFeaturesConcatenator(void) {}
-		DllExport virtual byte	getNumFeatures(void) const { return 2 * m_nFeatures; }
+		DllExport virtual word	getNumFeatures(void) const { return 2 * m_nFeatures; }
 		DllExport virtual void	concatenate(const Mat &featureVector1, const Mat &featureVector2, Mat &dst) const {
 			// Assertions
 			DGM_ASSERT(featureVector1.size() == featureVector2.size());
 			DGM_ASSERT(featureVector1.type() == featureVector2.type());
 			// DGM_ASSERT ( dst )
 
-			for (register byte f = 0; f < m_nFeatures; f++) {
+			for (register word f = 0; f < m_nFeatures; f++) {
 				dst.at<byte>(2 * f    , 0) = featureVector1.at<byte>(f, 0);
 				dst.at<byte>(2 * f + 1, 0) = featureVector2.at<byte>(f, 0);
 			}			
@@ -87,16 +87,16 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/
-		DllExport CDiffFeaturesConcatenator(byte nFeatures) : CFeaturesConcatenator(nFeatures) {}
+		DllExport CDiffFeaturesConcatenator(word nFeatures) : CFeaturesConcatenator(nFeatures) {}
 		DllExport virtual ~CDiffFeaturesConcatenator(void) {}
-		DllExport virtual byte	getNumFeatures(void) const { return 1 * m_nFeatures; }
+		DllExport virtual word	getNumFeatures(void) const { return 1 * m_nFeatures; }
 		DllExport virtual void	concatenate(const Mat &featureVector1, const Mat &featureVector2, Mat &dst) const {
 			// Assertions
 			DGM_ASSERT(featureVector1.size() == featureVector2.size());
 			DGM_ASSERT(featureVector1.type() == featureVector2.type());
 			// DGM_ASSERT ( dst )
 
-			for (register byte f = 0; f < m_nFeatures; f++) {
+			for (register word f = 0; f < m_nFeatures; f++) {
 				dst.at<byte>(1 * f, 0) = static_cast<byte>(MIN(255, MAX(0, 127.5 + 1.0 * featureVector1.at<byte>(f, 0) - 1.0 * featureVector2.at<byte>(f, 0))));
 			}			
 		}

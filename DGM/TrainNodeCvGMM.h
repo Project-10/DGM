@@ -43,14 +43,14 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		* @param params Expectation Maximization parameters (Ref. @ref TrainNodeCvGMMParams)
 		*/
-		DllExport CTrainNodeCvGMM(byte nStates, byte nFeatures, TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT);
+		DllExport CTrainNodeCvGMM(byte nStates, word nFeatures, TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT);
 		/**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		* @param nGausses The number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
-		DllExport CTrainNodeCvGMM(byte nStates, byte nFeatures, byte nGausses);
+		DllExport CTrainNodeCvGMM(byte nStates, word nFeatures, byte nGausses);
 		DllExport virtual ~CTrainNodeCvGMM(void);
 
 		DllExport void	reset(void);	

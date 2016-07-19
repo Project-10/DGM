@@ -125,17 +125,17 @@ int main(int argc, char *argv[])
 		byte *pFv1 = fv.ptr<byte>(y);
 		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
 		for (int x = 0; x < width; x++, idx++) {
-			for (byte f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
+			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
 			nodePot = nodeTrainer->getNodePotentials(featureVector1);												// node potential
 			graph->setNode(idx, nodePot);
 
 			if (x > 0) {
-				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
+				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
 				graph->setArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
-				for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
+				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
 				graph->setArc(idx, idx - width, edgePot);
 			} // if y

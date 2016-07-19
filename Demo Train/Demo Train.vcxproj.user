@@ -9,11 +9,11 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments> 5 0 ..\Data\001_img.jpg ..\Data\001_fv.jpg ..\Data\001_gt.bmp ..\Data\001_output.jpg </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments> 0 4 ..\Data\001_img.jpg ..\Data\001_fv.jpg ..\Data\001_gt.bmp ..\Data\001_output.jpg </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments> 2 3 ..\Data\001_img.jpg ..\Data\001_fv.bmp ..\Data\001_gt.bmp ..\Data\001_output.jpg </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments> 0 4 ..\Data\001_img.jpg ..\Data\001_fv.jpg ..\Data\001_gt.bmp ..\Data\001_output.jpg </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

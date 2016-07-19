@@ -41,6 +41,9 @@ void CInferTRW::infer(unsigned int nIt)
 		}
 
 		Point extremumLoc;
+		
+		for (int r = 0; r < node.Pot.rows; r++) printf("%f, ", node.Pot.at<float>(r, 0)); printf("\n");
+
 		minMaxLoc(node.Pot, NULL, NULL, NULL, &extremumLoc);
 		node.sol = static_cast<byte> (extremumLoc.y);
 	}

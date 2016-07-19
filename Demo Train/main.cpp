@@ -48,7 +48,6 @@ int main(int argv, char *argc[])
 	CTrainEdge		* edgeTrainer	= NULL;
 	CGraphExt		* graph			= new CGraphExt(nStates);
 	CInfer			* decoder		= new CInferTRW(graph);
-	//CInfer			* decoder		= new CInferTRW_S(graph);
 	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat		= new CCMat(nStates);
 	float			  params[]		= {100, 0.01f};						
@@ -97,13 +96,13 @@ int main(int argv, char *argc[])
 		byte *pGt1 = gt.ptr<byte>(y);
 		byte *pGt2 = gt.ptr<byte>(y - 1);
 		for (int x = 1; x < width; x++) {
-			for (byte f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
+			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
 
-			for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
+			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 			edgeTrainer->addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt1[x-1]);
 			edgeTrainer->addFeatureVecs(featureVector2, pGt1[x-1], featureVector1, pGt1[x]);
 
-			for (byte f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
+			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 			edgeTrainer->addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt2[x]);
 			edgeTrainer->addFeatureVecs(featureVector2, pGt2[x], featureVector1, pGt1[x]);
 		} // x
@@ -126,7 +125,7 @@ int main(int argv, char *argc[])
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder->decode(10 );
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -144,9 +143,9 @@ int main(int argv, char *argc[])
 	imwrite(argc[6], img);
 	
 	imshow("Image", img);
-	cvWaitKey();
+	cvWaitKey(1000);
 
-	getchar();
+	//getchar();
 
 	return 0;
 }

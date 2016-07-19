@@ -12,19 +12,19 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood {
 	class ClassificationTrainingContext : public ITrainingContext<LinearFeatureResponse, HistogramAggregator> 
 	{
 	public:
-		ClassificationTrainingContext(unsigned char nStates, unsigned char nFeatures) : m_nStates(nStates), m_nFeatures(nFeatures) {}
+		ClassificationTrainingContext(unsigned char nStates, unsigned short nFeatures) : m_nStates(nStates), m_nFeatures(nFeatures) {}
 		~ClassificationTrainingContext(void) {}
 
 
 	private:
-		LinearFeatureResponse	GetRandomFeature(Random& random)	{return LinearFeatureResponse::CreateRandom(m_nFeatures, random);}
-		HistogramAggregator		GetStatisticsAggregator(void)		{return HistogramAggregator(m_nStates);}
+		LinearFeatureResponse	GetRandomFeature(Random& random)	{ return LinearFeatureResponse::CreateRandom(m_nFeatures, random); }
+		HistogramAggregator		GetStatisticsAggregator(void)		{ return HistogramAggregator(m_nStates); }
 		double					ComputeInformationGain(const HistogramAggregator& allStatistics, const HistogramAggregator& leftStatistics, const HistogramAggregator& rightStatistics);
 		bool					ShouldTerminate(const HistogramAggregator& parent, const HistogramAggregator& leftChild, const HistogramAggregator& rightChild, double gain) {return gain < 0.01;}
 
 
 	private:
-		unsigned char m_nStates;
-		unsigned char m_nFeatures;
+		unsigned char	m_nStates;
+		unsigned short	m_nFeatures;
 	};
 }}}

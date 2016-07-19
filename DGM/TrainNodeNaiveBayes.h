@@ -34,7 +34,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainNodeNaiveBayes(byte nStates, byte nFeatures);
+		DllExport CTrainNodeNaiveBayes(byte nStates, word nFeatures);
 		DllExport ~CTrainNodeNaiveBayes(void);
 
 		DllExport virtual void	  reset(void);		
@@ -48,7 +48,7 @@ namespace DirectGraphicalModels
 		* @param feature The feature
 		* @return The probability density function 
 		*/
-		DllExport CPDF			* getPDF(byte state, byte feature) const { return m_pPDF[state][feature]; }	
+		DllExport CPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
 		
 		/**
 		*/

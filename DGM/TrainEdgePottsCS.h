@@ -41,7 +41,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features	
 		* @param penApproach Flag specifying the penalization approach for the edge potential matrix (Ref. @ref ePotPenalApproach)
 		*/
-		DllExport CTrainEdgePottsCS(byte nStates, byte nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP) 
+		DllExport CTrainEdgePottsCS(byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP) 
 			: CTrainEdgePotts(nStates, nFeatures)
 			, CBaseRandomModel(nStates)
 			, m_penApproach(penApproach) 

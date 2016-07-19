@@ -4,7 +4,7 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainEdgePrior::CTrainEdgePrior(byte nStates, byte nFeatures, ePotPenalApproach penApproach, ePotNormApproach normApproach) 
+CTrainEdgePrior::CTrainEdgePrior(byte nStates, word nFeatures, ePotPenalApproach penApproach, ePotNormApproach normApproach) 
 	: CTrainEdgePottsCS(nStates, nFeatures, penApproach)
 	, CPriorEdge(nStates, normApproach)
 	, CBaseRandomModel(nStates)

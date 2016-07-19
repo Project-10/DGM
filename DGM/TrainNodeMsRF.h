@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		* @param params Random Forest parameters (Ref. @ref TrainNodeMsRFParams)
 		*/
-		DllExport CTrainNodeMsRF(byte nStates, byte nFeatures, TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT);
+		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT);
 		/**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -67,7 +67,7 @@ namespace DirectGraphicalModels
 		* @todo Add the "maxSamples" functionality
 		* @todo Try Parallel implementation with ParallelForestTrainer.h
 		*/
-		DllExport CTrainNodeMsRF(byte nStates, byte nFeatures, size_t maxSamples);
+		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples);
 		DllExport virtual ~CTrainNodeMsRF(void);
 
 		/**

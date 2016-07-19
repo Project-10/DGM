@@ -8,13 +8,13 @@ namespace DirectGraphicalModels
 const double CTrainNodeCvGMM::MIN_COEFFICIENT_BASE = 32.0;
 	
 // Constructor
-CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, byte nFeatures, TrainNodeCvGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
+CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, TrainNodeCvGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, byte nFeatures, byte numGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
+CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, byte numGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
 {
 	TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT;
 	params.numGausses = numGausses;
@@ -91,7 +91,7 @@ void CTrainNodeCvGMM::train(void)
 		for (register unsigned int smp = 0; smp < nSamples; smp++) {	// samples
 			double * pSamples = samples.ptr<double>(smp);
 			Mat Sample = m_pSamplesAcc[s].getSample(smp);
-			for (register int f = 0; f < m_nFeatures; f++)				// features
+			for (word f = 0; f < m_nFeatures; f++)				// features
 				pSamples[f] = Sample.at<double>(f, 0);	
 		} // smp
 		if (!m_vpEM[s]->trainEM(samples)) printf("Error EM training!\n");

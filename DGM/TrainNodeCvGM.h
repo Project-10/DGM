@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 @param nStates Number of states (classes)
 @param nFeatures Number of features
 */
-		DllExport CTrainNodeCvGM(byte nStates, byte nFeatures) : CTrainNodeCvGMM(nStates, nFeatures, 1), CBaseRandomModel(nStates) {}
+		DllExport CTrainNodeCvGM(byte nStates, word nFeatures) : CTrainNodeCvGMM(nStates, nFeatures, 1), CBaseRandomModel(nStates) {}
 		DllExport ~CTrainNodeCvGM(void) {}
 	};
 }

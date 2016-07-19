@@ -9,7 +9,7 @@ const size_t		CTrainNodeGMM::MIN_SAMPLES		= 16;
 const long double	CTrainNodeGMM::MAX_COEFFICIENT =  1.0;
 
 // Constructor
-CTrainNodeGMM::CTrainNodeGMM(byte nStates, byte nFeatures, TrainNodeGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(params)
+CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(params)
 {
 	m_pvGausses = new vec_NDGauss_t[nStates];
 	for (int s = 0; s < nStates; s++)
@@ -18,7 +18,7 @@ CTrainNodeGMM::CTrainNodeGMM(byte nStates, byte nFeatures, TrainNodeGMMParams pa
 }
 
 // Constructor
-CTrainNodeGMM::CTrainNodeGMM(byte nStates, byte nFeatures, byte maxGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
+CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
 {
 	m_params.maxGausses = maxGausses;
 	m_pvGausses = new vec_NDGauss_t[nStates];
@@ -163,10 +163,10 @@ void CTrainNodeGMM::saveFile(FILE *pFile) const
 			Mat		sigma	= gauss.getSigma();
 
 			fwrite(&nPoints, sizeof(long), 1, pFile);
-			for (byte y = 0; y < m_nFeatures; y++)
+			for (word y = 0; y < m_nFeatures; y++)
 				fwrite(&mu.at<double>(y, 0), sizeof(double), 1, pFile);
-			for (byte y = 0; y < m_nFeatures; y++)
-				for (byte x = 0; x < m_nFeatures; x++)
+			for (word y = 0; y < m_nFeatures; y++)
+				for (word x = 0; x < m_nFeatures; x++)
 					fwrite(&sigma.at<double>(y, x), sizeof(double), 1, pFile);
 			mu.release();
 			sigma.release();
@@ -196,10 +196,10 @@ void CTrainNodeGMM::loadFile(FILE *pFile)
 			Mat sigma(m_nFeatures, m_nFeatures, CV_64FC1);
 			
 			fread(&nPoints, sizeof(long), 1, pFile);
-			for (byte y = 0; y < m_nFeatures; y++)
+			for (word y = 0; y < m_nFeatures; y++)
 				fread(&mu.at<double>(y, 0), sizeof(double), 1, pFile);
-			for (byte y = 0; y < m_nFeatures; y++)
-				for (byte x = 0; x < m_nFeatures; x++)
+			for (word y = 0; y < m_nFeatures; y++)
+				for (word x = 0; x < m_nFeatures; x++)
 					fread(&sigma.at<double>(y, x), sizeof(double), 1, pFile);
 			
 			gauss.setMu(mu);

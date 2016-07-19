@@ -6,7 +6,7 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, byte nFeatures) 
+CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures) 
 	: CTrainNode(nStates, nFeatures)
 	, CPriorNode(nStates)
 	, CBaseRandomModel(nStates)
@@ -15,7 +15,7 @@ CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, byte nFeatures)
 	m_pPDF = new CPDF**[m_nStates];
 	for (byte s = 0; s < m_nStates; s++) {
 		m_pPDF[s] = new CPDF*[m_nFeatures];
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f] = new CPDFHistogram();
 //			m_pPDF[s][f] = new CPDFGaussian();
 	} // s
@@ -36,7 +36,7 @@ CTrainNodeNaiveBayes::~CTrainNodeNaiveBayes(void)
 {
 	if (!m_prior.empty()) m_prior.release();
 	for (byte s = 0; s < m_nStates; s++) {
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			delete m_pPDF[s][f];
 		delete m_pPDF[s];
 	} // s
@@ -53,7 +53,7 @@ void CTrainNodeNaiveBayes::reset(void)
 	if (!m_prior.empty()) m_prior.release();		// resetting the prior
 
 	for (byte s = 0; s < m_nStates; s++)
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->reset();
 	
 #ifdef DEBUG_MODE	// --- Debug ---
@@ -73,7 +73,7 @@ void CTrainNodeNaiveBayes::addFeatureVec(const Mat &featureVector, byte gt)
 	
 	addNodeGroundTruth(gt);
 
-	for (byte f = 0; f < m_nFeatures; f++) {
+	for (word f = 0; f < m_nFeatures; f++) {
 //		byte feature = featureVector.ptr<byte>(f)[0];
 		byte feature = featureVector.at<byte>(f, 0);
 		m_pPDF[gt][f]->addPoint(feature);
@@ -97,7 +97,7 @@ void CTrainNodeNaiveBayes::smooth(int nIt)
 {
 	if (typeid(*** m_pPDF) != typeid(CPDFHistogram)) return;
 	for (byte s = 0; s < m_nStates; s++)
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			dynamic_cast<CPDFHistogram *>(m_pPDF[s][f])->smooth(nIt);
 }
 
@@ -106,7 +106,7 @@ void CTrainNodeNaiveBayes::saveFile(FILE *pFile) const
 	CPriorNode::saveFile(pFile);
 
 	for (byte s = 0; s < m_nStates; s++)
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->saveFile(pFile);
 
 } 
@@ -117,7 +117,7 @@ void CTrainNodeNaiveBayes::loadFile(FILE *pFile)
 	calculatePrior();		// loads m_prior from the CPriorNode class
 
 	for (byte s = 0; s < m_nStates; s++)
-		for (byte f = 0; f < m_nFeatures; f++)
+		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->loadFile(pFile);
 } 
 
@@ -127,7 +127,7 @@ void CTrainNodeNaiveBayes::calculateNodePotentials(const Mat &featureVector, Mat
 	for (byte s = 0; s < m_nStates; s++) {			// state
 		float	* pPot	= potential.ptr<float>(s);
 		byte	* pMask	= mask.ptr<byte>(s);
-		for (int f = 0; f < m_nFeatures; f++) {		// feature
+		for (word f = 0; f < m_nFeatures; f++) {		// feature
 			byte feature = featureVector.ptr<byte>(f)[0];
 			if (m_pPDF[s][f]->isEstimated()) 
 				pPot[0] *= m_pPDF[s][f]->getDensity(feature);	
