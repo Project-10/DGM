@@ -41,9 +41,6 @@ void CInferTRW::infer(unsigned int nIt)
 		}
 
 		Point extremumLoc;
-		
-		for (int r = 0; r < node.Pot.rows; r++) printf("%f, ", node.Pot.at<float>(r, 0)); printf("\n");
-
 		minMaxLoc(node.Pot, NULL, NULL, NULL, &extremumLoc);
 		node.sol = static_cast<byte> (extremumLoc.y);
 	}
@@ -59,10 +56,10 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 
 	// main loop
 	for (unsigned int i = 0; i < nIt; i++) {												// iterations
-//#ifdef PRINT_DEBUG_INFO
+#ifdef PRINT_DEBUG_INFO
 		if (i == 0) printf("\n");
 		if (i % 5 == 0) printf("--- It: %d ---\n", i);
-//#endif
+#endif
 		// Forward pass
 		std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&](Node &node) {									
 			memcpy(data, node.Pot.data, nStates * sizeof(float));							// data = node.pot

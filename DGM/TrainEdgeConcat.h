@@ -53,8 +53,8 @@ namespace DirectGraphicalModels
 			, CBaseRandomModel(nStates)
 		{
 			DGM_ASSERT(nStates < 16);
-			m_pPrior = new CPriorNode(nStates * nStates);
-			m_pTrainer = new Trainer(nStates * nStates, nFeatures, params);
+			m_pPrior		= new CPriorNode(nStates * nStates);
+			m_pTrainer		= new Trainer(nStates * nStates, nFeatures, params);
 			m_pConcatenator = new Concatenator(nFeatures);
 			m_featureVector = Mat(m_pConcatenator->getNumFeatures(), 1, CV_8UC1);
 		}
@@ -79,17 +79,7 @@ namespace DirectGraphicalModels
 			m_pTrainer->addFeatureVec(m_featureVector, gt);
 
 		}
-		virtual void	train(void) 
-		{
-			// Fill holes in trainig
-			m_featureVector.setTo(0);
-			Mat priors = m_pPrior->getPrior();
-			for (byte i = 0; i < priors.rows; i++)
-				if (priors.at<float>(i, 0) == 0)
-					m_pTrainer->addFeatureVec(m_featureVector, i);
-			
-			m_pTrainer->train(); 
-		}
+		virtual void	train(void) { m_pTrainer->train(); }
 
 
 	protected:
@@ -111,7 +101,7 @@ namespace DirectGraphicalModels
 		{
 			m_pConcatenator->concatenate(featureVector1, featureVector2, const_cast<Mat &>(m_featureVector));
 			Mat pot = m_pTrainer->getNodePotentials(m_featureVector);
-			//pot = m_pPrior->getPrior(100);
+			Mat prior = m_pPrior->getPrior(100);
 
 			Mat res(m_nStates, m_nStates, CV_32FC1);
 			
@@ -119,7 +109,9 @@ namespace DirectGraphicalModels
 				float * pRes = res.ptr<float>(gt1);
 				for (register byte gt2 = 0; gt2 < m_nStates; gt2++) {
 					byte gt = gt2 * m_nStates + gt1;
-					pRes[gt2] = pot.at<float>(gt);
+					
+					float epsilon = prior.at<float>(gt) > 0 ? FLT_EPSILON : 0.0f;
+					pRes[gt2] = MAX(pot.at<float>(gt), epsilon);
 				}
 			}
 
@@ -130,7 +122,7 @@ namespace DirectGraphicalModels
 
 	protected:
 		CPriorNode				* m_pPrior;				///< %Node prior poobability
-		CTrainNode				* m_pTrainer;			///< Node trainer
+		CTrainNode				* m_pTrainer;			///< %Node trainer
 		CFeaturesConcatenator	* m_pConcatenator;		///< Feature concatenator
 
 
