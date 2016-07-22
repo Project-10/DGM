@@ -29,7 +29,11 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Extracts the sparse coding feature.
 		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \a nbhd.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
+<<<<<<< HEAD
 		* @param dictionary Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_32FC1)
+=======
+		* @param dictionary Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood).
 		* @return The sparse coding feature image of type \b CV_8UC{nWords}.
 		*/

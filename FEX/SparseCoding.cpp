@@ -55,7 +55,11 @@ namespace DirectGraphicalModels { namespace fex
 				for (int j = 0; j < H.rows; j++)
 					H.row(j) = H.row(j) / norm(dict.col(j), NORM_L2);
 
+<<<<<<< HEAD
 				float cost = calculate_W(sample, dict, H, epsilon, lambdaH, 200);
+=======
+				double cost = calculate_W(sample, dict, H, epsilon, lambdaH, 200);
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 				//printf("Sample: %d, cost value = %f\n", s, cost);
 
 				for (int w = 0; w < nWords; w++) {

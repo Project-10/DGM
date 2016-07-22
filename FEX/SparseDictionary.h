@@ -41,7 +41,11 @@ namespace DirectGraphicalModels { namespace fex
 		/**
 		* @brief Train dictionary \f$D\f$
 		* @details This function creates and trains new dictionary \f$D\f$ on data \f$X\f$
+<<<<<<< HEAD
 		* @param X Training data \f$X\f$: Mat(size sampleLen x nSamples; type CV_32FC1)
+=======
+		* @param X Training data \f$X\f$: Mat(size sampleLen x nSamples; type CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		* @param nWords Length of the dictionary (number of words)
 		* @param batch The number of randomly chosen samples from \b X to be used in every distinct iteration of training
 		* > This parameter must be smaller or equal to the number of samples in training data \f$X\f$
@@ -60,7 +64,11 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport void load(const std::string &fileName);
 		/**
 		* @brief Return dictionary \f$D\f$
+<<<<<<< HEAD
 		* @returns Dictionary \f$D\f$: Mat(size: blockSize^2 x nWords; type: CV_32FC1)
+=======
+		* @returns Dictionary \f$D\f$: Mat(size: blockSize^2 x nWords; type: CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		*/
 		DllExport Mat getDictionary(void) const { return m_D; }
 		/**
@@ -86,7 +94,11 @@ namespace DirectGraphicalModels { namespace fex
 		* @param blockSize Size of the quadratic patch
 		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
 		* @param varianceThreshold 
+<<<<<<< HEAD
 		* @returns Data \f$X\f$: Mat(size: blockSize^2 x nSamples; type: CV_32FC1)
+=======
+		* @returns Data \f$X\f$: Mat(size: blockSize^2 x nSamples; type: CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		*/
 		DllExport static Mat img2data(const Mat &img, int blockSize, float varianceThreshold = 0.0f);
 		/**
@@ -115,18 +127,29 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Evaluates weighting coefficients matrix \f$W\f$
 		* @details Find the \f$W\f$, that minimizes \f$J(D, W)\f$ for the given \f$D\f$: 
 		* \f[ argmin_{W} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \lambda\sum_{i,j}{\sqrt{w^{2}_{i,j} + \epsilon}} \f]
+<<<<<<< HEAD
 		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_32FC1)
 		* @param[in] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_32FC1)
 		* @param[in,out] W  Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_32FC1)
+=======
+		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_64FC1)
+		* @param[in] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_64FC1)
+		* @param[in,out] W  Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		* @param[in] lambda Regularisation parameter \f$\lambda\f$
 		* @param[in] epsilon L1-regularisation parameter: \f$\epsilon\f$
 		* @param[in] nIt Number of iterations
 		*/
+<<<<<<< HEAD
 		static void calculate_W(const Mat &X, const Mat& D, Mat &W, float lambda, float epsilon, unsigned int nIt = 800);
+=======
+		static void calculate_W(const Mat &X, const Mat& D, Mat &W, double lambda, double epsilon, unsigned int nIt = 800);
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		/**
 		* @brief Evaluates dictionary \f$D\f$
 		* @details Solve for the \f$D\f$ that minimizes \f$J(D, W)\f$ for the given \f$W\f$:
 		* \f[ argmin_{D} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \gamma\left\|D\right\|^{2}_{2}, \f]
+<<<<<<< HEAD
 		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_32FC1)
 		* @param[in,out] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_32FC1)
 		* @param[in] W Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_32FC1)
@@ -134,11 +157,24 @@ namespace DirectGraphicalModels { namespace fex
 		* @param[in] nIt Number of iterations
 		*/
 		static void calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt = 800);
+=======
+		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_64FC1)
+		* @param[in,out] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_64FC1)
+		* @param[in] W Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_64FC1)
+		* @param[in] gamma Regularisation parameter: \f$\gamma\f$
+		* @param[in] nIt Number of iterations
+		*/
+		static void calculate_D(const Mat &X, Mat &D, const Mat &W, double gamma, unsigned int nIt = 800);
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 
 
 
 	protected:
+<<<<<<< HEAD
 		Mat		m_D;					///< The dictionary \f$\mathbb{D}\f$: Mat(size: blockSize^2 x nWords; type: CV_32FC1); 
+=======
+		Mat		m_D;					///< The dictionary \f$\mathbb{D}\f$: Mat(size: blockSize^2 x nWords; type: CV_64FC1); 
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 
 
 	protected:
@@ -148,18 +184,31 @@ namespace DirectGraphicalModels { namespace fex
 		* @param[in] gType
 		* @returns Gradient matrix
 		*/
+<<<<<<< HEAD
 		static Mat calculateGradient(grad_type gType, const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma);
 		/**
 		* @brief Calculates the value of the cost function and \b grad matrix
 		* @param[in] X Training data \f$\mathbb{X}\f$: Mat(size blockSize^2 x nSamples; type CV_32FC1)
 		* @param[in] dict Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_32FC1)
 		* @param[in] H Weighting coefficients \f$\vec{h}\f$:  Mat(size blockSize^2 x 1; type CV_32FC1)
+=======
+		static Mat calculateGradient(grad_type gType, const Mat &X, const Mat &D, const Mat &W, double lambda, double epsilon, double gamma);
+		/**
+		* @brief Calculates the value of the cost function and \b grad matrix
+		* @param[in] X Training data \f$\mathbb{X}\f$: Mat(size blockSize^2 x nSamples; type CV_64FC1)
+		* @param[in] dict Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_64FC1)
+		* @param[in] H Weighting coefficients \f$\vec{h}\f$:  Mat(size blockSize^2 x 1; type CV_64FC1)
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 		* @param[out] grad (hGrad or dictGrad, depending on \b cType)
 		* @param[in] epsilon L1-regularisation parameter: \f$|h|\approx\sqrt{h^2 + \epsilon}\f$
 		* @param[in] lambda Regularisation parameter (for hCost or gradCost, depending on \b cType)
 		* @returns The value of the cost function
 		*/
+<<<<<<< HEAD
 		static float calculateCost(const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma);
+=======
+		static double calculateCost(const Mat &X, const Mat &D, const Mat &W, double lambda, double epsilon, double gamma);
+>>>>>>> 0d589ec2f5d0ed3d74673219e5e86d657f59305f
 	};
 
 } }
