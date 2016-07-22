@@ -3,86 +3,104 @@
 
 namespace DirectGraphicalModels { namespace fex
 {
-	void CSparseDictionary::train(const Mat &X, int nWords, int batch, unsigned int nIt)
+	// J(D, W) = ||W x D - X||^{2}_{2} + \lambda ||W||_1 + \gamma ||D||^{2}_{2}
+	void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt)
 	{
-		const int		nSamples	= X.cols;
-		const int		nFeatures	= X.rows;
+		const dword		nSamples	= X.rows;
+		const int		sampleLen	= X.cols;
 
-		const double	epsilon		= 1e-5;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-		const double	lambdaH		= 5e-5;		// 5e-5;  // L1-regularisation parameter (on features)
-		const double	lambdaDict	= 1e-2;		// 1e-2;  // L2-regularisation parameter (on basis)
-
+		const float	lambda		= 5e-5f;		// 5e-5;  // L1-regularisation parameter (on features)
+		const float	epsilon		= 1e-5f;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
+		const float	gamma		= 1e-2f;		// 1e-2;  // L2-regularisation parameter (on basis)
+		
 		DGM_ASSERT_MSG(batch <= nSamples, "The batch number %d exceeds the length of the training data %d", batch, nSamples);
 
+		// 1. Initialize dictionary D randomly
+		if (!m_D.empty()) m_D.release();
+		m_D = Mat(nWords, sampleLen, CV_32FC1);
+
 		RNG rng;
-		if (!m_dict.empty()) m_dict.release();
-		m_dict = Mat(nFeatures, nWords, CV_64FC1);
-		rng.fill(m_dict, RNG::NORMAL, 0, 1);
-		m_dict = m_dict * 0.12;
+		rng.fill(m_D, RNG::NORMAL, 0, 0.3);
 
-		Mat H;
+		Mat		W;	// Weights matrix (Size: nStamples x nWords)
+		float	cost;
 
-		//Gradient Checking...
-		//    mat randx = x.cols(5, 10);
-		//    h = dict.t() * randx;
-		//    for(int i = 0; i < h.n_rows; i++){
-		//        h.row(i) = h.row(i) / norm(dict.col(i), 2);
-		//    }
+		// 2. Repeat until convergence
 		for (unsigned int i = 0; i < nIt; i++) {
 			printf("--- It: %d ---\n", i);
 
-			int randomNum = ((long)rand() + (long)rand()) % (nSamples - batch);
-			Mat randx = X(cvRect(randomNum, 0, batch, nFeatures));
-			gemm(m_dict, randx, 1.0, Mat(), 0.0, H, GEMM_1_T);				// H = dict^T x randx;
+			// 2.1 Select a random mini-batch of 2000 patches
+			dword rndRow = ((dword) rand() * (RAND_MAX + 1) + (dword) rand()) % (nSamples - batch);
+			Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
 
-			for (int j = 0; j < H.rows; j++) H.row(j) = H.row(j) / norm(m_dict.col(j), NORM_L2);
+			// 2.2 Initialize W
+			gemm(m_D, _X, 1.0, Mat(), 0.0, W, GEMM_2_T);				// W = (D x _X^T)^T;
+			W = W.t();
+			for (word w = 0; w < W.cols; w++)
+				W.col(w) /= norm(m_D.row(w), NORM_L2);
+			
+			printf("Cost: ");
+			cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+			printf("%f -> ", cost);
+			
+			// 2.3. Find the W, that minimizes E(D, W) for the D found in the previos step
+			// J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
+			calculate_W(_X, m_D, W, lambda, epsilon, 800);
+			cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+			printf("%f -> ", cost);
 
-			calculateH(randx, m_dict, H, epsilon, lambdaH, 800);
-			calculateDict(randx, m_dict, H, epsilon, lambdaDict, 800);
 
+			// 2.4 Solve for the D that minimizes E(D, W) for the W found in the previous step
+			// J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
+			calculate_D(_X, m_D, W, gamma, 800);
+			cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+			printf("%f\n", cost);
+
+			// 2.5 Saving intermediate dictionary
 			std::string str = "D:\\Dictionaries\\dict_";
 			str += std::to_string(i / 5);
 			str += ".txt";
 			if (i % 5 == 0) save(str);
-		}
+		} // i
+
 	}
 
 	void CSparseDictionary::save(const std::string &fileName) const
 	{
 		FILE *pFile = fopen(fileName.c_str(), "wb");
-		fwrite(&m_dict.rows, sizeof(int), 1, pFile);			// nFeatures
-		fwrite(&m_dict.cols, sizeof(int), 1, pFile);			// nWords
-		fwrite(m_dict.data, sizeof(double), m_dict.rows * m_dict.cols, pFile);
+		fwrite(&m_D.rows, sizeof(int), 1, pFile);			// nFeatures
+		fwrite(&m_D.cols, sizeof(int), 1, pFile);			// nWords
+		fwrite(m_D.data, sizeof(float), m_D.rows * m_D.cols, pFile);
 		fclose(pFile);
 	}
 
 	void CSparseDictionary::load(const std::string &fileName)
 	{
-		int nFeatures;
+		int sampleLen;
 		int nWords;
 
 		FILE *pFile = fopen(fileName.c_str(), "rb");
-		fread(&nFeatures, sizeof(int), 1, pFile);
+		fread(&sampleLen, sizeof(int), 1, pFile);
 		fread(&nWords, sizeof(int), 1, pFile);
 
-		if (!m_dict.empty()) m_dict.release();
-		m_dict = Mat(nFeatures, nWords, CV_64FC1);
+		if (!m_D.empty()) m_D.release();
+		m_D = Mat(sampleLen, nWords, CV_32FC1);
 
-		fread(m_dict.data, sizeof(double), nFeatures * nWords, pFile);
+		fread(m_D.data, sizeof(float), sampleLen * nWords, pFile);
 
 		fclose(pFile);
 	}
 
 	Mat CSparseDictionary::decode(const Mat &X, CvSize imgSize) const
 	{
-		DGM_ASSERT_MSG(!m_dict.empty(), "The dictionary must me trained or loaded before using this function");
+		DGM_ASSERT_MSG(!m_D.empty(), "The dictionary must me trained or loaded before using this function");
 
-		const int		blockSize = static_cast<int>(sqrt(m_dict.rows));
-		const double	epsilon = 1e-5;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-		const double	lambdaH = 5e-5;		// regularisation parameter (on features)
+		const int		blockSize = static_cast<int>(sqrt(m_D.rows));
+		const float	lambda		= 5e-5f;		// 5e-5;  // L1-regularisation parameter (on features)
+		const float	epsilon		= 1e-5f;		// 1e-5;  // L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 
-		Mat res(imgSize, CV_64FC1, cvScalar(0));
-		Mat cover(imgSize, CV_64FC1, cvScalar(0));
+		Mat res(imgSize, CV_32FC1, cvScalar(0));
+		Mat cover(imgSize, CV_32FC1, cvScalar(0));
 
 		// for (int s = 0; s < nSamples; s++) {
 #ifdef USE_PPL
@@ -94,17 +112,17 @@ namespace DirectGraphicalModels { namespace fex
 
 				int s = y * (imgSize.width - blockSize + 1) + x;				// sample index
 
-				Mat sample = X.col(s);											// sample
-				Mat H;
-				gemm(m_dict, sample, 1.0, Mat(), 0.0, H, GEMM_1_T);				// H = dict^T x sample
+				Mat sample = X.row(s);											// sample
+				Mat W;
+				gemm(m_D, sample, 1.0, Mat(), 0.0, W, GEMM_2_T);				// W = (D x sample^T)^T
+				W = W.t();
+				for (word w = 0; w < W.cols; w++)
+					W.col(w) /= norm(m_D.row(w), NORM_L2);
 
-				for (int j = 0; j < H.rows; j++) H.row(j) = H.row(j) / norm(m_dict.col(j), NORM_L2);
-
-				double cost = calculateH(sample, m_dict, H, epsilon, lambdaH, 800);
-				//printf("Sample: %d, cost value = %f\n", s, cost);
+				calculate_W(sample, m_D, W, lambda, epsilon, 800);
 
 				Mat tmp;
-				gemm(m_dict, H, 1.0, Mat(), 0.0, tmp);							// tmp = dict x H
+				gemm(W, m_D, 1.0, Mat(), 0.0, tmp);								// tmp = W x D
 				tmp = tmp.reshape(0, blockSize);
 
 				res(cvRect(x, y, blockSize, blockSize)) += tmp;
@@ -120,26 +138,26 @@ namespace DirectGraphicalModels { namespace fex
 
 	// =================================================================================== static
 
-	double getMean(const Mat &m)
+	float getMean(const Mat &m)
 	{
-		double sum = 0.0;
+		float sum = 0.0;
 		for (int i = 0; i < m.cols; i++)
-			sum += m.at<byte>(0, i);
+			sum += m.at<float>(0, i);
 		return sum / m.cols;
 	}
 
-	double getVariance(const Mat &m)
+	float getVariance(const Mat &m)
 	{
-		double mean = getMean(m);
-		double temp = 0.0;
+		float mean = getMean(m);
+		float temp = 0.0;
 		for (int i = 0; i < m.cols; i++) {
-			double val = m.at<byte>(0, i);
+			float val = m.at<float>(0, i);
 			temp += (mean - val) * (mean - val);
 		}
 		return temp / m.cols;
 	}
 
-	Mat CSparseDictionary::img2data(const Mat &img, int blockSize, double varianceThreshold)
+	Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThreshold)
 	{
 		DGM_IF_WARNING(blockSize % 2 == 0, "The block size is even");
 
@@ -148,198 +166,201 @@ namespace DirectGraphicalModels { namespace fex
 		if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
 		else img.copyTo(I);
 
+		// Converting to floating - point normalized data
+		I.convertTo(I, CV_32FC1, 1.0 / 255);
+
+		const int	dataHeight  = img.rows - blockSize + 1;
 		const int	dataWidth	= img.cols - blockSize + 1;
-		const int	dataHeight	= img.rows - blockSize + 1;
 
 		Mat res;
 		Mat sample;
-		for (register int y = 0; y < dataHeight; y++)
-			for (register int x = 0; x < dataWidth; x++) {
-				int s = y * dataWidth + x;															// sample index
-				Mat _sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);		// sample as a column-vector
-				
-				double variance = getVariance(_sample);
-				//printf("variance = %f\n", var);
 
-				if (variance >= varianceThreshold) {
-					_sample.convertTo(sample, CV_64FC1, 1.0 / 255);
+		for (int y = 0; y < dataHeight; y++)
+			for (int x = 0; x < dataWidth; x++) {
+				sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);			// sample as a row-vector
+				
+				float variance = getVariance(sample);
+				//printf("variance = %f\n", variance);
+
+				if (variance >= varianceThreshold) 
 					res.push_back(sample);
-				}
-			
 			} // x
-		return res.t();
+		return res;
 	}
 
 	Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	{
-		Mat img(imgSize, CV_64FC1, cvScalar(0));
-		Mat cover(imgSize, CV_64FC1, cvScalar(0));
+		Mat res(imgSize, CV_32FC1, cvScalar(0));
+		Mat cover(imgSize, CV_32FC1, cvScalar(0));
 
-		const int	blockSize	= static_cast<int>(sqrt(X.rows));
-		const int	dataWidth	= img.cols - blockSize + 1;
-		const int	dataHeight	= img.rows - blockSize + 1;
+		const int	blockSize	= static_cast<int>(sqrt(X.cols));
+		const int	dataWidth	= res.cols - blockSize + 1;
+		const int	dataHeight	= res.rows - blockSize + 1;
 
-		for (int y = 0; y < dataHeight; y++)
-			for (int x = 0; x < dataWidth; x++) {
-				int s = y * dataWidth + x;															// sample index
-					
-				Mat sample = X.col(s).t();															// smple as a row-vector
-				sample = sample.reshape(0, blockSize);												// square sample - data patch
+		for (int s = 0; s < X.rows; s++) {
+			Mat sample = X.row(s);															// smple as a row-vector
+			sample = sample.reshape(0, blockSize);												// square sample - data patch
 
-				img(cvRect(x, y, blockSize, blockSize)) += sample;
-				cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
-			} // x
-		img /= cover;
+			int y = s / dataWidth;
+			int x = s % dataWidth;
+
+			res(cvRect(x, y, blockSize, blockSize)) += sample;
+			cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
+		}
+		res /= cover;
 		
-		Mat res;
-		img.convertTo(res, CV_8UC1, 255);
+		res.convertTo(res, CV_8UC1, 255);
 		return res;
 	}
 
-	Mat CSparseDictionary::shuffleCols(const Mat &X)
+	Mat CSparseDictionary::shuffleRows(const Mat &X)
 	{
 		std::vector<int> seeds;
-		for (int x = 0; x < X.cols; x++) 
-			seeds.push_back(x);
+		for (int s = 0; s < X.rows; s++) 
+			seeds.push_back(s);
 
 		randShuffle(seeds);
 
 		Mat res(X.size(), X.type());
-		for (int x = 0; x < X.cols; x++)
-			X.col(seeds[x]).copyTo(res.col(x));
+		for (int s = 0; s < X.rows; s++)
+			X.row(seeds[s]).copyTo(res.row(s));
 
 		return res;
 	}
 	
 	// =================================================================================== protected
 
-	double CSparseDictionary::calculateCost(cost_type cType, const Mat &X, const Mat &dict, const Mat &H, Mat &grad, double epsilon, double lambda)
+	void my_gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
 	{
-		const int nSamples = X.cols;
+		DGM_ASSERT(A.cols == B.rows);
 
-		Mat delta;
-		gemm(dict, H, 1.0, X, -1.0, delta);					// delta = dict x H - X	
-		
-		
-		double minval_d, maxval_d;
-		minMaxLoc(dict, &minval_d, &maxval_d);
+		const Mat _B = B.t();
+		res = Mat(A.rows, B.cols, CV_32FC1);
+		concurrency::parallel_for(0, res.rows, 1, [&](int y) {
+		//for (int y = 0; y < res.rows; y++) {
+			float		 *pRes	= res.ptr<float>(y);
+			const float *pA	= A.ptr<float>(y);
+			const float *pC    = C.ptr<float>(y);
+			for (register int x = 0; x < res.cols; x++) {
+				const float *pB = _B.ptr<float>(x);
+				float val = 0.0;
+				for (register int i = 0; i < A.cols; i++)
+					val += pA[i] * pB[i];
+				pRes[x] = alpha * val + beta * pC[x];
+			} // x
 
-		double minval_h, maxval_h;
-		minMaxLoc(H, &minval_h, &maxval_h);
-		
-		double minval, maxval;
-		minMaxLoc(delta, &minval, &maxval);
-		
-		//if (minval < -100 || maxval > 100)
-		//	printf("min = %f; max = %f. dict: [%f; %f]; H: [%f; %f]\n", minval, maxval, minval_d, maxval_d, minval_h, maxval_h);
+		}); // y
 
-		
-		reduce(delta, delta, 1, CV_REDUCE_AVG);
-		pow(delta, 2, delta);
-		double cost = sum(delta)[0];
-		DGM_ASSERT(!isnan(cost));
-		DGM_ASSERT(!isinf(cost));
+	}
 
+
+	/// @todo optimize the matrix multiplication
+	Mat CSparseDictionary::calculateGradient(grad_type gType, const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma)
+	{
+		const int nSamples = X.rows;
+		
+		Mat temp; // = (2.0 / nSamples) * (W * D - X);
+		my_gemm(W, D, 2.0f / nSamples, X, -2.0f / nSamples, temp);				// temp = 2 * (W x D - X) / nSamples
+		Mat gradient;
 		Mat sparsityMatrix;
-		pow(H, 2, sparsityMatrix);
-		sparsityMatrix += epsilon;
-		sqrt(sparsityMatrix, sparsityMatrix);				// sparsityMatrix = sqrt(H^2 + epsilon)
 
-
-		if (cType == COST_H) {
-			// ----- Grad -----
-			Mat p1;
-			gemm(dict, H, 1.0, Mat(), 0.0, p1);				// p1 = dict x H
-
-			Mat p2;
-			gemm(dict, X, 1.0, Mat(), 0.0, p2, GEMM_1_T);	// p2 = dict^T x X
-
-			Mat p3;
-			gemm(dict, p1, 2.0, p2, -2.0, p3, GEMM_1_T);	// p3 = 2 * (dict^T x p1) - 2 * p2 
-
-			grad = p3 / nSamples;
-			grad += lambda * (H / sparsityMatrix);
-
-
-			// ----- Cost -----
-			Mat sparsityVector;
-			reduce(sparsityMatrix, sparsityVector, 1, CV_REDUCE_AVG);
-			cost += lambda * sum(sparsityVector)[0];
-		} 
-		else { // DICT_COST
-			// ----- Grad -----
-			Mat p1;
-			gemm(H, H, 1.0, Mat(), 0.0, p1, GEMM_2_T);		// p1 = H x H^T
-
-			Mat p2;
-			gemm(X, H, 1.0, Mat(), 0.0, p2, GEMM_2_T);		// p2 = X x H^T
-
-			Mat p3;
-			gemm(dict, p1, 2.0, p2, -2.0, p3);				// p3 = 2 * (dict x p1) - 2 * p2
-
-			grad = p3 / nSamples;
-			grad += 2 * lambda * dict;
-
-			// ----- Cost -----
-			Mat dict2;
-			pow(dict, 2, dict2);
-			cost += lambda * sum(dict2)[0];
-			DGM_ASSERT(!isnan(cost));
-			DGM_ASSERT(!isinf(cost));
+		switch (gType) {
+			case GRAD_W:	// 2 * (W x D - X) x D^T / nSamples + lambda * W / sqrt(W^2 + epsilon)
+				multiply(W, W, sparsityMatrix);
+				sparsityMatrix += epsilon;
+				sqrt(sparsityMatrix, sparsityMatrix);												// sparsityMatrix = sqrt(W^2 + epsilon)
+				
+				my_gemm(temp, D.t(), 1.0, W / sparsityMatrix, lambda, gradient);
+				//gradient = temp * D.t();
+				//gradient += lambda * (W / sparsityMatrix);							
+				break;
+			case GRAD_D:	// 2 * W^T x (W x D - X) / nSamples + 2 * gamma * D
+				
+				my_gemm(W.t(), temp, 1.0, D, 2 * gamma, gradient);
+				//gradient = W.t() * temp;										
+				//gradient += 2 * gamma * D;
+				
+				break;
 		}
 
-		return cost;
+		return gradient;
+
+		// int nsamples = x.n_cols;
+		
+		// mat sparsityMatrix = sqrt(pow(h, 2.0) + epsilon);
+		// hGrad    = 2 * dict.t() * (dict * h - x) / nsamples + lambda * (h / sparsityMatrix);
+
+		// dictGrad = 2 * (dict * h - x) * h.t() / nsamples + 2 * gamma * dict;
 	}
 
-	double CSparseDictionary::calculateDict(const Mat &X, Mat &dict, const Mat &H, double epsilon, double lambda, unsigned int nIt)
+	/// @todo Check performance with pow() instead of multiply()
+	float CSparseDictionary::calculateCost(const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma)
 	{
-		// define the velocity vectors.
-		Mat dictGrad(dict.size(), CV_64FC1, cvScalar(0));
-		Mat inc_dict(dict.size(), CV_64FC1, cvScalar(0));
+		Mat temp;
+		
+		my_gemm(W, D, 1.0, X, -1.0, temp);					// temp =  W x D - X	
+		reduce(temp, temp, 0, CV_REDUCE_AVG);
+		multiply(temp, temp, temp);						// temp = (W x D - X)^2
+		float J1 = static_cast<float>(sum(temp)[0]);
+		
+		multiply(W, W, temp);							// temp = W^2
+		temp += epsilon;								// temp = W^2 + epsilon
+		sqrt(temp, temp);								// temp = sqrt(W^2 + epsilon)
+		reduce(temp, temp, 0, CV_REDUCE_AVG);
+		float J2 = lambda * static_cast<float>(sum(temp)[0]);
 
-		const double	lrate = 0.05;				//Learning rate for weights 
-		const double	weightcost = 0.0002;
-		const double	initialmomentum = 0.5;
-		const double	finalmomentum = 0.9;
-		double			momentum;
-		double			cost;
+		multiply(D, D, temp);							// temp = D^2
+		float J3 = gamma * static_cast<float>(sum(temp)[0]);
 
-		for (unsigned int i = 0; i < nIt; i++) {
-			momentum = (i > 10) ? finalmomentum : initialmomentum;
-			cost = calculateCost(COST_DICT, X, dict, H, dictGrad, epsilon, lambda);
-			DGM_ASSERT(!isnan(cost));
-			DGM_ASSERT(!isinf(cost));
-			// update weights 
-			inc_dict *= momentum;
-			inc_dict += (dictGrad - dict * weightcost) * lrate;
-			dict -= inc_dict;
-		}
-		printf("training dict, Cost function value = %f\n", cost);
+		float cost = J1 + J2 + J3;
 		return cost;
+
+
+		// mat delta = dict * h - x;
+		// float J1 = accu(pow(mean(delta, 1), 2.0));
+		
+		// mat sparsityMatrix = sqrt(pow(h, 2.0) + epsilon);
+		// float J2 = lambda * accu(mean(sparsityMatrix, 1));
+		
+		// float J3 = gamma * accu(pow(dict, 2.0));
+		
+		// float cost = J1 + J2 + J3;
 	}
 
-	double CSparseDictionary::calculateH(const Mat &X, const Mat& dict, Mat &H, double epsilon, double lambda,  unsigned int nIt)
+	// J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
+	void CSparseDictionary::calculate_W(const Mat &X, const Mat &D, Mat &W, float lambda, float epsilon, unsigned int nIt)
 	{
-		// define the velocity vectors.
-		Mat hGrad(H.size(), CV_64FC1, cvScalar(0));
-		Mat inc_h(H.size(), CV_64FC1, cvScalar(0));
+		// Define the velocity vectors
+		Mat gradient;
+		Mat incriment(W.size(), W.type(), cvScalar(0));
 
-		const double lrate = 0.05;						//Learning rate for weights 
-		const double weightcost = 0.0002;
-		const double initialmomentum = 0.5;
-		const double finalmomentum = 0.9;
-		double		 momentum;
-		double		 cost;
+		const float lrate		= 0.01f;						//Learning rate for weights 
+		const float weightcost	= 0.0002f;
 
 		for (unsigned int i = 0; i < nIt; i++) {
-			momentum = (i > 10) ? finalmomentum : initialmomentum;
-			cost = calculateCost(COST_H, X, dict, H, hGrad, epsilon, lambda);
-			// update weights 
-			inc_h = momentum * inc_h + lrate * (hGrad - weightcost * H);
-			H -= inc_h;
+			float momentum = (i <= 10) ? 0.5f : 0.9f;
+			gradient  = calculateGradient(GRAD_W, X, D, W, lambda, epsilon, 0);
+			incriment = momentum * incriment + lrate * (gradient - weightcost * W);
+			W -= incriment;
 		} // i
-		//printf("training H, Cost function value = %f\n", cost);
-		return cost;
+	}
+
+	// J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
+	void CSparseDictionary::calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt)
+	{
+		// define the velocity vectors
+		Mat gradient;
+		Mat incriment(D.size(), D.type(), cvScalar(0));
+
+		const float	lrate		= 0.01f;					//Learning rate for weights 
+		const float	weightcost	= 0.0002f;
+
+		for (unsigned int i = 0; i < nIt; i++) {
+			float momentum = (i <= 10) ? 0.5f : 0.9f;
+			gradient  = calculateGradient(GRAD_D, X, D, W, 0, 0, gamma);
+			incriment = momentum * incriment + lrate * (gradient - weightcost * D);
+			D -= incriment;
+		} // i
 	}
 
 } }

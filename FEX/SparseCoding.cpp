@@ -7,14 +7,14 @@ namespace DirectGraphicalModels { namespace fex
 
 	Mat CSparseCoding::get(const Mat &img, const Mat &dict, SqNeighbourhood nbhd)
 	{
-		DGM_ASSERT_MSG(!dict.empty(), "The dictionary must me trained or loaded before using this function");
+/*		DGM_ASSERT_MSG(!dict.empty(), "The dictionary must me trained or loaded before using this function");
 		
 		const int		nWords		= dict.cols;
 		const int		blockSize	= static_cast<int>(sqrt(dict.rows));
 		const int		dataWidth	= img.cols - blockSize + 1;
 		const int		dataHeight	= img.rows - blockSize + 1;
-		const double	epsilon		= 1e-5;							// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-		const double	lambdaH		= 5e-5;							// regularisation parameter (on features)
+		const float	epsilon		= 1e-5;							// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
+		const float	lambdaH		= 5e-5;							// regularisation parameter (on features)
 
 		DGM_ASSERT_MSG(nbhd.leftGap + nbhd.rightGap == nbhd.upperGap + nbhd.lowerGap, "The Neighbourhood must be a square for this method");	
 		DGM_ASSERT(blockSize == nbhd.leftGap + nbhd.rightGap + 1);
@@ -25,7 +25,7 @@ namespace DirectGraphicalModels { namespace fex
 		else img.copyTo(I);
 
 		// Prepare data
-		Mat X(blockSize * blockSize, dataWidth * dataHeight, CV_64FC1);
+		Mat X(blockSize * blockSize, dataWidth * dataHeight, CV_32FC1);
 		for (int y = 0; y < dataHeight; y++)
 			for (register int x = 0; x < dataWidth; x++) {
 				int s = y * dataWidth + x;										// sample index
@@ -38,8 +38,8 @@ namespace DirectGraphicalModels { namespace fex
 		for (int w = 0; w < nWords; w++) 
 			pTemp[w] = Mat(I.size(), CV_8UC1, cvScalar(0));
 
-		double min = 0;
-		double max = 0;
+		float min = 0;
+		float max = 0;
 
 #ifdef USE_PPL
 		concurrency::parallel_for(0, dataHeight, [&] (int y) {
@@ -55,14 +55,14 @@ namespace DirectGraphicalModels { namespace fex
 				for (int j = 0; j < H.rows; j++)
 					H.row(j) = H.row(j) / norm(dict.col(j), NORM_L2);
 
-				double cost = calculateH(sample, dict, H, epsilon, lambdaH, 200);
+				float cost = calculate_W(sample, dict, H, epsilon, lambdaH, 200);
 				//printf("Sample: %d, cost value = %f\n", s, cost);
 
 				for (int w = 0; w < nWords; w++) {
-					//if (min > H.at<double>(w, 0)) min = H.at<double>(w, 0);
-					//if (max < H.at<double>(w, 0)) max = H.at<double>(w, 0);
+					//if (min > H.at<float>(w, 0)) min = H.at<float>(w, 0);
+					//if (max < H.at<float>(w, 0)) max = H.at<float>(w, 0);
 
-					pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(static_cast<float>(H.at<double>(w, 0)), -0.5f, 0.5f);
+					pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(static_cast<float>(H.at<float>(w, 0)), -0.5f, 0.5f);
 					//printf("%d ", pTemp[w].at<byte>(y, x));
 				}
 				//printf("\n");
@@ -80,7 +80,8 @@ namespace DirectGraphicalModels { namespace fex
 		
 		delete[] pTemp;
 
-		return res;
+		return res;*/
+		return Mat();
 	}
 
 
