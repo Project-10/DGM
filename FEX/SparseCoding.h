@@ -23,16 +23,16 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CSparseCoding(const Mat &img) : CBaseFeatureExtractor(img) {}
 		DllExport virtual ~CSparseCoding(void) {}
 
-		DllExport virtual Mat	get(void) const { return get(m_img, m_dict); }
+		DllExport virtual Mat	get(void) const { return get(m_img, m_D); }
 
 		/**
 		* @brief Extracts the sparse coding feature.
 		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \a nbhd.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
-		* @param dict Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_64FC1)
+		* @param dictionary Dictionary \f$\mathbb{D}\f$:  Mat(size blockSize^2 x nWords; type CV_64FC1)
 		* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood).
 		* @return The sparse coding feature image of type \b CV_8UC{nWords}.
 		*/
-		DllExport static Mat	get(const Mat &img, const Mat &dict, SqNeighbourhood nbhd = sqNeighbourhood(3));
+		DllExport static Mat	get(const Mat &img, const Mat &dictionary, SqNeighbourhood nbhd = sqNeighbourhood(3));
 	};
 } }

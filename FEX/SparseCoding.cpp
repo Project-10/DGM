@@ -7,7 +7,7 @@ namespace DirectGraphicalModels { namespace fex
 
 	Mat CSparseCoding::get(const Mat &img, const Mat &dict, SqNeighbourhood nbhd)
 	{
-		DGM_ASSERT_MSG(!dict.empty(), "The dictionary must me trained or loaded before using this function");
+/*		DGM_ASSERT_MSG(!dict.empty(), "The dictionary must me trained or loaded before using this function");
 		
 		const int		nWords		= dict.cols;
 		const int		blockSize	= static_cast<int>(sqrt(dict.rows));
@@ -55,7 +55,7 @@ namespace DirectGraphicalModels { namespace fex
 				for (int j = 0; j < H.rows; j++)
 					H.row(j) = H.row(j) / norm(dict.col(j), NORM_L2);
 
-				double cost = calculateH(sample, dict, H, epsilon, lambdaH, 200);
+				double cost = calculate_W(sample, dict, H, epsilon, lambdaH, 200);
 				//printf("Sample: %d, cost value = %f\n", s, cost);
 
 				for (int w = 0; w < nWords; w++) {
@@ -80,7 +80,8 @@ namespace DirectGraphicalModels { namespace fex
 		
 		delete[] pTemp;
 
-		return res;
+		return res;*/
+		return Mat();
 	}
 
 
