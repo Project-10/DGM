@@ -138,7 +138,7 @@ namespace DirectGraphicalModels {
 
 
 		protected:
-			Mat		m_D;					///< The dictionary \f$\mathbb{D}\f$: Mat(size: blockSize^2 x nWords; type: CV_32FC1); 
+			Mat		m_D;					///< The dictionary \f$D\f$: Mat(size: nWords x sampleLen; type: CV_32FC1); 
 
 
 		protected:
