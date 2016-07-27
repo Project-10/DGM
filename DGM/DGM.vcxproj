@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\DGM.h" />
     <ClInclude Include="..\include\macroses.h" />
+    <ClInclude Include="..\include\parallel.h" />
     <ClInclude Include="..\include\types.h" />
     <ClInclude Include="BaseGraph.h" />
     <ClInclude Include="BaseRandomModel.h" />

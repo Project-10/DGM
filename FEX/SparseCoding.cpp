@@ -34,12 +34,13 @@ Mat CSparseCoding::get(const Mat &img, const Mat &D, SqNeighbourhood nbhd)
 #else
 	for (int y = 0; y < dataHeight; y++) {
 #endif
+		Mat _W, W;
 		for (int x = 0; x < dataWidth; x += blockSize) {
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample as a row-vector
-			Mat W;
-			gemm(D, sample, 1.0, Mat(), 0.0, W, GEMM_2_T);					// W = D x sample^T
-			W = W.t();
+
+			gemm(D, sample.t(), 1.0, Mat(), 0.0, _W);						// W = D x sample^T
+			W = _W.t();
 			for (int w = 0; w < W.cols; w++)
 				W.col(w) /= norm(D.row(w), NORM_L2);
 

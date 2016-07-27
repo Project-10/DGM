@@ -313,6 +313,9 @@
     <ClInclude Include="InferTRW.h">
       <Filter>Source Files\Inference\Message Passing\TRW</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\parallel.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
