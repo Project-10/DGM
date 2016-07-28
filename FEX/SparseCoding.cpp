@@ -24,18 +24,15 @@ Mat CSparseCoding::get(const Mat &img, const Mat &D, SqNeighbourhood nbhd)
 
 	Mat *pTemp = new Mat[nWords];
 	for (word w = 0; w < nWords; w++)
-		pTemp[w] = Mat(img.size(), CV_32FC1, cvScalar(0));
-
-	float min = 0;
-	float max = 0;
+		pTemp[w] = Mat(img.size(), CV_8UC1, cvScalar(0));
 
 #ifdef USE_PPL
-	concurrency::parallel_for(0, dataHeight, blockSize, [&] (int y) {
+	concurrency::parallel_for(0, dataHeight, 1, [&] (int y) {
 #else
 	for (int y = 0; y < dataHeight; y++) {
 #endif
 		Mat _W, W;
-		for (int x = 0; x < dataWidth; x += blockSize) {
+		for (int x = 0; x < dataWidth; x += 1) {
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample as a row-vector
 
@@ -46,16 +43,14 @@ Mat CSparseCoding::get(const Mat &img, const Mat &D, SqNeighbourhood nbhd)
 
 			calculate_W(sample, D, W, lambda, epsilon, 200);
 
+			// double minVal, maxVal;
+			// minMaxLoc(W, &minVal, &maxVal);
+			// printf("[%f; %f]\n", minVal, maxVal);
+			
 			for (word w = 0; w < nWords; w++) {
-				//if (min > H.at<float>(w, 0)) min = H.at<float>(w, 0);
-				//if (max < H.at<float>(w, 0)) max = H.at<float>(w, 0);
-
-				//pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(W.at<float>(w, 0), -0.5f, 0.5f);
-				pTemp[w].at<float>(y + nbhd.upperGap, x + nbhd.leftGap) = W.at<float>(0, w);
-				//printf("%d ", pTemp[w].at<byte>(y, x));
+				pTemp[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(W.at<float>(0, w), -1.0f, 1.0f);
+				//pTemp[w].at<float>(y + nbhd.upperGap, x + nbhd.leftGap) = W.at<float>(0, w);
 			}
-			//printf("\n");
-			//printf("[%f; %f]\n", min, max);
 		}
 	}
 #ifdef USE_PPL
