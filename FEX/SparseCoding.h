@@ -24,17 +24,29 @@ namespace DirectGraphicalModels {
 			DllExport CSparseCoding(const Mat &img) : CBaseFeatureExtractor(img) {}
 			DllExport virtual ~CSparseCoding(void) {}
 
-			DllExport virtual Mat	get(void) const { return get(m_img, getDictionary()); }
+			DllExport virtual Mat		get(void) const { return get(m_img, getDictionary()); }
 
 			/**
 			* @brief Extracts the sparse coding feature.
-			* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \a nbhd.
 			* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
-			* @param dictionary Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
+			* @param D Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
+			* > nWords should be less or equal to 512. If nWords is larger than 512, one should use get_v() function instead.
 			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
 			* @return The sparse coding feature image of type \b CV_8UC{nWords}.
 			*/
-			DllExport static Mat	get(const Mat &img, const Mat &dictionary, SqNeighbourhood nbhd = sqNeighbourhood(3));
+			DllExport static Mat		get(const Mat &img, const Mat &D, SqNeighbourhood nbhd = sqNeighbourhood(3));
+			/**
+			* @brief Extracts the sparse coding feature.
+			* @details This function is an alternative to get(), which can handle large amount of features (more then 512)
+			* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
+			* @param D Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
+			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
+			* @return The vector with \a nWords sparse coding feature images of type \b CV_8UC1 each.
+			*/
+			DllExport static vec_mat_t	get_v(const Mat &img, const Mat &D, SqNeighbourhood nbhd = sqNeighbourhood(3));
+
+		private:
+			static Mat * calculateFeatures(const Mat &img, const Mat &D, SqNeighbourhood nbhd);
 		};
 	}
 }

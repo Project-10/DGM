@@ -80,7 +80,9 @@ void CSparseDictionary::load(const std::string &fileName)
 	int sampleLen;
 	int nWords;
 
-	FILE *pFile = fopen(fileName.c_str(), "rb");
+	FILE *pFile = fopen(fileName.c_str(), "rb");	
+	DGM_ASSERT_MSG(pFile, "Can't load data from %s", fileName.c_str());
+	
 	fread(&nWords, sizeof(int), 1, pFile);
 	fread(&sampleLen, sizeof(int), 1, pFile);
 
