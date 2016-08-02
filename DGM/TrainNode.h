@@ -47,6 +47,13 @@ namespace DirectGraphicalModels
 		*/			
 		DllExport void			addFeatureVec(const Mat &featureVectors, const Mat &gt);
 		/**
+		* @brief Adds a block of new feature vectors
+		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gt for training
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		*/
+		DllExport void			addFeatureVec(const vec_mat_t &featureVectors, const Mat &gt);
+		/**
 		* @brief Adds new feature vector
 		* @details Used to add a \b featureVector, corresponding to the ground-truth state (class) \b gt for training
 		* @param featureVector Multi-dimensinal point: Mat(size: nFeatures x 1; type: CV_8UC1)

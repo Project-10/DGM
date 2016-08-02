@@ -94,7 +94,8 @@ void CSparseDictionary::load(const std::string &fileName)
 	fclose(pFile);
 }
 
-Mat CSparseDictionary::decode(const Mat &X, CvSize imgSize) const
+#ifdef DEBUG_MODE	// --- Debugging ---
+Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 {
 	DGM_ASSERT_MSG(!m_D.empty(), "The dictionary must me trained or loaded before using this function");
 
@@ -142,6 +143,7 @@ Mat CSparseDictionary::decode(const Mat &X, CvSize imgSize) const
 	res.convertTo(res, CV_8UC1, 255);
 	return res;
 }
+#endif
 
 // =================================================================================== static
 

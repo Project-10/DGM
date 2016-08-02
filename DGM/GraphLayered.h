@@ -59,6 +59,18 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const Mat &featureVectors, float weightBase = 1.0f, float weightOccl = 1.0f);
 		/**
+		* @brief Fills the graph nodes with potentials
+		* @details This function uses \b nodeTrainerBase and \b nodeTrainerOccl classes in order to achieve none potentials from feature vectors, stored
+		* in \b featureVectors and fills with them the graph nodes
+		* > This function supports PPL
+		* @param nodeTrainerBase A pointer to the node trainer
+		* @param nodeTrainerOccl A pointer to the node trainer
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param weightBase The weighting parameter for base layer
+		* @param weightOccl The weighting parameter for occlusion layer
+		*/
+		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVector, float weightBase = 1.0f, float weightOccl = 1.0f);
+		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
 		* and fills with them the graph edges
@@ -72,6 +84,20 @@ namespace DirectGraphicalModels
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
 		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		/**
+		* @brief Fills the graph edges with potentials
+		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
+		* and fills with them the graph edges
+		* > This function supports PPL
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param linkTrainer A pointer to tht link (inter-layer edge) trainer
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param params Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
+		* @param params_len The length of the \b params parameter
+		* @param edgeWeight The weighting parameter for (within-layer) edges
+		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
+		*/
+		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Marginalizes a set of nodes
 		* @details This function separates the marginalized graph nodes by removing all the edges connecting them with the remaining nodes.

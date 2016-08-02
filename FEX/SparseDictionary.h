@@ -73,6 +73,7 @@ namespace DirectGraphicalModels {
 			* @returns \b blockSize
 			*/
 			DllExport int getBlockSize(void) const { return m_D.empty() ? 0 : static_cast<int>(sqrt(m_D.cols)); }
+#ifdef DEBUG_MODE	// --- Debugging ---
 			/**
 			* @brief Decodes an image from the data \f$X\f$
 			* @details This is a debug function, which restores an image from the data \f$X\f$ with the current dictionary \f$D\f$.<br>
@@ -91,8 +92,8 @@ namespace DirectGraphicalModels {
 			* @param imgSize Size of the resulting image
 			* @returns Decoded image: Mat(size: \b imgSize; type: CV_8UC1)
 			*/
-			DllExport Mat decode(const Mat &X, CvSize imgSize) const;
-
+			DllExport Mat TEST_decode(const Mat &X, CvSize imgSize) const;
+#endif
 
 			/**
 			* @brief Converts image into data \f$X\f$
