@@ -12,7 +12,7 @@ const double	CMarkerHistogram::frgWeight		= 0.75;
 
 Mat CMarkerHistogram::drawHistogram(Scalar color) const
 {
-	const byte		fMaxHeight	= 8;					// The maximal number of feature histograms in a column
+	const byte		fMaxHeight	= 9;					// The maximal number of feature histograms in a column
 	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
 	const int		activeState = getActiveState(color);
 

@@ -22,6 +22,12 @@ void CTrainNode::addFeatureVec(const Mat &featureVectors, const Mat &gt)
 	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
 }
 
+void CTrainNode::addFeatureVec(const vec_mat_t &featureVectors, const Mat &gt)
+{
+	DGM_ASSERT_MSG(featureVectors.size() == m_nFeatures, "Number of features in the <featureVectors> (%llu) does not correspond to the specified (%d)", featureVectors.size(), m_nFeatures);
+	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
+}
+
 Mat CTrainNode::getNodePotentials(const Mat &featureVector, float weight) const
 {
 	// Assertions

@@ -40,6 +40,19 @@ namespace DirectGraphicalModels
 			CGraphLayered::fillNodes(nodeTrainer, NULL, featureVectors, weight);
 		}
 		/**
+		* @brief Fills the graph nodes with potentials
+		* @details This function uses \b nodeTrainer class in order to achieve none potentials from feature vectors, stored in \b featureVectors
+		* and fills with them the graph nodes
+		* > This function supports PPL
+		* @param nodeTrainer A pointer to the node trainer
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param weight The weighting parameter
+		*/
+		DllExport void fillNodes(const CTrainNode *nodeTrainer, const vec_mat_t &featureVectors, float weight = 1.0f)
+		{
+			CGraphLayered::fillNodes(nodeTrainer, NULL, featureVectors, weight);
+		}
+		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
 		* and fills with them the graph edges
@@ -51,6 +64,21 @@ namespace DirectGraphicalModels
 		* @param weight The weighting parameter
 		*/
 		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const Mat &featureVectors, float *params, size_t params_len, float weight = 1.0f)
+		{
+			CGraphLayered::fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
+		}
+		/**
+		* @brief Fills the graph edges with potentials
+		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
+		* and fills with them the graph edges
+		* > This function supports PPL
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param featureVectors  Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param params Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
+		* @param params_len The length of the \b params parameter
+		* @param weight The weighting parameter
+		*/
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float weight = 1.0f)
 		{
 			CGraphLayered::fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
 		}
