@@ -139,8 +139,9 @@ namespace DirectGraphicalModels {
 			* @param[in] lambda Regularisation parameter \f$\lambda\f$
 			* @param[in] epsilon L1-regularisation parameter: \f$\epsilon\f$
 			* @param[in] nIt Number of iterations
+			* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 			*/
-			static void calculate_W(const Mat &X, const Mat& D, Mat &W, float lambda, float epsilon, unsigned int nIt = 800);
+			static void calculate_W(const Mat &X, const Mat& D, Mat &W, float lambda, float epsilon, unsigned int nIt = 800, float lRate = 0.05f);
 			/**
 			* @brief Evaluates dictionary \f$D\f$
 			* @details Finds the \f$D\f$, that minimizes \f$J(D, W)\f$ for the given \f$W\f$:
@@ -150,8 +151,9 @@ namespace DirectGraphicalModels {
 			* @param[in] W Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_32FC1)
 			* @param[in] gamma Regularisation parameter: \f$\gamma\f$
 			* @param[in] nIt Number of iterations
+			* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 			*/
-			static void calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt = 800);
+			static void calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt = 800, float lRate = 0.05f);
 
 
 		private:

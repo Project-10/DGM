@@ -13,6 +13,9 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 	const float	epsilon = 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 	const float	gamma   = 1e-2f;		// L2-regularisation parameter (on basis)
 
+	const float lRate_W = 0.05f;		// Learning rate for weights
+	const float lRate_D = 0.005f;		// Learning rate for dictionary
+
 	DGM_ASSERT_MSG(batch <= nSamples, "The batch number %d exceeds the length of the training data %d", batch, nSamples);
 
 	// 1. Initialize dictionary D randomly
@@ -45,14 +48,14 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 
 		// 2.3. Find the W, that minimizes J(D, W) for the D found in the previos step
 		// argmin J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
-		calculate_W(_X, m_D, W, lambda, epsilon, 800);
+		calculate_W(_X, m_D, W, lambda, epsilon, 800, lRate_W);
 		cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
 		printf("%f -> ", cost);
 
 
 		// 2.4 Solve for the D that minimizes J(D, W) for the W found in the previous step
 		// argmin J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
-		calculate_D(_X, m_D, W, gamma, 800);
+		calculate_D(_X, m_D, W, gamma, 800, lRate_D);
 		cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
 		printf("%f\n", cost);
 		DGM_ASSERT(!isnan(cost));
@@ -234,11 +237,41 @@ Mat CSparseDictionary::shuffleRows(const Mat &X)
 
 // =================================================================================== protected
 
+// J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
+void CSparseDictionary::calculate_W(const Mat &X, const Mat &D, Mat &W, float lambda, float epsilon, unsigned int nIt, float lRate)
+{
+	// Define the velocity vectors
+	Mat gradient;
+	Mat incriment(W.size(), W.type(), cvScalar(0));
+
+	for (unsigned int i = 0; i < nIt; i++) {
+		float momentum = (i <= 10) ? 0.5f : 0.9f;
+		gradient = calculateGradient(GRAD_W, X, D, W, lambda, epsilon, 0);
+		incriment = momentum * incriment + lRate * (gradient - 2e-4f * W);
+		W -= incriment;
+	} // i
+}
+
+// J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
+void CSparseDictionary::calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt, float lRate)
+{
+	// define the velocity vectors
+	Mat gradient;
+	Mat incriment(D.size(), D.type(), cvScalar(0));
+
+	for (unsigned int i = 0; i < nIt; i++) {
+		float momentum = (i <= 10) ? 0.5f : 0.9f;
+		gradient = calculateGradient(GRAD_D, X, D, W, 0, 0, gamma);
+		incriment = momentum * incriment + lRate * (gradient - 2e-4f * D);
+		D -= incriment;
+	} // i
+}
+
 Mat CSparseDictionary::calculateGradient(grad_type gType, const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma)
 {
-	const int nSamples = X.rows;
+	const int	nSamples = X.rows;
 
-	Mat temp;																
+	Mat temp;
 	parallel::gemm(W, D, 2.0f / nSamples, X, -2.0f / nSamples, temp);				// temp = (2.0 / nSamples) * (W x D - X)
 	Mat gradient;
 	Mat sparsityMatrix;
@@ -247,7 +280,7 @@ Mat CSparseDictionary::calculateGradient(grad_type gType, const Mat &X, const Ma
 	case GRAD_W:	// 2 * (W x D - X) x D^T / nSamples + lambda * W / sqrt(W^2 + epsilon)
 		multiply(W, W, sparsityMatrix);
 		sparsityMatrix += epsilon;
-		sqrt(sparsityMatrix, sparsityMatrix);								// sparsityMatrix = sqrt(W^2 + epsilon)
+		sqrt(sparsityMatrix, sparsityMatrix);										// sparsityMatrix = sqrt(W^2 + epsilon)
 		parallel::gemm(temp, D.t(), 1.0, W / sparsityMatrix, lambda, gradient);
 		break;
 	case GRAD_D:	// 2 * W^T x (W x D - X) / nSamples + 2 * gamma * D
@@ -256,42 +289,6 @@ Mat CSparseDictionary::calculateGradient(grad_type gType, const Mat &X, const Ma
 	}
 
 	return gradient;
-}
-
-// J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
-void CSparseDictionary::calculate_W(const Mat &X, const Mat &D, Mat &W, float lambda, float epsilon, unsigned int nIt)
-{
-	// Define the velocity vectors
-	Mat gradient;
-	Mat incriment(W.size(), W.type(), cvScalar(0));
-
-	const float lrate = 0.05f;						//Learning rate for weights 
-	const float weightcost = 0.0002f;
-
-	for (unsigned int i = 0; i < nIt; i++) {
-		float momentum = (i <= 10) ? 0.5f : 0.9f;
-		gradient = calculateGradient(GRAD_W, X, D, W, lambda, epsilon, 0);
-		incriment = momentum * incriment + lrate * (gradient - weightcost * W);
-		W -= incriment;
-	} // i
-}
-
-// J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
-void CSparseDictionary::calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt)
-{
-	// define the velocity vectors
-	Mat gradient;
-	Mat incriment(D.size(), D.type(), cvScalar(0));
-
-	const float	lrate = 0.004f;					//Learning rate for weights 
-	const float	weightcost = 0.0002f;
-
-	for (unsigned int i = 0; i < nIt; i++) {
-		float momentum = (i <= 10) ? 0.5f : 0.9f;
-		gradient = calculateGradient(GRAD_D, X, D, W, 0, 0, gamma);
-		incriment = momentum * incriment + lrate * (gradient - weightcost * D);
-		D -= incriment;
-	} // i
 }
 
 float CSparseDictionary::calculateCost(const Mat &X, const Mat &D, const Mat &W, float lambda, float epsilon, float gamma)
