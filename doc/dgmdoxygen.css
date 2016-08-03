@@ -1,0 +1,24 @@
+a {
+	color: #59800d;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.contents a:visited {
+	color: #59800d;
+}
+
+.icon {
+    font-family: Arial, Helvetica;
+    font-weight: bold;
+    font-size: 12px;
+    height: 14px;
+    width: 16px;
+    display: inline-block;
+    background-color: #59800d;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
