@@ -130,8 +130,8 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CCommonFeatureExtractor getNDVI(byte midPoint = 127) const  { return CCommonFeatureExtractor(CNDVI::get(m_img, midPoint)); }
 		/**
 		* @brief Extracts the distance feature.
-		* @details For each pixel of the source image this function calculates the distance to the closest pixel, which value is larger or equal to \a threshold. 
-		* Resulting feature image is multiplied by \a multiplier
+		* @details For each pixel of the source image this function calculates the distance to the closest pixel, which value is larger or equal to \b threshold. 
+		* Resulting feature image is multiplied by \b multiplier
 		* @param threshold Threshold value. 
 		* @param multiplier Amplification coefficient for the resulting feature image.
 		* @return Common feature extractor class with extracted distance feature of type \b CV_8UC1.
@@ -139,8 +139,8 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CCommonFeatureExtractor getDistance(byte threshold = 16, double multiplier = 4.0) const { return CCommonFeatureExtractor(CDistance::get(m_img, threshold, multiplier)); }
 		/**
 		* @brief Extracts the HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients">histogram of oriented gradients</a>) feature.
-		* @details For each pixel of the source image this function calculates the histogram of oriented gradients inside the pixel's neighbourhood \a nbhd.
-		* The histogram consists of \a nBins values, it is normalized, and stored as \a nBins channel image, thus, the channel index corresponds to the histogram index.
+		* @details For each pixel of the source image this function calculates the histogram of oriented gradients inside the pixel's neighbourhood \b nbhd.
+		* The histogram consists of \b nBins values, it is normalized, and stored as \b nBins channel image, thus, the channel index corresponds to the histogram index.
 		* @param nBins Number of bins. Hence a single bin covers an angle of \f$\frac{180^\circ}{nBins}\f$.
 		* @param nbhd Neighborhood around the pixel, where its histogram is estimated. (Ref. @ref SqNeighbourhood).
 		* @return Common feature extractor class with extracted HOG feature of type \b CV_8UC{n}, where \f$n=nBins\f$.
@@ -148,14 +148,25 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CCommonFeatureExtractor getHOG(int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CHOG::get(m_img, nBins, nbhd)); }
 		/**
 		* @brief Extracts the variance feature.
-		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \a nbhd.
+		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \b nbhd.
 		* @param nbhd Neighborhood around the pixel, where the variance is estimated. (Ref. @ref SqNeighbourhood).
 		* @return Common feature extractor class with extracted variance feature of type \b CV_8UC1.
 		*/		
 		DllExport CCommonFeatureExtractor getVariance(SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CVariance::get(m_img, nbhd)); }
 		/**
+		* @brief Extracts the sparse coding feature.
+		* @details For each pixel of the source image this function calculates the sparse coding feature within the pixel's neighbourhood \b nbhd. 
+		* > This fuction supports dictionaries with \a nWords less or equal to 512 words. For larger dictionaries use CSparseCoding::get_v() function directly.
+		* @param D Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
+		* > Dictionary should be learned from a training data with CSparseDictionary::train() function,<br>
+		* > or it may be loaded directed from a \a dic file with CSparseDictionary::getDictionary("dictionary.dic").
+		* @param nbhd Neighborhood around the pixel, where the feature is estimated. (Ref. @ref SqNeighbourhood).
+		* @return Common feature extractor class with extracted sparse coding feature of type \b CV_8UC{nWords}.
+		*/
+		DllExport CCommonFeatureExtractor getSparseCoding(const Mat &D, SqNeighbourhood nbhd = sqNeighbourhood(3)) const { return CCommonFeatureExtractor(CSparseCoding::get(m_img, D, nbhd)); }
+		/**
 		* @brief Extracts the scale feature.
-		* @details For each pixel of the source image this function calculates the mean value within the pixel's neighbourhood \a nbhd.
+		* @details For each pixel of the source image this function calculates the mean value within the pixel's neighbourhood \b nbhd.
 		* Using different neighbourhood radii, it alows for different scale representations of the nput features.
 		* @param nbhd Neighborhood around the pixel, where the mean is estimated. (Ref. @ref SqNeighbourhood).
 		* @return Common feature extractor class with extracted scale feature of type \b CV_8UC1.

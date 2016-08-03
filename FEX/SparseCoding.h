@@ -28,9 +28,11 @@ namespace DirectGraphicalModels {
 
 			/**
 			* @brief Extracts the sparse coding feature.
+			* @details > This fuction supports dictionaries with \a nWords less or equal to 512 words. For larger dictionaries use CSparseCoding::get_v() function directly.
 			* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 			* @param D Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
-			* > nWords should be less or equal to 512. If nWords is larger than 512, one should use get_v() function instead.
+			* > Dictionary should be learned from a training data with CSparseDictionary::train() function,<br>
+			* > or it may be loaded directed from a \a dic file with CSparseDictionary::getDictionary("dictionary.dic").
 			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
 			* @return The sparse coding feature image of type \b CV_8UC{nWords}.
 			*/
@@ -40,13 +42,12 @@ namespace DirectGraphicalModels {
 			* @details This function is an alternative to get(), which can handle large amount of features (more then 512)
 			* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 			* @param D Sparse dictionary \f$D\f$:  Mat(size nWords x blockSize^2; type CV_32FC1).
+			* > Dictionary should be learned from a training data with CSparseDictionary::train() function,<br>
+			* > or it may be loaded directed from a \a dic file with CSparseDictionary::getDictionary("dictionary.dic").
 			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
 			* @return The vector with \a nWords sparse coding feature images of type \b CV_8UC1 each.
 			*/
 			DllExport static vec_mat_t	get_v(const Mat &img, const Mat &D, SqNeighbourhood nbhd = sqNeighbourhood(3));
-
-		private:
-			static Mat * calculateFeatures(const Mat &img, const Mat &D, SqNeighbourhood nbhd);
 		};
 	}
 }

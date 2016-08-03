@@ -4,17 +4,16 @@
 
 namespace DirectGraphicalModels { namespace fex
 {
-void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt)
+// Constants
+const float	CSparseDictionary::SC_LAMBDA	= 5e-5f;		// L1-regularisation parameter (on features)
+const float	CSparseDictionary::SC_EPSILON	= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
+const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation parameter (on basis)
+
+
+void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt, float lRate, const std::string &fileName)
 {
 	const dword		nSamples  = X.rows;
 	const int		sampleLen = X.cols;
-
-	const float	lambda  = 5e-5f;		// L1-regularisation parameter (on features)
-	const float	epsilon = 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-	const float	gamma   = 1e-2f;		// L2-regularisation parameter (on basis)
-
-	const float lRate_W = 0.05f;		// Learning rate for weights
-	const float lRate_D = 0.005f;		// Learning rate for dictionary
 
 	DGM_ASSERT_MSG(batch <= nSamples, "The batch number %d exceeds the length of the training data %d", batch, nSamples);
 
@@ -29,9 +28,11 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 	float	cost;
 
 	// 2. Repeat until convergence
-	for (unsigned int i = 0; i < nIt; i++) {
+	for (unsigned int i = 0; i < nIt; i++) {								// iterations
+#ifdef PRINT_DEBUG_INFO
+		if (i == 0) printf("\n");
 		printf("--- It: %d ---\n", i);
-
+#endif
 		// 2.1 Select a random mini-batch of 2000 patches
 		dword rndRow = ((dword)rand() * (RAND_MAX + 1) + (dword)rand()) % (nSamples - batch);
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
@@ -42,31 +43,36 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		for (word w = 0; w < W.cols; w++)
 			W.col(w) /= norm(m_D.row(w), NORM_L2);					
 
+#ifdef PRINT_DEBUG_INFO
 		printf("Cost: ");
-		cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+		cost = calculateCost(_X, m_D, W, SC_LAMBDA, SC_EPSILON, SC_GAMMA);
 		printf("%f -> ", cost);
-
+#endif
+		
 		// 2.3. Find the W, that minimizes J(D, W) for the D found in the previos step
 		// argmin J(W) = ||W x D - X||^{2}_{2} + \lambda||W||_1
-		calculate_W(_X, m_D, W, lambda, epsilon, 800, lRate_W);
-		cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+		calculate_W(_X, m_D, W, SC_LAMBDA, SC_EPSILON, 800, SC_LRATE_W);
+#ifdef PRINT_DEBUG_INFO		
+		cost = calculateCost(_X, m_D, W, SC_LAMBDA, SC_EPSILON, SC_GAMMA);
 		printf("%f -> ", cost);
-
+#endif
 
 		// 2.4 Solve for the D that minimizes J(D, W) for the W found in the previous step
 		// argmin J(D) = ||W x D - X||^{2}_{2} + \gamma||D||^{2}_{2}
-		calculate_D(_X, m_D, W, gamma, 800, lRate_D);
-		cost = calculateCost(_X, m_D, W, lambda, epsilon, gamma);
+		calculate_D(_X, m_D, W, SC_GAMMA, 800, lRate);
+		cost = calculateCost(_X, m_D, W, SC_LAMBDA, SC_EPSILON, SC_GAMMA);
+#ifdef PRINT_DEBUG_INFO	
 		printf("%f\n", cost);
-		DGM_ASSERT(!isnan(cost));
+#endif
+		DGM_ASSERT_MSG(!isnan(cost), "Training is unstable. Try reducing the learning rate for dictionary.");
 
 		// 2.5 Saving intermediate dictionary
-		// std::string str = "D:\\Dictionaries\\dict_";
-		// str += std::to_string(i / 5);
-		// str += ".dic";
-		// if (i % 5 == 0) save(str);
+		if (!fileName.empty()) {
+			std::string str = fileName + std::to_string(i / 5);
+			str += ".dic";
+			if (i % 5 == 0) save(str);
+		}
 	} // i
-
 }
 
 void CSparseDictionary::save(const std::string &fileName) const
@@ -146,16 +152,14 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 	res.convertTo(res, CV_8UC1, 255);
 	return res;
 }
-#endif
+#endif				// --- --------- ---
 
 // =================================================================================== static
 
 float calculateMean(const Mat &m)
 {
 	float sum = 0.0;
-	for (int i = 0; i < m.cols; i++)
-		sum += m.at<float>(0, i);
-
+	for (int i = 0; i < m.cols; i++) sum += m.at<float>(0, i);
 	return sum / m.cols;
 }
 
@@ -165,7 +169,6 @@ float calculateVariance(const Mat &m)
 	float temp = 0.0;
 	for (int i = 0; i < m.cols; i++) {
 		float val = m.at<float>(0, i);
-
 		temp += (mean - val) * (mean - val);
 	}
 	return temp / m.cols;
@@ -297,7 +300,7 @@ float CSparseDictionary::calculateCost(const Mat &X, const Mat &D, const Mat &W,
 {
 	Mat temp;
 
-	parallel::gemm(W, D, 1.0, X, -1.0, temp);					// temp =  W x D - X	
+	parallel::gemm(W, D, 1.0, X, -1.0, temp);		// temp =  W x D - X	
 	reduce(temp, temp, 0, CV_REDUCE_AVG);
 	multiply(temp, temp, temp);						// temp = (W x D - X)^2
 	float J1 = static_cast<float>(sum(temp)[0]);

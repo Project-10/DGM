@@ -69,7 +69,7 @@ namespace DirectGraphicalModels
 		* @param weightBase The weighting parameter for base layer
 		* @param weightOccl The weighting parameter for occlusion layer
 		*/
-		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVector, float weightBase = 1.0f, float weightOccl = 1.0f);
+		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVectors, float weightBase = 1.0f, float weightOccl = 1.0f);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
