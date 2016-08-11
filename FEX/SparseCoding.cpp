@@ -42,6 +42,7 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 		for (int x = 0; x < dataWidth; x += 1) {
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample as a row-vector
+			sample.convertTo(sample, CV_32FC1, 1.0 / 255);
 
 			gemm(D, sample.t(), 1.0, Mat(), 0.0, _W);						// W = D x sample^T
 			W = _W.t();

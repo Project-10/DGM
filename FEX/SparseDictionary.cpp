@@ -36,7 +36,8 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		// 2.1 Select a random mini-batch of 2000 patches
 		dword rndRow = ((dword)rand() * (RAND_MAX + 1) + (dword)rand()) % (nSamples - batch);
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
-
+		_X.convertTo(_X, CV_32FC1, 1.0 / 255);
+		
 		// 2.2 Initialize W
 		parallel::gemm(m_D, _X.t(), 1.0, Mat(), 0.0, _W);					// _W = (D x _X^T);
 		W = _W.t();															// _W = (D x _X^T)^T;
@@ -129,6 +130,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample
+			sample.convertTo(sample, CV_32FC1, 1.0 / 255);
 
 			gemm(m_D, sample.t(), 1.0, Mat(), 0.0, _W);						// _W = (D x sample^T)
 			W = _W.t();														// W = (D x sample^T)^T
@@ -159,7 +161,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 float calculateMean(const Mat &m)
 {
 	float sum = 0.0;
-	for (int i = 0; i < m.cols; i++) sum += m.at<float>(0, i);
+	for (int i = 0; i < m.cols; i++) sum += m.at<byte>(0, i);
 	return sum / m.cols;
 }
 
@@ -168,7 +170,7 @@ float calculateVariance(const Mat &m)
 	float mean = calculateMean(m);
 	float temp = 0.0;
 	for (int i = 0; i < m.cols; i++) {
-		float val = m.at<float>(0, i);
+		float val = m.at<byte>(0, i);
 		temp += (mean - val) * (mean - val);
 	}
 	return temp / m.cols;
@@ -182,9 +184,6 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 	Mat I;
 	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
 	else img.copyTo(I);
-
-	// Converting to floating - point normalized data
-	I.convertTo(I, CV_32FC1, 1.0 / 255);
 
 	const int	dataHeight = img.rows - blockSize + 1;
 	const int	dataWidth = img.cols - blockSize + 1;
@@ -226,7 +225,7 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	}
 	res /= cover;
 
-	res.convertTo(res, CV_8UC1, 255);
+	res.convertTo(res, CV_8UC1, 1);
 	return res;
 }
 

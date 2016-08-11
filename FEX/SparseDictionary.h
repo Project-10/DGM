@@ -47,7 +47,7 @@ namespace DirectGraphicalModels { namespace fex
 		/**
 		* @brief Trains dictionary \f$D\f$
 		* @details This function creates and trains new dictionary \f$D\f$ on data \f$X\f$
-		* @param X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_32FC1)
+		* @param X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_8UC1)
 		* > May be derived from an image with img2data() fucntion
 		* @param nWords Length of the dictionary (number of words)
 		* @param batch The number of randomly chosen samples from \b X to be used in every distinct iteration of training
@@ -134,7 +134,7 @@ namespace DirectGraphicalModels { namespace fex
 		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
 		* @param varianceThreshold The extracted samples with variance greater or equal to \b varianceThreshold will be included to \f$X\f$. 
 		* > If \b varianceThreshold = 0 all the samples are included, thus nSamples = nMaxSamples
-		* @returns Data \f$X\f$: Mat(size: nSamples x \b blockSize^2; type: CV_32FC1)
+		* @returns Data \f$X\f$: Mat(size: nSamples x \b blockSize^2; type: CV_8UC1)
 		*/
 		DllExport static Mat img2data(const Mat &img, int blockSize, float varianceThreshold = 0.0f);
 		/**
@@ -196,7 +196,7 @@ namespace DirectGraphicalModels { namespace fex
 		Mat		m_D;					///< The dictionary \f$D\f$: Mat(size: nWords x sampleLen; type: CV_32FC1); 
 
 
-	private:
+	protected:
 		enum grad_type { GRAD_D, GRAD_W };
 		/**
 		* @brief Calculates the gradient matrices \f$\frac{\partial J(D, W)}{\partial D}\f$ and \f$\frac{\partial J(D, W)}{\partial W}\f$
