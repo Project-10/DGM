@@ -121,9 +121,10 @@ namespace DirectGraphicalModels
 			int i = y * width * m_nLayers;
 			for (int x = 0; x < width; x++) {
 				for (word f = 0; f < nFeatures; f++) featureVector.at<byte>(f, 0) = pFv[f][x];
-				nodeTrainerBase->getNodePotentials(featureVector, weightBase).copyTo(nPotBase(ROIb));
+				Mat nnnPot = nodeTrainerBase->getNodePotentials(featureVector, weightBase);
+				nnnPot.copyTo(nPotBase(ROIb));
 				setNode(i, nPotBase);
-				if (m_nLayers >= 2) {
+				if (m_nLayers >= 2) { 
 					nodeTrainerOccl->getNodePotentials(featureVector, weightOccl).copyTo(nPotOccl(ROIo));
 					setNode(i + 1, nPotOccl);
 				}
@@ -152,13 +153,13 @@ namespace DirectGraphicalModels
 			Mat featureVector1(nFeatures, 1, CV_8UC1);
 			Mat featureVector2(nFeatures, 1, CV_8UC1);
 			Mat ePot;
-			size_t l;
+			word l;
 #else 
 		Mat featureVector1(nFeatures, 1, CV_8UC1);
 		Mat featureVector2(nFeatures, 1, CV_8UC1);
 		Mat ePot;
 		word l;
-		for (int y = 0, i = 0; y < height; y++) {
+		for (int y = 0; y < height; y++) {
 #endif
 			const byte *pFv1 = featureVectors.ptr<byte>(y);
 			const byte *pFv2 = (y > 0) ? featureVectors.ptr<byte>(y - 1) : NULL;
@@ -228,13 +229,13 @@ namespace DirectGraphicalModels
 			Mat featureVector1(nFeatures, 1, CV_8UC1);
 			Mat featureVector2(nFeatures, 1, CV_8UC1);
 			Mat ePot;
-			size_t l;
+			word l;
 #else 
 		Mat featureVector1(nFeatures, 1, CV_8UC1);
 		Mat featureVector2(nFeatures, 1, CV_8UC1);
 		Mat ePot;
 		word l;
-		for (int y = 0, i = 0; y < height; y++) {
+		for (int y = 0; y < height; y++) {
 #endif
 			byte const **pFv1 = new const byte * [nFeatures];
 			for (word f = 0; f < nFeatures; f++) pFv1[f] = featureVectors[f].ptr<byte>(y);
