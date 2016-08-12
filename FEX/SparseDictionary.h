@@ -41,7 +41,7 @@ namespace DirectGraphicalModels { namespace fex
 	class CSparseDictionary
 	{
 	public:
-		CSparseDictionary(void) : m_D(Mat()) {}
+		CSparseDictionary(void) : m_D(Mat()) { }
 		virtual ~CSparseDictionary(void) {}
 
 		/**

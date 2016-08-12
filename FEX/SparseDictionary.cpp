@@ -2,6 +2,10 @@
 #include "macroses.h"
 #include "parallel.h"
 
+#include <random>
+#include <time.h>
+#include <thread>
+
 namespace DirectGraphicalModels { namespace fex
 {
 // Constants
@@ -11,12 +15,41 @@ const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation paramete
 
 // =================================================================================== auxilary functions
 
-dword drand(void)
+// single-thread random number generator [min; max]
+template <typename T>
+T drand(T min, T max)
 {
-	dword r1 = static_cast<dword>(rand());
-	dword r2 = static_cast<dword>(rand());
-	return r1 * (RAND_MAX + 1) + r2;
+	T r1 = static_cast<T>(rand());
+	T r2 = static_cast<T>(rand());
+	T r = r1 * (RAND_MAX + 1) + r2;
+	return min + r % (max - min + 1);
 }
+
+// single-thread random number generator [min; max]
+template <typename T>
+T drand_c11(T min, T max)
+{
+	static std::mt19937 generator(static_cast<unsigned int>(time(NULL)));
+	std::uniform_int_distribution<T> distribution(min, max);
+	return distribution(generator);
+}
+
+// thread-safe random number generator [min; max]
+template <typename T>
+T drand_parallel(const T &min, const T &max) {
+	static thread_local std::mt19937 *generator = nullptr;
+	if (!generator) generator = new std::mt19937(time(NULL) + std::hash<std::thread::id>()(std::this_thread::get_id()));
+	std::uniform_int_distribution<T> distribution(min, max);
+	return distribution(*generator);
+}
+
+int drand_example(const int & min, const int & max) {
+	static thread_local std::mt19937* generator = nullptr;
+	if (!generator) generator = new std::mt19937(clock() + std::hash<std::thread::id>()(std::this_thread::get_id()));
+	std::uniform_int_distribution<int> distribution(min, max);
+	return distribution(*generator);
+}
+
 
 template<typename T>
 float calculateMean(const Mat &m)
@@ -54,7 +87,6 @@ inline void Swap(Mat &a, Mat &b)
 }
 
 // =================================================================================== public
-
 void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt, float lRate, const std::string &fileName)
 {
 	const dword		nSamples  = X.rows;
@@ -79,7 +111,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		printf("--- It: %d ---\n", i);
 #endif
 		// 2.1 Select a random mini-batch of 2000 patches
-		dword rndRow = drand() % (nSamples - batch);
+		dword rndRow = drand<dword>(0, nSamples - batch - 1);
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
 		_X.convertTo(_X, CV_32FC1, 1.0 / 255);
 		
@@ -258,19 +290,27 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 
 void CSparseDictionary::shuffleRows(Mat &X)
 {
-#ifdef USE_PPL
-	int step = MAX(1, X.rows / (concurrency::GetProcessorCount() * 10));
+	//for (int i = 0; i < 10; i++) printf("%d ", parallel_drand(0, 3));
+	//return;
+
+#ifdef USE_PPL1
+	int step = MAX(1, X.rows / (/*concurrency::GetProcessorCount()*/ 8 * 10));
 	concurrency::parallel_for(0, X.rows, step, [step, &X](int S) {
-		int last = MIN(S + step, X.rows);
-		for (int s = last - 1; s > S; s--) {
-			word r = S +  drand() % (s + 1 - S);
-			Swap(X.row(s), X.row(r));
-		}
+
+		//printf("[%d]: ", S / step);
+		//for (int i = 0; i < 3; i++)	printf("%d ", drand_old(0, 99));
+		//printf("\n");
+
+		//int last = MIN(S + step, X.rows);
+		//for (int s = last - 1; s > S; s--) {		 // s = [last - 1; S + 1]
+		//	int r = parallel_drand(0, X.rows - 1); //drand_old(S, s);		//  r = [S; s] = [S; S + 1] -> [S; last - 1]
+		//	if (r != s) Swap(X.row(s), X.row(r));
+		//}
 	});
 #else	
-	for (int s = X.rows - 1; s > 0; s--) {
-		word r = drand() % (s + 1);
-		Swap(X.row(s), X.row(r));
+	for (int s = X.rows - 1; s > 0; s--) {			// s = [n-1; 1]
+		int r = drand<dword>(0, s);					// r = [0; s] = [0; 1] -> [0; n-1]
+		if (r != s)	Swap(X.row(s), X.row(r));
 	}
 #endif
 }

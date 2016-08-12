@@ -1,7 +1,7 @@
 #pragma once
 
-//#define PRINT_DEBUG_INFO	
-//#define DEBUG_MODE			
+#define PRINT_DEBUG_INFO	
+#define DEBUG_MODE			
 #define USE_PPL
 //#define USE_AMP
 
@@ -10,7 +10,7 @@
 #include <math.h>
 #ifdef USE_PPL
 #include <ppl.h>
-#include <concrtrm.h>
+//#include <concrtrm.h>
 #endif
 #ifdef USE_AMP
 #include <amp.h>
