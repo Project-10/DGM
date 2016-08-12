@@ -9,6 +9,51 @@ const float	CSparseDictionary::SC_LAMBDA	= 5e-5f;		// L1-regularisation paramete
 const float	CSparseDictionary::SC_EPSILON	= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation parameter (on basis)
 
+// =================================================================================== auxilary functions
+
+dword drand(void)
+{
+	dword r1 = static_cast<dword>(rand());
+	dword r2 = static_cast<dword>(rand());
+	return r1 * (RAND_MAX + 1) + r2;
+}
+
+template<typename T>
+float calculateMean(const Mat &m)
+{
+	float res = 0.0f;
+	for (int y = 0; y < m.rows; y++) {
+		const T *pM = m.ptr<T>(y);
+		for (int x = 0; x < m.cols; x++) {
+			res += pM[x];
+		}
+	}
+	return res / (m.cols * m.rows);
+}
+
+template<typename T>
+float calculateVariance(const Mat &m)
+{
+	float res = 0.0f;
+	float mean = calculateMean<T>(m);
+	for (int y = 0; y < m.rows; y++) {
+		const T *pM = m.ptr<T>(y);
+		for (int x = 0; x < m.cols; x++) {
+			float val = pM[x];
+			res += (mean - val) * (mean - val);
+		}
+	}
+	return res / (m.cols * m.rows);
+}
+
+inline void Swap(Mat &a, Mat &b)
+{
+	add(a, b, a);		// a = a + b
+	subtract(a, b, b);	// b = a - b
+	subtract(a, b, a);	// a = a - b;
+}
+
+// =================================================================================== public
 
 void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt, float lRate, const std::string &fileName)
 {
@@ -34,7 +79,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		printf("--- It: %d ---\n", i);
 #endif
 		// 2.1 Select a random mini-batch of 2000 patches
-		dword rndRow = ((dword)rand() * (RAND_MAX + 1) + (dword)rand()) % (nSamples - batch);
+		dword rndRow = drand() % (nSamples - batch);
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
 		_X.convertTo(_X, CV_32FC1, 1.0 / 255);
 		
@@ -158,24 +203,6 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 
 // =================================================================================== static
 
-float calculateMean(const Mat &m)
-{
-	float sum = 0.0;
-	for (int i = 0; i < m.cols; i++) sum += m.at<byte>(0, i);
-	return sum / m.cols;
-}
-
-float calculateVariance(const Mat &m)
-{
-	float mean = calculateMean(m);
-	float temp = 0.0;
-	for (int i = 0; i < m.cols; i++) {
-		float val = m.at<byte>(0, i);
-		temp += (mean - val) * (mean - val);
-	}
-	return temp / m.cols;
-}
-
 Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThreshold)
 {
 	DGM_IF_WARNING(blockSize % 2 == 0, "The block size is even");
@@ -195,7 +222,7 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 		for (int x = 0; x < dataWidth; x++) {
 			sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);			// sample as a row-vector
 
-			float variance = calculateVariance(sample);
+			float variance = calculateVariance<byte>(sample);
 			//printf("variance = %f\n", variance);
 
 			if (variance >= varianceThreshold)
@@ -229,14 +256,23 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	return res;
 }
 
-Mat CSparseDictionary::shuffleRows(const Mat &X)
+void CSparseDictionary::shuffleRows(Mat &X)
 {
-	std::vector<int> seeds;
-	for (int s = 0; s < X.rows; s++) seeds.push_back(s);
-	randShuffle(seeds);
-	Mat res(X.size(), X.type());
-	for (int s = 0; s < X.rows; s++) X.row(seeds[s]).copyTo(res.row(s));
-	return res;
+#ifdef USE_PPL
+	int step = MAX(1, X.rows / (concurrency::GetProcessorCount() * 10));
+	concurrency::parallel_for(0, X.rows, step, [step, &X](int S) {
+		int last = MIN(S + step, X.rows);
+		for (int s = last - 1; s > S; s--) {
+			word r = S +  drand() % (s + 1 - S);
+			Swap(X.row(s), X.row(r));
+		}
+	});
+#else	
+	for (int s = X.rows - 1; s > 0; s--) {
+		word r = drand() % (s + 1);
+		Swap(X.row(s), X.row(r));
+	}
+#endif
 }
 
 // =================================================================================== protected

@@ -32,7 +32,7 @@ namespace DirectGraphicalModels { namespace fex
 	*
 	*	CSparseCoding *sparseCoding = new CSparseCoding(img);
 	*	Mat X = CSparseDictionary::img2data(img, blockSize);	// sampleLen = blockSize * blockSize
-	*	X = CSparseDictionary::shuffleRows(X);
+	*	CSparseDictionary::shuffleRows(X);
 	*	sparseCoding->train(X, nWords);
 	*	sparseCoding->save("dictionary.dic");
 	* @endcode
@@ -152,10 +152,11 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
 		/**
 		* @brief Randomly shuffles the rows of the input matrix
-		* @param X The input data
-		* @returns Copy of \b X with suffled columns
+		* @details > This function supports PPL
+		* @param[in,out] X The input/output data, which rows should be shffled
+		* @todo The parallel version of this functions is biased.
 		*/
-		DllExport static Mat shuffleRows(const Mat &X);
+		DllExport static void shuffleRows(Mat &X);
 
 	
 	protected:
