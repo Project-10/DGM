@@ -3,6 +3,7 @@
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace parallel {
+#ifdef USE_PPL
 // ------------------------------------------- GEMM ------------------------------------------
 // --------------------- fast generalized matrix multiplication with PPL ---------------------
 inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, Mat &res)
@@ -47,6 +48,7 @@ inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, floa
 				}
 			});
 		}
+#endif 
 
 inline void gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
 		{
