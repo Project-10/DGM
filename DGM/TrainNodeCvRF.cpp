@@ -1,5 +1,4 @@
 #include "TrainNodeCvRF.h"
-#include "SamplesAccumulator.h"
 #include "RForest.h"
 #include "Random.h"
 #include "macroses.h"
@@ -14,7 +13,7 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, TrainNodeCvRFParams
 }
 
 // Constructor
-CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	TrainNodeCvRFParams params	= TRAIN_NODE_CV_RF_PARAMS_DEFAULT;
 	params.maxSamples			= maxSamples;
@@ -23,7 +22,7 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples) 
 
 void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 {
-	m_pSamplesAcc	= new CSamplesAccumulator[m_nStates];
+	m_vSamplesAcc	= vec_mat_t(m_nStates);
 	m_pRF			= CRForest::create();
 	m_pRF->setMaxDepth(params.max_depth);
 	m_pRF->setMinSampleCount(params.min_sample_count);
@@ -36,20 +35,19 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 
 	m_pRF->setNumStates(m_nStates);
 
-	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<size_t>::max();
+	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
 	else						m_maxSamples = params.maxSamples;	
 }
 
 // Destructor
 CTrainNodeCvRF::~CTrainNodeCvRF(void)
 {
-	delete [] m_pSamplesAcc;
 	delete m_pRF;
 }
 
 void CTrainNodeCvRF::reset(void)
 {
-	for (byte s = 0; s < m_nStates; s++) m_pSamplesAcc[s].reset();
+	for (Mat &acc : m_vSamplesAcc) acc.release();
 	m_pRF->clear();
 }
 
@@ -70,23 +68,15 @@ void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
 	// Assertions:
 	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
 	
-	if (m_pSamplesAcc[gt].getNumSamples() < m_maxSamples) {
-		Mat point(m_nFeatures, 1, CV_64FC1);
-		featureVector.convertTo(point, point.type());
-		m_pSamplesAcc[gt].addSample(point);
-	}
+	m_vSamplesAcc[gt].push_back(featureVector.t());
 }
 
 void CTrainNodeCvRF::train(void)
 {
-	register byte	s;										// state and feature indexes 
-	register word	f;
-	register size_t	smp;									// sample index
-
-	size_t nAllSamples = 0;
-	for (s = 0; s < m_nStates; s++) {						// states
-		size_t nSamples = m_pSamplesAcc[s].getNumSamples();
-		size_t S	    =  MIN(nSamples, m_maxSamples);
+	int nAllSamples = 0;
+	for (byte s = 0; s < m_nStates; s++) {						// states
+		int nSamples = m_vSamplesAcc[s].rows;
+		int S	     = MIN(nSamples, m_maxSamples);
 		nAllSamples += S;
 	} // i
 	
@@ -97,18 +87,17 @@ void CTrainNodeCvRF::train(void)
 	
 	// printf("\n");
 	int l = 0;
-	for (s = 0; s < m_nStates; s++) {						// states
-		size_t nSamples = m_pSamplesAcc[s].getNumSamples();
-		size_t S		= MIN(nSamples, m_maxSamples);
+	for (byte s = 0; s < m_nStates; s++) {						// states
+		int nSamples = m_vSamplesAcc[s].rows;
+		int S		 = MIN(nSamples, m_maxSamples);
 		
 		//printf("State[%d] - %d samples\n", i, nSamples);
 
-		for (smp = 0; smp < S; smp++, l++) {				// samples
-			float *pSamples = samples.ptr<float>(l);
-			size_t sample = (nSamples > m_maxSamples) ? random.du() % nSamples : smp;
-			Mat Sample = m_pSamplesAcc[s].getSample(sample);
-			for (f = 0; f < m_nFeatures; f++) 				// features
-				pSamples[f] = static_cast<float>(Sample.at<double>(f, 0));
+		for (int smp = 0; smp < S; smp++, l++) {				// samples
+			int sample = (nSamples > m_maxSamples) ? random.du() % nSamples : smp;
+			Mat Sample = m_vSamplesAcc[s].row(sample);
+
+			Sample.convertTo(samples.row(l), samples.type());
 			classes.at<float>(l, 0) = s;	
 		} // smp
 	} // s

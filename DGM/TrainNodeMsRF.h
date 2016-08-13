@@ -23,10 +23,10 @@ namespace DirectGraphicalModels
 		unsigned int	num_of_candidate_thresholds_per_feature;	///< Number of candidate thresholds (per feature)
 		int				num_ot_trees;								///< Number of trees in the forest (time / accuracy)
 		bool			verbose;									///< Verbose mode
-		size_t			maxSamples;									///< Maximum number of samples to be used in training. 0 means using all the samples
+		int				maxSamples;									///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeMsRFParams() {}
-		TrainNodeMsRFParams(int _max_decision_levels, int _num_of_candidate_features, unsigned int _num_of_candidate_thresholds_per_feature, int _num_ot_trees, bool _verbose, size_t _maxSamples) : max_decision_levels(_max_decision_levels), num_of_candidate_features(_num_of_candidate_features), num_of_candidate_thresholds_per_feature(_num_of_candidate_thresholds_per_feature), num_ot_trees(_num_ot_trees), verbose(_verbose), maxSamples(_maxSamples) {}
+		TrainNodeMsRFParams(int _max_decision_levels, int _num_of_candidate_features, unsigned int _num_of_candidate_thresholds_per_feature, int _num_ot_trees, bool _verbose, int _maxSamples) : max_decision_levels(_max_decision_levels), num_of_candidate_features(_num_of_candidate_features), num_of_candidate_thresholds_per_feature(_num_of_candidate_thresholds_per_feature), num_ot_trees(_num_ot_trees), verbose(_verbose), maxSamples(_maxSamples) {}
 	} TrainNodeMsRFParams;
 
 	const TrainNodeMsRFParams TRAIN_NODE_MS_RF_PARAMS_DEFAULT = TrainNodeMsRFParams(

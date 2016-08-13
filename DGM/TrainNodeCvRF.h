@@ -6,7 +6,6 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
 	class CRForest;
 
 	/// @brief OpenCV Random Forest parameters
@@ -21,10 +20,10 @@ namespace DirectGraphicalModels
 		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
 		double	epsilon;							///< Forest accuracy
 		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)
-		size_t	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
+		int 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvRFParams() {}
-		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, dword _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
+		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvRFParams;
 
 	const TrainNodeCvRFParams TRAIN_NODE_CV_RF_PARAMS_DEFAULT = TrainNodeCvRFParams(
@@ -65,7 +64,7 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples);
+		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples);
 		DllExport ~CTrainNodeCvRF(void);
 
 		DllExport void	reset(void);		
@@ -92,16 +91,16 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples container
-		Ptr<CRForest>		  m_pRF;						///< Random Forest
+		vec_mat_t		m_vSamplesAcc;						///< Samples container for all states
+		Ptr<CRForest>	m_pRF;								///< Random Forest
 
 
 	private:
-		void		  init(TrainNodeCvRFParams params);		// This function is called by both constructors
+		void			init(TrainNodeCvRFParams params);	// This function is called by both constructors
 		
 		
 	private:		
-		size_t		m_maxSamples;							// = INFINITY;	// for optimisation purposes
+		int				m_maxSamples;						// = INFINITY;	// for optimisation purposes
 	};
 }
 

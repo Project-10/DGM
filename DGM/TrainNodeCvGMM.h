@@ -6,8 +6,6 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
-
 	///@brief OpenCV Random Forest parameters
 	typedef struct TrainNodeCvGMMParams {
 		word	numGausses;					///< The number of Gauss functions for approximation
@@ -69,7 +67,7 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		CSamplesAccumulator	      * m_pSamplesAcc;				///< Samples container
+		vec_mat_t					m_vSamplesAcc;				///< Samples container
 		std::vector<Ptr<ml::EM>>	m_vpEM;						///< Expectation Maximization for GMM parameters estimation
 	
 
