@@ -58,7 +58,6 @@
     <ClInclude Include="PriorNode.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RForest.h" />
-    <ClInclude Include="SamplesAccumulator.h" />
     <ClInclude Include="sherwood\utilities\DataPointCollection.h" />
     <ClInclude Include="sherwood\utilities\FeatureResponseFunctions.h" />
     <ClInclude Include="sherwood\utilities\StatisticsAggregators.h" />
@@ -112,7 +111,6 @@
     <ClCompile Include="PriorNode.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="RForest.cpp" />
-    <ClCompile Include="SamplesAccumulator.cpp" />
     <ClCompile Include="sherwood\utilities\DataPointCollection.cpp" />
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp" />
     <ClCompile Include="sherwood\utilities\StatisticsAggregators.cpp" />

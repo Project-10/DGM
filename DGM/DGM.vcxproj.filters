@@ -92,9 +92,6 @@
     <Filter Include="Source Files\Random Model\PDF\Gaussian">
       <UniqueIdentifier>{bacefcab-787f-4a11-a357-def424c4493d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Common\Samples Accumulator">
-      <UniqueIdentifier>{d6be5904-3638-4450-bb5f-dc4045b06af4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Common\Features Concatenator">
       <UniqueIdentifier>{16f60359-7c3f-44e5-8ce1-a1979d36e6d1}</UniqueIdentifier>
     </Filter>
@@ -253,9 +250,6 @@
     <ClInclude Include="NDGauss.h">
       <Filter>Source Files\Common\NDGauss</Filter>
     </ClInclude>
-    <ClInclude Include="SamplesAccumulator.h">
-      <Filter>Source Files\Common\Samples Accumulator</Filter>
-    </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Source Files\Common\Random</Filter>
     </ClInclude>
@@ -407,9 +401,6 @@
     </ClCompile>
     <ClCompile Include="NDGauss.cpp">
       <Filter>Source Files\Common\NDGauss</Filter>
-    </ClCompile>
-    <ClCompile Include="SamplesAccumulator.cpp">
-      <Filter>Source Files\Common\Samples Accumulator</Filter>
     </ClCompile>
     <ClCompile Include="Random.cpp">
       <Filter>Source Files\Common\Random</Filter>

@@ -14,7 +14,7 @@ void CInferLBP::calculateMessages(unsigned int nIt)
 	for (unsigned int i = 0; i < nIt; i++) {					// iterations
 #ifdef PRINT_DEBUG_INFO
 		if (i == 0) printf("\n");
-		printf("--- It: %d ---\n", i);
+		if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
 #ifdef USE_PPL		
 		concurrency::parallel_for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&, nStates](Node &node) {		// all nodes

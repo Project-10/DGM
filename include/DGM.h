@@ -2,7 +2,6 @@
 
 #include "../DGM/CMat.h"
 #include "../DGM/NDGauss.h"
-#include "../DGM/SamplesAccumulator.h"
 #include "../DGM/Random.h"
 
 #include "../DGM/PDF.h"

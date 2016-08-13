@@ -1,5 +1,4 @@
 #include "TrainNodeCvGMM.h"
-#include "SamplesAccumulator.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
@@ -23,7 +22,7 @@ CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, byte numGausses) 
 
 void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 {
-	m_pSamplesAcc = new CSamplesAccumulator[m_nStates];
+	m_vSamplesAcc = vec_mat_t(m_nStates);
 	for (byte s = 0; s < m_nStates; s++) {
 		Ptr<ml::EM> pEM = ml::EM::create();
 		pEM->setClustersNumber(params.numGausses);
@@ -35,17 +34,14 @@ void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 
 CTrainNodeCvGMM::~CTrainNodeCvGMM(void)
 {
-	delete [] m_pSamplesAcc;
 	for(byte s = 0; s < m_nStates; s++) delete m_vpEM[s];
 	m_vpEM.clear();
 }
 
 void CTrainNodeCvGMM::reset(void)
 {
-	for (byte s = 0; s < m_nStates; s++) {
-		m_pSamplesAcc[s].reset();
-		m_vpEM[s]->clear();
-	}
+	for (Mat &acc : m_vSamplesAcc) acc.release();
+	for (Ptr<ml::EM> &em : m_vpEM) em->clear();
 }
 
 void CTrainNodeCvGMM::save(const std::string &path, const std::string &name, short idx) const
@@ -75,26 +71,19 @@ void CTrainNodeCvGMM::addFeatureVec(const Mat &featureVector, byte gt)
 	// Assertions:
 	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
 	
-	Mat point(m_nFeatures, 1, CV_64FC1);
-	featureVector.convertTo(point, point.type());
-	m_pSamplesAcc[gt].addSample(point);
+	m_vSamplesAcc[gt].push_back(featureVector.t());
 }
 
 void CTrainNodeCvGMM::train(void)
 {
 	printf("\n");
-	for (byte s = 0; s < m_nStates; s++) {								// states
-		size_t nSamples = m_pSamplesAcc[s].getNumSamples();
-		printf("State[%d] - %zu samples\n", s, nSamples);
+	for (byte s = 0; s < m_nStates; s++) {						// states
+		int nSamples = m_vSamplesAcc[s].rows;
+#ifdef PRINT_DEBUG_INFO
+		printf("State[%d] - %d samples\n", s, nSamples);
+#endif
 		if (nSamples == 0) continue;
-		Mat samples(static_cast<int>(nSamples), m_nFeatures, CV_64FC1);
-		for (register unsigned int smp = 0; smp < nSamples; smp++) {	// samples
-			double * pSamples = samples.ptr<double>(smp);
-			Mat Sample = m_pSamplesAcc[s].getSample(smp);
-			for (word f = 0; f < m_nFeatures; f++)				// features
-				pSamples[f] = Sample.at<double>(f, 0);	
-		} // smp
-		if (!m_vpEM[s]->trainEM(samples)) printf("Error EM training!\n");
+		DGM_IF_WARNING(!m_vpEM[s]->trainEM(m_vSamplesAcc[s]), "Error EM training!");
 	} // s
 	
 	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, m_nFeatures);
@@ -105,7 +94,6 @@ void CTrainNodeCvGMM::calculateNodePotentials(const Mat &featureVector, Mat &pot
 	Mat fv;
 	featureVector.convertTo(fv, CV_64FC1);
 	transpose(fv, fv);
-
 
 	// Min Coefficient approach
 	for (byte s = 0; s < m_nStates; s++) { 					// state
