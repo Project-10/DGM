@@ -16,6 +16,7 @@ const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation paramete
 // =================================================================================== auxilary functions
 
 // single-thread random number generator [min; max]
+// needs the srand to be executed before running this function
 template <typename T>
 T drand(T min, T max)
 {
@@ -290,22 +291,32 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 
 void CSparseDictionary::shuffleRows(Mat &X)
 {
-	//for (int i = 0; i < 10; i++) printf("%d ", parallel_drand(0, 3));
-	//return;
+	/*std::vector<dword> vCont(100, 777);
+	concurrency::parallel_for(0, 100, 5, [&vCont](int S) {
+		for (int i = 0; i < 5; i++)
+			vCont[S + i] = drand<dword>(0, 5);
+	});
 
-#ifdef USE_PPL1
-	int step = MAX(1, X.rows / (/*concurrency::GetProcessorCount()*/ 8 * 10));
+	for (int S = 0; S < 100; S += 5) {
+		for (int i = 0; i < 5; i++)
+			printf("%d ", vCont[S + i]);
+		printf("\n");
+	}
+	//return;*/
+
+#ifdef USE_PPL_TEST
+	int step = MAX(1, X.rows / (/*concurrency::GetProcessorCount()*/ 8 * 1));
 	concurrency::parallel_for(0, X.rows, step, [step, &X](int S) {
 
 		//printf("[%d]: ", S / step);
 		//for (int i = 0; i < 3; i++)	printf("%d ", drand_old(0, 99));
 		//printf("\n");
 
-		//int last = MIN(S + step, X.rows);
-		//for (int s = last - 1; s > S; s--) {		 // s = [last - 1; S + 1]
-		//	int r = parallel_drand(0, X.rows - 1); //drand_old(S, s);		//  r = [S; s] = [S; S + 1] -> [S; last - 1]
-		//	if (r != s) Swap(X.row(s), X.row(r));
-		//}
+		int last = MIN(S + step, X.rows);
+		for (int s = last - 1; s > S; s--) {				// s = [last - 1; S + 1]
+			dword r = drand_parallel<dword>(S, s);				//  r = [S; s] = [S; S + 1] -> [S; last - 1]
+			if (r != s) Swap(X.row(s), X.row(r));
+		}
 	});
 #else	
 	for (int s = X.rows - 1; s > 0; s--) {			// s = [n-1; 1]
