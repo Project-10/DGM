@@ -17,7 +17,7 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams
 }
 
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
 {
 	TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;

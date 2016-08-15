@@ -67,7 +67,7 @@ namespace DirectGraphicalModels
 		* @todo Add the "maxSamples" functionality
 		* @todo Try Parallel implementation with ParallelForestTrainer.h
 		*/
-		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples);
+		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples);
 		DllExport virtual ~CTrainNodeMsRF(void);
 
 		/**
