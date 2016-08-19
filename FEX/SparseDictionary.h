@@ -151,10 +151,11 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
 		/**
-		* @brief Randomly shuffles the rows of the input matrix
-		* @details > This function supports PPL
-		* @param[in,out] X The input/output data, which rows should be shffled
-		* @todo The parallel version of this functions is biased.
+		* @brief Randomly shuffles the rows of the input matrix.
+		* @details > This function supports PPL.<br>
+		* > When using PPL, the result of this function is biased.
+		* @param[in,out] X The input/output data, which rows should be shffled.
+		* @todo Eliminate the bias, caused by parallel processing.
 		*/
 		DllExport static void shuffleRows(Mat &X);
 

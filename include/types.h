@@ -7,10 +7,10 @@
 
 #include <vector>
 #include <memory>
+#include <thread>
 #include <math.h>
 #ifdef USE_PPL
 #include <ppl.h>
-//#include <concrtrm.h>
 #endif
 #ifdef USE_AMP
 #include <amp.h>
