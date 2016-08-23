@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor">
+      <UniqueIdentifier>{4f8ea61a-ca82-493e-acf1-bc3c3b5dc9ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{6a9313e8-c1f9-47bc-8154-ebb23702ab5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Distance">
+      <UniqueIdentifier>{60e025ef-887c-4f28-9737-1317ceb62a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Gradient">
+      <UniqueIdentifier>{7eab92d5-abf1-4160-8970-03fad868ba2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Intensity">
+      <UniqueIdentifier>{c4f63361-8994-4490-86c7-a2ef48cce017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\NDVI">
+      <UniqueIdentifier>{c2c3732c-1260-4bbf-9083-b6f0c84b7efe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Variance">
+      <UniqueIdentifier>{d245d202-ab77-46e1-b627-2221e0953fdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Scale">
+      <UniqueIdentifier>{41c31fd5-825b-4ce3-8d6e-d0946f3bc9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\HOG">
+      <UniqueIdentifier>{e894d46e-f520-4240-8c4f-2c8e327aac46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Coordinate">
+      <UniqueIdentifier>{36d3029c-341b-4d25-9ac5-61ce1bef0e69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\HSV">
+      <UniqueIdentifier>{cbc5c15e-c38e-4b5d-9827-93cd4fef239e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FeatureExtractor\Sparse Coding">
+      <UniqueIdentifier>{0aab4f2e-5496-4ff1-91c4-4de2e02b003d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NDVI.cpp">
+      <Filter>Source Files\FeatureExtractor\NDVI</Filter>
+    </ClCompile>
+    <ClCompile Include="Intensity.cpp">
+      <Filter>Source Files\FeatureExtractor\Intensity</Filter>
+    </ClCompile>
+    <ClCompile Include="Gradient.cpp">
+      <Filter>Source Files\FeatureExtractor\Gradient</Filter>
+    </ClCompile>
+    <ClCompile Include="Variance.cpp">
+      <Filter>Source Files\FeatureExtractor\Variance</Filter>
+    </ClCompile>
+    <ClCompile Include="Distance.cpp">
+      <Filter>Source Files\FeatureExtractor\Distance</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseFeatureExtractor.cpp">
+      <Filter>Source Files\FeatureExtractor</Filter>
+    </ClCompile>
+    <ClCompile Include="Scale.cpp">
+      <Filter>Source Files\FeatureExtractor\Scale</Filter>
+    </ClCompile>
+    <ClCompile Include="HOG.cpp">
+      <Filter>Source Files\FeatureExtractor\HOG</Filter>
+    </ClCompile>
+    <ClCompile Include="Coordinate.cpp">
+      <Filter>Source Files\FeatureExtractor\Coordinate</Filter>
+    </ClCompile>
+    <ClCompile Include="HSV.cpp">
+      <Filter>Source Files\FeatureExtractor\HSV</Filter>
+    </ClCompile>
+    <ClCompile Include="SparseDictionary.cpp">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClCompile>
+    <ClCompile Include="SparseCoding.cpp">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NDVI.h">
+      <Filter>Source Files\FeatureExtractor\NDVI</Filter>
+    </ClInclude>
+    <ClInclude Include="Intensity.h">
+      <Filter>Source Files\FeatureExtractor\Intensity</Filter>
+    </ClInclude>
+    <ClInclude Include="Gradient.h">
+      <Filter>Source Files\FeatureExtractor\Gradient</Filter>
+    </ClInclude>
+    <ClInclude Include="Variance.h">
+      <Filter>Source Files\FeatureExtractor\Variance</Filter>
+    </ClInclude>
+    <ClInclude Include="Distance.h">
+      <Filter>Source Files\FeatureExtractor\Distance</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseFeatureExtractor.h">
+      <Filter>Source Files\FeatureExtractor</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonFeatureExtractor.h">
+      <Filter>Source Files\FeatureExtractor</Filter>
+    </ClInclude>
+    <ClInclude Include="SquareNeighborhood.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale.h">
+      <Filter>Source Files\FeatureExtractor\Scale</Filter>
+    </ClInclude>
+    <ClInclude Include="HOG.h">
+      <Filter>Source Files\FeatureExtractor\HOG</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinate.h">
+      <Filter>Source Files\FeatureExtractor\Coordinate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\FEX.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="HSV.h">
+      <Filter>Source Files\FeatureExtractor\HSV</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseDictionary.h">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClInclude>
+    <ClInclude Include="SparseCoding.h">
+      <Filter>Source Files\FeatureExtractor\Sparse Coding</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

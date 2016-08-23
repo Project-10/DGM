@@ -7,7 +7,7 @@
 namespace DirectGraphicalModels { namespace parallel {
 // ------------------------------------------- GEMM ------------------------------------------
 // --------------------- fast generalized matrix multiplication with PPL ---------------------
-#ifdef USE_PPL
+#ifdef ENABLE_PPL
 	inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, Mat &res)
 	{
 		DGM_ASSERT(A.cols == B.rows);
@@ -54,7 +54,7 @@ namespace DirectGraphicalModels { namespace parallel {
 
 	inline void gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
 	{
-#ifdef USE_PPL
+#ifdef ENABLE_PPL
 		if (C.empty()) ppl_gemm(A, B, alpha, res);
 		else ppl_gemm(A, B, alpha, C, beta, res);
 #else

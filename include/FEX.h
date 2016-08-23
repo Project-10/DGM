@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../FEX/CommonFeatureExtractor.h"
-#include "../FEX/SparseDictionary.h"
+#include "FEX/CommonFeatureExtractor.h"
+#include "FEX/SparseDictionary.h"
 
 /**
 @defgroup moduleFEX FEX Module
