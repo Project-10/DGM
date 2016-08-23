@@ -166,23 +166,33 @@ DGM implements the following sampling method:
 
 /**
 @page s3 Installation
+Curently the DGM library may be installed only on Windows machines. It is also based on OpenCV library v.3.1.0.<br> 
+In order to build the DGM library, the OpenCV library should be built and installed first.
+
 @section sec_install_cv Installing OpenCV
-This library is based on OpenCV library v.3.1.0. In order to use the DGM library, the OpenCV library should be also installed.
 -# Download the OpenCV library from <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.1.0/" target="_blank">sourcefourge</a>
--# Install the OpenCV library. You may follow the <a href="http://www.project-10.de/forum/viewtopic.php?f=23&t=198#p237" target="_blank">installation guide</a>
+-# Install the OpenCV library. You may follow the <a href="http://www.project-10.de/forum/viewtopic.php?f=23&t=198#p237" target="_blank">short installation guide</a> or a deteiled
+   <a href="http://docs.opencv.org/2.4/doc/tutorials/introduction/windows_install/windows_install.html#installation-by-making-your-own-libraries-from-the-source-files" target="_blank">installation in Windows guide</a>
 
 @section sec_install_dgm Installing DGM
--# Download the DGM library from <a href="http://research.project-10.de/dgm/">Project X Research</a>
+-# Download the DGM library from <a href="http://research.project-10.de/dgm/" target="_blank">Project X Research</a>
 -# Unzip it to your local folder (for example to disk @b C:\\, so the library path will be @b C:\\DGM\\)
--# In case you want to rebuild the library from the "Win32" / "x64" packages or you use the "Source" package follow these instructions, otherwise - skip this step
-	-# Configure the paths in the DGM Visual Studio solution to match your installed OpenCV paths
-	-# Perform Build -> Batch Build
-	-# If you want to run the demo applications, you may need to copy OpenCV dll files to the @b C:\\DGM\\bin\\Release and/or @b C:\\DGM\\bin\\Debug folders
+-# In case you want to build the library follow these instructions, otherwise - skip this step
+	-# Download and install <a href="https://cmake.org/" target="_blank">CMake</a>
+    -# Run \b cmake-gui.exe
+    -# In the <i>“Where is the source code”</i> field choose the DGM source directory: \b C:\\DGM\\sources<br>
+       In the <i>“Where to build the binaries”</i> field choose directory for VS compiled DGM: \b C:\\DGM\\builds
+    -# Press \a Configure button and choose <i>Visual Studio 14 2015</i> or <i>Visual Studio 14 2015 Win64</i>  (or whatever) as building environment
+    -# Be sure that the \a OpenCV_DIR is pointing to the OpenCV build directory (\a e.g. \b C:\\OpenCV\\build), where \b OpenCVConfig.cmake file is located
+    -# Press one more time \a Configure and then \a Generate, so the VS project will be generated in the \b C:\\DGM\\builds
+    -# Open the solution (\b DGM.sln file) 
+    -# Build \b ALL_BUILD and \b INSTALL projects first for \a Debug and then for \a Release configuration. That will copy DGM headers, binaries and demonstration applications to \b C:\\DGM\\builds\\install
+    -# (Optionally) you can copy the content of the \b C:\\DGM\\builds\\install to another folder, e.g. \b C:\\DGM\\build 
 -# Specify the following paths and library
-	-# Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path @b C:\\DGM\\include\\
-	-# Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path @b C:\\DGM\\lib\\Release\\ and @b C:\\DGM\\lib\\Debug\\ for Release and Debug configurations accordingly
-	-# Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries @b dgm142.lib, @b fex142.lib and @b dgm142d.lib, @b fex142d.lib for Release and Debug configurations accordingly
--# Copy the DGM dll files @b dgm142.dll, @b fex142.dll from @b C:\\DGM\\bin\\Release and @b dgm142d.dll, @b fex142d.dll from @b C:\\DGM\\bin\\Debug to your project's Relese and Debug folders.
+	-# Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b C:\\DGM\\build\\include
+	-# Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b C:\\DGM\\build\\lib for both Release and Debug configurations
+	-# Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm150.lib, \b fex150.lib and \b dgm150d.lib, \b fex150d.lib for Release and Debug configurations accordingly
+-# Copy the DGM dll files \b dgm150.dll, \b dgm150d.dll and \b fex150.dll, \b fex150d.dll from @b C:\\DGM\\build\\bin to your project's Relese and Debug folders.
 */
 
 /**
