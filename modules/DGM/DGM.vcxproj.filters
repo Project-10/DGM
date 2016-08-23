@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{1b8593c8-fd19-4137-bbcf-007d1caa2228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Sherwood Utilities">
+      <UniqueIdentifier>{b1d27dc9-c725-4965-91e2-c08ffbfba089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{ec202d3a-3424-42d3-a863-943eec058c65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph">
+      <UniqueIdentifier>{c282556e-06d4-4602-8735-35e23ff54668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{2c610f61-4f96-44f9-93dc-2c0639df95a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Marker">
+      <UniqueIdentifier>{f76ca0d0-962a-4417-8988-564335e6690d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoding">
+      <UniqueIdentifier>{548e7671-288a-4f73-9ea6-923d9d16e22e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoding\Exact">
+      <UniqueIdentifier>{723df4bc-e033-4610-81f4-2ef70c316549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\NDGauss">
+      <UniqueIdentifier>{afc31f32-b024-4c15-b914-f0679df96641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Random">
+      <UniqueIdentifier>{f37e00e9-eb44-4650-8fd2-598252358fca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Confusion Matrix">
+      <UniqueIdentifier>{5a2b5045-4ad4-4be6-9dbe-1232ac6bf6cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Param Estimation">
+      <UniqueIdentifier>{10e45790-eac1-44a0-81d8-4a5d3b2bda9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model">
+      <UniqueIdentifier>{e2eabb48-09d9-4cc1-8fe9-c2a25ede3da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training">
+      <UniqueIdentifier>{63762539-9f8a-4515-8283-54781097073f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Edge">
+      <UniqueIdentifier>{8936c4e7-5848-4223-866d-dfe9ed8669b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Edge\Potts">
+      <UniqueIdentifier>{95f11107-2af9-4ebd-8623-1f01748e08c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Edge\Contrast Sensitive">
+      <UniqueIdentifier>{5a3ca43c-76bb-4b33-95d4-e21ed5946d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Edge\Data Dependent">
+      <UniqueIdentifier>{c5722a06-fad2-44c5-9c20-59332f2ea9f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Node">
+      <UniqueIdentifier>{1934656d-060a-4759-86ec-7705d68c4b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Node\RandomForest">
+      <UniqueIdentifier>{a5c5b614-358b-4ed1-b488-f6e71d78ea1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Node\GaussianMixture">
+      <UniqueIdentifier>{7b837ad7-44fd-40aa-abe8-66e869f154ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Triplet">
+      <UniqueIdentifier>{be72fa7c-de91-4a04-a95d-c54d3feb2871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Prior">
+      <UniqueIdentifier>{a6991eb7-5436-4720-ba65-b5142ebb13c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Prior\Node">
+      <UniqueIdentifier>{b7febc2f-8fa9-45e4-86e5-bac70e664dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Prior\Edge">
+      <UniqueIdentifier>{b3f7bacf-7b9f-4343-8902-d6abbef1eaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Prior\Triplet">
+      <UniqueIdentifier>{d0138aa2-366f-4d1f-9afe-0edd49a3f726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\PDF">
+      <UniqueIdentifier>{50a9db2d-80a0-44b1-994a-4f8f8148e6bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\PDF\Histogram">
+      <UniqueIdentifier>{7a54cad8-d82e-4b9e-85af-a75defc1a7b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\PDF\Gaussian">
+      <UniqueIdentifier>{bacefcab-787f-4a11-a357-def424c4493d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Features Concatenator">
+      <UniqueIdentifier>{16f60359-7c3f-44e5-8ce1-a1979d36e6d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference">
+      <UniqueIdentifier>{cbead079-1c97-4e32-bcb1-600f2ee8b317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Exact">
+      <UniqueIdentifier>{d2f76cae-f1fd-4251-bcaf-4c363d505250}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing">
+      <UniqueIdentifier>{1f27a9b4-531e-4c50-8c85-da18a8d65dfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\LBP">
+      <UniqueIdentifier>{198851ab-044e-47c9-b369-2976ed68918e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\Tree">
+      <UniqueIdentifier>{04dbbf13-7c7f-4271-ac40-40dafd88e62e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\Chain">
+      <UniqueIdentifier>{8919ba1b-6f11-4f77-90ad-fef99059993c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\Viterbi">
+      <UniqueIdentifier>{dfc5f8fd-37ef-4eb1-ad57-77c61a1a92bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Open CV">
+      <UniqueIdentifier>{2bf2dd53-0abe-4e8d-b59f-474d7dbd59a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Link">
+      <UniqueIdentifier>{052715d6-9e24-4c81-accf-f230a7be94fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Random Model\Training\Node\Naive Bayes">
+      <UniqueIdentifier>{cbf89c71-62c1-4f46-b57c-a39a289259ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inference\Message Passing\TRW">
+      <UniqueIdentifier>{30544020-7134-433b-b6f5-fdf8afa2c4ec}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sherwood\utilities\FeatureResponseFunctions.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\utilities\StatisticsAggregators.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\utilities\DataPointCollection.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\utilities\TrainingContexts.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainEdge.h">
+      <Filter>Source Files\Random Model\Training\Edge</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNode.h">
+      <Filter>Source Files\Random Model\Training\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Train.h">
+      <Filter>Source Files\Random Model\Training</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeCvRF.h">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeMsRF.h">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeCvGMM.h">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeCvGM.h">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeGMM.h">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeGM.h">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClInclude>
+    <ClInclude Include="Decode.h">
+      <Filter>Source Files\Decoding</Filter>
+    </ClInclude>
+    <ClInclude Include="Infer.h">
+      <Filter>Source Files\Inference</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Powell.h">
+      <Filter>Source Files\Param Estimation</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph3.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainTriplet.h">
+      <Filter>Source Files\Random Model\Training\Triplet</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainNodeNaiveBayes.h">
+      <Filter>Source Files\Random Model\Training\Node\Naive Bayes</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainEdgePotts.h">
+      <Filter>Source Files\Random Model\Training\Edge\Potts</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainEdgePottsCS.h">
+      <Filter>Source Files\Random Model\Training\Edge\Contrast Sensitive</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainEdgeConcat.h">
+      <Filter>Source Files\Random Model\Training\Edge\Data Dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainEdgePrior.h">
+      <Filter>Source Files\Random Model\Training\Edge\Data Dependent</Filter>
+    </ClInclude>
+    <ClInclude Include="RForest.h">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClInclude>
+    <ClInclude Include="Prior.h">
+      <Filter>Source Files\Random Model\Prior</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseRandomModel.h">
+      <Filter>Source Files\Random Model</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorEdge.h">
+      <Filter>Source Files\Random Model\Prior\Edge</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorNode.h">
+      <Filter>Source Files\Random Model\Prior\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorTriplet.h">
+      <Filter>Source Files\Random Model\Prior\Triplet</Filter>
+    </ClInclude>
+    <ClInclude Include="Marker.h">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClInclude>
+    <ClInclude Include="MarkerHistogram.h">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClInclude>
+    <ClInclude Include="InferLBP.h">
+      <Filter>Source Files\Inference\Message Passing\LBP</Filter>
+    </ClInclude>
+    <ClInclude Include="InferViterbi.h">
+      <Filter>Source Files\Inference\Message Passing\Viterbi</Filter>
+    </ClInclude>
+    <ClInclude Include="DecodeExact.h">
+      <Filter>Source Files\Decoding\Exact</Filter>
+    </ClInclude>
+    <ClInclude Include="CMat.h">
+      <Filter>Source Files\Common\Confusion Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DGM.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\macroses.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="NDGauss.h">
+      <Filter>Source Files\Common\NDGauss</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Source Files\Common\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="PDF.h">
+      <Filter>Source Files\Random Model\PDF</Filter>
+    </ClInclude>
+    <ClInclude Include="PDFHistogram.h">
+      <Filter>Source Files\Random Model\PDF\Histogram</Filter>
+    </ClInclude>
+    <ClInclude Include="PDFGaussian.h">
+      <Filter>Source Files\Random Model\PDF\Gaussian</Filter>
+    </ClInclude>
+    <ClInclude Include="FeaturesConcatenator.h">
+      <Filter>Source Files\Common\Features Concatenator</Filter>
+    </ClInclude>
+    <ClInclude Include="InferExact.h">
+      <Filter>Source Files\Inference\Exact</Filter>
+    </ClInclude>
+    <ClInclude Include="InferChain.h">
+      <Filter>Source Files\Inference\Message Passing\Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="InferTree.h">
+      <Filter>Source Files\Inference\Message Passing\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="MessagePassing.h">
+      <Filter>Source Files\Inference\Message Passing</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseGraph.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="MarkerGraph.h">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphBoost.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="opencv\DTrees.h">
+      <Filter>External\Open CV</Filter>
+    </ClInclude>
+    <ClInclude Include="opencv\RTrees.h">
+      <Filter>External\Open CV</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphExt.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainLink.h">
+      <Filter>Source Files\Random Model\Training\Link</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainLinkNested.h">
+      <Filter>Source Files\Random Model\Training\Link</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphLayered.h">
+      <Filter>Source Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="InferTRW.h">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\parallel.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\ForestTrainer.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\ParallelForestTrainer.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\Forest.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="sherwood\utilities\StatisticsAggregators.cpp">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="sherwood\utilities\DataPointCollection.cpp">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="sherwood\utilities\TrainingContexts.cpp">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNode.cpp">
+      <Filter>Source Files\Random Model\Training\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainEdge.cpp">
+      <Filter>Source Files\Random Model\Training\Edge</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNodeCvRF.cpp">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNodeMsRF.cpp">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNodeCvGMM.cpp">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNodeGMM.cpp">
+      <Filter>Source Files\Random Model\Training\Node\GaussianMixture</Filter>
+    </ClCompile>
+    <ClCompile Include="Decode.cpp">
+      <Filter>Source Files\Decoding</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Powell.cpp">
+      <Filter>Source Files\Param Estimation</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph3.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainTriplet.cpp">
+      <Filter>Source Files\Random Model\Training\Triplet</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainNodeNaiveBayes.cpp">
+      <Filter>Source Files\Random Model\Training\Node\Naive Bayes</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainEdgePotts.cpp">
+      <Filter>Source Files\Random Model\Training\Edge\Potts</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainEdgePottsCS.cpp">
+      <Filter>Source Files\Random Model\Training\Edge\Contrast Sensitive</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainEdgePrior.cpp">
+      <Filter>Source Files\Random Model\Training\Edge\Data Dependent</Filter>
+    </ClCompile>
+    <ClCompile Include="RForest.cpp">
+      <Filter>Source Files\Random Model\Training\Node\RandomForest</Filter>
+    </ClCompile>
+    <ClCompile Include="Prior.cpp">
+      <Filter>Source Files\Random Model\Prior</Filter>
+    </ClCompile>
+    <ClCompile Include="PriorEdge.cpp">
+      <Filter>Source Files\Random Model\Prior\Edge</Filter>
+    </ClCompile>
+    <ClCompile Include="PriorNode.cpp">
+      <Filter>Source Files\Random Model\Prior\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="PriorTriplet.cpp">
+      <Filter>Source Files\Random Model\Prior\Triplet</Filter>
+    </ClCompile>
+    <ClCompile Include="Marker.cpp">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClCompile>
+    <ClCompile Include="MarkerHistogram.cpp">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClCompile>
+    <ClCompile Include="InferLBP.cpp">
+      <Filter>Source Files\Inference\Message Passing\LBP</Filter>
+    </ClCompile>
+    <ClCompile Include="DecodeExact.cpp">
+      <Filter>Source Files\Decoding\Exact</Filter>
+    </ClCompile>
+    <ClCompile Include="CMat.cpp">
+      <Filter>Source Files\Common\Confusion Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="NDGauss.cpp">
+      <Filter>Source Files\Common\NDGauss</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files\Common\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseRandomModel.cpp">
+      <Filter>Source Files\Random Model</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFHistogram.cpp">
+      <Filter>Source Files\Random Model\PDF\Histogram</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFGaussian.cpp">
+      <Filter>Source Files\Random Model\PDF\Gaussian</Filter>
+    </ClCompile>
+    <ClCompile Include="InferExact.cpp">
+      <Filter>Source Files\Inference\Exact</Filter>
+    </ClCompile>
+    <ClCompile Include="InferChain.cpp">
+      <Filter>Source Files\Inference\Message Passing\Chain</Filter>
+    </ClCompile>
+    <ClCompile Include="InferTree.cpp">
+      <Filter>Source Files\Inference\Message Passing\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="MessagePassing.cpp">
+      <Filter>Source Files\Inference\Message Passing</Filter>
+    </ClCompile>
+    <ClCompile Include="MarkerGraph.cpp">
+      <Filter>Source Files\Common\Marker</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphBoost.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="opencv\DTrees.cpp">
+      <Filter>External\Open CV</Filter>
+    </ClCompile>
+    <ClCompile Include="opencv\RTrees.cpp">
+      <Filter>External\Open CV</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphLayered.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainLink.cpp">
+      <Filter>Source Files\Random Model\Training\Link</Filter>
+    </ClCompile>
+    <ClCompile Include="Infer.cpp">
+      <Filter>Source Files\Inference</Filter>
+    </ClCompile>
+    <ClCompile Include="InferTRW.cpp">
+      <Filter>Source Files\Inference\Message Passing\TRW</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
