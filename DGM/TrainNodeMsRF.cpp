@@ -1,7 +1,13 @@
 #include "TrainNodeMsRF.h"
 #include "macroses.h"
 
-//#include "sherwood\ParallelForestTrainer.h"				// for parallle computing
+#ifdef USE_SHERWOOD
+
+#include "sherwood\Sherwood.h"
+
+#ifdef USE_PPL
+#include "sherwood\ParallelForestTrainer.h"				// for parallle computing
+#endif
 
 #include "sherwood\utilities\FeatureResponseFunctions.h"
 #include "sherwood\utilities\StatisticsAggregators.h"
@@ -27,11 +33,12 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : C
 void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 {
 	// Some default parameters
-	m_params.MaxDecisionLevels						= params.max_decision_levels - 1;
-	m_params.NumberOfCandidateFeatures				= params.num_of_candidate_features;
-	m_params.NumberOfCandidateThresholdsPerFeature	= params.num_of_candidate_thresholds_per_feature;
-	m_params.NumberOfTrees							= params.num_ot_trees;
-	m_params.Verbose								= params.verbose;
+	m_pParams = std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
+	m_pParams->MaxDecisionLevels						= params.max_decision_levels - 1;
+	m_pParams->NumberOfCandidateFeatures				= params.num_of_candidate_features;
+	m_pParams->NumberOfCandidateThresholdsPerFeature	= params.num_of_candidate_thresholds_per_feature;
+	m_pParams->NumberOfTrees							= params.num_ot_trees;
+	m_pParams->Verbose									= params.verbose;
 
 	m_pData = std::auto_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
 	m_pData->m_dimension = m_nFeatures;
@@ -100,8 +107,12 @@ void CTrainNodeMsRF::train(void)
 	
 	sw::Random random;
 	sw::ClassificationTrainingContext classificationContext(m_nStates, m_nFeatures);
-	m_pForest = sw::ForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, m_params, classificationContext, *m_pData);
-	//m_pForest = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, m_params, classificationContext, *m_pData);
+#ifdef USE_PPL
+	// Use this function with cautions - it is not verifiied!
+	m_pForest = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *m_pData);
+#else
+	m_pForest = sw::ForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *m_pData);
+#endif
 }	
 
 void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
@@ -129,3 +140,4 @@ void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 		potential.at<float>(s, 0) = (1.0f - mudiness) * h.GetProbability(s);
 }
 }
+#endif

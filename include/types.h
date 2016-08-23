@@ -1,9 +1,10 @@
 #pragma once
 
-#define PRINT_DEBUG_INFO	
-#define DEBUG_MODE			
+//#define PRINT_DEBUG_INFO	
+//#define DEBUG_MODE			
 #define USE_PPL
 //#define USE_AMP
+#define USE_SHERWOOD
 
 #include <vector>
 #include <memory>

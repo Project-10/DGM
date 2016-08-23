@@ -3,16 +3,18 @@
 #pragma once
 
 #include "TrainNode.h"
-#include "sherwood\Sherwood.h"
 
-
-namespace sw = MicrosoftResearch::Cambridge::Sherwood;
+#ifdef USE_SHERWOOD
 
 namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood {
 	class LinearFeatureResponse;
 	class HistogramAggregator;
 	class DataPointCollection;
+	template<class F, class S> class Forest;
+	struct TrainingParameters;
 }}}
+
+namespace sw = MicrosoftResearch::Cambridge::Sherwood;
 
 namespace DirectGraphicalModels
 {
@@ -43,6 +45,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleTrainNode
 	* @brief Microsoft Sherwood Random Forest training class
 	* @details This class is based on the <a href="http://research.microsoft.com/en-us/downloads/52d5b9c3-a638-42a1-94a5-d549e2251728/">Sherwood C++ code library for decision forests</a> v.1.0.0
+	* > In order to use the Sherwood library, DGM must be build with the \b USE_SHERWOOD flag
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeMsRF : public CTrainNode
@@ -100,7 +103,8 @@ namespace DirectGraphicalModels
 
 
 	private:
-		sw::TrainingParameters															m_params;
+		std::auto_ptr<sw::TrainingParameters>											m_pParams;
 		size_t																			m_maxSamples;
 	};
 }
+#endif

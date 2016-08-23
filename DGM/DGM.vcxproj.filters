@@ -310,6 +310,15 @@
     <ClInclude Include="..\include\parallel.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="sherwood\ForestTrainer.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\ParallelForestTrainer.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sherwood\Forest.h">
+      <Filter>External\Sherwood Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sherwood\utilities\FeatureResponseFunctions.cpp">
