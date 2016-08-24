@@ -6,9 +6,9 @@
 
 #include "types.h"
 
-namespace DirectGraphicalModels
+namespace DirectGraphicalModels { namespace marker
 {
-// Default paletes
+	// Default paletes
 	const static Scalar colors3[] =  
 	{ 
 		CV_RGB(255, 0,   0),		// Red
@@ -71,17 +71,17 @@ namespace DirectGraphicalModels
 		CV_RGB(128, 0,   64)		// 
 	}; 
 
-///@brief Default palettes.
+	///@brief Default palettes.
 	enum default_pallete {
 		DEF_PALETTE_3,		///< Default Pallete with 3 colors
 		DEF_PALETTE_6,		///< Default Pallete with 6 colors
 		DEF_PALETTE_12,		///< Default Pallete with 12 colors
 		DEF_PALETTE_24		///< Default Pallete with 12 colors
 	};
-/**
-@brief Visualization flags.
-@details Used in CMarker::markClasses() and CMarker::markPotentials() functions.
-*/
+	/**
+	* @brief Visualization flags.
+	* @details Used in CMarker::markClasses() and CMarker::markPotentials() functions.
+	*/
 	enum mark_flags {
 		MARK_GRID		= 1,	///< Visualizes only the odd pixels
 		MARK_OVER		= 2,	///< Blends the base image
@@ -94,7 +94,7 @@ namespace DirectGraphicalModels
 
 	// ================================ Marker Class ================================
 	/**
-	* @ingroup moduleVis
+	* @ingroup moduleMarker
 	* @brief Marker class
 	* @details This class allows to visualize the results of graphical models decoding
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -111,6 +111,7 @@ namespace DirectGraphicalModels
 
 			TP_PERCENT	= 128		// This flag may be mixed with the <mark_flags>
 		};
+	
 	public:
 		/**
 		* @brief Constructor with a default palette
@@ -153,14 +154,6 @@ namespace DirectGraphicalModels
 		* @returns Figure with visualized confusion matrix
 		*/
 		DllExport Mat			drawConfusionMatrix(const Mat &confusionMat, byte flag = 0) const;
-		/**
-		* @brief Visualizes a sparse coding dictionary
-		* @details This function visualizes a dictionary, that is returned by fex::CSparseDictionary::get() fucntion
-		* @param  dictionary Dictionary: Mat of type: CV_64FC1
-		* @param m The magnifier koefficients for scaling the dictionary values
-		* @returns Figure with visualized dictionary
-		*/
-		DllExport static Mat	drawDictionary(const Mat &dictionary, double m = 1);
 	
 	
 	protected:
@@ -184,11 +177,23 @@ namespace DirectGraphicalModels
 		static const int	ds;								// size of the cell
 			
 
-
 	private:
 		// Copy semantics are disabled
 		CMarker(const CMarker &rhs) {}
-		const CMarker & operator= (const CMarker & rhs) {return *this;}
+		const CMarker & operator= (const CMarker & rhs) { return *this; }
 	};
-}
+
+
+
+	/**
+	* @ingroup moduleMarker
+	* @brief Visualizes a sparse coding dictionary
+	* @details This function visualizes a dictionary, that is returned by fex::CSparseDictionary::getDictionary() fucntion
+	* @param  dictionary Dictionary: Mat of type: CV_64FC1
+	* @param m The magnifier koefficients for scaling the dictionary values
+	* @returns Figure with visualized dictionary
+	*/
+	DllExport Mat drawDictionary(const Mat &dictionary, double m = 1);
+
+} }
 

@@ -24,13 +24,6 @@ source_group("3rdparty\\opencv" FILES ${3RD_OPENCV_SOURCES})
 source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
-source_group("Source Files\\Common\\Marker" FILES	"Marker.h"
-													"Marker.cpp"
-													"MarkerGraph.h"
-													"MarkerGraph.cpp"
-													"MarkerHistogram.h"
-													"MarkerHistogram.cpp"
-												)
 source_group("Source Files\\Common\\NDGauss" FILES "NDGauss.h" "NDGauss.cpp")
 source_group("Source Files\\Common\\Random" FILES "Random.h" "Random.cpp")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												

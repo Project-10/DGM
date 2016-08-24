@@ -1,9 +1,9 @@
 #include "MarkerHistogram.h"
 
-#include "TrainNodeNaiveBayes.h"
-#include "PDF.h"
+#include "DGM\TrainNodeNaiveBayes.h"
+#include "DGM\PDF.h"
 
-namespace DirectGraphicalModels
+namespace DirectGraphicalModels { namespace marker 
 {
 // Constants
 const CvSize	CMarkerHistogram::margin		= cvSize(25, 16);
@@ -149,8 +149,8 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	tmp.release();
 
 	// Feature Names
-	if (m_ppFeatureNames == NULL) sprintf(str, "feature %d", f);
-	else						  sprintf(str, "%s", m_ppFeatureNames[f]);
+	if (m_vFeatureNames.empty()) sprintf(str, "feature %d", f);
+	else						 sprintf(str, "%s", m_vFeatureNames[f].c_str());
 	CvSize textSize = getTextSize(str, CV_FONT_HERSHEY_SIMPLEX, 0.5, 1, NULL);
 	putText(res, str, Point(margin.width + (MAX(256 - textSize.width, 108)) / 2, 16), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(125, 125, 125), 1, CV_AA);
 
@@ -218,4 +218,4 @@ Mat CMarkerHistogram::drawLegend(int maxHeight, int activeState) const
 	return res;
 }
 
-}
+} }

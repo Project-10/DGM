@@ -1,7 +1,9 @@
 // Example "Training" 2D-case with model training
 #include "DGM.h"
+#include "Marker.h"
 
 using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::marker;
 
 void print_help(void)
 {

@@ -2,14 +2,16 @@
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
-#include "marker.h"
+#include "MarkerBase.h"
 
-namespace DirectGraphicalModels
-{
+namespace DirectGraphicalModels { 
 	class CTrainNode;
+	namespace marker
+{
+	
 	// ================================ Histogram Marker Class ================================
 	/**
-	* @ingroup moduleVis
+	* @ingroup moduleMarker
 	* @brief Histogram Marker class
 	* @details This class allows to visualize the feature densitiy distributions (feature histograms), used in the naive bayes random model (Ref. @ref CTrainNodeNaiveBayes).
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -17,23 +19,23 @@ namespace DirectGraphicalModels
 	class CMarkerHistogram : public CMarker
 	{
 	public:
-/**
-@brief Constructor with default palette
-@param pNodeTrainer Pointer to the CTrainNode class.
-@param palette One of the default palletes (Ref. @ref default_pallete).
-@param ppFeatureNames Optional list of feature names. 
-For optimal performance, each feature name should have maximal 17 symbols.
-*/
-		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, default_pallete palette = DEF_PALETTE_12, char *ppFeatureNames[] = NULL) : CMarker(palette), m_pNodeTrainer(pNodeTrainer), m_ppFeatureNames(ppFeatureNames) {}
+		/**
+		* @brief Constructor with default palette
+		* @param pNodeTrainer Pointer to the CTrainNode class.
+		* @param palette One of the default palletes (Ref. @ref default_pallete).
+		* @param vFeatureNames Optional list of feature names. 
+		* For optimal performance, each feature name should have maximal 17 symbols.
+		*/
+		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, default_pallete palette = DEF_PALETTE_12, vec_string_t vFeatureNames = vec_string_t()) : CMarker(palette), m_pNodeTrainer(pNodeTrainer), m_vFeatureNames(vFeatureNames) {}
 		/**
 		* @brief Constructor with custom palette
 		* @param pNodeTrainer Pointer to the CTrainNode class.
 		* @param vPalette Custom palette. It is represented as a std::vector of the custom entries of type: @code std::make_pair(CV_RGB(r, g, b), "class name"). @endcode
 		* For optimal performance, class name should have maximal 10 symbols. 
-		* @param ppFeatureNames Optional list of feature names.
+		* @param vFeatureNames Optional list of feature names.
 		* For optimal performance, each feature name should have maximal 17 symbols.
 		*/
-		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, const vec_nColor_t &vPalette, char *ppFeatureNames[] = NULL) : CMarker(vPalette), m_pNodeTrainer(pNodeTrainer), m_ppFeatureNames(ppFeatureNames) {}
+		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, const vec_nColor_t &vPalette, vec_string_t vFeatureNames = vec_string_t()) : CMarker(vPalette), m_pNodeTrainer(pNodeTrainer), m_vFeatureNames(vFeatureNames) {}
 		DllExport virtual ~CMarkerHistogram(void) {}
 
 /**
@@ -57,7 +59,7 @@ The function will redraw the fugure, depending on the input color.
 	#endif				// --- --------- ---
 
 	
-	protected:
+	private:
 /**
 @brief Retrieves a chosen by an user state, from the color.
 @param color Color of a pixel from the histogram figure. 
@@ -79,16 +81,17 @@ The function will redraw the fugure, depending on the input color.
 */
 		Mat				drawLegend(int maxHeight, int activeState = -1) const;
 
+	
 	protected:
 		CTrainNode			*  m_pNodeTrainer;		///< Pointer to the  CTrainNode class
 
 
 	private:
-		static const CvSize    margin;
-		static const byte	   bkgIntencity;
-		static const double	   frgWeight;
+		static const CvSize margin;
+		static const byte	bkgIntencity;
+		static const double	frgWeight;
 
-		char				** m_ppFeatureNames;
+		vec_string_t		m_vFeatureNames;
 	};
 
-}
+} }

@@ -10,7 +10,7 @@ namespace DirectGraphicalModels
 
 	// ================================ Confusion Matrix Class ================================
 	/**
-	* @ingroup moduleVis
+	* @ingroup moduleEva
 	* @brief Confusion matrix class.
 	* @details This class estimates the <a href="http://en.wikipedia.org/wiki/Confusion_matrix">confusion matrix</a>, which  
 	* allows for evaluation of the classification results in terms of the overall classification accuracy, as well as of

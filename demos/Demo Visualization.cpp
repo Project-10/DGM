@@ -1,6 +1,8 @@
 // Example "Visualization" 2D-case 
 #include "DGM.h"
+#include "Marker.h"
 using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::marker;
 
 // Global definitions
 Mat histogramImg;
@@ -91,9 +93,9 @@ int main(int argc, char *argv[])
 	palette.push_back(std::make_pair(CV_RGB(64,  128,   0), "tree"));
 	palette.push_back(std::make_pair(CV_RGB(255,   0,   0), "car"));
 	// Define feature names for visualization
-	char				* featureNames[] = {"NDVI", "Var. Int.", "Saturation"};	
-	CMarkerHistogram	* marker		 = new CMarkerHistogram(nodeTrainer, palette, featureNames);
-	CCMat				* confMat		 = new CCMat(nStates);
+	vec_string_t		  featureNames	= {"NDVI", "Var. Int.", "Saturation"};	
+	CMarkerHistogram	* marker		= new CMarkerHistogram(nodeTrainer, palette, featureNames);
+	CCMat				* confMat		= new CCMat(nStates);
 
 	// ==================== STAGE 1: Building the graph ====================
 	printf("Building the Graph... ");

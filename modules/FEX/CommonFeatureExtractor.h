@@ -35,6 +35,7 @@ namespace DirectGraphicalModels { namespace fex
 
 	// ================================ Common Feature Extractor Class ==============================
 	/**
+	* @ingroup moduleFEX
 	* @brief Common class, which unites feature extraction algorithms.
 	* @details In order to simplify the user feature extraction code, this class provides <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a>. 
 	* Please see the example code below for more details.

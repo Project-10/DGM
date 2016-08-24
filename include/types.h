@@ -4,11 +4,11 @@
 #define DGM_VERSION_MINOR 5
 #define DGM_VERSION_PATCH 0
 
-/* #undef DEBUG_MODE */
-/* #undef DEBUG_PRINT_INFO */
-/* #undef ENABLE_PPL */
+#define DEBUG_MODE			
+#define DEBUG_PRINT_INFO	
+#define ENABLE_PPL
 /* #undef ENABLE_AMP */
-/* #undef USE_SHERWOOD */
+#define USE_SHERWOOD
 
 #include <vector>
 #include <memory>
@@ -29,14 +29,6 @@ using word	= unsigned __int16;
 using dword	= unsigned __int32;
 using qword	= unsigned __int64;
 
-using vec_mat_t		= std::vector<Mat>;
-using vec_bool_t	= std::vector<bool>;
-using vec_byte_t	= std::vector<byte>;
-using vec_int_t		= std::vector<int>;
-using vec_float_t	= std::vector<float>;
-using vec_size_t	= std::vector<size_t>;
-using vec_string_t	= std::vector<std::string>;
-
 using ptr_float_u	= std::unique_ptr<float[]>;
 
 const double	Pi	= 3.1415926;			///< Pi number
@@ -48,6 +40,14 @@ const double	Pi	= 3.1415926;			///< Pi number
 // DGM lib
 namespace DirectGraphicalModels
 {
+	using vec_mat_t			= std::vector<Mat>;
+	using vec_bool_t		= std::vector<bool>;
+	using vec_byte_t		= std::vector<byte>;
+	using vec_int_t			= std::vector<int>;
+	using vec_float_t		= std::vector<float>;
+	using vec_size_t		= std::vector<size_t>;
+	using vec_string_t		= std::vector<std::string>;
+
 	struct  Node;
 	using	vec_node_t		= std::vector<Node>;
 	struct  Edge;

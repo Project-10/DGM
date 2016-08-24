@@ -8,6 +8,7 @@ namespace DirectGraphicalModels { namespace fex
 {
 	// ================================ Base Feature Extractor Class ==============================
 	/**
+	* @ingroup moduleFEX
 	* @brief Base abstract class for feature extraction algorithms
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		

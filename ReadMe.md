@@ -20,6 +20,7 @@ Framework development discussions and thorough bug reports are collected on [Iss
 
 - __DGM__ - the main library
 - __FEX__ - feature extraction module
+- __Marker__ - visualization module
 
 ## License and Citation
 
