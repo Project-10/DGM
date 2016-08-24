@@ -18,12 +18,12 @@ namespace DirectGraphicalModels
 		bool	calc_var_importance;				///< Calculate variable importance (must be \a true in order to use CTrainNodeCvRF::getFeatureImportance function)
 		int		nactive_vars;						///< Number of variables randomly selected at node and used to find the best split(s). (0 means the \f$ \sqrt{nFeatures} \f$)
 		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
-		double	epsilon;							///< Forest accuracy
+		float	epsilon;							///< Forest accuracy
 		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)
 		int 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvRFParams() {}
-		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
+		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, float _epsilon, int _term_criteria_type, int _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvRFParams;
 
 	const TrainNodeCvRFParams TRAIN_NODE_CV_RF_PARAMS_DEFAULT = TrainNodeCvRFParams(
@@ -35,7 +35,7 @@ namespace DirectGraphicalModels
 																false,	// Calculate variable importance 
 																4,		// Number of variables randomly selected at node and used to find the best split(s). 0 means sqrt(nFeatures) 
 																100,	// Max number of trees in the forest (time / accuracy)
-																0.01,	// Forest accuracy
+																0.01f,	// Forest accuracy
 																TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)
 																0		// Maximum number of samples to be used in training. 0 means using all the samples
 																);
@@ -91,16 +91,17 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		vec_mat_t		m_vSamplesAcc;						///< Samples container for all states
-		Ptr<CRForest>	m_pRF;								///< Random Forest
+		vec_mat_t					m_vSamplesAcc;						///< Samples container for all states
+		std::auto_ptr<CRForest>		m_pRF;								///< Random Forest
 
 
 	private:
-		void			init(TrainNodeCvRFParams params);	// This function is called by both constructors
+		void						init(TrainNodeCvRFParams params);	// This function is called by both constructors
 		
 		
 	private:		
-		int				m_maxSamples;						// = INFINITY;	// for optimisation purposes
+		std::auto_ptr<CvRTParams>	m_pParams;
+		int							m_maxSamples;						// = INFINITY;	// for optimisation purposes
 	};
 }
 

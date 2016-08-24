@@ -239,7 +239,7 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 		int y = s / dataWidth;
 		int x = s % dataWidth;
 
-		res(cvRect(x, y, blockSize, blockSize)) += sample;
+		add (res(cvRect(x, y, blockSize, blockSize)), sample, res(cvRect(x, y, blockSize, blockSize)));
 		cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
 	}
 	res /= cover;

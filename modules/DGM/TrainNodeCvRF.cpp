@@ -23,17 +23,21 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples) : C
 void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 {
 	m_vSamplesAcc	= vec_mat_t(m_nStates);
-	m_pRF			= CRForest::create();
-	m_pRF->setMaxDepth(params.max_depth);
-	m_pRF->setMinSampleCount(params.min_sample_count);
-	m_pRF->setRegressionAccuracy(params.regression_accuracy);
-	m_pRF->setUseSurrogates(params.use_surrogates);
-	m_pRF->setMaxCategories(params.max_categories);
-	m_pRF->setCalculateVarImportance(params.calc_var_importance);
-	m_pRF->setActiveVarCount(params.nactive_vars);
-	m_pRF->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
-
-	m_pRF->setNumStates(m_nStates);
+	m_pRF			= std::auto_ptr<CRForest>(new CRForest(m_nStates));
+	//m_pPriors = new float[m_nStates];
+	//std::fill(m_pPriors, m_pPriors + m_nStates, 1.0f);
+	m_pParams		= std::auto_ptr<CvRTParams>(new CvRTParams(params.max_depth,
+		params.min_sample_count,
+		params.regression_accuracy,
+		params.use_surrogates,
+		params.max_categories,
+		NULL, //m_pPriors,
+		params.calc_var_importance,
+		params.nactive_vars,
+		params.maxCount,
+		params.epsilon,
+		params.term_criteria_type
+		));
 
 	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
 	else						m_maxSamples = params.maxSamples;	
@@ -42,7 +46,6 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 // Destructor
 CTrainNodeCvRF::~CTrainNodeCvRF(void)
 {
-	delete m_pRF;
 }
 
 void CTrainNodeCvRF::reset(void)
@@ -60,15 +63,14 @@ void CTrainNodeCvRF::save(const std::string &path, const std::string &name, shor
 void CTrainNodeCvRF::load(const std::string &path, const std::string &name, short idx)
 {
 	std::string fileName = generateFileName(path, name.empty() ? "TrainNodeCvRF" : name, idx);
-	m_pRF = Algorithm::load<CRForest>(fileName.c_str());
+	m_pRF->load(fileName.c_str());
 }
 
 void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
 {
 	// Assertions:
 	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
-	
-	m_vSamplesAcc[gt].push_back(featureVector.t());
+	m_vSamplesAcc[gt].push_back(Mat(featureVector.t()));
 }
 
 void CTrainNodeCvRF::train(void)
@@ -78,20 +80,24 @@ void CTrainNodeCvRF::train(void)
 		int nSamples = m_vSamplesAcc[s].rows;
 		int S	     = MIN(nSamples, m_maxSamples);
 		nAllSamples += S;
-	} // i
+	} // s
 	
 	CRandom random;
 
 	Mat samples(static_cast<int>(nAllSamples), m_nFeatures, CV_32FC1);
 	Mat classes(static_cast<int>(nAllSamples), 1          , CV_32FC1);	
 	
-	// printf("\n");
+#ifdef DEBUG_PRINT_INFO
+	printf("\n");
+#endif
 	int l = 0;
 	for (byte s = 0; s < m_nStates; s++) {						// states
 		int nSamples = m_vSamplesAcc[s].rows;
 		int S		 = MIN(nSamples, m_maxSamples);
 		
-		//printf("State[%d] - %d samples\n", i, nSamples);
+#ifdef DEBUG_PRINT_INFO
+		printf("State[%d] - %d from %d samples\n", s, S, nSamples);
+#endif
 
 		for (int smp = 0; smp < S; smp++, l++) {				// samples
 			int sample = (nSamples > m_maxSamples) ? random.du() % nSamples : smp;
@@ -103,11 +109,11 @@ void CTrainNodeCvRF::train(void)
 	} // s
 
 	Mat var_type = Mat(m_nFeatures + 1, 1, CV_8U);
-	var_type.setTo(Scalar(ml::VAR_NUMERICAL)); // all inputs are numerical
-	var_type.at<uchar>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
+	var_type.setTo(Scalar(CV_VAR_NUMERICAL)); // all inputs are numerical
+	var_type.at<uchar>(m_nFeatures, 0) = CV_VAR_CATEGORICAL;
 
 	try {
-		m_pRF->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+		m_pRF->train(samples, CV_ROW_SAMPLE, classes, Mat(), Mat(), var_type, Mat(), *m_pParams);
 	} catch (std::exception &e) {
 		printf("EXCEPTION: %s\n", e.what());
 		printf("Try to reduce the maximal depth of the forest or switch to x64.\n");

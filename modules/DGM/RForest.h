@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2013 for CV
 #pragma once
 
-#include "opencv\RTrees.h"
+#include "types.h"
 
 namespace DirectGraphicalModels
 {
@@ -13,30 +13,24 @@ namespace DirectGraphicalModels
 	* This is done in order to produce the potential vector instead of the class value.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CRForest : public CRTrees
+	class CRForest : public CvRTrees
 	{
 	public:
 		/**
-		* @brief Creates the empty model.
+		* @brief Constuctor
+		* @param nStates Number of states (classes)
 		*/
-		static Ptr<CRForest> create() { return makePtr<CRForest>(); }
-
-		CRForest() : CRTrees(), m_nStates(0) {}
-		virtual ~CRForest() {}
+		CRForest(byte nStates) : CvRTrees(), m_nStates(nStates) {}
+		virtual ~CRForest(void) {}
 		/**
 		* @brief Calculates potentials give a feature vector
 		* @param featureVector Multi-dimensinal sample point \f$\textbf{f}\f$: Mat(size: nFeatures x 1)
 		* @return Potential vector: Mat(size: nStates x 1; type: CV_32FC1);
 		*/
 		virtual Mat predict(const Mat &featureVector);
-		/**
-		* @brief Set the number of states (classes)
-		* @param nStates The number of ctates (classes)
-		*/
-		void setNumStates(byte nStates) { m_nStates = nStates; }
 
 
 	private:
-		byte m_nStates;	// = 0;
+		byte m_nStates;
 	};
 }

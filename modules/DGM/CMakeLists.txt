@@ -5,11 +5,7 @@ file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 						)
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
-					
-file(GLOB 3RD_OPENCV_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/opencv/*.h"
-								"${PROJECT_SOURCE_DIR}/3rdparty/opencv/*.cpp"
-							)
-							
+	
 if (USE_SHERWOOD)
 file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
 										"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
@@ -20,7 +16,6 @@ endif()
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${DGM_INCLUDE})
 source_group("" FILES ${DGM_SOURCES} ${DGM_HEADERS})
-source_group("3rdparty\\opencv" FILES ${3RD_OPENCV_SOURCES})
 source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
@@ -116,9 +111,7 @@ install(FILES ${DGM_INCLUDE} DESTINATION ${PROJECT_INSTALL_PREFIX}/include)
 install(FILES ${DGM_HEADERS} DESTINATION ${PROJECT_INSTALL_PREFIX}/include/DGM)
 	
 # 3rdparty code
-target_sources(DGM PRIVATE	${3RD_OPENCV_SOURCES}
-							${3RD_SHERWOOD_SOURCES}
-						)
+target_sources(DGM PRIVATE ${3RD_SHERWOOD_SOURCES})
  
 # Creates folder "Modules" and adds target project 
 set_target_properties(DGM PROPERTIES FOLDER "Modules")

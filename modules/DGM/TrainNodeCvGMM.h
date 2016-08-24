@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 
 	const TrainNodeCvGMMParams TRAIN_NODE_CV_GMM_PARAMS_DEFAULT = TrainNodeCvGMMParams(
 																16,											// Number of Gaussians
-																ml::EM::COV_MAT_DIAGONAL,					// Covariance matrix type
+																EM::COV_MAT_DIAGONAL,						// Covariance matrix type
 																100,										// Max number of iterations
 																0.01,										// GMM accuracy
 																TermCriteria::MAX_ITER | TermCriteria::EPS	// Termination cirteria (according the the two previous parameters)
@@ -67,12 +67,12 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		vec_mat_t					m_vSamplesAcc;				///< Samples container
-		std::vector<Ptr<ml::EM>>	m_vpEM;						///< Expectation Maximization for GMM parameters estimation
+		vec_mat_t						m_vSamplesAcc;				///< Samples container
+		std::vector<std::auto_ptr<EM>>	m_vpEM;						///< Expectation Maximization for GMM parameters estimation
 	
 
 	private:
-		void		  init(TrainNodeCvGMMParams params);		// This function is called by both constructors
+		void		  init(TrainNodeCvGMMParams params);			// This function is called by both constructors
 
 
 	private:
@@ -80,7 +80,7 @@ namespace DirectGraphicalModels
 
 
 	private:
-		long double			  m_minCoefficient;		// = 1;	// auxilary coefficient for scaling gaussian coefficients
+		long double			  m_minCoefficient;						// = 1;	// auxilary coefficient for scaling gaussian coefficients
 	};
 }
 
