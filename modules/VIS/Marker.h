@@ -6,7 +6,7 @@
 
 #include "types.h"
 
-namespace DirectGraphicalModels { namespace marker
+namespace DirectGraphicalModels { namespace vis
 {
 	// Default paletes
 	const static Scalar colors3[] =  
@@ -94,7 +94,7 @@ namespace DirectGraphicalModels { namespace marker
 
 	// ================================ Marker Class ================================
 	/**
-	* @ingroup moduleMarker
+	* @ingroup moduleVIS
 	* @brief Marker class
 	* @details This class allows to visualize the results of graphical models decoding
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -186,7 +186,7 @@ namespace DirectGraphicalModels { namespace marker
 
 
 	/**
-	* @ingroup moduleMarker
+	* @ingroup moduleVIS
 	* @brief Visualizes a sparse coding dictionary
 	* @details This function visualizes a dictionary, that is returned by fex::CSparseDictionary::getDictionary() fucntion
 	* @param  dictionary Dictionary: Mat of type: CV_64FC1

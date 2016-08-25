@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2013 for Project X
 #pragma once
 
-#include "Train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 	* See @ref demotrain for more details
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainNode : public CTrain
+	class CTrainNode : public ITrain
 	{
 	public:
 		/**

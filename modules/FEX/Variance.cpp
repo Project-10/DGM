@@ -1,4 +1,5 @@
 #include "Variance.h"
+#include "LinearMapper.h"
 
 namespace DirectGraphicalModels { namespace fex
 {

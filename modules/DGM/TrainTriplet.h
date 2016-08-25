@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "Train.h"
+#include "ITrain.h"
 #include "PriorTriplet.h"
 #include "macroses.h"		// For DGM_WARNING
 
@@ -13,10 +13,10 @@ namespace DirectGraphicalModels
 @brief  Base abstract class for triplet potential training
 @author Sergey G. Kosov, sergey.kosov@project-10.de
 */
-	class CTrainTriplet : public CTrain, private CPriorTriplet
+	class CTrainTriplet : public ITrain, private CPriorTriplet
 	{
 	public:
-		DllExport CTrainTriplet(byte nStates, byte nFeatures) : CTrain(nStates, nFeatures), CPriorTriplet(nStates), CBaseRandomModel(nStates) {}
+		DllExport CTrainTriplet(byte nStates, byte nFeatures) : ITrain(nStates, nFeatures), CPriorTriplet(nStates), CBaseRandomModel(nStates) {}
 		DllExport ~CTrainTriplet(void) {}
 
 		DllExport void	reset(void) {CPriorTriplet::reset(); }

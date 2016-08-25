@@ -1,4 +1,4 @@
-// Base abstract class for random model training
+// Interface class for random model training
 // Written by Sergey G. Kosov in 2012 for Project X
 #pragma once
 
@@ -8,11 +8,11 @@ namespace DirectGraphicalModels
 {
 	// ================================ Train Class ================================
 	/**
-	* @brief Base abstract class for random model training
+	* @brief Interface class for random model training
 	* @ingroup moduleTrain
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrain : public virtual CBaseRandomModel
+	class ITrain : public virtual CBaseRandomModel
 	{
 	public:
 		/**
@@ -20,8 +20,8 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrain(byte nStates, word nFeatures) : CBaseRandomModel(nStates), m_nFeatures(nFeatures) {}
-		DllExport virtual ~CTrain(void) {}
+		DllExport ITrain(byte nStates, word nFeatures) : CBaseRandomModel(nStates), m_nFeatures(nFeatures) {}
+		DllExport virtual ~ITrain(void) {}
 
 		/**
 		* @brief Random model training
@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 		* @brief Returns number of features
 		* @return Number of features @ref m_nFeatures
 		*/		
-		DllExport word			getNumFeatures(void) const {return m_nFeatures;}
+		DllExport word			getNumFeatures(void) const { return m_nFeatures; }
 
 
 	protected:

@@ -1,7 +1,7 @@
-#include "MarkerBase.h"
+#include "Marker.h"
 #include "macroses.h"
 
-namespace DirectGraphicalModels { namespace marker
+namespace DirectGraphicalModels { namespace vis
 {
 // Constants
 const byte	CMarker::bkgIntencity	= 222;

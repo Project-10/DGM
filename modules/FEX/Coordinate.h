@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "basefeatureextractor.h"
+#include "IFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -21,14 +21,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @details This class allows extracting features, which depend only on the coordinates of the coresponding image pixels.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CCoordinate :	public CBaseFeatureExtractor
+	class CCoordinate :	public IFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image.
 		*/
-		DllExport CCoordinate(const Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CCoordinate(const Mat &img) : IFeatureExtractor(img) {}
 		DllExport virtual ~CCoordinate(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

@@ -12,9 +12,9 @@ CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures)
 	, CBaseRandomModel(nStates)
 	, m_prior(Mat())
 {
-	m_pPDF = new CPDF**[m_nStates];
+	m_pPDF = new IPDF**[m_nStates];
 	for (byte s = 0; s < m_nStates; s++) {
-		m_pPDF[s] = new CPDF*[m_nFeatures];
+		m_pPDF[s] = new IPDF*[m_nFeatures];
 		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f] = new CPDFHistogram();
 //			m_pPDF[s][f] = new CPDFGaussian();

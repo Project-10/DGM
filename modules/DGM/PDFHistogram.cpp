@@ -3,7 +3,7 @@
 namespace DirectGraphicalModels 
 {
 // Constructor
-CPDFHistogram::CPDFHistogram(void) : CPDF() 
+CPDFHistogram::CPDFHistogram(void) : IPDF() 
 { 
 	memset(m_data, 0, 256 * sizeof(long)); 
 }

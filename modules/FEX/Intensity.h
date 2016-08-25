@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -11,14 +11,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Intensity feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CIntensity : public CBaseFeatureExtractor
+	class CIntensity : public IFeatureExtractor
 	{
 	public: 
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-		DllExport CIntensity(const Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CIntensity(const Mat &img) : IFeatureExtractor(img) {}
 		DllExport virtual ~CIntensity(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

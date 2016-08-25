@@ -1,21 +1,20 @@
 #pragma once
 
 #include "DGM/CMat.h"
+#include "DGM/FeaturesConcatenator.h"
 #include "DGM/NDGauss.h"
 #include "DGM/Random.h"
 
-#include "DGM/PDF.h"
+#include "DGM/IPDF.h"
 #include "DGM/PDFHistogram.h"
 #include "DGM/PDFGaussian.h"
-
-#include "DGM/FeaturesConcatenator.h"
 
 #include "DGM/Prior.h"
 #include "DGM/PriorNode.h"
 #include "DGM/PriorEdge.h"
 #include "DGM/PriorTriplet.h"
 
-#include "DGM/Train.h"
+#include "DGM/ITrain.h"
 #include "DGM/TrainNode.h"
 #include "DGM/TrainNodeNaiveBayes.h"
 #include "DGM/TrainNodeGM.h"
@@ -33,6 +32,7 @@
 #include "DGM/TrainLink.h"
 #include "DGM/TrainLinkNested.h"
 
+#include "DGM/IGraph.h"
 #include "DGM/Graph.h"
 #include "DGM/GraphWeiss.h"
 #include "DGM/GraphExt.h"
@@ -66,7 +66,7 @@ DGM library consists of three modules:
 	- @ref sec_main_paramest
 	- @ref moduleEva
 - Feature extraction @ref moduleFEX, which allows for extracting the main data features, used nowadays in image classification.
-- Visualization @ref moduleMarker, wich allows for visualizing the used data and features as well as intermediate and final classification results.
+- Visualization @ref moduleVIS, wich allows for visualizing the used data and features as well as intermediate and final classification results.
 
 These tasks are optimized for speed, @a i.e. high-efficient calculations. The code is written entirely in C++ and can be compiled with Microsoft Visual C++.
 
@@ -126,7 +126,7 @@ DGM implements the following sampling method:
 Please refer to the @ref moduleFEX documentation
 
 @subsection sec_main_marker Visualization
-Please refer to the @ref moduleMarker documentation
+Please refer to the @ref moduleVIS documentation
 
 
 @section sec_main_links Quick Links
@@ -344,7 +344,9 @@ we evaluate the results by comparing the lebelled image with the groundtruth.
 
 @code
 #include "DGM.h"
+#include "VIS.h"
 using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::vis;
 
 int main(int argv, char *argc[])
 {

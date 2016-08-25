@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2013-2015 for Project X
 #pragma once
 
-#include "train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
@@ -13,7 +13,7 @@ namespace DirectGraphicalModels
 	* @details Refer to the @ref demotrain for the application and common usage example
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainEdge : public CTrain
+	class CTrainEdge : public ITrain
 	{
 	public:
 		/**
@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainEdge(byte nStates, word nFeatures) : CTrain(nStates, nFeatures), CBaseRandomModel(nStates) {}
+		DllExport CTrainEdge(byte nStates, word nFeatures) : ITrain(nStates, nFeatures), CBaseRandomModel(nStates) {}
 		DllExport virtual ~CTrainEdge(void) {}
 
 		/**

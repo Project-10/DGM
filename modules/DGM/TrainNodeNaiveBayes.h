@@ -7,7 +7,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CPDF;
+	class IPDF;
 
 
 	#ifdef DEBUG_MODE   // --- Debug ---
@@ -48,7 +48,7 @@ namespace DirectGraphicalModels
 		* @param feature The feature
 		* @return The probability density function 
 		*/
-		DllExport CPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
+		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
 		
 		/**
 		*/
@@ -73,7 +73,7 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		CPDF				  *** m_pPDF;				///< The 1D PDF for node potentials	
+		IPDF				  *** m_pPDF;				///< The 1D PDF for node potentials	
 	
 	
 	private:

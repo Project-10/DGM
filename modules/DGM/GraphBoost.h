@@ -1,9 +1,9 @@
 #pragma once
 
-#include "BaseGraph.h"
+#include "IGraph.h"
 
 namespace DirectGraphicalModels {
-	class CGraphBoost : public CBaseGraph
+	class CGraphBoost : public IGraph
 	{
 	public:
 		/**

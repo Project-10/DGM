@@ -1,4 +1,4 @@
-// Probability Density Function abstract class interface
+// Probability Density Function interface class
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
@@ -8,18 +8,18 @@ namespace DirectGraphicalModels
 {
 // ================================ PDF Class ==============================
 	/**
-	* @brief Probability Density Function (PDF) abstract class
+	* @brief Interface class for Probability Density Function (PDF)
 	* @details This class define the interface for estimation of 1D probability density functions for 
 	* random read-valued variables
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPDF : public CBaseRandomModel 
+	class IPDF : public CBaseRandomModel 
 	{
 	friend class CTrainNodeNaiveBayes;
 	
 	public:
-		DllExport CPDF(void) : CBaseRandomModel(0), m_nPoints(0) {}
-		DllExport virtual ~CPDF(void) {}
+		DllExport IPDF(void) : CBaseRandomModel(0), m_nPoints(0) {}
+		DllExport virtual ~IPDF(void) {}
 
 		/**
 		* @brief Adds a sample point for PDF estimation.

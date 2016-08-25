@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -12,7 +12,7 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Gradient feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		
-	class CGradient : public CBaseFeatureExtractor
+	class CGradient : public IFeatureExtractor
 	{
 	friend class CHOG;
 	public:
@@ -20,7 +20,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CGradient(const Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CGradient(const Mat &img) : IFeatureExtractor(img) {}
 		DllExport virtual ~CGradient(void) {}
 
 		DllExport virtual Mat get(void) const {return get(m_img);}

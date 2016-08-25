@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2016 for Project X 
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 #include "SparseDictionary.h"
 #include "SquareNeighborhood.h"
 
@@ -14,14 +14,14 @@ namespace DirectGraphicalModels {
 		* @brief Sparse Coding feature extraction class.
 		* @author Sergey G. Kosov, sergey.kosov@project-10.de
 		*/
-		class CSparseCoding : public CBaseFeatureExtractor, public CSparseDictionary
+		class CSparseCoding : public IFeatureExtractor, public CSparseDictionary
 		{
 		public:
 			/**
 			* @brief Constructor.
 			* @param img Input image of type \b CV_8UC1.
 			*/
-			DllExport CSparseCoding(const Mat &img) : CBaseFeatureExtractor(img) {}
+			DllExport CSparseCoding(const Mat &img) : IFeatureExtractor(img) {}
 			DllExport virtual ~CSparseCoding(void) {}
 
 			DllExport virtual Mat		get(void) const { return get(m_img, getDictionary()); }

@@ -2,7 +2,7 @@
 // Writtem by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 #include "Coordinate.h"
 #include "Intensity.h"
 #include "HSV.h"
@@ -47,14 +47,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/			
-	class CCommonFeatureExtractor : public CBaseFeatureExtractor
+	class CCommonFeatureExtractor : public IFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image.
 		*/		
-		DllExport CCommonFeatureExtractor(Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CCommonFeatureExtractor(Mat &img) : IFeatureExtractor(img) {}
 		DllExport virtual ~CCommonFeatureExtractor(void) {}
 
 		/**

@@ -7,11 +7,11 @@
 #define DGM_HSV(h, s, v) cvScalar(h, s, v, 0 )
 
 namespace DirectGraphicalModels { 
-	class CBaseGraph;
-	namespace marker
+	class IGraph;
+	namespace vis
 {
 	/**
-	* @ingroup moduleMarker
+	* @ingroup moduleVIS
 	* @brief Visualizes the graph structure
 	* @param pGraph The graph
 	* @param posFunc The pointer to a positioning function: a mapper, which places every node at the resulting image canvas of size: \a size x \a size.
@@ -25,5 +25,5 @@ namespace DirectGraphicalModels {
 	* @endcode
 	* @return Image 1000 x 1000 pixels with visualized graph.
 	*/
-	DllExport Mat drawGraph(CBaseGraph *pGraph, CvPoint (*posFunc) (size_t nodeId, int size) );
+	DllExport Mat drawGraph(IGraph *pGraph, CvPoint (*posFunc) (size_t nodeId, int size) );
 } }

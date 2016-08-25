@@ -1,9 +1,9 @@
 #include "MarkerHistogram.h"
 
 #include "DGM\TrainNodeNaiveBayes.h"
-#include "DGM\PDF.h"
+#include "DGM\IPDF.h"
 
-namespace DirectGraphicalModels { namespace marker 
+namespace DirectGraphicalModels { namespace vis 
 {
 // Constants
 const CvSize	CMarkerHistogram::margin		= cvSize(25, 16);
@@ -135,7 +135,7 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	// histogram
 	if (typeid(*m_pNodeTrainer) == typeid(CTrainNodeNaiveBayes))
 		for (byte s = 0; s < nStates; s++) {				// states
-				CPDF *pPDF = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF(s, f);
+				IPDF *pPDF = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF(s, f);
 				for (x = 0; x < 256; x++) {
 					int len	=  static_cast<int>(koeff * pPDF->getDensity(static_cast<float>(x)));
 					y = 100 - MIN(99, len);

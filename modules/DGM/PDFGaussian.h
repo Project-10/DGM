@@ -2,7 +2,7 @@
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
-#include "PDF.h"
+#include "IPDF.h"
 
 namespace DirectGraphicalModels 
 {
@@ -12,10 +12,10 @@ namespace DirectGraphicalModels
 	* @details This class approximates PDF via Gaussian functions. 
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CPDFGaussian : public CPDF
+	class CPDFGaussian : public IPDF
 	{
 	public:
-		DllExport CPDFGaussian(void) : CPDF(), m_mu(0), m_sigma2(0) {}
+		DllExport CPDFGaussian(void) : IPDF(), m_mu(0), m_sigma2(0) {}
 		DllExport virtual ~CPDFGaussian(void) {}
 
 		DllExport virtual void	reset(void);

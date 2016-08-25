@@ -1,8 +1,8 @@
 // Example "Visualization" 2D-case 
 #include "DGM.h"
-#include "Marker.h"
+#include "VIS.h"
 using namespace DirectGraphicalModels;
-using namespace DirectGraphicalModels::marker;
+using namespace DirectGraphicalModels::vis;
 
 // Global definitions
 Mat histogramImg;

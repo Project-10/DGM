@@ -1,19 +1,25 @@
-// Basic graph interface class;
+// Graph interface class;
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
 #include "types.h"
 
 namespace DirectGraphicalModels {
-	class CBaseGraph
+	// ================================ Graph Interface Class ================================
+	/**
+	* @brief Interface class for graphical models
+	* @ingroup moduleGraph
+	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/
+	class IGraph
 	{
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CBaseGraph(byte nStates) : m_nStates(nStates) {};
-		DllExport virtual ~CBaseGraph(void) {};
+		DllExport IGraph(byte nStates) : m_nStates(nStates) {};
+		DllExport virtual ~IGraph(void) {};
 
 		/**
 		* @brief Resets the graph
@@ -144,7 +150,7 @@ namespace DirectGraphicalModels {
 	
 	private:
 		// Copy semantics are disabled
-		CBaseGraph(const CBaseGraph &rhs) {}
-		const CBaseGraph & operator= (const CBaseGraph & rhs) { return *this; }
+		IGraph(const IGraph &rhs) {}
+		const IGraph & operator= (const IGraph & rhs) { return *this; }
 	};
 }  

@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 #include "SquareNeighborhood.h"
 
 namespace DirectGraphicalModels { namespace fex
@@ -12,14 +12,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Variance feature extraction class.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		
-	class CVariance : public CBaseFeatureExtractor 
+	class CVariance : public IFeatureExtractor 
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CVariance(const Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CVariance(const Mat &img) : IFeatureExtractor(img) {}
 		DllExport virtual ~CVariance(void) {}
 
 		DllExport virtual Mat	get(void) const { return get(m_img); }

@@ -1,5 +1,5 @@
 #include "tree.h"
-#include "Marker.h"
+#include "VIS.h"
 
 const byte   nStates  = 4;					// {very safe, safe, unsafe, very unsave}
 const size_t nNodes	  = 100;				// number of nodes 
@@ -127,7 +127,7 @@ void CTree::Main(void)
 	
 
 	if (true) {
-		Mat img = marker::drawGraph(graph, [](size_t n, int size) { 
+		Mat img = vis::drawGraph(graph, [](size_t n, int size) { 
 			return cvPoint(
 				size / 2 + static_cast<int>(0.45 * size * cos(2 * n * Pi / nNodes)),
 				size / 2 + static_cast<int>(0.45 * size * sin(2 * n * Pi / nNodes)) );

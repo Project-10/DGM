@@ -4,7 +4,7 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CGraphWeiss::CGraphWeiss(byte nStates) : CBaseGraph(nStates), m_IDx(0), m_nStates(nStates)
+CGraphWeiss::CGraphWeiss(byte nStates) : IGraph(nStates), m_IDx(0), m_nStates(nStates)
 { }
 
 // Destructor: clean up the Node objects

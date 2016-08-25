@@ -28,7 +28,7 @@ source_group("Source Files\\Common\\NDGauss" FILES "NDGauss.h" "NDGauss.cpp")
 source_group("Source Files\\Common\\Random" FILES "Random.h" "Random.cpp")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" FILES	"BaseGraph.h"
+source_group("Source Files\\Graph" FILES	"IGraph.h"
 											"Graph.h"
 											"Graph.cpp"
 											"GraphWeiss.h"
@@ -51,14 +51,14 @@ source_group("Source Files\\Inference\\Message Passing\\TRW" FILES "InferTRW.h" 
 source_group("Source Files\\Inference\\Message Passing\\Viterbi" FILES "InferViterbi.h")
 source_group("Source Files\\Param Estimation" FILES "Powell.h" "Powell.cpp")
 source_group("Source Files\\Random Model" FILES "BaseRandomModel.h" "BaseRandomModel.cpp")
-source_group("Source Files\\Random Model\\PDF" FILES "PDF.h")
+source_group("Source Files\\Random Model\\PDF" FILES "IPDF.h")
 source_group("Source Files\\Random Model\\PDF\\Gaussian" FILES "PDFGaussian.h" "PDFGaussian.cpp")
 source_group("Source Files\\Random Model\\PDF\\Histogram" FILES "PDFHistogram.h" "PDFHistogram.cpp")
 source_group("Source Files\\Random Model\\Prior" FILES "Prior.h" "Prior.cpp")
 source_group("Source Files\\Random Model\\Prior\\Edge" FILES "PriorEdge.h" "PriorEdge.cpp")
 source_group("Source Files\\Random Model\\Prior\\Node" FILES "PriorNode.h" "PriorNode.cpp")
 source_group("Source Files\\Random Model\\Prior\\Triplet" FILES "PriorTriplet.h" "PriorTriplet.cpp")
-source_group("Source Files\\Random Model\\Training" FILES "Train.h")
+source_group("Source Files\\Random Model\\Training" FILES "ITrain.h")
 source_group("Source Files\\Random Model\\Training\\Edge" FILES "TrainEdge.h" "TrainEdge.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Contrast Sensitive" FILES "TrainEdgePottsCS.h" "TrainEdgePottsCS.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Data Dependent" FILES "TrainEdgePrior.h" "TrainEdgePrior.cpp" "TrainEdgeConcat.h")

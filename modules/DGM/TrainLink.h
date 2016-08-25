@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2016 for Project X
 #pragma once
 
-#include "Train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
@@ -12,7 +12,7 @@ namespace DirectGraphicalModels
 	* @brief Base abstract class for link (inter-layer edge) potentials training
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainLink : public CTrain
+	class CTrainLink : public ITrain
 	{
 	public:
 		/**
@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainLink(byte nStatesBase, byte nStatesOccl, word nFeatures) 
-			: CTrain(nStatesBase * nStatesOccl, nFeatures)
+			: ITrain(nStatesBase * nStatesOccl, nFeatures)
 			, CBaseRandomModel(nStatesBase * nStatesOccl)
 			, m_nStatesBase(nStatesBase)
 			, m_nStatesOccl(nStatesOccl)

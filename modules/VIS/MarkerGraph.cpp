@@ -1,7 +1,7 @@
 #include "MarkerGraph.h"
-#include "DGM\BaseGraph.h"
+#include "DGM\IGraph.h"
 
-namespace DirectGraphicalModels { namespace marker
+namespace DirectGraphicalModels { namespace vis
 {
 // Constants
 const byte bkgIntencity = 50;
@@ -66,7 +66,7 @@ namespace {
 	}
 }
 
-	Mat drawGraph(CBaseGraph * pGraph, CvPoint (*posFunc) (size_t nodeId, int size))
+	Mat drawGraph(IGraph * pGraph, CvPoint (*posFunc) (size_t nodeId, int size))
 	{
 		const int		size	= 1000;
 		CvPoint			pt1, pt2;

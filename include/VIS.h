@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Marker\MarkerBase.h"
-#include "Marker\MarkerGraph.h"
-#include "Marker\MarkerHistogram.h"
+#include "VIS\Marker.h"
+#include "VIS\MarkerGraph.h"
+#include "VIS\MarkerHistogram.h"
 
 /**
-@defgroup moduleMarker Marker Module
+@defgroup moduleVIS VIS Module
 @section sec_marker_title Visualization Module
 
 Marker module provides with a variety of tools for visualizing and analyzing used data as well as intermediate and final results:
-- <b>markClasses</b>         : DirectGraphicalModels::marker::CMarker::markClasses()            for visualizing the classification results;
-- <b>drawPotentials</b>      : DirectGraphicalModels::marker::CMarker::drawPotentials()         for visualizing the node and edge potentials;
-- <b>drawConfusionMatrix</b> : DirectGraphicalModels::marker::CMarker::drawConfusionMatrix()    for visualizing and analyzing the qualitative classification results;
-- <b>drawHistogram</b>       : DirectGraphicalModels::marker::CMarkerHistogram::drawHistogram() for visualizing and analyzing distribution of features for given classes;
-- <b>drawDictionary</b>      : DirectGraphicalModels::marker::drawDictionary()                  for visualizing the sparse dictionaries;
-- <b>drawGraph</b>           : DirectGraphicalModels::marker::drawGraph()                       for visualizing the graphical models;
+- <b>markClasses</b>         : DirectGraphicalModels::vis::CMarker::markClasses()            for visualizing the classification results;
+- <b>drawPotentials</b>      : DirectGraphicalModels::vis::CMarker::drawPotentials()         for visualizing the node and edge potentials;
+- <b>drawConfusionMatrix</b> : DirectGraphicalModels::vis::CMarker::drawConfusionMatrix()    for visualizing and analyzing the qualitative classification results;
+- <b>drawHistogram</b>       : DirectGraphicalModels::vis::CMarkerHistogram::drawHistogram() for visualizing and analyzing distribution of features for given classes;
+- <b>drawDictionary</b>      : DirectGraphicalModels::vis::drawDictionary()                  for visualizing the sparse dictionaries;
+- <b>drawGraph</b>           : DirectGraphicalModels::vis::drawGraph()                       for visualizing the graphical models;
 
 For user interaction capacity, there are more functions, which allow for handling the mouse clicks over the figures. Please see our tutorial @ref demovis for more details.
 
@@ -46,7 +46,9 @@ For user interaction capacity we define additional functions for handling the mo
 
 @code
 #include "DGM.h"
+#include "VIS.h"
 using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::vis;
 
 // Global definitions
 Mat histogramImg;

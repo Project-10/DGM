@@ -2,16 +2,16 @@
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
-#include "MarkerBase.h"
+#include "Marker.h"
 
 namespace DirectGraphicalModels { 
 	class CTrainNode;
-	namespace marker
+	namespace vis
 {
 	
 	// ================================ Histogram Marker Class ================================
 	/**
-	* @ingroup moduleMarker
+	* @ingroup moduleVIS
 	* @brief Histogram Marker class
 	* @details This class allows to visualize the feature densitiy distributions (feature histograms), used in the naive bayes random model (Ref. @ref CTrainNodeNaiveBayes).
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
