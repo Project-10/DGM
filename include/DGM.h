@@ -34,6 +34,7 @@
 #include "DGM/TrainLinkNested.h"
 
 #include "DGM/Graph.h"
+#include "DGM/GraphWeiss.h"
 #include "DGM/GraphExt.h"
 #include "DGM/Graph3.h"
 

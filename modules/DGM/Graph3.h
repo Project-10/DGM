@@ -20,6 +20,7 @@ namespace DirectGraphicalModels
 		
 		Triplet(size_t n1, size_t n2, size_t n3) : node1(n1), node2(n2), node3(n3) {}
 	}; 
+	using	vec_triplet_t = std::vector<Triplet>;
 
 	// ================================ Graph3 Class ================================
 	/**

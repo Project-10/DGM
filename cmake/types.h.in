@@ -48,12 +48,6 @@ namespace DirectGraphicalModels
 	using vec_size_t		= std::vector<size_t>;
 	using vec_string_t		= std::vector<std::string>;
 
-	struct  Node;
-	using	vec_node_t		= std::vector<Node>;
-	struct  Edge;
-	using	vec_edge_t		= std::vector<Edge>;
-	struct	Triplet;
-	using	vec_triplet_t	= std::vector<Triplet>;
 	class	CNDGauss;
 	using	vec_NDGauss_t	= std::vector<CNDGauss>;
 	using   vec_nColor_t	= std::vector<std::pair<Scalar, std::string>>;

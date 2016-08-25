@@ -1,5 +1,5 @@
 // (pairwise) Graph class interface;
-// Written by Sergey G. Kosov in 2011 - 2014 for Project X (based on M. A. Weiss recommendations) 
+// Written by Sergey G. Kosov in 2015 for Project X 
 #pragma once
 
 #include "BaseGraph.h"
@@ -26,7 +26,7 @@ namespace DirectGraphicalModels
 
 		Node(size_t _id, const Mat &p) : id(_id), sol(0) { p.copyTo(Pot); }
 	};
-
+	using vec_node_t = std::vector<Node>;
 
 	// =============================== Edge Structure ==============================
 	/**
@@ -53,7 +53,7 @@ namespace DirectGraphicalModels
 			msg_temp = tmp;
 		}
 	};
-
+	using	vec_edge_t = std::vector<Edge>;
 
 	// ================================ Graph Class ================================
 	/**
@@ -113,6 +113,7 @@ namespace DirectGraphicalModels
 		* @param edge index of the edge
 		*/
 		DllExport virtual void		removeEdge(size_t edge);
+
 
 	private:
 		size_t		m_IDx;			// = 0;	Primary Key

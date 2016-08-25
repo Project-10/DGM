@@ -31,6 +31,8 @@ source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.
 source_group("Source Files\\Graph" FILES	"BaseGraph.h"
 											"Graph.h"
 											"Graph.cpp"
+											"GraphWeiss.h"
+											"GraphWeiss.cpp"
 											"Graph3.h"
 											"Graph3.cpp"
 											"GraphBoost.h"
