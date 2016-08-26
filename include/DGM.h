@@ -193,7 +193,7 @@ In order to build the DGM library, the OpenCV library should be built and instal
 	-# Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b C:\\DGM\\build\\include
 	-# Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b C:\\DGM\\build\\lib for both Release and Debug configurations
 	-# Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm150.lib, \b fex150.lib and \b dgm150d.lib, \b fex150d.lib for Release and Debug configurations accordingly
--# Copy the DGM dll files \b dgm150.dll, \b dgm150d.dll and \b fex150.dll, \b fex150d.dll from @b C:\\DGM\\build\\bin to your project's Relese and Debug folders.
+-# Copy the DGM dll files \b dgm150.dll, \b dgm150d.dll and \b fex150.dll, \b fex150d.dll and \b vis150.dll, \b vis150d.dll from @b C:\\DGM\\build\\bin to your project's Relese and Debug folders.
 */
 
 /**

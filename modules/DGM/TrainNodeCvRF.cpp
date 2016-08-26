@@ -85,14 +85,16 @@ void CTrainNodeCvRF::train(void)
 	Mat samples(static_cast<int>(nAllSamples), m_nFeatures, CV_32FC1);
 	Mat classes(static_cast<int>(nAllSamples), 1          , CV_32FC1);	
 	
-	// printf("\n");
+#ifdef DEBUG_PRINT_INFO
+	printf("\n");
+#endif
 	int l = 0;
 	for (byte s = 0; s < m_nStates; s++) {						// states
 		int nSamples = m_vSamplesAcc[s].rows;
 		int S		 = MIN(nSamples, m_maxSamples);
-		
-		//printf("State[%d] - %d samples\n", i, nSamples);
-
+#ifdef DEBUG_PRINT_INFO		
+		printf("State[%d] - %d of %d samples\n", s, S, nSamples);
+#endif
 		for (int smp = 0; smp < S; smp++, l++) {				// samples
 			int sample = (nSamples > m_maxSamples) ? random.du() % nSamples : smp;
 			Mat Sample = m_vSamplesAcc[s].row(sample);
