@@ -1,6 +1,6 @@
 #include "TrainNodeCvRF.h"
 #include "RForest.h"
-#include "Random.h"
+#include "random.h"
 #include "macroses.h"
 #include <limits>
 
@@ -80,8 +80,6 @@ void CTrainNodeCvRF::train(void)
 		nAllSamples += S;
 	} // i
 	
-	CRandom random;
-
 	Mat samples(static_cast<int>(nAllSamples), m_nFeatures, CV_32FC1);
 	Mat classes(static_cast<int>(nAllSamples), 1          , CV_32FC1);	
 	
@@ -96,7 +94,7 @@ void CTrainNodeCvRF::train(void)
 		printf("State[%d] - %d of %d samples\n", s, S, nSamples);
 #endif
 		for (int smp = 0; smp < S; smp++, l++) {				// samples
-			int sample = (nSamples > m_maxSamples) ? random.du() % nSamples : smp;
+			int sample = (nSamples > m_maxSamples) ? random::u(0, nSamples - 1) : smp;
 			Mat Sample = m_vSamplesAcc[s].row(sample);
 
 			Sample.convertTo(samples.row(l), samples.type());

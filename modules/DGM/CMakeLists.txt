@@ -1,7 +1,6 @@
 file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 						${PROJECT_SOURCE_DIR}/include/types.h
 						${PROJECT_SOURCE_DIR}/include/macroses.h
-						${PROJECT_SOURCE_DIR}/include/parallel.h
 						)
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
@@ -25,7 +24,8 @@ source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
 source_group("Source Files\\Common\\NDGauss" FILES "NDGauss.h" "NDGauss.cpp")
-source_group("Source Files\\Common\\Random" FILES "Random.h" "Random.cpp")
+source_group("Source Files\\Common\\Random" FILES "random.h")
+source_group("Source Files\\Common\\Parallel" FILES "parallel.h")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.cpp")												
 source_group("Source Files\\Graph" FILES	"IGraph.h"

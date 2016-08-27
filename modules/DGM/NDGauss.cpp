@@ -1,5 +1,5 @@
 #include "NDGauss.h"
-#include "Random.h"
+#include "random.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
@@ -13,7 +13,6 @@ CNDGauss::CNDGauss(dword k) : m_nPoints(0), m_sigmaInv(Mat()), m_Q(Mat()), m_alp
 {
 	m_mu	= Mat(k, 1, CV_64FC1, Scalar(0));
 	m_sigma = USE_SAFE_SIGMA ? Mat::eye(k, k, CV_64FC1) : Mat(k, k, CV_64FC1, Scalar(0));
-	random	= new CRandom();
 }
 
 /// @cond 
@@ -23,7 +22,6 @@ CNDGauss::CNDGauss(const Mat &mu) : m_nPoints(1), m_sigmaInv(Mat()), m_Q(Mat()),
 	dword k = mu.rows;
 	mu.convertTo(m_mu, CV_64FC1);
 	m_sigma = USE_SAFE_SIGMA ? Mat::eye(k, k, CV_64FC1) : Mat(k, k, CV_64FC1, Scalar(0));
-	random	= new CRandom();
 }
 /// @endcond
 
@@ -36,7 +34,6 @@ CNDGauss::CNDGauss(const  CNDGauss &rhs) : m_nPoints(rhs.m_nPoints), m_alpha(rhs
 	else rhs.m_sigmaInv.copyTo(this->m_sigmaInv);
 	if (rhs.m_Q.empty()) this->m_Q = Mat();
 	else rhs.m_Q.copyTo(this->m_Q);
-	random = new CRandom();
 }
 
 // Destructor
@@ -46,7 +43,6 @@ CNDGauss::~CNDGauss(void)
 	m_sigma.release();
 	if (!m_sigmaInv.empty()) m_sigmaInv.release();
 	if (!m_Q.empty()) m_Q.release();
-	delete random;
 };
 
 // Copy Operator
@@ -242,8 +238,7 @@ double CNDGauss::getKullbackLeiberDivergence(CNDGauss &x) const
 
 Mat CNDGauss::getSample(void) const
 {
-	int D = m_mu.rows;								// dimension
-	Mat X = random->N(D, 0, 1);						// X - vector of independ
+	Mat X = random::N(m_mu.size(), 0, 1);				// X - vector of independ random variable with normal distribution
 
 	DGM_IF_WARNING(SHOW_OPTIMIZATION_HINTS && m_Q.empty(), "Use CNDGauss::freeze() method in order to pre-calculate m_Q and speed up sequential calculations");
 	Mat Q = m_Q.empty() ? calculateQ() : m_Q;

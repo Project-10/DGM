@@ -6,8 +6,6 @@
 
 namespace DirectGraphicalModels
 {
-	class CRandom;
-
 // ================================ NDGauss Class ==============================
 /**
 @brief Multi - dimensional Gauss function class
@@ -199,11 +197,9 @@ while(point) estGaussian.addPoint(point);			// estimated Gauss function is updat
 		Mat			  m_sigmaInv;		// = Mat();	// the inverse to the <sigma> matrix
 		Mat			  m_Q;				// = Mat(); // aux Mat for getSample()
 		long double	  m_alpha;			// = -1;	// gaussian coefficient
-		CRandom		* random;
 	
 		inline void	  reset_SigmaInv_Q_Alpha(void);		
 		Mat			  calculateQ(void) const;			
-
 	};
 }
 

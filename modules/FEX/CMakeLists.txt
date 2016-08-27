@@ -21,6 +21,7 @@ source_group("Source Files\\Feature Extractor\\Variance" FILES "Variance.h" "Var
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include
+					${PROJECT_SOURCE_DIR}/modules
 					${OpenCV_INCLUDE_DIRS} 
 					${OpenCV_INCLUDE_DIRS}2
 				)
