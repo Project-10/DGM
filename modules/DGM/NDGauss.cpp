@@ -238,14 +238,13 @@ double CNDGauss::getKullbackLeiberDivergence(CNDGauss &x) const
 
 Mat CNDGauss::getSample(void) const
 {
-	Mat X = random::N(m_mu.size(), 0, 1);				// X - vector of independ random variable with normal distribution
+	Mat X = random::N(m_mu.size(), m_mu.type());				// X - vector of independ random variable with normal distribution
 
 	DGM_IF_WARNING(SHOW_OPTIMIZATION_HINTS && m_Q.empty(), "Use CNDGauss::freeze() method in order to pre-calculate m_Q and speed up sequential calculations");
 	Mat Q = m_Q.empty() ? calculateQ() : m_Q;
 	
 	Mat res;
-	gemm(m_Q, X, 1, m_mu, 1, res, GEMM_1_T);		
-
+	gemm(Q, X, 1, m_mu, 1, res, GEMM_1_T);		
 	return res;
 }
 

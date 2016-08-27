@@ -71,35 +71,31 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Returns a matrix of floating-point random numbers with uniform distribution
 		* @param size Size of the resulting matrix
+		* @param type Type of the resulting matrix
 		* @param min The lower boundary
 		* @param max The upper boundary
-		* @return A matrix Mat(type: CV_32FC1) of floating-point numbers in range between [\b min and \b max)
+		* @return A matrix of floating-point numbers in range between [\b min and \b max)
 		*/
-		inline Mat U(CvSize size, float min = 0, float max = 1)
+		inline Mat U(CvSize size, int type, double min = 0, double max = 1)
 		{
-			Mat res(size, CV_32FC1);
-			for (int y = 0; y < size.height; y++) {
-				float *pRes = res.ptr<float>(y);
-				for (int x = 0; x < size.width; x++)
-					pRes[x] = U<float>(min, max);
-			}
+			static thread_local RNG rng(static_cast<unsigned int>(clock() + std::hash<std::thread::id>()(std::this_thread::get_id())));
+			Mat res(size, type);
+			rng.fill(res, RNG::UNIFORM, min, max);
 			return res;
 		}
 		/**
 		* @brief Returns a matrix of floating-point random numbers with normal distribution
 		* @param size Size of the resulting matrix
+		* @param type Type of the resulting matrix
 		* @param mu The mean \f$\mu\f$
 		* @param sigma The standard deviation \f$\sigma\f$
-		* @return A matrix Mat(type: CV_32FC1) of floating-point numbers with normal distribution
+		* @return A matrix of floating-point numbers with normal distribution
 		*/
-		inline Mat N(CvSize size, float mu = 0, float sigma = 1)
+		inline Mat N(CvSize size, int type, double mu = 0, double sigma = 1)
 		{
-			Mat res(size, CV_32FC1);
-			for (int y = 0; y < size.height; y++) {
-				float *pRes = res.ptr<float>(y);
-				for (int x = 0; x < size.width; x++)
-					pRes[x] = N<float>(mu, sigma);
-			}
+			static thread_local RNG rng(static_cast<unsigned int>(clock() + std::hash<std::thread::id>()(std::this_thread::get_id())));
+			Mat res(size, type);
+			rng.fill(res, RNG::NORMAL, mu, sigma);
 			return res;
 		}
 

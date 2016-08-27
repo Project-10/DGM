@@ -20,9 +20,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 
 	// 1. Initialize dictionary D randomly
 	if (!m_D.empty()) m_D.release();
-	m_D = random::N(cvSize(sampleLen, nWords), 0.0f, 0.3f);  // Mat(nWords, sampleLen, CV_32FC1);
-	// RNG rng;
-	// rng.fill(m_D, RNG::NORMAL, 0, 0.3);
+	m_D = random::N(cvSize(sampleLen, nWords), CV_32FC1, 0.0f, 0.3f);  
 
 	Mat		_W, W;					// Weights matrix (Size: nStamples x nWords)
 	float	cost;

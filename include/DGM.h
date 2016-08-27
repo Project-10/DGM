@@ -3,6 +3,8 @@
 #include "DGM/CMat.h"
 #include "DGM/FeaturesConcatenator.h"
 #include "DGM/NDGauss.h"
+#include "DGM/random.h"
+#include "DGM/parallel.h"
 
 #include "DGM/IPDF.h"
 #include "DGM/PDFHistogram.h"
