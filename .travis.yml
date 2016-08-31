@@ -15,8 +15,8 @@ addons:
       - cmake-data
 
 before_script:
-  - cd DGM
   - mkdir build
+  - cd build
   - cmake ..
 
 script: make
