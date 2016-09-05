@@ -14,5 +14,5 @@ addons:
 
 script: 
   - mkdir build
-  - make
-  - cmake .. & make
+  - cd build
+  - cmake .. 
