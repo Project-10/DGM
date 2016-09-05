@@ -1,22 +1,18 @@
 language: cpp
 
-os:
-  - windows
+sudo: required
+dist: trusty
 
-compiler:
-  - gcc
+compiler: clang
 
 addons:
-  apt:
-    sources:
-      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
-    packages:
-      - cmake
-      - cmake-data
+    apt:
+      packages:
+        - cmake
+      sources:
+        - kalakris-cmake
 
-before_script:
+script: 
   - mkdir build
-  - cd build
-  - cmake ..
-
-script: make
+  - make
+  - cmake .. & make
