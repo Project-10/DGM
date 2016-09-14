@@ -31,14 +31,10 @@ void CCMat::load(const std::string &path, const std::string &name, short idx)
 	m_pConfusionMatrix->load(path, name.empty() ? "CMat" : name, idx); 
 } 
 
-void CCMat::estimate(const Mat &gt, const Mat &solution) 
-{ 
-	DGM_ELEMENTWISE2<CCMat, &CCMat::estimate>(*this, gt, solution); 
-}
-
 void CCMat::estimate(const Mat &gt, const Mat &solution, const Mat &mask)
 {
-	DGM_ELEMENTWISE2<CCMat, &CCMat::estimate>(*this, gt, solution, mask);
+	if (mask.empty())	DGM_ELEMENTWISE2<CCMat, &CCMat::estimate>(*this, gt, solution);
+	else				DGM_ELEMENTWISE2<CCMat, &CCMat::estimate>(*this, gt, solution, mask);
 }
 
 void CCMat::estimate(byte gt, byte solution) 
