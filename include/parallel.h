@@ -13,7 +13,7 @@ inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, Mat &res)
 			DGM_ASSERT(res.rows == A.rows);
 			DGM_ASSERT(res.cols == B.cols);
 
-			const Mat _B = B.t();
+			const Mat _B = Mat(B.t());								// may be more stable under CPU full load
 			concurrency::parallel_for(0, res.rows, [&](int y) {
 				float * pRes = res.ptr<float>(y);
 				const float * pA = A.ptr<float>(y);
@@ -34,7 +34,7 @@ inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, floa
 			DGM_ASSERT(res.rows == A.rows && res.rows == C.rows);
 			DGM_ASSERT(res.cols == B.cols && res.cols == C.cols);
 
-			const Mat _B = B.t();
+			const Mat _B = Mat(B.t());								// may be more stable under CPU full load
 			concurrency::parallel_for(0, res.rows, [&](int y) {
 				float * pRes = res.ptr<float>(y);
 				const float * pA = A.ptr<float>(y);
