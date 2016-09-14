@@ -1,0 +1,55 @@
+#include "PDFHistogram.h"
+
+namespace DirectGraphicalModels 
+{
+// Constructor
+CPDFHistogram::CPDFHistogram(void) : IPDF() 
+{ 
+	memset(m_data, 0, 256 * sizeof(long)); 
+}
+
+// Destructor
+CPDFHistogram::~CPDFHistogram(void) 
+{ }
+
+void CPDFHistogram::reset(void) 
+{ 
+	memset(m_data, 0, 256 * sizeof(long)); 
+	m_nPoints = 0;
+}
+
+void CPDFHistogram::addPoint(float point)
+{
+	byte i = static_cast<byte>(MIN(255, MAX(0, point)));
+	m_data[i]++;
+	m_nPoints++;
+}
+
+float CPDFHistogram::getDensity(float point) 
+{
+	byte i = static_cast<byte>(MIN(255, MAX(0, point)));
+	return static_cast<float>(m_data[i]) / m_nPoints;
+}
+
+void CPDFHistogram::smooth(int nIt)
+{
+	long tmp[256];
+	for (int iter = 0; iter < nIt; iter++) {
+		memcpy(tmp, m_data, 256 * sizeof(long));
+		for (int i = 1; i < 255; i++) m_data[i] = static_cast<long>(0.25 * (tmp[i-1] + 2*tmp[i] + tmp[i+1]));
+	} // iterations
+}
+
+void CPDFHistogram::saveFile(FILE *pFile) const
+{
+	fwrite(&m_data, sizeof(long), 256, pFile);
+	fwrite(&m_nPoints, sizeof(long), 1,   pFile);
+}
+
+void CPDFHistogram::loadFile(FILE *pFile)
+{
+	fread(&m_data, sizeof(long), 256, pFile);
+	fread(&m_nPoints, sizeof(long), 1,   pFile);
+}
+
+}

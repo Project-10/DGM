@@ -1,3 +1,4 @@
+<img align="left" src="doc/DGM logo.jpg">
 # Direct Graphical Models C++ library
 
 [![Version](https://img.shields.io/github/release/Project-10/DGM.svg)](https://github.com/Project-10/DGM/releases)
@@ -20,6 +21,7 @@ Framework development discussions and thorough bug reports are collected on [Iss
 
 - __DGM__ - the main library
 - __FEX__ - feature extraction module
+- __VIS__ - visualization module
 
 ## License and Citation
 

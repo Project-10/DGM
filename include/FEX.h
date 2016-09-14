@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../FEX/CommonFeatureExtractor.h"
-#include "../FEX/SparseDictionary.h"
+#include "FEX/CommonFeatureExtractor.h"
+#include "FEX/SparseDictionary.h"
 
 /**
 @defgroup moduleFEX FEX Module
@@ -29,7 +29,7 @@ different classes. This preprocessing stage is also called feature extraction. N
 
 There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of \a coordinate feature.
 
-The first way is to declare the correspondig class and call its method DirectGraphicalModels::fex::CBaseFeatureExtractor::get() :
+The first way is to declare the correspondig class and call its method DirectGraphicalModels::fex::IFeatureExtractor::get() :
 @code
 using namespace DirectGraphicalModels::fex;
 
