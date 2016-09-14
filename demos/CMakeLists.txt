@@ -26,7 +26,7 @@ set_target_properties(Demo_1D PROPERTIES FOLDER "Demos")
 target_link_libraries(Demo_1D ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 
 #install
-install(TARGETS Demo_1D RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin)
+install(TARGETS Demo_1D RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # ================================================= DEMO 2D =================================================
 add_executable(Demo_2D "Demo 2D.cpp")
@@ -40,7 +40,7 @@ set_target_properties(Demo_2D PROPERTIES FOLDER "Demos")
 target_link_libraries(Demo_2D ${OpenCV_LIBS} ${DGM_LIB})  
 
 #install
-install(TARGETS Demo_2D RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin)
+install(TARGETS Demo_2D RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # ================================================= DEMO FEX ================================================
 add_executable(Demo_FEX "Demo FEX.cpp")
@@ -54,7 +54,7 @@ set_target_properties(Demo_FEX PROPERTIES FOLDER "Demos")
 target_link_libraries(Demo_FEX ${OpenCV_LIBS} ${FEX_LIB})  
 
 #install
-install(TARGETS Demo_FEX RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin)
+install(TARGETS Demo_FEX RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # =============================================== DEMO TRAIN ================================================
 add_executable(Demo_Train "Demo Train.cpp")
@@ -68,7 +68,7 @@ set_target_properties(Demo_Train PROPERTIES FOLDER "Demos")
 target_link_libraries(Demo_Train ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 
 #install
-install(TARGETS Demo_Train RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin)
+install(TARGETS Demo_Train RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	
 # =========================================== DEMO VISUALIZATION ============================================
 add_executable(Demo_Vis "Demo Visualization.cpp")
@@ -82,7 +82,7 @@ set_target_properties(Demo_Vis PROPERTIES FOLDER "Demos")
 target_link_libraries(Demo_Vis ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 
 #install
-install(TARGETS Demo_Vis RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin)
+install(TARGETS Demo_Vis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 
 
