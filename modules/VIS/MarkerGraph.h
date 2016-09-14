@@ -26,4 +26,11 @@ namespace DirectGraphicalModels {
 	* @return Image 1000 x 1000 pixels with visualized graph.
 	*/
 	DllExport Mat drawGraph(IGraph *pGraph, CvPoint (*posFunc) (size_t nodeId, int size) );
+
+#ifdef USE_OPENGL
+	/**
+	* @ingroup moduleVIS
+	*/
+	DllExport void drawGraph3D(IGraph *pGraph, CvPoint3D64f(*posFunc) (size_t nodeId, int size));
+#endif
 } }

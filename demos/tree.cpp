@@ -126,7 +126,7 @@ void CTree::Main(void)
 	}
 	
 
-	if (true) {
+	if (false) {
 		Mat img = vis::drawGraph(graph, [](size_t n, int size) { 
 			return cvPoint(
 				size / 2 + static_cast<int>(0.45 * size * cos(2 * n * Pi / nNodes)),
@@ -137,6 +137,10 @@ void CTree::Main(void)
 		cvWaitKey();
 		destroyAllWindows();
 	}
+
+#ifdef USE_OPENGL	
+	vis::drawGraph3D(graph, [](size_t n, int size) { return cvPoint3D64f(0, 0, 0); });
+#endif
 
 	delete graph;
 	delete inferer;

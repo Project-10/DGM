@@ -8,7 +8,9 @@
 #cmakedefine DEBUG_PRINT_INFO	
 #cmakedefine ENABLE_PPL
 #cmakedefine ENABLE_AMP
+#cmakedefine USE_OPENGL
 #cmakedefine USE_SHERWOOD
+
 
 #include <vector>
 #include <memory>

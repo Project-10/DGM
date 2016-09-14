@@ -1,5 +1,10 @@
 #include "MarkerGraph.h"
 #include "DGM\IGraph.h"
+#include "macroses.h"
+
+#ifdef USE_OPENGL
+#include <GLFW\glfw3.h>
+#endif
 
 namespace DirectGraphicalModels { namespace vis
 {
@@ -105,4 +110,65 @@ namespace {
 		return res;
 	}
 
+
+#ifdef USE_OPENGL
+	void render_loop()
+	{
+		glClearColor(.7, .1, .1, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, 1024, 768);
+		glMatrixMode(GL_PROJECTION);
+		//gluPerspective( 65.0, (double)1024/(double)768, 1.0, 60.0 );
+		glLoadIdentity();
+		glOrtho(0, 1024, 768, 0, 100, -100);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		glPointSize(10);
+		glBegin(GL_POINTS);
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(512, 384, 0);
+		glVertex3f(0, 384, 0);
+		glEnd();
+	}
+	
+	
+	void drawGraph3D(IGraph *pGraph, CvPoint3D64f(*posFunc) (size_t nodeId, int size))
+	{
+		GLFWwindow * window;
+
+		// Initialise GLFW
+		DGM_ASSERT_MSG(glfwInit(), "Failed to initialize GLFW");
+
+		// Create a windowed mode window and its OpenGL context 
+		window = glfwCreateWindow(640, 480, "Graph Viewer", NULL, NULL);
+		if (!window) {
+			glfwTerminate();
+			return;
+		}
+
+		// Make the window's context current 
+		glfwMakeContextCurrent(window);
+
+		glLoadIdentity();
+
+		// Loop until the user closes the window 
+		while (!glfwWindowShouldClose(window)) {
+			// Render here 
+			//glClear(GL_COLOR_BUFFER_BIT);
+
+			
+			render_loop();
+
+
+			// Swap front and back buffers 
+			glfwSwapBuffers(window);
+
+			// Poll for and process events 
+			glfwPollEvents();
+		}
+
+		glfwTerminate();
+	}
+#endif
 } }
