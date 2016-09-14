@@ -48,21 +48,7 @@ option(DEBUG_PRINT_INFO "Output debug information" OFF)
 option(DEBUG_MODE "Debugging mode" OFF)
 option(ENABLE_PPL "Use Parallel Pattern Library for parallel CPU computing" ON) 
 option(ENABLE_AMP "Use AMP Algorithms Library for parallel GPU computing" OFF) 
-option(USE_OPENGL "Use OpenGL library" OFF)
 option(USE_SHERWOOD "Use Microsoft Sherwood Library for CTrainNodeMsRF class" ON)
-
-if (USE_OPENGL)
-	#OpenGL
-	find_package(OpenGL REQUIRED)
-
-	# GLFW
-	set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-	set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-	set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-	add_subdirectory(3rdparty/glfw-3.2.1)
-	set_target_properties(glfw PROPERTIES FOLDER "3rdparty")
-endif()
 
 # Sub-directories where more CMakeLists.txt exist
 add_subdirectory(modules/DGM)
