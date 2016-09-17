@@ -16,7 +16,7 @@ init:
 # clone directory
 clone_folder: c:\projects\dgm
 
-# platform: x64
+platform: x86
 
 #install:
 #  -cmd: choco install OpenCV
