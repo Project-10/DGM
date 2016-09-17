@@ -22,8 +22,8 @@ clone_folder: c:\projects\dgm
 #  -cmd: choco install OpenCV
 
 build_script:
-  - choco install OpenCV --install-directory 'c\opencv'
-  - cv C:\opencv
+  - choco install OpenCV '/InstallationPath:C:\OpenCV'
+  - cd C:\OpenCV
   - dir
   - cd c:\projects\dgm
   - md build
