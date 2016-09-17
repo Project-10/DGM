@@ -19,7 +19,9 @@ clone_folder: c:\projects\dgm
 # platform: x64
 
 build_script:
-  - cd c:\projects\dgm
+  - cd c:\projects\dgm\
+  - dir
   - md build
+  - dir
   - cmake ..
   - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
