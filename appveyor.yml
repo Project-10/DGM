@@ -24,6 +24,10 @@ install:
 build_script:
   - cd c:\
   - dir
+  - cd c:\Install\
+  - dir
+  - choco install OpenCV
+  - choco install opencv
   - cd c:\projects\dgm
   - md build
   - cd build
