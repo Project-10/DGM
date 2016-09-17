@@ -1,1 +1,27 @@
+#-----------------------------------------------------------------------------
+#  Configuration for continuous integration service at appveyor.com
+#-----------------------------------------------------------------------------
+version: 1.5.0:{build}
 
+branches:
+  only:
+  - master
+
+clone_folder: c:\projects\dgm
+
+# Operating system (build VM template)
+os: Visual Studio 2015
+
+# scripts that are called at very beginning, before repo cloning
+init:
+
+# clone directory
+clone_folder: c:\projects\libosmium
+
+# platform: x64
+
+build_script:
+  - cd c:\projects\dgm
+  - md build
+  - cmake ..
+  - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
