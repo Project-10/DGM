@@ -67,7 +67,7 @@ namespace DirectGraphicalModels { namespace parallel {
 		if (C.empty()) ppl_gemm(A, B, alpha, res);
 		else ppl_gemm(A, B, alpha, C, beta, res);
 #else
-		gemm(A, B, alpha, C, beta, res);
+		cv::gemm(A, B, alpha, C, beta, res);
 #endif
 	}
 
@@ -104,7 +104,7 @@ namespace DirectGraphicalModels { namespace parallel {
 		});
 #else	
 		for (int s = X.rows - 1; s > 0; s--) {			// s = [n-1; 1]
-			int r = parallel::rand<dword>(0, s);		// r = [0; s] = [0; 1] -> [0; n-1]
+			int r = random::u<int>(0, s);		// r = [0; s] = [0; 1] -> [0; n-1]
 			if (r != s)	Swap(X.row(s), X.row(r));
 		}
 #endif
