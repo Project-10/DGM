@@ -7,8 +7,6 @@ branches:
   only:
   - master
 
-clone_folder: c:\projects\dgm
-
 # Operating system (build VM template)
 os: Visual Studio 2015
 
@@ -16,7 +14,7 @@ os: Visual Studio 2015
 init:
 
 # clone directory
-clone_folder: c:\projects\libosmium
+clone_folder: c:\projects\dgm
 
 # platform: x64
 
