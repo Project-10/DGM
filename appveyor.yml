@@ -23,10 +23,10 @@ clone_folder: c:\projects\dgm
 
 build_script:
   - choco install opencv 
-  - cd c:\tools\opencv\build\x64
+  - cd c:\tools\opencv\build\x64\vc14
   - dir
   - cd c:\projects\dgm
   - md build
   - cd build
-  - cmake -DOpenCV_DIR=c:\tools\opencv\build\x64 -G"Visual Studio 14" ..
-  - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
+  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win32" ..
+  - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
