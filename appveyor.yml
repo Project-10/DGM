@@ -21,5 +21,6 @@ clone_folder: c:\projects\dgm
 build_script:
   - cd c:\projects\dgm
   - md build
-  - cmake .\ .\build
+  - cd build
+  - cmake -G"Visual Studio 14" ..
   - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
