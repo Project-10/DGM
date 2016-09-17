@@ -1,7 +1,7 @@
 <img align="left" src="doc/DGM logo.jpg">
 # Direct Graphical Models C++ library
 
-[![License](https://img.shields.io/badge/license-BSD%203--Clause-red.svg)](License.txt)
+[![License](https://img.shields.io/badge/license-BSD%203--Clause-green.svg)](License.txt)
 [![Version](https://img.shields.io/github/release/Project-10/DGM.svg)](https://github.com/Project-10/DGM/releases)
 [![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt.svg?maxAge=2592000)](https://ci.appveyor.com/project/ProjectX/dgm)
 
