@@ -18,18 +18,13 @@ clone_folder: c:\projects\dgm
 
 # platform: x64
 
-install:
-  -cmd: choco install OpenCV
+#install:
+#  -cmd: choco install OpenCV
 
 build_script:
-  - cd c:\
-  - dir
-  - cd c:\Install\
-  - dir
-  - choco install OpenCV
-  - choco install opencv
+  - choco install OpenCV /InstallationPath:c\opencv
   - cd c:\projects\dgm
   - md build
   - cd build
-  - cmake -G"Visual Studio 14" ..
+  - cmake -DOPENCV_DIR="c:\opencv" -G"Visual Studio 14" ..
   - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
