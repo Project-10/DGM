@@ -19,7 +19,7 @@ clone_folder: c:\projects\dgm
 # platform: x64
 
 install:
-  -ps: choco install opencv
+  -cmd: choco install OpenCV
 
 build_script:
   - cd c:\
