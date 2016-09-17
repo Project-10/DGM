@@ -23,10 +23,10 @@ platform: x64
 
 build_script:
   - choco install opencv 
-  - cd c:\tools\opencv\build\x64\vc14
+  - cd c:\tools\opencv\build\
   - dir
   - cd c:\projects\dgm
   - md build
   - cd build
-  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14" ..
+  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 ARM" ..
   - msbuild /m /p:Configuration=Release /p:Platform="Win32" DGM.sln
