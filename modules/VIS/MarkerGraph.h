@@ -31,6 +31,6 @@ namespace DirectGraphicalModels {
 	/**
 	* @ingroup moduleVIS
 	*/
-	DllExport void drawGraph3D(IGraph *pGraph, CvPoint3D64f(*posFunc) (size_t nodeId, int size));
+	DllExport void drawGraph3D(IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId));
 #endif
 } }

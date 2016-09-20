@@ -20,17 +20,24 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)
 add_library(VIS SHARED ${VIS_INCLUDE} ${VIS_SOURCES} ${VIS_HEADERS})
 add_dependencies(VIS DGM)
-if(USE_OPENGL)
-	add_dependencies(VIS glfw)
-endif()
  
 # Properties -> Linker -> Input -> Additional Dependencies
 target_link_libraries(VIS ${OpenCV_LIBS} ${DGM_LIB})
 if(USE_OPENGL)
-	target_link_libraries(VIS glfw ${OPENGL_gl_LIBRARY})
+	include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/include
+						${PROJECT_SOURCE_DIR}/3rdparty/glm-0.9.8.0)
+
+	# GLEW
+	add_library(glew STATIC ${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/src/glew.c)
+	target_link_libraries(glew ${OPENGL_LIBRARY} ${EXTRA_LIBS})	
+	set_target_properties(glew PROPERTIES FOLDER "3rdparty")
+	add_definitions(-DGLEW_STATIC)
+	
+	add_dependencies(VIS glew glfw)
+	
+	target_link_libraries(VIS glew glfw  ${OPENGL_gl_LIBRARY})	
 endif()
 
- 
 set_target_properties(VIS PROPERTIES OUTPUT_NAME_RELEASE vis${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
 set_target_properties(VIS PROPERTIES OUTPUT_NAME_DEBUG vis${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH}d)
 

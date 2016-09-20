@@ -139,7 +139,12 @@ void CTree::Main(void)
 	}
 
 #ifdef USE_OPENGL	
-	vis::drawGraph3D(graph, [](size_t n, int size) { return cvPoint3D64f(0, 0, 0); });
+	vis::drawGraph3D(graph, [](size_t n) { 
+		return cvPoint3D32f(
+			0.9f * cos(2 * n * Pi / nNodes),
+			0.9f * sin(2 * n * Pi / nNodes),
+			-static_cast<float>(n) / nNodes); 
+	});
 #endif
 
 	delete graph;
