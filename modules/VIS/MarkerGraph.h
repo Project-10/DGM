@@ -13,24 +13,25 @@ namespace DirectGraphicalModels {
 	/**
 	* @ingroup moduleVIS
 	* @brief Visualizes the graph structure
+	* @param size The size of resulting image
 	* @param pGraph The graph
 	* @param posFunc The pointer to a positioning function: a mapper, which places every node at the resulting image canvas of size: \a size x \a size.
 	* For example:
 	* @code
 	* CvPoint posFunc(size_t nodeId, int size) {
-	*	return cvPoint(
-	*		size / 2 + static_cast<int>(0.45 * size * cos(2 * nodeId * Pi / nNodes)),
-	*		size / 2 + static_cast<int>(0.45 * size * sin(2 * nodeId * Pi / nNodes)) );
-	* }
+	*	return cvPoint2D32f(
+	*		0.5f + 0.45 * cos(2 * n * Pi / nNodes),
+	*		0.5f + 0.45 * sin(2 * n * Pi / nNodes) );
+	*	});
 	* @endcode
-	* @return Image 1000 x 1000 pixels with visualized graph.
+	* @return Image \b size x \b size pixels with visualized graph.
 	*/
-	DllExport Mat drawGraph(IGraph *pGraph, CvPoint (*posFunc) (size_t nodeId, int size) );
+	DllExport Mat drawGraph(int size, IGraph *pGraph, CvPoint2D32f (*posFunc) (size_t nodeId) );
 
 #ifdef USE_OPENGL
 	/**
 	* @ingroup moduleVIS
 	*/
-	DllExport void drawGraph3D(IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId));
+	DllExport void drawGraph3D(int size, IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId));
 #endif
 } }

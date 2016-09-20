@@ -127,10 +127,10 @@ void CTree::Main(void)
 	
 
 	if (false) {
-		Mat img = vis::drawGraph(graph, [](size_t n, int size) { 
-			return cvPoint(
-				size / 2 + static_cast<int>(0.45 * size * cos(2 * n * Pi / nNodes)),
-				size / 2 + static_cast<int>(0.45 * size * sin(2 * n * Pi / nNodes)) );
+		Mat img = vis::drawGraph(640, graph, [](size_t n) { 
+			return cvPoint2D32f(
+				0.5f + 0.45 * cos(2 * n * Pi / nNodes),
+				0.5f + 0.45 * sin(2 * n * Pi / nNodes) );
 		});
 
 		imshow("Image", img);
@@ -138,12 +138,12 @@ void CTree::Main(void)
 		destroyAllWindows();
 	}
 
-#ifdef USE_OPENGL	
-	vis::drawGraph3D(graph, [](size_t n) { 
+#ifdef USE_OPENGL
+	vis::drawGraph3D(640, graph, [](size_t n) { 
 		return cvPoint3D32f(
 			0.9f * cos(2 * n * Pi / nNodes),
 			0.9f * sin(2 * n * Pi / nNodes),
-			-static_cast<float>(n) / nNodes); 
+			0.5f - static_cast<float>(n) / nNodes); 
 	});
 #endif
 
