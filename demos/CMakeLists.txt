@@ -84,6 +84,16 @@ target_link_libraries(Demo_Vis ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 #install
 install(TARGETS Demo_Vis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+# ============================================== DEMO STEREO ===============================================
+add_executable(Demo_Stereo "Demo Stereo.cpp")
+add_dependencies(Demo_Stereo DGM)
 
+set_target_properties(Demo_Stereo PROPERTIES PROJECT_LABEL "Demo Stereo")			# in Visual Studio
+set_target_properties(Demo_Stereo PROPERTIES OUTPUT_NAME "Demo Stereo")
+set_target_properties(Demo_Stereo PROPERTIES FOLDER "Demos")
 
+# Properties->Linker->Input->Additional Dependencies
+target_link_libraries(Demo_Stereo ${OpenCV_LIBS} ${DGM_LIB})
 
+#install
+install(TARGETS Demo_Stereo RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

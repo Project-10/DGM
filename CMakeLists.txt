@@ -5,7 +5,7 @@ project (DGM)
 # The version number
 set (DGM_VERSION_MAJOR 1)
 set (DGM_VERSION_MINOR 5)
-set (DGM_VERSION_PATCH 0)
+set (DGM_VERSION_PATCH 1)
 
 configure_file(${PROJECT_SOURCE_DIR}/cmake/types.h.in ${PROJECT_SOURCE_DIR}/include/types.h)
 
