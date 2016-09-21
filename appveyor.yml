@@ -27,4 +27,5 @@ build_script:
   - md build
   - cd build
   - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win64" ..
+  - dir
   - msbuild /m /t:ALL_BUILD /p:Configuration=Release /p:Platform="x64" DGM.sln
