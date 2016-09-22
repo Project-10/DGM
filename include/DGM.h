@@ -209,10 +209,10 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
   - @ref demo1d_tree : This demo shows how to construct a tree-structured graphical model, for which also an exact message-passing inference algorithm exists. 
 - @subpage demo2d : An example of more complicated graphical models, containing loops and built upon a binary 2-dimentional image. This example also shows the application of DGM to
 					unsupervised segmentation.
+- @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 - @subpage demofex : An introduction to the feature extraction, needed mainly for supervised learning.
 - @subpage demotrain : An introdiction to the random model learning (training) in case when the training data is available.
 - @subpage demovis : An example of usage the visualization module of the library for analysis and represention of the intermediate and final results of classification.
-- @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 
 */
 
@@ -500,6 +500,26 @@ int main(int argv, char *argc[])
 @page demostereo Demo Stereo
 
 add description here
+
+<table align="center">
+<tr>
+<td colspan="2"><center><b>Input</b></center></td>
+<td></td>
+<td><center><b>Output</b></center></td>
+</tr>
+<tr>
+<td><img src="tsukuba_left.jpg"></td>
+<td><img src="tsukuba_right.jpg"></td>
+<td><img src="arrow.png"></td>
+<td><img src="tsukuba_truedisp.bmp"></td>
+</tr>
+<tr>
+<td><center><b>Left Image.jpg</b></center></td>
+<td><center><b>Right image.jpg</b></center></td>
+<td></td>
+<td><center><b>Resulting Disparity Map</b></center></td>
+</tr>
+</table>
 
 @code
 #include "DGM.h"
