@@ -126,26 +126,28 @@ void CTree::Main(void)
 	}
 	
 
-	if (false) {
+	if (true) {
 		Mat img = vis::drawGraph(640, graph, [](size_t n) { 
 			return cvPoint2D32f(
-				0.5f + 0.45 * cos(2 * n * Pi / nNodes),
-				0.5f + 0.45 * sin(2 * n * Pi / nNodes) );
+				0.9f * cos(2 * n * Pi / nNodes),
+				0.9f * sin(2 * n * Pi / nNodes) 
+			);
 		});
-
-		imshow("Image", img);
-		cvWaitKey();
-		destroyAllWindows();
+		imshow("2D Graph Viewer", img);
 	}
 
 #ifdef USE_OPENGL
-	vis::drawGraph3D(640, graph, [](size_t n) { 
+	vis::drawGraph3D(640, graph, [](size_t n) {
 		return cvPoint3D32f(
 			0.9f * cos(2 * n * Pi / nNodes),
 			0.9f * sin(2 * n * Pi / nNodes),
-			0.5f - static_cast<float>(n) / nNodes); 
+			// 0.5f - static_cast<float>(n) / nNodes
+		);
 	});
 #endif
+
+	//cvWaitKey();
+	destroyAllWindows();
 
 	delete graph;
 	delete inferer;

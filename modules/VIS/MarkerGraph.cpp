@@ -92,15 +92,18 @@ namespace {
 			vec_size_t childs;
 			pGraph->getChildNodes(n, childs);
 			pt1 = posFunc(n);
-			pt1.x *= size; pt1.y *= size;
+			pt1.x = 0.5f * (1 + pt1.x) * size; 
+			pt1.y = 0.5f * (1 + pt1.y) * size;
 
 			color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 64.0));
 			for (size_t c = 0; c < childs.size(); c++) {
 				pt2 = posFunc(childs[c]);
-				pt2.x *= size; pt2.y *= size;
+				pt2.x = 0.5f * (1 + pt2.x) * size; 
+				pt2.y = 0.5f * (1 + pt2.y) * size;
 
 				alpha.setTo(0);
-				arrowedLine(alpha, pt1, pt2, color, 1, CV_AA, 0, 0.05);
+				//arrowedLine(alpha, pt1, pt2, color, 1, CV_AA, 0, 0.05);
+				line(alpha, pt1, pt2, color, 1, CV_AA, 0);
 				add(res, alpha, res);
 			}
 		}
@@ -109,7 +112,8 @@ namespace {
 		for (size_t n = 0; n < nNodes; n++) {
 			color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			pt1 = posFunc(n);
-			pt1.x *= size; pt1.y *= size;
+			pt1.x = 0.5f * (1 + pt1.x) * size;
+			pt1.y = 0.5f * (1 + pt1.y) * size;
 			circle(res, pt1, 1 + size / 333, color, -1, CV_AA);
 		} // n
 		
@@ -211,7 +215,7 @@ namespace {
 	}
 	
 	// Arcball instance, sadly we put it here, so that it can be referenced in the callbacks 
-	static Arcball arcball(0.3f, 0.3f, 5);
+	static Arcball arcball(0.0f, -glm::pi<float>() / 2, 2.5f);
 
 	void scrollCallback(GLFWwindow *window, double x, double y) 
 	{
@@ -236,7 +240,7 @@ namespace {
 		// Initialise GLFW
 		DGM_ASSERT_MSG(glfwInit(), "Failed to initialize GLFW");
 
-		glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwWindowHint(GLFW_SAMPLES, 16);
 		// Tell GLFW to use OpenGL 3.3 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -246,7 +250,7 @@ namespace {
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);						// Disable window resizing
 		
 		// Create a windowed mode window and its OpenGL context 
-		GLFWwindow *window = glfwCreateWindow(size, size, "Graph Viewer", NULL, NULL);
+		GLFWwindow *window = glfwCreateWindow(size, size, "3D Graph Viewer", NULL, NULL);
 		if (!window) {
 			DGM_WARNING("Unable to create GLFW window");
 			glfwTerminate();
@@ -269,11 +273,12 @@ namespace {
 		const float _bkgIntencity = static_cast<float>(bkgIntencity) / 255;
 		glClearColor(_bkgIntencity, _bkgIntencity, _bkgIntencity, 0.0f);	// Set background color
 
-//		glShadeModel(GL_SMOOTH);											// Select flat or smooth shading
+		glShadeModel(GL_SMOOTH);											// Select flat or smooth shading
 		glEnable(GL_DEPTH_TEST);											// Ebable depth buffer
 		glDepthFunc(GL_LESS);												// Specify the value used for depth buffer comparisons
 		glEnable(GL_PROGRAM_POINT_SIZE);
-
+		glEnable(GL_POINT_SMOOTH);
+		glEnable(GL_BLEND);
 
 //		glFrontFace(GL_CCW);												// Define front- and back-facing polygons
 		glEnable(GL_CULL_FACE);
@@ -296,26 +301,46 @@ namespace {
 
 		// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 		// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::vec3> colors;
+		std::vector<unsigned short>	indices;
+		std::vector<glm::vec3>		vertices;
+		std::vector<glm::vec3>		colors;
 		
-		for (size_t n = 0; n < pGraph->getNumNodes(); n++) {
+		// Nodes
+		for (size_t n = 0; n < nNodes; n++) {
 			CvPoint3D32f pt = posFunc(n);
 			vertices.push_back(glm::vec3(pt.x, pt.y, pt.z));
-			
+					
 			CvScalar color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
-			colors.push_back(glm::vec3(color.val[0] / 255, color.val[1] / 255, color.val[2] / 255));
+			colors.push_back(glm::vec3(color.val[2] / 255, color.val[1] / 255, color.val[0] / 255));
+		}		
+		
+		// Edges
+		for (size_t n = 0; n < nNodes; n++) {
+			vec_size_t childs;
+			pGraph->getChildNodes(n, childs);
+			
+			for (size_t c : childs) {
+				indices.push_back(static_cast<unsigned short>(n));
+				indices.push_back(static_cast<unsigned short>(c));
+			}
 		}
+		
+		
 
 		GLuint vertexbuffer;
-		glGenBuffers(1, &vertexbuffer);											// Create 1 buffer
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);							// Make this buffer current
+		glGenBuffers(1, &vertexbuffer);																		// Create 1 buffer
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);														// Make this buffer current
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);	// transmit data
 
 		GLuint colorbuffer;
 		glGenBuffers(1, &colorbuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), &colors[0], GL_STATIC_DRAW);
+
+		GLuint elementbuffer;
+		glGenBuffers(1, &elementbuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
 
 
 		glm::mat4 ModelMatrix		= glm::mat4(1.0f);
@@ -362,9 +387,12 @@ namespace {
 				(void*)0            // array buffer offset
 			);
 			
+			// Index buffer
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 			// Вывести треугольник!
-			glDrawArrays(GL_POINTS, 0, vertices.size()); // 12*3 indices starting at 0 -> 12 triangles -> 6 squares
+			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (void *) 0); 
+			glDrawArrays(GL_POINTS, 0, vertices.size()); 
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
 

@@ -31,7 +31,7 @@ public:
 		: m_theta(theta)
 		, m_phi(phi)
 		, m_radius(radius)
-		, m_up(1)
+		, m_up(phi >= 0 ? 1 : -1)
 		, m_target(0, 0, 0)
 		, m_view(glm::mat4(1))
 		, m_viewNeedsUpdate(true)
