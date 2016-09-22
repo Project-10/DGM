@@ -1,5 +1,5 @@
 // Example "GraphCuts" 2D-case with LBP decoding
-// (http://www.di.ens.fr/~mschmidt/Software/UGM/graphCuts.html)
+// (http://www.cs.ubc.ca/~schmidtm/Software/UGM/graphCuts.html)
 #include "DGM.h"
 using namespace DirectGraphicalModels;
 
@@ -31,22 +31,23 @@ int main(int argc, char *argv[])
 	
 	// No training
 	// Defynig the edge potential
-	edgePot = CTrainEdgePotts::getEdgePotentials(10000, 2);
+	edgePot = CTrainEdgePotts::getEdgePotentials(10000, nStates);
 	// equivalent to:
 	// ePot.at<float>(0, 0) = 1000;	ePot.at<float>(0, 1) = 1;
 	// ePot.at<float>(1, 0) = 1;	ePot.at<float>(1, 1) = 1000;
 
 	// ==================== Building and filling the graph ====================
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++) {
 			float p = 1.0f - static_cast<float>(noise.at<byte>(y,x)) / 255.0f;
 			nodePot.at<float>(0, 0) = p;
 			nodePot.at<float>(1, 0) = 1.0f - p;
 			size_t idx = graph->addNode(nodePot);
-			if (y > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (x > 0) graph->addArc(idx, idx - width, edgePot);
-			if ((y > 0) && (x > 0)) graph->addArc(idx, idx - width - 1, edgePot);
-		} // y
+			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
+			if (y > 0) graph->addArc(idx, idx - width, edgePot);
+			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);	
+			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);											
+		} // x
 
 	// =============================== Decoding ===============================
 	printf("Decoding... ");
@@ -57,21 +58,18 @@ int main(int argc, char *argv[])
 
 	
 	// ====================== Evaluation / Visualization ======================
-	for (int x = 0, i = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
-			noise.at<byte>(y,x) = 255 * optimalDecoding[i++];
+	noise = Mat(noise.size(), CV_8UC1, optimalDecoding.data()) * 255;
 	medianBlur(noise, noise, 3);
 
 	float error = 0;
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
+	for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++)
 			if (noise.at<byte>(y,x) != img.at<byte>(y,x)) error++;
 
 	printf("Accuracy  = %.2f%%\n", 100 - 100 * error / (width * height));
 	
-	cvNamedWindow("image", CV_WINDOW_AUTOSIZE);
 	imshow("image", noise);	
-	imwrite("D:\\aaa.png", noise);
+
 	cvWaitKey();
 
 	return 0;

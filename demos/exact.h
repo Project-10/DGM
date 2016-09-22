@@ -1,5 +1,5 @@
 // Example "SMALL" 1D-case with exact inference / decoding 
-// (http://www.di.ens.fr/~mschmidt/Software/UGM/small.html)
+// (http://www.cs.ubc.ca/~schmidtm/Software/UGM/small.html)
 /// @cond DemoCode
 #pragma once
 
@@ -21,7 +21,7 @@ private:
 /**
 @page demo1d_exact Exact
 In this demo, we use a very simple graphical model to represent a very simple probabilistic scenario, show how to input the model into DGM, and perform inference and decoding in the model.
-This example copies the idea from the <a href="http://www.di.ens.fr/~mschmidt/Software/UGM/small.html" target="_blank">Cheating Students Scenario</a>
+This example copies the idea from the <a href="http://www.cs.ubc.ca/~schmidtm/Software/UGM/small.html" target="_blank">Cheating Students Scenario</a>
 
 > In order to run this demo, please execute \b "Demo 1D.exe" \b exact command
 

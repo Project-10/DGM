@@ -209,6 +209,7 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
   - @ref demo1d_tree : This demo shows how to construct a tree-structured graphical model, for which also an exact message-passing inference algorithm exists. 
 - @subpage demo2d : An example of more complicated graphical models, containing loops and built upon a binary 2-dimentional image. This example also shows the application of DGM to
 					unsupervised segmentation.
+- @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 - @subpage demofex : An introduction to the feature extraction, needed mainly for supervised learning.
 - @subpage demotrain : An introdiction to the random model learning (training) in case when the training data is available.
 - @subpage demovis : An example of usage the visualization module of the library for analysis and represention of the intermediate and final results of classification.
@@ -241,7 +242,7 @@ comparing the restored image with the original one.
 </tr>
 </table>
 
-This example copies the idea from the <a href="http://www.di.ens.fr/~mschmidt/Software/UGM/graphCuts.html">GraphCuts UGM Demo</a>
+This example copies the idea from the <a href="http://www.cs.ubc.ca/~schmidtm/Software/UGM/graphCuts.html">GraphCuts UGM Demo</a>
 @code
 #include "DGM.h"
 using namespace DirectGraphicalModels;
@@ -264,22 +265,23 @@ int main(int argv, char *argc[])
 	
 	// No training
 	// Defynig the edge potential
-	edgePot = CTrainEdgePotts::getEdgePotentials(10000, 2);
+	edgePot = CTrainEdgePotts::getEdgePotentials(10000, nStates);
 	// equivalent to:
 	// ePot.at<float>(0, 0) = 1000;	ePot.at<float>(0, 1) = 1;
 	// ePot.at<float>(1, 0) = 1;	ePot.at<float>(1, 1) = 1000;
 
 	// ==================== Building and filling the graph ====================
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++) {
 			float p = 1.0f - static_cast<float>(noise.at<byte>(y,x)) / 255.0f;
 			nodePot.at<float>(0, 0) = p;
 			nodePot.at<float>(1, 0) = 1.0f - p;
 			size_t idx = graph->addNode(nodePot);
-			if (y > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (x > 0) graph->addArc(idx, idx - width, edgePot);
-			if ((y > 0) && (x > 0)) graph->addArc(idx, idx - width - 1, edgePot);
-		} // y
+			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
+			if (y > 0) graph->addArc(idx, idx - width, edgePot);
+			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);
+			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);									
+		} // x
 
 	// =============================== Decoding ===============================
 	printf("Decoding... ");
@@ -290,14 +292,12 @@ int main(int argv, char *argc[])
 
 	
 	// ====================== Evaluation / Visualization ======================
-	for (int x = 0, i = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
-			noise.at<byte>(y,x) = 255 * optimalDecoding[i++];
+	noise = Mat(noise.size(), CV_8UC1, optimalDecoding.data()) * 255;
 	medianBlur(noise, noise, 3);
 
 	float error = 0;
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
+	for (int y = 0; y < height; y++)
+		for (int x = 0; x < width; x++)
 			if (noise.at<byte>(y,x) != img.at<byte>(y,x)) error++;
 
 	printf("Accuracy  = %.2f%%\n", 100 - 100 * error / (width * height));
@@ -496,3 +496,32 @@ int main(int argv, char *argc[])
 @endcode
 */
 
+/**
+@page demostereo Demo Stereo
+
+add description here
+
+<table align="center">
+<tr>
+<td colspan="2"><center><b>Input</b></center></td>
+<td></td>
+<td><center><b>Output</b></center></td>
+</tr>
+<tr>
+<td><img src="tsukuba_left.jpg"></td>
+<td><img src="tsukuba_right.jpg"></td>
+<td><img src="arrow.png"></td>
+<td><img src="tsukuba_truedisp.bmp"></td>
+</tr>
+<tr>
+<td><center><b>Left Image.jpg</b></center></td>
+<td><center><b>Right image.jpg</b></center></td>
+<td></td>
+<td><center><b>Resulting Disparity Map</b></center></td>
+</tr>
+</table>
+
+@code
+#include "DGM.h"
+@endcode
+*/
