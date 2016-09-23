@@ -141,7 +141,7 @@ void CTree::Main(void)
 		return cvPoint3D32f(
 			0.9f * cos(2 * n * Pi / nNodes),
 			0.9f * sin(2 * n * Pi / nNodes),
-			// 0.5f - static_cast<float>(n) / nNodes
+			0.0f// 0.5f - static_cast<float>(n) / nNodes
 		);
 	});
 #endif

@@ -2,14 +2,15 @@ file(GLOB VIS_INCLUDE	${PROJECT_SOURCE_DIR}/include/VIS.h)
 file(GLOB VIS_SOURCES	"*.cpp")
 file(GLOB VIS_HEADERS	"*.h")
 if(USE_OPENGL)
-file(GLOB VIS_SHADERS	"*shader")
+file(GLOB VIS_SHADERS	"*.glsl")
 endif()
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${VIS_INCLUDE})
 source_group("Source Files" FILES ${VIS_SOURCES} ${VIS_HEADERS}) 
-source_group("shaders" FILES ${VIS_SHADERS})
+source_group("shaders\\vertex" FILES "VertexShader.glsl")
+source_group("shaders\\fragment" FILES "NodeFragmentShader.glsl" "EdgeFragmentShader.glsl")
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include

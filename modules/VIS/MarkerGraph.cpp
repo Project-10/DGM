@@ -122,96 +122,117 @@ namespace {
 
 
 #ifdef USE_OPENGL
-	GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
+	void LoadShaders(GLuint &NodeProgramID, GLuint &EdgeProgramID)
+	{
+		GLint	Result = GL_FALSE;
+		int		InfoLogLength;
+		
 
-		// Create the shaders
+		// -------------- Vertex Shader --------------
 		GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		
+		{
+			const std::string sourceCode =
+			#include "VertexShader.glsl"
+			;
 
-		// Read the Vertex Shader code from the file
-		std::string VertexShaderCode;
-		std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-		if (VertexShaderStream.is_open()) {
-			std::string Line = "";
-			while (getline(VertexShaderStream, Line))
-				VertexShaderCode += "\n" + Line;
-			VertexShaderStream.close();
-		}
-		else {
-			printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
-			getchar();
-			return 0;
-		}
+			// Compile Vertex Shader
+			printf("Compiling vertex shader\n");
+			char const * VertexSourcePointer = sourceCode.c_str();
+			glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
+			glCompileShader(VertexShaderID);
 
-		// Read the Fragment Shader code from the file
-		std::string FragmentShaderCode;
-		std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-		if (FragmentShaderStream.is_open()) {
-			std::string Line = "";
-			while (getline(FragmentShaderStream, Line))
-				FragmentShaderCode += "\n" + Line;
-			FragmentShaderStream.close();
+			// Check Vertex Shader
+			glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+			glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+			if (InfoLogLength > 0) {
+				std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
+				glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+				printf("%s\n", &VertexShaderErrorMessage[0]);
+			}
 		}
 
-		GLint Result = GL_FALSE;
-		int InfoLogLength;
+		// -------------- Node Fragment Shader --------------
+		GLuint NodeFragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		
+		{
+			const std::string sourceCode =
+			#include "NodeFragmentShader.glsl"
+			;
 
+			// Compile Fragment Shader
+			printf("Compiling fragment shader\n");
+			char const * FragmentSourcePointer = sourceCode.c_str();
+			glShaderSource(NodeFragmentShaderID, 1, &FragmentSourcePointer, NULL);
+			glCompileShader(NodeFragmentShaderID);
 
-		// Compile Vertex Shader
-		printf("Compiling shader : %s\n", vertex_file_path);
-		char const * VertexSourcePointer = VertexShaderCode.c_str();
-		glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
-		glCompileShader(VertexShaderID);
+			// Check Fragment Shader
+			glGetShaderiv(NodeFragmentShaderID, GL_COMPILE_STATUS, &Result);
+			glGetShaderiv(NodeFragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+			if (InfoLogLength > 0) {
+				std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
+				glGetShaderInfoLog(NodeFragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+				printf("%s\n", &FragmentShaderErrorMessage[0]);
+			}
+		}
 
-		// Check Vertex Shader
-		glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-		glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		if (InfoLogLength > 0) {
-			std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
-			glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-			printf("%s\n", &VertexShaderErrorMessage[0]);
+		// -------------- Edge Fragment Shader --------------
+		GLuint EdgeFragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+		{
+			const std::string sourceCode =
+			#include "EdgeFragmentShader.glsl"
+				;
+
+			// Compile Fragment Shader
+			printf("Compiling fragment shader\n");
+			char const * FragmentSourcePointer = sourceCode.c_str();
+			glShaderSource(EdgeFragmentShaderID, 1, &FragmentSourcePointer, NULL);
+			glCompileShader(EdgeFragmentShaderID);
+
+			// Check Fragment Shader
+			glGetShaderiv(EdgeFragmentShaderID, GL_COMPILE_STATUS, &Result);
+			glGetShaderiv(EdgeFragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+			if (InfoLogLength > 0) {
+				std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
+				glGetShaderInfoLog(EdgeFragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+				printf("%s\n", &FragmentShaderErrorMessage[0]);
+			}
 		}
 
 
-		// Compile Fragment Shader
-		printf("Compiling shader : %s\n", fragment_file_path);
-		char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-		glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
-		glCompileShader(FragmentShaderID);
-
-		// Check Fragment Shader
-		glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-		glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-		if (InfoLogLength > 0) {
-			std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
-			glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-			printf("%s\n", &FragmentShaderErrorMessage[0]);
-		}
-
-		// Link the program
+		// -------------- Program --------------
 		printf("Linking program\n");
-		GLuint ProgramID = glCreateProgram();
-		glAttachShader(ProgramID, VertexShaderID);
-		glAttachShader(ProgramID, FragmentShaderID);
-		glLinkProgram(ProgramID);
+		NodeProgramID = glCreateProgram();
+		glAttachShader(NodeProgramID, VertexShaderID);
+		glAttachShader(NodeProgramID, NodeFragmentShaderID);
+		glLinkProgram(NodeProgramID);
 
 		// Check the program
-		glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-		glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		glGetProgramiv(NodeProgramID, GL_LINK_STATUS, &Result);
+		glGetProgramiv(NodeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 		if (InfoLogLength > 0) {
 			std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-			glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+			glGetProgramInfoLog(NodeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 			printf("%s\n", &ProgramErrorMessage[0]);
 		}
 
+		glDetachShader(NodeProgramID, VertexShaderID);
+		glDetachShader(NodeProgramID, NodeFragmentShaderID);
 
-		glDetachShader(ProgramID, VertexShaderID);
-		glDetachShader(ProgramID, FragmentShaderID);
+		
+		
+		printf("Linking program\n");
+		EdgeProgramID = glCreateProgram();
+		glAttachShader(EdgeProgramID, VertexShaderID);
+		glAttachShader(EdgeProgramID, EdgeFragmentShaderID);
+		glLinkProgram(EdgeProgramID);
 
+
+		
 		glDeleteShader(VertexShaderID);
-		glDeleteShader(FragmentShaderID);
-
-		return ProgramID;
+		glDeleteShader(NodeFragmentShaderID);
+		glDeleteShader(EdgeFragmentShaderID);
 	}
 	
 	// Arcball instance, sadly we put it here, so that it can be referenced in the callbacks 
@@ -278,7 +299,9 @@ namespace {
 		glDepthFunc(GL_LESS);												// Specify the value used for depth buffer comparisons
 		glEnable(GL_PROGRAM_POINT_SIZE);
 		glEnable(GL_POINT_SMOOTH);
+		// Enable blending
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 
 //		glFrontFace(GL_CCW);												// Define front- and back-facing polygons
 		glEnable(GL_CULL_FACE);
@@ -294,10 +317,12 @@ namespace {
 		glBindVertexArray(vertex_array_id);
 
 		// Create and compile our GLSL program from the shaders
-		GLuint programID = LoadShaders("..\\..\\modules\\VIS\\SimpleVertexShader.vertexshader", "..\\..\\modules\\VIS\\SimpleFragmentShader.fragmentshader");
+		GLuint NodeProgramID, EdgeProgramID;
+		LoadShaders(NodeProgramID, EdgeProgramID);
 		
 		// Get a handle for our "MVP" uniform
-		GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+		GLuint NodeMatrixID = glGetUniformLocation(NodeProgramID, "MVP");
+		GLuint EdgeMatrixID = glGetUniformLocation(EdgeProgramID, "MVP");
 
 		// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 		// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -352,8 +377,8 @@ namespace {
 		while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS ) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);					// Clear information from last draw
 			
-			// Use our shader
-			glUseProgram(programID);
+
+			glUseProgram(NodeProgramID);
 
 			// Compute the MVP matrix from keyboard and mouse input
 			//computeMatricesFromInputs(window, size);
@@ -361,7 +386,7 @@ namespace {
 			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 			// Send our transformation to the currently bound shader, in the "MVP" uniform
-			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(NodeMatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 			// 1-st attribute buffer : vertices
 			glEnableVertexAttribArray(0);
@@ -387,14 +412,57 @@ namespace {
 				(void*)0            // array buffer offset
 			);
 			
-			// Index buffer
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+			glDrawArrays(GL_POINTS, 0, vertices.size());
 
-			// Вывести треугольник!
-			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (void *) 0); 
-			glDrawArrays(GL_POINTS, 0, vertices.size()); 
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
+
+			// --------------------------------------
+			
+			glUseProgram(EdgeProgramID);
+
+			// Send our transformation to the currently bound shader, in the "MVP" uniform
+			glUniformMatrix4fv(EdgeMatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+			// 1-st attribute buffer : vertices
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+			glVertexAttribPointer(
+				0,                  // attribute. No particular reason for 1, but must match the layout in the shader.
+				3,                  // size
+				GL_FLOAT,           // type
+				GL_FALSE,           // normalized ?
+				0,                  // stride
+				(void*)0            // array buffer offset
+				);
+
+			// 2-nd attribute buffer : colors
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+			glVertexAttribPointer(
+				1,                  // attribute. No particular reason for 1, but must match the layout in the shader.
+				3,                  // size
+				GL_FLOAT,           // type
+				GL_FALSE,           // normalized ?
+				0,                  // stride
+				(void*)0            // array buffer offset
+				);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);			// Index buffer
+
+			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (void *)0);
+			
+			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(1);
+
+
+
+
+
+
+
+		
+
 
 			glfwSwapBuffers(window);											// Swap front and back buffers 
 			glfwPollEvents();													// Poll for and process events 
@@ -403,7 +471,8 @@ namespace {
 		// Cleanup VBO and shader
 		glDeleteBuffers(1, &vertexbuffer);
 		glDeleteBuffers(1, &colorbuffer);
-		glDeleteProgram(programID);
+		glDeleteProgram(NodeProgramID);
+		glDeleteProgram(EdgeProgramID);
 		glDeleteVertexArrays(1, &vertex_array_id);
 
 		// Close OpenGL window and terminate GLFW
