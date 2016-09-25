@@ -5,7 +5,12 @@ file(GLOB VIS_HEADERS	"*.h")
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${VIS_INCLUDE})
-source_group("Source Files" FILES ${VIS_SOURCES} ${VIS_HEADERS}) 
+source_group("" FILES ${VIS_SOURCES} ${VIS_HEADERS})
+source_group("Source Files" FILES	"Marker.h" "Marker.cpp"
+									"MarkerHistogram.h" "MarkerHistogram.cpp"
+									"MarkerGraph.h" "MarkerGraph.cpp") 
+source_group("Source Files\\Common" FILES "ColorSpaces.h")
+
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include

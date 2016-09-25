@@ -9,39 +9,6 @@
 namespace DirectGraphicalModels { namespace vis
 {
 	// Default paletes
-	const static Scalar colors3[] =  
-	{ 
-		CV_RGB(255, 0,   0),		// Red
-		CV_RGB(0,   255, 0),		// Green
-		CV_RGB(0,   0,   255)		// Blue
-	}; 
-
-	const static Scalar colors6[] =  
-	{ 
-		CV_RGB(255, 0,   0),		// Red
-		CV_RGB(255, 255, 0),		// Yellow
-		CV_RGB(0,   255, 0),		// Green
-		CV_RGB(0,   255, 255),		// Cyan
-		CV_RGB(0,   0,   255),		// Blue
-		CV_RGB(255, 0,   255)		// Purple
-	}; 
-
-	const static Scalar colors12[] =  
-	{ 
-		CV_RGB(255, 0,   0),		// Red
-		CV_RGB(255, 128, 0),		// Orange
-		CV_RGB(255, 255, 0),		// Yellow
-		CV_RGB(128, 255, 0),		// Chartreuse
-		CV_RGB(0,   255, 0),		// Green
-		CV_RGB(0,   255, 128),		// Spring green
-		CV_RGB(0,   255, 255),		// Cyan
-		CV_RGB(0,   128, 255),		// 
-		CV_RGB(0,   0,   255),		// Blue
-		CV_RGB(128, 0,   255),		// 
-		CV_RGB(255, 0,   255),		// Purple
-		CV_RGB(255, 0,   128)		// 
-	}; 
-
 	const static Scalar colors24[] =  
 	{ 
 		CV_RGB(255, 0,   0),		// Red
@@ -74,9 +41,18 @@ namespace DirectGraphicalModels { namespace vis
 	///@brief Default palettes.
 	enum default_pallete {
 		DEF_PALETTE_3,		///< Default Pallete with 3 colors
+		DEF_PALETTE_3_INV,	///< Default Pallete with 3 colors
 		DEF_PALETTE_6,		///< Default Pallete with 6 colors
+		DEF_PALETTE_6_INV,	///< Default Pallete with 6 colors
 		DEF_PALETTE_12,		///< Default Pallete with 12 colors
-		DEF_PALETTE_24		///< Default Pallete with 12 colors
+		DEF_PALETTE_12_INV,	///< Default Pallete with 12 colors
+		DEF_PALETTE_24,		///< Default Pallete with 24 colors
+		DEF_PALETTE_24_INV,	///< Default Pallete with 24 colors
+		DEF_PALETTE_24_M,	///< Default Pallete with 24 colors
+		DEF_PALETTE_36,		///< Default Pallete with 36 colors
+		DEF_PALETTE_36_INV,	///< Default Pallete with 36 colors
+		DEF_PALETTE_72,		///< Default Pallete with 72 colors
+		DEF_PALETTE_72_INV	///< Default Pallete with 72 colors
 	};
 	/**
 	* @brief Visualization flags.

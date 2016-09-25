@@ -7,7 +7,7 @@
 #define DEBUG_MODE			
 #define DEBUG_PRINT_INFO	
 #define ENABLE_PPL
-#define ENABLE_AMP
+/* #undef ENABLE_AMP */
 #define USE_SHERWOOD
 
 #include <vector>
