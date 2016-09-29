@@ -9,7 +9,7 @@
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 
-#include "TrackballCamera.h"
+#include "CameraControl.h"
 #endif
 
 namespace DirectGraphicalModels { namespace vis
@@ -178,24 +178,6 @@ namespace DirectGraphicalModels { namespace vis
 		glDeleteShader(EdgeFragmentShaderID);
 	}
 	
-	// Arcball instance, sadly we put it here, so that it can be referenced in the callbacks 
-	static CTrackballCamera camera(0.0f, -glm::pi<float>() / 2, 2.5f);
-
-	void scrollCallback(GLFWwindow *window, double x, double y) 
-	{
-		camera.scrollCallback(window, x, y);
-	}
-
-	void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) 
-	{
-		camera.mouseButtonCallback(window, button, action, mods);
-	}
-
-	void cursorCallback(GLFWwindow *window, double x, double y) 
-	{
-		camera.cursorCallback(window, static_cast<float>(x), static_cast<float>(y));
-	}
-
 	void drawGraph3D(int size, IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId))
 	{
 		// Constants
@@ -234,6 +216,9 @@ namespace DirectGraphicalModels { namespace vis
 
 		printf("OpenGL Ver: %s\n", glGetString(GL_VERSION));
 		
+		// Arcball instance, sadly we put it here, so that it can be referenced in the callbacks 
+		CCameraControl camera(window);
+		
 		const float _bkgIntencity = static_cast<float>(bkgIntencity) / 255;
 		glClearColor(_bkgIntencity, _bkgIntencity, _bkgIntencity, 0.0f);	// Set background color
 
@@ -251,9 +236,9 @@ namespace DirectGraphicalModels { namespace vis
 //		glCullFace(GL_BACK);
 
 		// Set the callback functions
-		glfwSetScrollCallback(window, scrollCallback);
-		glfwSetCursorPosCallback(window, cursorCallback);
-		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+		//glfwSetScrollCallback(window, scrollCallback);
+		//glfwSetCursorPosCallback(window, cursorCallback);
+		//glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 		GLuint vertex_array_id;
 		glGenVertexArrays(1, &vertex_array_id);
@@ -325,6 +310,7 @@ namespace DirectGraphicalModels { namespace vis
 
 			// Compute the MVP matrix from keyboard and mouse input
 			//computeMatricesFromInputs(window, size);
+			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera.reset();
 			glm::mat4 ViewMatrix = camera.getViewMatrix();
 			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
@@ -397,15 +383,6 @@ namespace DirectGraphicalModels { namespace vis
 			
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
-
-
-
-
-
-
-
-		
-
 
 			glfwSwapBuffers(window);											// Swap front and back buffers 
 			glfwPollEvents();													// Poll for and process events 

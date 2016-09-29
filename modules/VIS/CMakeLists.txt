@@ -3,6 +3,8 @@ file(GLOB VIS_SOURCES	"*.cpp")
 file(GLOB VIS_HEADERS	"*.h")
 if(USE_OPENGL)
 file(GLOB VIS_SHADERS	"*.glsl")
+file(GLOB VIS_SOURCES	${VIS_SOURCES} "./Trackball Camera/*.cpp")
+file(GLOB VIS_HEADERS	${VIS_HEADERS} "./Trackball Camera/*.h")
 endif()
 
 # Create named folders for the sources within the .vcproj
@@ -14,9 +16,9 @@ source_group("shaders\\fragment" FILES "NodeFragmentShader.glsl" "EdgeFragmentSh
 source_group("Source Files" FILES	"Marker.h" "Marker.cpp"
 									"MarkerHistogram.h" "MarkerHistogram.cpp"
 									"MarkerGraph.h" "MarkerGraph.cpp") 
-source_group("Source Files\\Common" FILES "ColorSpaces.h")
-source_group("Source Files\\Common\\Trackball Camera" FILES "TrackballCamera.h" "TrackballCamera.cpp") 
-
+source_group("Source Files\\Common\\Color Spaces" FILES "colorspaces.h")
+source_group("Source Files\\Common\\Trackball Camera" FILES "./Trackball Camera/TrackballCamera.h" "./Trackball Camera/TrackballCamera.cpp") 
+source_group("Source Files\\Common\\Trackball Camera" FILES "./Trackball Camera/CameraControl.h" "./Trackball Camera/CameraControl.cpp") 
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include
@@ -36,7 +38,8 @@ add_dependencies(VIS DGM)
 target_link_libraries(VIS ${OpenCV_LIBS} ${DGM_LIB})
 if(USE_OPENGL)
 	include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/include
-						${PROJECT_SOURCE_DIR}/3rdparty/glm-0.9.8.0)
+						${PROJECT_SOURCE_DIR}/3rdparty/glm-0.9.8.0
+						"Trackball Camera")
 
 	# GLEW
 	add_library(glew STATIC ${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/src/glew.c)
