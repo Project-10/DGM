@@ -1,80 +1,21 @@
 #include "MarkerGraph.h"
 #include "DGM\IGraph.h"
+#include "ColorSpaces.h"
 #include "macroses.h"
 
 #ifdef USE_OPENGL
-#include <fstream> // for LoadShaders
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
+
 #include "TrackballCamera.h"
 #endif
 
 namespace DirectGraphicalModels { namespace vis
 {
-// Constants
-const byte bkgIntencity = 50;
-
-namespace {
-	CvScalar hsv2rgb(CvScalar hsv)
-	{
-		double      hh, p, q, t, ff;
-		long        i;
-		CvScalar	out;
-
-		if (hsv.val[1] <= 0.0) {       // < is bogus, just shuts up warnings
-			out.val[0] = hsv.val[2];
-			out.val[1] = hsv.val[2];
-			out.val[2] = hsv.val[2];
-			return out;
-		}
-		hh = hsv.val[0];
-		if (hh >= 360.0) hh = 0.0;
-		hh /= 60.0;
-		i = (long)hh;
-		ff = hh - i;
-		p = hsv.val[2] * (1.0 - hsv.val[1] / 255.0);
-		q = hsv.val[2] * (1.0 - (hsv.val[1] * ff) / 255.0);
-		t = hsv.val[2] * (1.0 - (hsv.val[1] * (1.0 - ff)) / 255.0);
-
-		switch (i) {
-		case 0:
-			out.val[0] = hsv.val[2];
-			out.val[1] = t;
-			out.val[2] = p;
-			break;
-		case 1:
-			out.val[0] = q;
-			out.val[1] = hsv.val[2];
-			out.val[2] = p;
-			break;
-		case 2:
-			out.val[0] = p;
-			out.val[1] = hsv.val[2];
-			out.val[2] = t;
-			break;
-
-		case 3:
-			out.val[0] = p;
-			out.val[1] = q;
-			out.val[2] = hsv.val[2];
-			break;
-		case 4:
-			out.val[0] = t;
-			out.val[1] = p;
-			out.val[2] = hsv.val[2];
-			break;
-		case 5:
-		default:
-			out.val[0] = hsv.val[2];
-			out.val[1] = p;
-			out.val[2] = q;
-			break;
-		}
-		return out;
-	}
-}
+	// Constants
+	const byte bkgIntencity = 50;
 
 	Mat drawGraph(int size, IGraph * pGraph, CvPoint2D32f(*posFunc) (size_t nodeId))
 	{
@@ -91,11 +32,13 @@ namespace {
 		for (size_t n = 0; n < nNodes; n++) {
 			vec_size_t childs;
 			pGraph->getChildNodes(n, childs);
+
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size; 
 			pt1.y = 0.5f * (1 + pt1.y) * size;
+	
+			color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 64.0));
 
-			color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 64.0));
 			for (size_t c = 0; c < childs.size(); c++) {
 				pt2 = posFunc(childs[c]);
 				pt2.x = 0.5f * (1 + pt2.x) * size; 
@@ -110,7 +53,7 @@ namespace {
 		
 		// Nodes
 		for (size_t n = 0; n < nNodes; n++) {
-			color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size;
 			pt1.y = 0.5f * (1 + pt1.y) * size;
@@ -335,7 +278,7 @@ namespace {
 			CvPoint3D32f pt = posFunc(n);
 			vertices.push_back(glm::vec3(pt.x, pt.y, pt.z));
 					
-			CvScalar color = hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			CvScalar color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			colors.push_back(glm::vec3(color.val[2] / 255, color.val[1] / 255, color.val[0] / 255));
 		}		
 		

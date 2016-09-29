@@ -1,5 +1,7 @@
 #include "Marker.h"
+#include "ColorSpaces.h"
 #include "macroses.h"
+
 
 namespace DirectGraphicalModels { namespace vis
 {
@@ -12,10 +14,19 @@ const int	CMarker::ds				= 70; // px
 CMarker::CMarker(default_pallete palette)
 {
 	switch(palette) {
-		case DEF_PALETTE_3:	 for (int i = 0; i < 3;  i++) m_vPalette.push_back(std::make_pair(colors3[i],  "")); break;
-		case DEF_PALETTE_6:	 for (int i = 0; i < 6;  i++) m_vPalette.push_back(std::make_pair(colors6[i],  "")); break;
-		case DEF_PALETTE_12: for (int i = 0; i < 12; i++) m_vPalette.push_back(std::make_pair(colors12[i], "")); break;
-		case DEF_PALETTE_24: for (int i = 0; i < 24; i++) m_vPalette.push_back(std::make_pair(colors24[i], "")); break;
+		case DEF_PALETTE_3:			for (int h = 0; h < 360; h += 120)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_3_INV:		for (int h = 0; h < 360; h += 120)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_6:			for (int h = 0; h < 360; h += 60)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_6_INV:		for (int h = 0; h < 360; h += 60)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_12:		for (int h = 0; h < 360; h += 30)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_12_INV:	for (int h = 0; h < 360; h += 30)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_24:		for (int h = 0; h < 360; h += 15)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_24_INV:	for (int h = 0; h < 360; h += 15)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_24_M:		for (int i = 0; i < 24; i++)		m_vPalette.push_back(std::make_pair(colors24[i], ""));								  break;
+		case DEF_PALETTE_36:		for (int h = 0; h < 360; h += 10)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_36_INV:	for (int h = 0; h < 360; h += 10)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_72:		for (int h = 0; h < 360; h += 5)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
+		case DEF_PALETTE_72_INV:	for (int h = 0; h < 360; h += 5)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
 	}	
 }
 

@@ -10,13 +10,13 @@ void print_help(void)
 
 int main(int argc, char *argv[]) 
 {
-	const unsigned int	nStates	= 2;			// {true; false}
-	
 	if (argc != 3) {
 		print_help();
 		return 0;
 	}
-	
+
+	const unsigned int	nStates = 2;			// {true; false}
+
 	// Reading parameters and images
 	Mat		  img		= imread(argv[1], 0);
 	Mat		  noise		= imread(argv[2], 0);

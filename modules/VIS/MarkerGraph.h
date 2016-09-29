@@ -4,8 +4,6 @@
 
 #include "types.h"
 
-#define DGM_HSV(h, s, v) cvScalar(h, s, v, 0 )
-
 namespace DirectGraphicalModels { 
 	class IGraph;
 	namespace vis
