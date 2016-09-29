@@ -8,9 +8,15 @@ endif()
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${VIS_INCLUDE})
-source_group("Source Files" FILES ${VIS_SOURCES} ${VIS_HEADERS}) 
+source_group("" FILES ${VIS_SOURCES} ${VIS_HEADERS}) 
 source_group("shaders\\vertex" FILES "VertexShader.glsl")
 source_group("shaders\\fragment" FILES "NodeFragmentShader.glsl" "EdgeFragmentShader.glsl")
+source_group("Source Files" FILES	"Marker.h" "Marker.cpp"
+									"MarkerHistogram.h" "MarkerHistogram.cpp"
+									"MarkerGraph.h" "MarkerGraph.cpp") 
+source_group("Source Files\\Common" FILES "ColorSpaces.h")
+source_group("Source Files\\Common\\Trackball Camera" FILES "TrackballCamera.h" "TrackballCamera.cpp") 
+
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include

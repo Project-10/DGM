@@ -8,7 +8,7 @@
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
-#include "arcball.h"
+#include "TrackballCamera.h"
 #endif
 
 namespace DirectGraphicalModels { namespace vis
@@ -236,21 +236,21 @@ namespace {
 	}
 	
 	// Arcball instance, sadly we put it here, so that it can be referenced in the callbacks 
-	static Arcball arcball(0.0f, -glm::pi<float>() / 2, 2.5f);
+	static CTrackballCamera camera(0.0f, -glm::pi<float>() / 2, 2.5f);
 
 	void scrollCallback(GLFWwindow *window, double x, double y) 
 	{
-		arcball.scrollCallback(window, x, y);
+		camera.scrollCallback(window, x, y);
 	}
 
 	void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) 
 	{
-		arcball.mouseButtonCallback(window, button, action, mods);
+		camera.mouseButtonCallback(window, button, action, mods);
 	}
 
 	void cursorCallback(GLFWwindow *window, double x, double y) 
 	{
-		arcball.cursorCallback(window, static_cast<float>(x), static_cast<float>(y));
+		camera.cursorCallback(window, static_cast<float>(x), static_cast<float>(y));
 	}
 
 	void drawGraph3D(int size, IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId))
@@ -382,7 +382,7 @@ namespace {
 
 			// Compute the MVP matrix from keyboard and mouse input
 			//computeMatricesFromInputs(window, size);
-			glm::mat4 ViewMatrix = arcball.createViewRotationMatrix();
+			glm::mat4 ViewMatrix = camera.getViewMatrix();
 			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 			// Send our transformation to the currently bound shader, in the "MVP" uniform
@@ -412,7 +412,7 @@ namespace {
 				(void*)0            // array buffer offset
 			);
 			
-			glDrawArrays(GL_POINTS, 0, vertices.size());
+			glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertices.size()));
 
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
@@ -450,7 +450,7 @@ namespace {
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);			// Index buffer
 
-			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (void *)0);
+			glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_SHORT, (void *)0);
 			
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
