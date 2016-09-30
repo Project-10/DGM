@@ -7,7 +7,11 @@
 #define DEBUG_MODE			
 #define DEBUG_PRINT_INFO	
 #define ENABLE_PPL
+<<<<<<< HEAD
 #define ENABLE_AMP
+=======
+/* #undef ENABLE_AMP */
+>>>>>>> aa7d5752b50ea513f5e51fc8572b7ad2ec6be978
 #define USE_OPENGL
 #define USE_SHERWOOD
 

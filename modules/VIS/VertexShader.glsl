@@ -15,7 +15,11 @@ void main()
 {
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4(vertexPosition, 1);
+<<<<<<< HEAD
 	gl_PointSize = 5.0f; //max(5.0f, 25.0f / gl_Position.w);
+=======
+	gl_PointSize = max(5.0f, 35.0f / gl_Position.w);
+>>>>>>> aa7d5752b50ea513f5e51fc8572b7ad2ec6be978
 
 	// The color of each vertex will be interpolated to produce the color of each fragment
 	fragmentColor = vertexColor;  
