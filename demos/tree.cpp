@@ -127,8 +127,8 @@ void CTree::Main(void)
 	
 
 	if (true) {
-		Mat img = vis::drawGraph(640, graph, [](size_t n) { 
-			return cvPoint2D32f(
+		Mat img = vis::drawGraph(600, graph, [](size_t n) { 
+			return Point2f(
 				0.9f * cos(2 * n * Pi / nNodes),
 				0.9f * sin(2 * n * Pi / nNodes) 
 			);
@@ -138,7 +138,7 @@ void CTree::Main(void)
 
 #ifdef USE_OPENGL
 	vis::drawGraph3D(640, graph, [](size_t n) {
-		return cvPoint3D32f(
+		return Point3f(
 			0.9f * cos(2 * n * Pi / nNodes),
 			0.9f * sin(2 * n * Pi / nNodes),
 			0.0f// 0.5f - static_cast<float>(n) / nNodes

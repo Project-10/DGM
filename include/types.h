@@ -4,11 +4,11 @@
 #define DGM_VERSION_MINOR 5
 #define DGM_VERSION_PATCH 1
 
-/* #undef DEBUG_MODE */
-/* #undef DEBUG_PRINT_INFO */
+#define DEBUG_MODE			
+#define DEBUG_PRINT_INFO	
 #define ENABLE_PPL
-/* #undef ENABLE_AMP */
-/* #undef USE_OPENGL */
+#define ENABLE_AMP
+#define USE_OPENGL
 #define USE_SHERWOOD
 
 

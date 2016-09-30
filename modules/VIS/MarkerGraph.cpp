@@ -17,10 +17,66 @@ namespace DirectGraphicalModels { namespace vis
 	// Constants
 	const byte bkgIntencity = 50;
 
-	Mat drawGraph(int size, IGraph * pGraph, CvPoint2D32f(*posFunc) (size_t nodeId))
+	namespace {
+		// Draws line with interpolated color
+		void drawLine(Mat &img, Point pt1, Point pt2, Scalar color1, Scalar color2, int thikness = 1, int lineType = LINE_8, int shift = 0)
+		{
+			const int nSegments = 8;
+
+			Point2f Pt1 = static_cast<Point2f>(pt1);
+			Point2f inc = static_cast<Point2f>(pt2 - pt1) / nSegments;
+			for (int i = 0; i < nSegments; i++) {
+				Point2f Pt2 = Pt1 + inc;
+				double a = static_cast<double>(i) / nSegments;
+				Scalar color = (1 - a) * color1 + a * color2;
+				line(img, Pt1, Pt2, color, thikness, lineType, shift);
+				Pt1 = Pt2;
+			}
+		}
+
+		// Draws filled triangle
+		void drawTriangle(Mat &img, Point pt1, Point pt2, Point pt3, Scalar color, int lineType = LINE_8, int shift = 0)
+		{
+			Point triangle[1][3] = { pt1, pt2, pt3 };
+			const Point * pts[1] = { triangle[0] };
+			int npts = 3;
+			fillPoly(img, pts, &npts, 1, color, lineType, shift);
+		}
+
+		// Draws an arrow
+		void drawArrow(Mat &img, cv::Point pt1, cv::Point pt2, Scalar color, int lineType = LINE_8, int shift = 0, double tipLength = 15)
+		{
+			Point2f dir = static_cast<Point2f>(pt1 - pt2);
+			float len = sqrtf(dir.dot(dir));
+			dir *= tipLength / len;
+
+			float alpha = 15 * static_cast<float>(Pi) / 180;
+			float cs = cosf(alpha);
+			float sn = sinf(alpha);
+			
+			Point left( dir.dot(Point2f(cs, -sn)) + 0.5f, dir.dot(Point2f( sn, cs)) + 0.5f);
+			Point right(dir.dot(Point2f(cs,  sn)) + 0.5f, dir.dot(Point2f(-sn, cs)) + 0.5f);
+
+			drawTriangle(img, pt2, pt2+left, pt2 + right, color, lineType, shift);
+		}
+
+		void drawArrowedLine(Mat &img, Point pt1, Point pt2, Scalar color, int thikness = 1, int lineType = LINE_8, int shift = 0, double tipLength = 15)
+		{
+			line(img, pt1, pt2, color, thikness, lineType, shift);
+			drawArrow(img, pt1, pt2, color, lineType, shift, tipLength);
+		}
+
+		void drawArrowedLine(Mat &img, Point pt1, Point pt2, Scalar color1, Scalar color2, int thikness = 1, int lineType = LINE_8, int shift = 0, double tipLength = 15)
+		{
+			drawLine(img, pt1, pt2, color1, color2, thikness, lineType, shift);
+			drawArrow(img, pt1, pt2, color2, lineType, shift, tipLength);
+		}
+	}
+
+	Mat drawGraph(int size, IGraph * pGraph, Point2f(*posFunc) (size_t nodeId))
 	{
-		CvPoint2D32f	pt1, pt2;
-		CvScalar		color	= CV_RGB(180, 180, 200);
+		Point2f	pt1, pt2;
+		Scalar	color1, color2;
 
 		const size_t	nNodes = pGraph->getNumNodes();
 		
@@ -37,27 +93,30 @@ namespace DirectGraphicalModels { namespace vis
 			pt1.x = 0.5f * (1 + pt1.x) * size; 
 			pt1.y = 0.5f * (1 + pt1.y) * size;
 	
-			color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 64.0));
+			color1 = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 192.0));
 
-			for (size_t c = 0; c < childs.size(); c++) {
-				pt2 = posFunc(childs[c]);
+			for (size_t c : childs) {
+				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
+			
+				pt2 = posFunc(c);
 				pt2.x = 0.5f * (1 + pt2.x) * size; 
 				pt2.y = 0.5f * (1 + pt2.y) * size;
+				color2 = colorspaces::hsv2rgb(DGM_HSV(360.0 * c / nNodes, 255.0, 192.0));
 
 				alpha.setTo(0);
-				//arrowedLine(alpha, pt1, pt2, color, 1, CV_AA, 0, 0.05);
-				line(alpha, pt1, pt2, color, 1, CV_AA, 0);
+				if (pGraph->isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
+				else							drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
 				add(res, alpha, res);
 			}
 		}
 		
 		// Nodes
 		for (size_t n = 0; n < nNodes; n++) {
-			color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			color1 = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size;
 			pt1.y = 0.5f * (1 + pt1.y) * size;
-			circle(res, pt1, 1 + size / 333, color, -1, CV_AA);
+			circle(res, pt1, 3, color1, -1, CV_AA);
 		} // n
 		
 		return res;
@@ -178,7 +237,7 @@ namespace DirectGraphicalModels { namespace vis
 		glDeleteShader(EdgeFragmentShaderID);
 	}
 	
-	void drawGraph3D(int size, IGraph *pGraph, CvPoint3D32f(*posFunc) (size_t nodeId))
+	void drawGraph3D(int size, IGraph *pGraph, Point3f(*posFunc) (size_t nodeId))
 	{
 		// Constants
 		const size_t	nNodes = pGraph->getNumNodes();
@@ -260,11 +319,10 @@ namespace DirectGraphicalModels { namespace vis
 		
 		// Nodes
 		for (size_t n = 0; n < nNodes; n++) {
-			CvPoint3D32f pt = posFunc(n);
+			Point3f pt = posFunc(n);
 			vertices.push_back(glm::vec3(pt.x, pt.y, pt.z));
-					
-			CvScalar color = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
-			colors.push_back(glm::vec3(color.val[2] / 255, color.val[1] / 255, color.val[0] / 255));
+			Scalar color = static_cast<Scalar>(colorspaces::hsv2bgr(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0))) / 255;
+			colors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
 		}		
 		
 		// Edges
@@ -273,6 +331,8 @@ namespace DirectGraphicalModels { namespace vis
 			pGraph->getChildNodes(n, childs);
 			
 			for (size_t c : childs) {
+				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
+
 				indices.push_back(static_cast<unsigned short>(n));
 				indices.push_back(static_cast<unsigned short>(c));
 			}

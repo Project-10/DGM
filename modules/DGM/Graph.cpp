@@ -128,6 +128,22 @@ namespace DirectGraphicalModels
 		removeEdge(*e_t);
 	}
 
+	bool CGraph::isEdgeExists(size_t srcNode, size_t dstNode) const
+	{
+		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
+		
+		auto e_t = std::find_if(m_vNodes[srcNode].to.cbegin(), m_vNodes[srcNode].to.cend(), [&](size_t e) { return (m_vEdges[e].node2 == dstNode); });
+
+		if (e_t == m_vNodes[srcNode].to.cend()) return false;
+		else									return true;
+	}
+
+	bool CGraph::isEdgeArc(size_t srcNode, size_t dstNode) const
+	{
+		return isEdgeExists(dstNode, srcNode);
+	}
+
 	// Add a new (undirected edge) arc to the graph
 	void CGraph::addArc(size_t Node1, size_t Node2)
 	{
@@ -159,6 +175,11 @@ namespace DirectGraphicalModels
 	{
 		removeEdge(Node1, Node2);
 		removeEdge(Node2, Node1);
+	}
+
+	bool CGraph::isArcExists(size_t Node1, size_t Node2) const
+	{
+		return (isEdgeExists(Node1, Node2) && isEdgeExists(Node2, Node1));
 	}
 
 	// ------------------------------ PRIVATE ------------------------------
