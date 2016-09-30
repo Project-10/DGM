@@ -92,16 +92,19 @@ namespace DirectGraphicalModels
 		DllExport virtual void		getChildNodes (size_t node, vec_size_t &vNodes) const;
 		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const;
 		
-		DllExport virtual void		addEdge   (size_t srcNode, size_t dstNode);
-		DllExport virtual void		addEdge   (size_t srcNode, size_t dstNode, const Mat &pot);
-		DllExport virtual void		setEdge   (size_t srcNode, size_t dstNode, const Mat &pot);
-		DllExport virtual void		getEdge   (size_t srcNode, size_t dstNode, Mat &pot) const;
-		DllExport virtual void		removeEdge(size_t srcNode, size_t dstNode);
-		
+		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode);
+		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
+		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
+		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const;
+		DllExport virtual void		removeEdge	(size_t srcNode, size_t dstNode);
+		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const;
+		DllExport virtual bool		isEdgeArc	(size_t srcNode, size_t dstNode) const;
+
 		DllExport virtual void		addArc    (size_t Node1, size_t Node2);
 		DllExport virtual void		addArc    (size_t Node1, size_t Node2, const Mat &pot);
 		DllExport virtual void		setArc    (size_t Node1, size_t Node2, const Mat &pot);
 		DllExport virtual void		removeArc (size_t Node1, size_t Node2);
+		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const;
 		
 		DllExport virtual size_t	getNumNodes(void) const { return m_vNodes.size(); }
 		DllExport virtual size_t	getNumEdges(void) const { return m_vEdges.size(); }

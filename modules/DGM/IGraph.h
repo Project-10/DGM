@@ -96,6 +96,23 @@ namespace DirectGraphicalModels {
 		*/		
 		DllExport virtual void		removeEdge(size_t srcNode, size_t dstNode) = 0;
 		/**
+		* @brief Checks whether the edge exists
+		* @param srcNode index of the source node
+		* @param dstNode index of the destination node
+		* @retval true if the edge exists
+		* @retval false otherwise
+		*/
+		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const = 0;
+		/**
+		* @brief Checks whether the edge is a part of an arc
+		* @details In contrast to the isArcExists() function, this function does not checks whether the input edge exists, and thus faster
+		* @param srcNode index of the source node
+		* @param dstNode index of the destination node
+		* @retval true if the edge is a part of an arc
+		* @retval false otherwise
+		*/
+		DllExport virtual bool		isEdgeArc(size_t srcNode, size_t dstNode) const = 0;
+		/**
 		* @brief Adds an additional udirected edge (arc)
 		* @details The arc is emulated by adding two directed edges
 		* @param Node1 index of the first node
@@ -132,6 +149,14 @@ namespace DirectGraphicalModels {
 		* @param Node2 index of the second node
 		*/
 		DllExport virtual void		removeArc(size_t Node1, size_t Node2) = 0;
+		/**
+		* @brief Checks whether the arc exists
+		* @param Node1 index of the first node
+		* @param Node2 index of the second node
+		* @retval true if the arc exists
+		* @retval false otherwise
+		*/
+		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const = 0;
 		/**
 		* @brief Returns the number of nodes in the graph
 		* @returns number of nodes
