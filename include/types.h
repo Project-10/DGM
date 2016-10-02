@@ -7,11 +7,7 @@
 #define DEBUG_MODE			
 #define DEBUG_PRINT_INFO	
 #define ENABLE_PPL
-<<<<<<< HEAD
-#define ENABLE_AMP
-=======
 /* #undef ENABLE_AMP */
->>>>>>> aa7d5752b50ea513f5e51fc8572b7ad2ec6be978
 #define USE_OPENGL
 #define USE_SHERWOOD
 
@@ -38,6 +34,7 @@ using qword	= unsigned __int64;
 using vec_mat_t			= std::vector<Mat>;
 using vec_bool_t		= std::vector<bool>;
 using vec_byte_t		= std::vector<byte>;
+using vec_word_t		= std::vector<word>;
 using vec_int_t			= std::vector<int>;
 using vec_float_t		= std::vector<float>;
 using vec_size_t		= std::vector<size_t>;
@@ -46,6 +43,7 @@ using vec_string_t		= std::vector<std::string>;
 using ptr_float_u	= std::unique_ptr<float[]>;
 
 const double	Pi	= 3.1415926;			///< Pi number
+const float		Pif	= 3.1415926f;			///< Pi number
 
 #define isnan		_isnan
 #define isinf		std::isinf

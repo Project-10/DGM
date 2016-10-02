@@ -127,10 +127,10 @@ void CTree::Main(void)
 	
 
 	if (true) {
-		Mat img = vis::drawGraph(600, graph, [](size_t n) { 
+		Mat img = vis::drawGraph(640, graph, [](size_t n) { 
 			return Point2f(
-				0.9f * cos(2 * n * Pi / nNodes),
-				0.9f * sin(2 * n * Pi / nNodes) 
+				0.9f * cosf(2 * n * Pif / nNodes),
+				0.9f * sinf(2 * n * Pif / nNodes) 
 			);
 		});
 		imshow("2D Graph Viewer", img);
@@ -139,8 +139,8 @@ void CTree::Main(void)
 #ifdef USE_OPENGL
 	vis::drawGraph3D(640, graph, [](size_t n) {
 		return Point3f(
-			0.9f * cos(2 * n * Pi / nNodes),
-			0.9f * sin(2 * n * Pi / nNodes),
+			0.9f * cosf(2 * n * Pif / nNodes),
+			0.9f * sinf(2 * n * Pif / nNodes),
 			0.0f// 0.5f - static_cast<float>(n) / nNodes
 		);
 	});

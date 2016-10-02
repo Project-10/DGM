@@ -8,6 +8,7 @@ namespace DirectGraphicalModels { namespace vis
 		m_phi				= m_initPhi;
 		m_radius			= m_initRadius;
 		m_up				= m_phi >= 0 ? 1.0f : -1.0f;
+		m_target			= glm::vec3(0);
 		m_viewNeedsUpdate	= true;
 	}
 	

@@ -28,7 +28,7 @@ namespace DirectGraphicalModels { namespace vis
 		* @param scrollSpeed The zoom speed
 		* @param panSpeed The panning speed
 		*/
-		CCameraControl(GLFWwindow * window, float theta = 0.0f, float phi = -glm::pi<float>() / 2, float radius = 2.5f, float turnSpeed = 0.004f, float scrollSpeed = 0.33f, float panSpeed = 0.01f);
+		CCameraControl(GLFWwindow * window, float theta = 0.0f, float phi = -glm::pi<float>() / 2, float radius = 2.4f, float turnSpeed = 0.004f, float scrollSpeed = 0.33f, float panSpeed = 0.01f);
 		virtual ~CCameraControl(void) {}
 
 	
