@@ -141,7 +141,7 @@ void CTree::Main(void)
 		return Point3f(
 			0.9f * cosf(2 * n * Pif / nNodes),
 			0.9f * sinf(2 * n * Pif / nNodes),
-			0.0f// 0.5f - static_cast<float>(n) / nNodes
+			0.0f
 		);
 	});
 #endif

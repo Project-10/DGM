@@ -73,7 +73,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	Mat drawGraph(int size, IGraph * pGraph, Point2f(*posFunc) (size_t nodeId))
+	Mat drawGraph(int size, IGraph * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc)
 	{
 		Point2f	pt1, pt2;
 		Scalar	color1, color2;
@@ -93,7 +93,7 @@ namespace DirectGraphicalModels { namespace vis
 			pt1.x = 0.5f * (1 + pt1.x) * size; 
 			pt1.y = 0.5f * (1 + pt1.y) * size;
 	
-			color1 = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 192.0));
+			color1 = colorFunc ? colorFunc(n) : colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 192.0));
 
 			for (size_t c : childs) {
 				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
@@ -101,10 +101,10 @@ namespace DirectGraphicalModels { namespace vis
 				pt2 = posFunc(c);
 				pt2.x = 0.5f * (1 + pt2.x) * size; 
 				pt2.y = 0.5f * (1 + pt2.y) * size;
-				color2 = colorspaces::hsv2rgb(DGM_HSV(360.0 * c / nNodes, 255.0, 192.0));
+				color2 = colorFunc ? colorFunc(c) : colorspaces::hsv2rgb(DGM_HSV(360.0 * c / nNodes, 255.0, 192.0));
 
 				alpha.setTo(0);
-				if (!pGraph->isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
+				if (pGraph->isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
 				else							drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
 				add(res, alpha, res);
 			}
@@ -122,7 +122,6 @@ namespace DirectGraphicalModels { namespace vis
 		return res;
 	}
 
-
 #ifdef USE_OPENGL
 	// types
 	using vec_vec3_t = std::vector<glm::vec3>;
@@ -130,112 +129,144 @@ namespace DirectGraphicalModels { namespace vis
 	namespace {
 		void LoadShaders(GLuint &NodeProgramID, GLuint &EdgeProgramID)
 		{
-			GLint	Result = GL_FALSE;
-			int		InfoLogLength;
-
+			GLint	Result			= GL_FALSE;
+			int		InfoLogLength	= 0;
 
 			// -------------- Vertex Shader --------------
 			GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-
-			{
+			{  
 				const std::string sourceCode =
 #include "VertexShader.glsl"
 					;
-
-				// Compile Vertex Shader
-				printf("Compiling vertex shader\n");
+#ifdef DEBUG_PRINT_INFO
+				printf("Compiling vertex shader... ");
+#endif
 				char const * VertexSourcePointer = sourceCode.c_str();
 				glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
 				glCompileShader(VertexShaderID);
 
-				// Check Vertex Shader
-				glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+#ifdef DEBUG_MODE	// Check Vertex Shader
+				glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS,  &Result);
 				glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-				if (InfoLogLength > 0) {
+				if (InfoLogLength > 1) {
 					std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
 					glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-					printf("%s\n", &VertexShaderErrorMessage[0]);
+					printf("\n%s\n", &VertexShaderErrorMessage[0]);
 				}
+#endif
+#ifdef DEBUG_PRINT_INFO
+				printf("Done\n");
+#endif
 			}
 
 			// -------------- Node Fragment Shader --------------
 			GLuint NodeFragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
 			{
 				const std::string sourceCode =
 #include "NodeFragmentShader.glsl"
 					;
-
-				// Compile Fragment Shader
-				printf("Compiling fragment shader\n");
+#ifdef DEBUG_PRINT_INFO
+				printf("Compiling node fragment Shader... ");
+#endif
 				char const * FragmentSourcePointer = sourceCode.c_str();
 				glShaderSource(NodeFragmentShaderID, 1, &FragmentSourcePointer, NULL);
 				glCompileShader(NodeFragmentShaderID);
 
-				// Check Fragment Shader
+#ifdef DEBUG_MODE	// Check Fragment Shader
 				glGetShaderiv(NodeFragmentShaderID, GL_COMPILE_STATUS, &Result);
 				glGetShaderiv(NodeFragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-				if (InfoLogLength > 0) {
+				if (InfoLogLength > 1) {
 					std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
 					glGetShaderInfoLog(NodeFragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-					printf("%s\n", &FragmentShaderErrorMessage[0]);
+					printf("\n%s\n", &FragmentShaderErrorMessage[0]);
 				}
+#endif
+#ifdef DEBUG_PRINT_INFO
+				printf("Done\n");
+#endif
 			}
 
 			// -------------- Edge Fragment Shader --------------
 			GLuint EdgeFragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
 			{
 				const std::string sourceCode =
 #include "EdgeFragmentShader.glsl"
 					;
-
-				// Compile Fragment Shader
-				printf("Compiling fragment shader\n");
+#ifdef DEBUG_PRINT_INFO
+				printf("Compiling edge fragment shader... ");
+#endif
 				char const * FragmentSourcePointer = sourceCode.c_str();
 				glShaderSource(EdgeFragmentShaderID, 1, &FragmentSourcePointer, NULL);
 				glCompileShader(EdgeFragmentShaderID);
 
-				// Check Fragment Shader
+#ifdef DEBUG_MODE	// Check Fragment Shader
 				glGetShaderiv(EdgeFragmentShaderID, GL_COMPILE_STATUS, &Result);
 				glGetShaderiv(EdgeFragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-				if (InfoLogLength > 0) {
+				if (InfoLogLength > 1) {
 					std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
 					glGetShaderInfoLog(EdgeFragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-					printf("%s\n", &FragmentShaderErrorMessage[0]);
+					printf("\n%s\n", &FragmentShaderErrorMessage[0]);
 				}
+#endif
+#ifdef DEBUG_PRINT_INFO
+				printf("Done\n");
+#endif
 			}
 
 
-			// -------------- Program --------------
-			printf("Linking program\n");
-			NodeProgramID = glCreateProgram();
-			glAttachShader(NodeProgramID, VertexShaderID);
-			glAttachShader(NodeProgramID, NodeFragmentShaderID);
-			glLinkProgram(NodeProgramID);
+			// -------------- Node Program --------------
+			{
+#ifdef DEBUG_PRINT_INFO
+				printf("Linking node program... ");
+#endif
+				NodeProgramID = glCreateProgram();
+				glAttachShader(NodeProgramID, VertexShaderID);
+				glAttachShader(NodeProgramID, NodeFragmentShaderID);
+				glLinkProgram(NodeProgramID);
 
-			// Check the program
-			glGetProgramiv(NodeProgramID, GL_LINK_STATUS, &Result);
-			glGetProgramiv(NodeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-			if (InfoLogLength > 0) {
-				std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-				glGetProgramInfoLog(NodeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-				printf("%s\n", &ProgramErrorMessage[0]);
+#ifdef DEBUG_MODE	// Check the program
+				glGetProgramiv(NodeProgramID, GL_LINK_STATUS, &Result);
+				glGetProgramiv(NodeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+				if (InfoLogLength > 1) {
+					std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
+					glGetProgramInfoLog(NodeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+					printf("%s\n", &ProgramErrorMessage[0]);
+				}
+#endif
+#ifdef DEBUG_PRINT_INFO
+				printf("Done\n");
+#endif
+				glDetachShader(NodeProgramID, VertexShaderID);
+				glDetachShader(NodeProgramID, NodeFragmentShaderID);
 			}
 
-			glDetachShader(NodeProgramID, VertexShaderID);
-			glDetachShader(NodeProgramID, NodeFragmentShaderID);
+			// -------------- Edge Program --------------
+			{
+#ifdef DEBUG_PRINT_INFO
+				printf("Linking edge program... ");
+#endif
+				EdgeProgramID = glCreateProgram();
+				glAttachShader(EdgeProgramID, VertexShaderID);
+				glAttachShader(EdgeProgramID, EdgeFragmentShaderID);
+				glLinkProgram(EdgeProgramID);
 
+#ifdef DEBUG_MODE	// Check the program
+				glGetProgramiv(NodeProgramID, GL_LINK_STATUS, &Result);
+				glGetProgramiv(NodeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+				if (InfoLogLength > 1) {
+					std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
+					glGetProgramInfoLog(NodeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+					printf("%s\n", &ProgramErrorMessage[0]);
+				}
+#endif
+#ifdef DEBUG_PRINT_INFO
+				printf("Done\n");
+#endif
+				glDetachShader(NodeProgramID, VertexShaderID);
+				glDetachShader(NodeProgramID, NodeFragmentShaderID);
 
-
-			printf("Linking program\n");
-			EdgeProgramID = glCreateProgram();
-			glAttachShader(EdgeProgramID, VertexShaderID);
-			glAttachShader(EdgeProgramID, EdgeFragmentShaderID);
-			glLinkProgram(EdgeProgramID);
-
-
-
+			}
+			
 			glDeleteShader(VertexShaderID);
 			glDeleteShader(NodeFragmentShaderID);
 			glDeleteShader(EdgeFragmentShaderID);
@@ -284,7 +315,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void drawGraph3D(int size, IGraph *pGraph, Point3f(*posFunc) (size_t nodeId))
+	void drawGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc)
 	{
 		// Constants
 		const size_t	nNodes = pGraph->getNumNodes();
@@ -292,15 +323,14 @@ namespace DirectGraphicalModels { namespace vis
 		// Initialise GLFW
 		DGM_ASSERT_MSG(glfwInit(), "Failed to initialize GLFW");
 
-		glfwWindowHint(GLFW_SAMPLES, 16);
-		// Tell GLFW to use OpenGL 3.3 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		// Window creation hints													
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);					// Tell GLFW to use OpenGL 3.3 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);			// To make MacOS happy; should not be needed
-		// Window creation hints
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);						// Disable window resizing
-		
+		glfwWindowHint(GLFW_SAMPLES, 16);
+
 		// Create a windowed mode window and its OpenGL context 
 		GLFWwindow *window = glfwCreateWindow(size, size, "3D Graph Viewer", NULL, NULL);
 		if (!window) {
@@ -308,41 +338,34 @@ namespace DirectGraphicalModels { namespace vis
 			glfwTerminate();
 			return;
 		}
-		// Make the window's context current 
-		glfwMakeContextCurrent(window);
+		
+		glfwMakeContextCurrent(window);										// Make the window's context current 
 		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);				// Ensure we can capture the escape key being pressed below
 
 		// Initialize GLEW
 		DGM_ASSERT_MSG(glewInit() == GLEW_OK, "Failed to initialize GLEW");
 
+#ifdef DEBUG_PRINT_INFO
 		printf("OpenGL Ver: %s\n", glGetString(GL_VERSION));
-		
-		CCameraControl camera(window);
-		
-		const float _bkgIntencity = static_cast<float>(bkgIntencity) / 255;
-		glClearColor(_bkgIntencity, _bkgIntencity, _bkgIntencity, 0.0f);	// Set background color
+#endif		
 
+		// Options
 		glShadeModel(GL_SMOOTH);											// Select flat or smooth shading
 		//glEnable(GL_DEPTH_TEST);											// Ebable depth buffer
 		//glDepthFunc(GL_LESS);												// Specify the value used for depth buffer comparisons
 		glEnable(GL_PROGRAM_POINT_SIZE);
-
-		// Enable blending
-		glEnable(GL_BLEND);
+		glEnable(GL_BLEND);													// Enable blending
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		//glBlendFunc(GL_ONE, GL_ONE);
-
-		glFrontFace(GL_CW);												// Define front- and back-facing polygons
+		glFrontFace(GL_CW);													// Define front- and back-facing polygons
 		glEnable(GL_CULL_FACE);
 		//glCullFace(GL_BACK);
-
 
 		GLuint vertex_array_id;
 		glGenVertexArrays(1, &vertex_array_id);
 		glBindVertexArray(vertex_array_id);
 
 		// Create and compile our GLSL program from the shaders
-		GLuint NodeProgramID, EdgeProgramID;
+		GLuint NodeProgramID, EdgeProgramID;								// Different shaders for graph nodes and edges
 		LoadShaders(NodeProgramID, EdgeProgramID);
 		
 		// Get a handle for our "MVP" uniform
@@ -354,11 +377,13 @@ namespace DirectGraphicalModels { namespace vis
 		vec_vec3_t vColors;
 		vec_word_t vIndices, vConeIndices;
 
+		// Filling in the containers
 		// Nodes
 		for (size_t n = 0; n < nNodes; n++) {
 			Point3f pt = posFunc(n);
 			vVertices.push_back(glm::vec3(pt.x, pt.y, pt.z));
-			Scalar color = static_cast<Scalar>(colorspaces::hsv2bgr(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0))) / 255;
+			CvScalar color = colorFunc ? colorspaces::bgr2rgb(colorFunc(n)) : colorspaces::hsv2bgr(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			color = static_cast<Scalar>(color) / 255;
 			vColors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
 		}		
 
@@ -369,27 +394,17 @@ namespace DirectGraphicalModels { namespace vis
 			
 			for (size_t c : childs) {
 				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
-				vIndices.push_back(static_cast<word>(n));	// src
-				vIndices.push_back(static_cast<word>(c));	// dst
-				if (pGraph->isEdgeArc(n, c))
+				vIndices.push_back(static_cast<word>(n));				// src
+				vIndices.push_back(static_cast<word>(c));				// dst
+				if (!pGraph->isEdgeArc(n, c))
 					addCone(vVertices, vColors, vConeIndices, vVertices[n], vVertices[c], vColors[c], 30.0f / size);
 			}
 		}
-
-		
-		const size_t nEdgesIdx = vIndices.size();
-
-		// =================== Cone ===================
-		// addCone(vVertices, vColors, vConeIndices, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.3, 0, 0), 0.5f);
-		// addCone(vVertices, vColors, vConeIndices, glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.5f, 2.0f), glm::vec3(0.3, 0, 0), 0.5f);
-		// addCone(vVertices, vColors, vConeIndices, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0, 1, 0), 0.5f);
-		// addCone(vVertices, vColors, vConeIndices, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1, 1, 1), 0.5f);
-		// =================== ==== ===================
-
-
+		const size_t nEdgesIdx = vIndices.size();						// Number of edge indices in the container
 		vIndices.insert(vIndices.end(), vConeIndices.begin(), vConeIndices.end());
+		vConeIndices.clear();
 
-
+		// Binding the containers: xxxBuffer to vXXX
 		GLuint vertexBuffer;
 		glGenBuffers(1, &vertexBuffer);																		// Create 1 buffer
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);														// Make this buffer current
@@ -406,101 +421,58 @@ namespace DirectGraphicalModels { namespace vis
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vIndices.size() * sizeof(word), &vIndices[0], GL_STATIC_DRAW);
 
 
+		CCameraControl camera(window);
+
+		const float _bkgIntencity = static_cast<float>(bkgIntencity) / 255;
+		glClearColor(_bkgIntencity, _bkgIntencity, _bkgIntencity, 0.0f);	// Set background color
+
 		glm::mat4 ModelMatrix		= glm::mat4(1.0f);
 		//glm::mat4 ViewMatrix		= glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0., 0., 0.), glm::vec3(0., 1., 0.));
 		glm::mat4 ProjectionMatrix	= glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
 		
-
-		// Loop until the user closes the window 
+		// Main loop
 		while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS ) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);					// Clear information from last draw
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);				// Clear information from last draw
 			
 			// Compute the MVP matrix from keyboard and mouse input
 			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera.reset();
-			glm::mat4 ViewMatrix = camera.getViewMatrix();
-			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glm::mat4 MVP = ProjectionMatrix * camera.getViewMatrix() * ModelMatrix;
 
+			// 1-st attribute buffer : vertices
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-			if (true) {
+			// 2-nd attribute buffer : colors
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			if (true) { // Draw nodes
 				glUseProgram(NodeProgramID);
 
 				// Send our transformation to the currently bound shader, in the "MVP" uniform
 				glUniformMatrix4fv(NodeMatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-				// 1-st attribute buffer : vertices
-				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-				glVertexAttribPointer(
-					0,                  // attribute. No particular reason for 1, but must match the layout in the shader.
-					3,                  // size
-					GL_FLOAT,           // type
-					GL_FALSE,           // normalized ?
-					0,                  // stride
-					(void*)0            // array buffer offset
-				);
-
-				// 2-nd attribute buffer : colors
-				glEnableVertexAttribArray(1);
-				glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-				glVertexAttribPointer(
-					1,                  // attribute. No particular reason for 1, but must match the layout in the shader.
-					3,                  // size
-					GL_FLOAT,           // type
-					GL_FALSE,           // normalized ?
-					0,                  // stride
-					(void*)0            // array buffer offset
-				);
-
 				glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(nNodes));
-
-				glDisableVertexAttribArray(0);
-				glDisableVertexAttribArray(1);
 			}
-
-			// --------------------------------------
 			
-			if (true) {
+			if (true) {	// Draw edges
 				glUseProgram(EdgeProgramID);
-
-				// Send our transformation to the currently bound shader, in the "MVP" uniform
-				glUniformMatrix4fv(EdgeMatrixID, 1, GL_FALSE, &MVP[0][0]);
-
-				// 1-st attribute buffer : vertices
-				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-				glVertexAttribPointer(
-					0,                  // attribute. No particular reason for 1, but must match the layout in the shader.
-					3,                  // size
-					GL_FLOAT,           // type
-					GL_FALSE,           // normalized ?
-					0,                  // stride
-					(void*)0            // array buffer offset
-				);
-
-				// 2-nd attribute buffer : colors
-				glEnableVertexAttribArray(1);
-				glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-				glVertexAttribPointer(
-					1,                  // attribute. No particular reason for 1, but must match the layout in the shader.
-					3,                  // size
-					GL_FLOAT,           // type
-					GL_FALSE,           // normalized ?
-					0,                  // stride
-					(void*)0            // array buffer offset
-				);
+				
+				glUniformMatrix4fv(EdgeMatrixID, 1, GL_FALSE, &MVP[0][0]);	// Send our transformation to the currently bound shader, in the "MVP" uniform
 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);			// Index buffer
 
-				glDrawElements(GL_LINES, static_cast<GLsizei>(nEdgesIdx), GL_UNSIGNED_SHORT, (void *) 0);
-//				glDrawRangeElements(GL_TRIANGLES, static_cast<GLsizei>(nEdgesIdx), static_cast<GLsizei>(vIndices.size() - 1), static_cast<GLsizei>(vIndices.size() - nEdgesIdx), GL_UNSIGNED_SHORT, (void *)0);
-				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vIndices.size() - nEdgesIdx), GL_UNSIGNED_SHORT, (void *) (nEdgesIdx * sizeof(word)));
-
-				glDisableVertexAttribArray(0);
-				glDisableVertexAttribArray(1);
+				glDrawElements(GL_LINES, static_cast<GLsizei>(nEdgesIdx), GL_UNSIGNED_SHORT, (void *) 0);													// Edges
+				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vIndices.size() - nEdgesIdx), GL_UNSIGNED_SHORT, (void *) (nEdgesIdx * sizeof(word)));	// Cones
 			}
 
-			glfwSwapBuffers(window);											// Swap front and back buffers 
-			glfwPollEvents();													// Poll for and process events 
+			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(1);
+
+			glfwSwapBuffers(window);										// Swap front and back buffers 
+			glfwPollEvents();												// Poll for and process events 
 		}
 
 		// Cleanup VBO and shader

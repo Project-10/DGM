@@ -7,10 +7,8 @@ in vec3 fragmentColor;
 // Ouput data
 out vec4 color;
 
-
 void main()
 {
-	// calculate normal from texture coordinates    
 	vec3 N;    
 	N.xy = gl_PointCoord * 2.0 - vec2(1);        
 	float r = dot(N.xy, N.xy);    
