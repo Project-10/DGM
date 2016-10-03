@@ -45,7 +45,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleTrainNode
 	* @brief Microsoft Sherwood Random Forest training class
 	* @details This class is based on the <a href="http://research.microsoft.com/en-us/downloads/52d5b9c3-a638-42a1-94a5-d549e2251728/">Sherwood C++ code library for decision forests</a> v.1.0.0
-	* > In order to use the Sherwood library, DGM must be build with the \b USE_SHERWOOD flag
+	* > In order to use the Sherwood library, DGM must be built with the \b USE_SHERWOOD flag
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeMsRF : public CTrainNode

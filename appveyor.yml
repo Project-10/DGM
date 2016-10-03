@@ -6,6 +6,7 @@ version: 1.5.1:{build}
 branches:
   only:
   - master
+  - OpenGL
 
 # Operating system (build VM template)
 os: Visual Studio 2015
@@ -26,5 +27,5 @@ build_script:
   - cd c:\projects\dgm
   - md build
   - cd build
-  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win64" ..
+  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win64" -DUSE_OPENGL=ON ..
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
