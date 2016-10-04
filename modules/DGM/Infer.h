@@ -59,13 +59,19 @@ namespace DirectGraphicalModels
 		* @note This function must not to be linear, \a i.e. \f$ infer(\alpha\times N)\not\equiv\alpha\times infer(N) \f$
 		* @note This function substitutes the graph nodes' potentials with estimated marginal potentials
 		*/
-		DllExport virtual void	  infer(unsigned int nIt = 1) = 0;
+		DllExport virtual void	infer(unsigned int nIt = 1) = 0;
 		/**
 		* @brief Returns the confidence of the prediction
 		* @details This function calculates the confidence values for the predicted states (classes) in the graph via CInfer::decode().
 		* The confidence values lie in range [0; 1].
 		* @return The confidence values for each node of graph.
 		*/
-		DllExport vec_float_t	  getConfidence(void);
+		DllExport vec_float_t	getConfidence(void) const;
+		/**
+		* @brief Returns the potnetials for the selected state (class)
+		* @param state The state (class) of interest
+		* @return The potential values for each node of the graph.
+		*/
+		DllExport vec_float_t	getPotentials(byte state) const;
 	};
 }
