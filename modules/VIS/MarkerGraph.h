@@ -25,9 +25,14 @@ namespace DirectGraphicalModels {
 	* });
 	* @endcode
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
+	* @param groupsColor The list of colors for graph edge groups.
 	* @return Image \b size x \b size pixels with visualized graph.
 	*/
-	DllExport Mat drawGraph(int size, IGraph *pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc = nullptr);
+	DllExport Mat drawGraph(int								  size, 
+							IGraph							* pGraph, 
+							std::function<Point2f(size_t)>	  posFunc, 
+							std::function<CvScalar(size_t)>   colorFunc		= nullptr, 
+							const vec_scalar_t				& groupsColor	= vec_scalar_t());
 
 #ifdef USE_OPENGL
 	/**
@@ -51,7 +56,12 @@ namespace DirectGraphicalModels {
 	* });
 	* @endcode
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
+	* @param groupsColor The list of colors for graph edge groups.                                 
 	*/
-	DllExport void drawGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc = nullptr);
+	DllExport void drawGraph3D(int								 size, 
+							   IGraph						   * pGraph, 
+							   std::function<Point3f(size_t)>    posFunc, 
+							   std::function<CvScalar(size_t)>   colorFunc	= nullptr,
+							   const vec_scalar_t			   & groupsColor	= vec_scalar_t());
 #endif
 } }

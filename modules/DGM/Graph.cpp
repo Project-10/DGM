@@ -116,6 +116,27 @@ namespace DirectGraphicalModels
 		} else m_vEdges[*e_t].Pot.copyTo(pot);
 	}
 
+	void CGraph::setEdgeGroup(size_t srcNode, size_t dstNode, byte group)
+	{
+		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
+
+		vec_size_t::const_iterator e_t = std::find_if(m_vNodes[srcNode].to.cbegin(), m_vNodes[srcNode].to.cend(), [&](size_t e) {return (m_vEdges[e].node2 == dstNode); });
+		DGM_ASSERT_MSG(e_t != m_vNodes[srcNode].to.end(), "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
+		m_vEdges[*e_t].group_id = group;
+	}
+
+	byte CGraph::getEdgeGroup(size_t srcNode, size_t dstNode) const
+	{
+		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
+
+		vec_size_t::const_iterator e_t = std::find_if(m_vNodes[srcNode].to.cbegin(), m_vNodes[srcNode].to.cend(), [&](size_t e) {return (m_vEdges[e].node2 == dstNode); });
+		DGM_ASSERT_MSG(e_t != m_vNodes[srcNode].to.end(), "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
+
+		return m_vEdges[*e_t].group_id;
+	}
+
 	void CGraph::removeEdge(size_t srcNode, size_t dstNode)
 	{
 		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
@@ -171,6 +192,12 @@ namespace DirectGraphicalModels
 		Pot.release();
 	}
 
+	void CGraph::setArcGroup(size_t Node1, size_t Node2, byte group)
+	{
+		setEdgeGroup(Node1, Node2, group);
+		setEdgeGroup(Node2, Node1, group);
+	}
+	
 	void CGraph::removeArc(size_t Node1, size_t Node2)
 	{
 		removeEdge(Node1, Node2);

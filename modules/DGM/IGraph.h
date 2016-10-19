@@ -90,6 +90,20 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		getEdge(size_t srcNode, size_t dstNode, Mat &pot) const = 0;
 		/**
+		* @brief Assigns a directed edge (\b srcNode) -> (\b dstNode) to the group \b group
+		* @param srcNode index of the source node
+		* @param dstNode index of the destination node
+		* @param group The edge group ID
+		*/
+		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) = 0;
+		/**
+		* @brief Returns the group of the edge
+		* @param srcNode index of the source node
+		* @param dstNode index of the destination node
+		* @returns The edge group ID
+		*/
+		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const = 0;
+		/**
 		* @brief Removes the specified edge
 		* @param srcNode index of the source node
 		* @param dstNode index of the destination node
@@ -143,6 +157,9 @@ namespace DirectGraphicalModels {
 		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void		setArc(size_t Node1, size_t Node2, const Mat &pot) = 0;
+		/**
+		*/
+		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) = 0;
 		/**
 		* @brief Removes the specified arc
 		* @param Node1 index of the first node

@@ -73,7 +73,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	Mat drawGraph(int size, IGraph * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc)
+	Mat drawGraph(int size, IGraph * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		Point2f	pt1, pt2;
 		Scalar	color1, color2;
@@ -103,6 +103,10 @@ namespace DirectGraphicalModels { namespace vis
 				pt2.y = 0.5f * (1 + pt2.y) * size;
 				color2 = colorFunc ? colorFunc(c) : colorspaces::hsv2rgb(DGM_HSV(360.0 * c / nNodes, 255.0, 192.0));
 
+				// Group edge color
+				if (groupsColor.size() > 0) 
+					color1 = color2 = groupsColor[pGraph->getEdgeGroup(n, c) % groupsColor.size()];
+
 				alpha.setTo(0);
 				if (pGraph->isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
 				else							drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
@@ -112,7 +116,7 @@ namespace DirectGraphicalModels { namespace vis
 		
 		// Nodes
 		for (size_t n = 0; n < nNodes; n++) {
-			color1 = colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			color1 = colorFunc ? colorFunc(n) : colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size;
 			pt1.y = 0.5f * (1 + pt1.y) * size;
@@ -315,7 +319,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void drawGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc)
+	void drawGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
 		const size_t	nNodes = pGraph->getNumNodes();
@@ -375,6 +379,7 @@ namespace DirectGraphicalModels { namespace vis
 		// Main containers
 		vec_vec3_t vVertices;
 		vec_vec3_t vColors;
+		vec_vec3_t vGroupColors;
 		vec_word_t vIndices, vConeIndices;
 
 		// Filling in the containers
@@ -396,6 +401,14 @@ namespace DirectGraphicalModels { namespace vis
 				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
 				vIndices.push_back(static_cast<word>(n));				// src
 				vIndices.push_back(static_cast<word>(c));				// dst
+				
+				if (groupsColor.size() > 0) {
+					byte group = pGraph->getEdgeGroup(n, c);
+					CvScalar color = groupsColor[group % groupsColor.size()];
+					color = static_cast<Scalar>(color) / 255;
+					vGroupColors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
+				}
+
 				if (!pGraph->isEdgeArc(n, c))
 					addCone(vVertices, vColors, vConeIndices, vVertices[n], vVertices[c], vColors[c], 30.0f / size);
 			}
@@ -415,11 +428,15 @@ namespace DirectGraphicalModels { namespace vis
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
 		glBufferData(GL_ARRAY_BUFFER, vColors.size() * sizeof(glm::vec3), &vColors[0], GL_STATIC_DRAW);
 
+		GLuint groupColorBuffer;
+		glGenBuffers(1, &groupColorBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, groupColorBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vGroupColors.size() * sizeof(glm::vec3), &vGroupColors[0], GL_STATIC_DRAW);
+
 		GLuint indexBuffer;
 		glGenBuffers(1, &indexBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vIndices.size() * sizeof(word), &vIndices[0], GL_STATIC_DRAW);
-
 
 		CCameraControl camera(window);
 
@@ -478,6 +495,7 @@ namespace DirectGraphicalModels { namespace vis
 		// Cleanup VBO and shader
 		glDeleteBuffers(1, &vertexBuffer);
 		glDeleteBuffers(1, &colorBuffer);
+		glDeleteBuffers(1, &groupColorBuffer);
 		glDeleteBuffers(1, &indexBuffer);
 		
 		glDeleteProgram(NodeProgramID);
