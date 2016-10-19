@@ -1,3 +1,4 @@
+
 #pragma once
 
 #define DGM_VERSION_MAJOR @DGM_VERSION_MAJOR@
