@@ -39,13 +39,14 @@ namespace DirectGraphicalModels
 		Mat		  Pot;			///< The edge potentials: Mat(size: nStates x nStates; type: CV_32FC1)
 		float	* msg;			///< Message (used in message-passing algorithms): Mat(size: nStates x 1; type: CV_32FC1)
 		float	* msg_temp;		///< Temp Message (used in message-passing algorithms): Mat(size: nStates x 1; type: CV_32FC1)
+		byte	  group_id;		///< ID of the group, to which the edge belongs
 		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
-		Edge(void) : Pot(Mat()), msg(NULL), msg_temp(NULL), suspend(false) {}
+		Edge(void) : Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
 
-		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), suspend(false) {}
+		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
 
-		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), suspend(false) { p.copyTo(Pot); }
+		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
 
 		void msg_swap(void) {
 			float *tmp = msg;
@@ -96,14 +97,17 @@ namespace DirectGraphicalModels
 		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
 		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const;
+		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group);
+		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const;
 		DllExport virtual void		removeEdge	(size_t srcNode, size_t dstNode);
 		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const;
 		DllExport virtual bool		isEdgeArc	(size_t srcNode, size_t dstNode) const;
 
-		DllExport virtual void		addArc    (size_t Node1, size_t Node2);
-		DllExport virtual void		addArc    (size_t Node1, size_t Node2, const Mat &pot);
-		DllExport virtual void		setArc    (size_t Node1, size_t Node2, const Mat &pot);
-		DllExport virtual void		removeArc (size_t Node1, size_t Node2);
+		DllExport virtual void		addArc     (size_t Node1, size_t Node2);
+		DllExport virtual void		addArc     (size_t Node1, size_t Node2, const Mat &pot);
+		DllExport virtual void		setArc	   (size_t Node1, size_t Node2, const Mat &pot);
+		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group);
+		DllExport virtual void		removeArc  (size_t Node1, size_t Node2);
 		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const;
 		
 		DllExport virtual size_t	getNumNodes(void) const { return m_vNodes.size(); }

@@ -37,7 +37,7 @@ namespace DirectGraphicalModels
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(byte nStates, word nLayers, byte gType = GRAPH_EDGES_GRID) : CGraph(nStates), m_nLayers(nLayers), m_gType(gType) {}
+		DllExport CGraphLayered(byte nStates, word nLayers, byte gType = GRAPH_EDGES_GRID) : CGraph(nStates), m_nLayers(nLayers), m_gType(gType), m_size(cvSize(0, 0)) {}
 		DllExport virtual ~CGraphLayered(void) {}
 
 		/**
@@ -99,6 +99,15 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
+		* @brief
+		* @param A
+		* @param B
+		* @param C
+		* @param group
+		*/
+		DllExport virtual void defineEdgeGroup(float A, float B, float C, byte group);
+		DllExport virtual void setGroupPot(byte group, const Mat &pot);
+		/**
 		* @brief Marginalizes a set of nodes
 		* @details This function separates the marginalized graph nodes by removing all the edges connecting them with the remaining nodes.
 		* New edges are added if they correspond to the inducing pathes. The potentials of new esges are calculated as the sum of edge potentials from the 
@@ -111,7 +120,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		word m_nLayers;			///< Number of layers
-		byte m_gType;			///< Graph type (Ref. @ref graphType)
+		word	m_nLayers;			///< Number of layers
+		byte	m_gType;			///< Graph type (Ref. @ref graphType)
+		CvSize	m_size;				///< Size of the graph
 	};
 }

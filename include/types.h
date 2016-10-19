@@ -39,6 +39,7 @@ using vec_int_t			= std::vector<int>;
 using vec_float_t		= std::vector<float>;
 using vec_size_t		= std::vector<size_t>;
 using vec_string_t		= std::vector<std::string>;
+using vec_scalar_t		= std::vector<CvScalar>;
 
 using ptr_float_u	= std::unique_ptr<float[]>;
 

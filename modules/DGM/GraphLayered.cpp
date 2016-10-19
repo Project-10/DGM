@@ -9,7 +9,8 @@ namespace DirectGraphicalModels
 	void CGraphLayered::build(CvSize graphSize)
 	{
 		if (getNumNodes() != 0) reset();
-		
+		m_size = graphSize;
+
 		size_t l;
 		for (int y = 0; y < graphSize.height; y++)
 			for (int x = 0; x < graphSize.width; x++) {
@@ -169,6 +170,13 @@ namespace DirectGraphicalModels
 				
 				if (m_gType & GRAPH_EDGES_LINK) {
 					ePot = linkTrainer->getLinkPotentials(featureVector1, linkWeight);
+					
+					// ----
+					//ePot.setTo(0);
+					//ePot.at<float>(0, 3) = 1.0f;
+					//ePot.at<float>(1, 3) = 1.0f;
+					// ---
+
 					add(ePot, ePot.t(), ePot);
 					word nLayers = MIN(2, m_nLayers);
 					for (l = 0; l < nLayers - 1; l++)
@@ -293,6 +301,64 @@ namespace DirectGraphicalModels
 #else
 		} // y
 #endif
+	}
+
+	void CGraphLayered::defineEdgeGroup(float A, float B, float C, byte group)
+	{
+		// TODO: add parallel y
+#ifdef ENABLE_PPL
+#else
+#endif
+		for (int y = 0; y < m_size.height; y++ ) {
+			int i = y * m_size.width * m_nLayers;
+			for (int x = 0; x < m_size.width; x++) {
+				int s = SIGN(A * x + B * y + C);
+
+				if (m_gType & GRAPH_EDGES_GRID) {
+					if (x > 0) {
+						int _x = x - 1;
+						int _y = y;
+						int _s = SIGN(A * _x + B * _y + C);
+						if (s != _s) setArcGroup(i, i - m_nLayers, group);
+					} // if x
+					if (y > 0) {
+						int _x = x;
+						int _y = y - 1;
+						int _s = SIGN(A * _x + B * _y + C);
+						if (s != _s) setArcGroup(i, i - m_nLayers * m_size.width, group);
+					} // if y
+				}
+
+				if (m_gType & GRAPH_EDGES_DIAG) {
+					if ((x > 0) && (y > 0)) {
+						int _x = x - 1;
+						int _y = y - 1;
+						int _s = SIGN(A * _x + B * _y + C);
+						if (s != _s) setArcGroup(i, i - m_nLayers * m_size.width - m_nLayers, group);
+					} // if x, y
+					if ((x < m_size.width - 1) && (y > 0)) {
+						int _x = x + 1;
+						int _y = y - 1;
+						int _s = SIGN(A * _x + B * _y + C);
+						if (s != _s) setArcGroup(i, i - m_nLayers * m_size.width + m_nLayers, group);
+					} // x, y
+				}
+				i += m_nLayers;
+			} // x
+		} // y
+	}
+
+	void CGraphLayered::setGroupPot(byte group, const Mat &pot)
+	{
+		const size_t nNodes = getNumNodes();
+		for (size_t n = 0; n < nNodes; n++) {
+			vec_size_t vChilds;
+			getChildNodes(n, vChilds);
+			for (size_t c : vChilds) {
+				if (getEdgeGroup(n, c) == group)
+					setEdge(n, c, pot);
+			}
+		}
 	}
 
 	void CGraphLayered::marginalize(const vec_size_t &nodes)
