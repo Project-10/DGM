@@ -137,7 +137,7 @@ void CTree::Main(void)
 	}
 
 #ifdef USE_OPENGL
-	vis::drawGraph3D(640, graph, [](size_t n) {
+	vis::showGraph3D(640, graph, [](size_t n) {
 		return Point3f(
 			0.9f * cosf(2 * n * Pif / nNodes),
 			0.9f * sinf(2 * n * Pif / nNodes),

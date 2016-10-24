@@ -58,7 +58,7 @@ namespace DirectGraphicalModels {
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
 	* @param groupsColor The list of colors for graph edge groups.                                 
 	*/
-	DllExport void drawGraph3D(int								 size, 
+	DllExport void showGraph3D(int								 size, 
 							   IGraph						   * pGraph, 
 							   std::function<Point3f(size_t)>    posFunc, 
 							   std::function<CvScalar(size_t)>   colorFunc	= nullptr,

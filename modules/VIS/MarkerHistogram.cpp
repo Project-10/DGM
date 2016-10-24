@@ -6,48 +6,33 @@
 namespace DirectGraphicalModels { namespace vis 
 {
 // Constants
-const CvSize	CMarkerHistogram::margin		= cvSize(25, 16);
-const byte		CMarkerHistogram::bkgIntencity	= 50;
-const double	CMarkerHistogram::frgWeight		= 0.75;
+const CvSize		CMarkerHistogram::margin		= cvSize(25, 16);
+const byte			CMarkerHistogram::bkgIntencity	= 50;
+const double		CMarkerHistogram::frgWeight		= 0.75;
+const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
 
-Mat CMarkerHistogram::drawHistogram(Scalar color) const
+void CMarkerHistogram::showHistogram(void)
 {
-	const byte		fMaxHeight	= 9;					// The maximal number of feature histograms in a column
-	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
-	const int		activeState = getActiveState(color);
+	static Mat histogramImg = drawHistogram(CV_RGB(0, 0, 0));
+	namedWindow(wndName.c_str(), WINDOW_AUTOSIZE);
+	imshow(wndName.c_str(), histogramImg);
+	setMouseCallback(wndName.c_str(), [](int Event, int x, int y, int flags, void *param) {
+		CMarkerHistogram   * pUserData = static_cast<CMarkerHistogram *>(param);
+		if (Event == CV_EVENT_LBUTTONDOWN) {
+			CvScalar color;
+			color.val[0] = histogramImg.at<byte>(y, 3 * x + 0); // Blue        
+			color.val[1] = histogramImg.at<byte>(y, 3 * x + 1); // Green        
+			color.val[2] = histogramImg.at<byte>(y, 3 * x + 2); // Red        
+			histogramImg.release();
+			histogramImg = pUserData->drawHistogram(color);
+			imshow("Feature Histogram Viewer", histogramImg);
+		}
+	}, this);
+}
 
-	CvSize			fSize;								// Size of the resulting image in feature histograms
-	fSize.width = nFeatures / fMaxHeight;
-	if (nFeatures % fMaxHeight != 0) fSize.width++;
-	fSize.height = (nFeatures < fMaxHeight) ? nFeatures : fMaxHeight;
-
-	CvSize	resSize;									// Size of the resulting image
-	resSize.width  = margin.width  + fSize.width  * (256 + 2 * margin.width);
-	resSize.height = margin.height + fSize.height * (100 + margin.height);
-
-	// Legende
-	Mat legende = drawLegend(resSize.height - margin.height, activeState);
-	resSize.width += legende.cols;
-
-	Mat		res =  Mat(resSize, CV_8UC3);				// Resulting Image
-	res.setTo(bkgIntencity);
-	
-	for (word f = 0; f < nFeatures; f++) {				// freatures
-		int dx = f / fMaxHeight;	dx *= (256 + 2 * margin.width);
-		int dy = f % fMaxHeight;	dy *= (100 + margin.height);
-		
-		Mat featureHistogram = drawFeatureHistogram(f, activeState);
-		Rect roi(Point(dx, margin.height + dy), featureHistogram.size());
-		featureHistogram.copyTo(res(roi));
-		featureHistogram.release();
-	} // f
-
-
-	Rect roi(Point(res.cols - legende.cols, margin.height), legende.size());
-	legende.copyTo(res(roi));
-	legende.release();
-
-	return res;
+void CMarkerHistogram::close(void) const
+{
+	destroyWindow(wndName.c_str());
 }
 
 #ifdef DEBUG_MODE	// --- Debugging ---
@@ -104,13 +89,52 @@ Mat	CMarkerHistogram::TEST_drawHistogram(CTrainNode *pTrain) const
 
 // ======================================== Private ========================================
 
+Mat CMarkerHistogram::drawHistogram(Scalar color) const
+{
+	const byte		fMaxHeight = 9;					// The maximal number of feature histograms in a column
+	const word		nFeatures = m_pNodeTrainer->getNumFeatures();
+	const int		activeState = getActiveState(color);
+
+	CvSize			fSize;								// Size of the resulting image in feature histograms
+	fSize.width = nFeatures / fMaxHeight;
+	if (nFeatures % fMaxHeight != 0) fSize.width++;
+	fSize.height = (nFeatures < fMaxHeight) ? nFeatures : fMaxHeight;
+
+	CvSize	resSize;									// Size of the resulting image
+	resSize.width = margin.width + fSize.width  * (256 + 2 * margin.width);
+	resSize.height = margin.height + fSize.height * (100 + margin.height);
+
+	// Legende
+	Mat legende = drawLegend(resSize.height - margin.height, activeState);
+	resSize.width += legende.cols;
+
+	Mat		res = Mat(resSize, CV_8UC3);				// Resulting Image
+	res.setTo(bkgIntencity);
+
+	for (word f = 0; f < nFeatures; f++) {				// freatures
+		int dx = f / fMaxHeight;	dx *= (256 + 2 * margin.width);
+		int dy = f % fMaxHeight;	dy *= (100 + margin.height);
+
+		Mat featureHistogram = drawFeatureHistogram(f, activeState);
+		Rect roi(Point(dx, margin.height + dy), featureHistogram.size());
+		featureHistogram.copyTo(res(roi));
+		featureHistogram.release();
+	} // f
+
+
+	Rect roi(Point(res.cols - legende.cols, margin.height), legende.size());
+	legende.copyTo(res(roi));
+	legende.release();
+
+	return res;
+}
+
 int CMarkerHistogram::getActiveState(Scalar color) const
 {
-	const size_t n = m_vPalette.size();
-	for (byte s = 0; s < n; s++) {						// states
-		int sum = 0;
-		for (int i = 0; i < 3; i++)	sum += static_cast<int>(fabs(bkgIntencity + frgWeight * m_vPalette.at(s).first.val[i] - color.val[i]));
-		if (sum == 0) return s;
+	size_t nStates = m_vPalette.size();
+	for (byte s = 0; s < nStates; s++) {						// states
+		Scalar diff = (Scalar)CV_RGB(bkgIntencity, bkgIntencity, bkgIntencity) + frgWeight * m_vPalette[s].first - color;
+		if (norm(diff) < 1.0) return s;
 	}
 	return -1;
 }

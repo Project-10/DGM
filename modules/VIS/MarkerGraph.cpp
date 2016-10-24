@@ -319,7 +319,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void drawGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	void showGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
 		const size_t	nNodes = pGraph->getNumNodes();

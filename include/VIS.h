@@ -50,9 +50,6 @@ For user interaction capacity we define additional functions for handling the mo
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-// Global definitions
-Mat histogramImg;
-
 typedef struct {
 	CGraph				* pGraph;
 	CMarkerHistogram	* pMarker;
@@ -166,8 +163,7 @@ int main(int argv, char *argc[])
 	imshow("Solution", img);
 
 	// Feature distribution histograms
-	histogramImg = marker->drawHistogram();
-	imshow("Histogram", histogramImg);
+	marker->showHistogram();
 
 	// Confusion matrix
 	Mat cMat	= confMat->getConfusionMatrix();
@@ -180,7 +176,6 @@ int main(int argv, char *argc[])
 	userData.pMarker	= marker;
 	userData.imgWidth	= width;
 	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
-	cvSetMouseCallback("Histogram", histogramWindowMouseHandler, &userData);
 
 	cvWaitKey();
 
@@ -223,24 +218,7 @@ void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param
 
 <b>Mouse Handler for drawing the feature distribution histograms</b><br>
 This mouse handler allows for user interaction with \b Histogram window. Its capable to visualize the feature distributions separately for each class. User can chose the needed class by clicking on the
-color box near to the class name. These feature distributions allow for analyzing the separability of the classes in the feature sapce.
-
-@code
-void histogramWindowMouseHandler(int Event, int x, int y, int flags, void *param)
-{
-	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == CV_EVENT_LBUTTONDOWN) {
-		CvScalar color;
-		color.val[0] = histogramImg.at<byte>(y, 3 * x + 0);	// Blue
-		color.val[1] = histogramImg.at<byte>(y, 3 * x + 1);	// Green
-		color.val[2] = histogramImg.at<byte>(y, 3 * x + 2);	// Red
-
-		histogramImg.release();
-		histogramImg = pUserData->pMarker->drawHistogram(color);
-		imshow("Histogram", histogramImg);
-	}
-}
-@endcode
-
+color box near to the class name. These feature distributions allow for analyzing the separability of the classes in the feature sapce.<br>
+> Starting from the version 1.5.1 this mouse handler is built in the VIS module. Thus, no extra code is needed.
 
 */

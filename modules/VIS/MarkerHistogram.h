@@ -37,61 +37,79 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, const vec_nColor_t &vPalette, vec_string_t vFeatureNames = vec_string_t()) : CMarker(vPalette), m_pNodeTrainer(pNodeTrainer), m_vFeatureNames(vFeatureNames) {}
 		DllExport virtual ~CMarkerHistogram(void) {}
-
-/**
-@brief Draws the figure with a visualization of feature densitiy distributions.
-@details This function also allows for active user interaction: after the figure is drawn, user may click upon it, and the color of the clicked point is than transmitted to the fuction as argument. 
-The function will redraw the fugure, depending on the input color.
-@param color Color of a pixel from the resulting histogram. This optional parameter is used for active user interaction.  
-@return Figure with visualized histograms of the feature distributions.
-*/
-		DllExport Mat	drawHistogram(Scalar color = CV_RGB(0,0,0)) const;
-
+		/**
+		* @brief Visualizes the feature densitiy distributions with user interaction.
+		* @details This function creates an OpenCV window with the visualized histograms.
+		* Click on the color box for specific state (class) visualuzation.
+		*/
+		DllExport void	showHistogram(void);
+		/**
+		* @brief Draws the figure with a visualization of feature densitiy distributions.
+		* @return Figure with visualized histograms of the feature distributions.
+		*/
+		DllExport Mat	drawHistogram(void) const { return drawHistogram(CV_RGB(0, 0, 0)); }
+		/**
+		* @brief Closes the histogram window
+		*/
+		DllExport void close(void) const;
 
 
 	#ifdef DEBUG_MODE	// --- Debugging ---
-/**
-@brief Visualises the 2-dimensional node potentials histogram.
-@return Figure with visualized histogram. 
-@warning Used only for test purposes. Capable to visualize only 2-dimensional feature space.
-*/
+		/**
+		* @brief Visualises the 2-dimensional node potentials histogram.
+		* @return Figure with visualized histogram. 
+		* @warning Used only for test purposes. Capable to visualize only 2-dimensional feature space.
+		*/
 		DllExport Mat	TEST_drawHistogram(CTrainNode *pTrain) const;
 	#endif				// --- --------- ---
 
 	
 	private:
-/**
-@brief Retrieves a chosen by an user state, from the color.
-@param color Color of a pixel from the histogram figure. 
-@return Active state (class) if \a color matches the palette, -1 othervise.
-*/
+		/**
+		* @brief Draws the figure with a visualization of feature densitiy distributions.
+		* @details This function also allows for active user interaction: after the figure is drawn, user may click upon it, and the color of the clicked point is than transmitted to the fuction as argument.
+		* The function will redraw the fugure, depending on the input color.
+		* @param color Color of a pixel from the resulting histogram. This optional parameter is used for active user interaction.
+		* @return Figure with visualized histograms of the feature distributions.
+		*/
+		DllExport Mat	drawHistogram(Scalar color) const;
+		/**
+		* @brief Retrieves a chosen by an user state, from the color.
+		* @param color Color of a pixel from the histogram figure. 
+		* @return Active state (class) if \a color matches the palette, -1 othervise.
+		*/
 		int				getActiveState(Scalar color) const;
-/**
-@brief Draws a single feature histogram.
-@param f Feature.
-@param activeState Desired state (class).
-@return Figure with visualized feature histogram. Mat(100, 256, CV_8UC1).
-*/
+		/**
+		* @brief Draws a single feature histogram.
+		* @param f Feature.
+		* @param activeState Desired state (class).
+		* @return Figure with visualized feature histogram: Mat(100, 256, CV_8UC1).
+		*/
 		Mat				drawFeatureHistogram(word f, int activeState = -1) const;
-/**
-@brief Draws a legend to the main figure.
-@param maxHeight The maximal height of the legend figure.
-@param activeState Desired state (class).
-@return Figure with visualized legend to the main figure.
-*/
+		/**
+		* @brief Draws a legend to the main figure.
+		* @param maxHeight The maximal height of the legend figure.
+		* @param activeState Desired state (class).
+		* @return Figure with visualized legend to the main figure.
+		*/
 		Mat				drawLegend(int maxHeight, int activeState = -1) const;
-
+		/**
+		* @brief Mouse handler
+		*/
+		//static void		onMouse(int Event, int x, int y, int flags, void *param);
 	
+
 	protected:
 		CTrainNode			*  m_pNodeTrainer;		///< Pointer to the  CTrainNode class
 
 
 	private:
-		static const CvSize margin;
-		static const byte	bkgIntencity;
-		static const double	frgWeight;
+		static const CvSize			margin;
+		static const byte			bkgIntencity;
+		static const double			frgWeight;
+		static const std::string	wndName;
 
-		vec_string_t		m_vFeatureNames;
+		vec_string_t				m_vFeatureNames;
 	};
 
 } }

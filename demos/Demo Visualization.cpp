@@ -4,9 +4,6 @@
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-// Global definitions
-Mat histogramImg;
-
 typedef struct {
 	CGraph				* pGraph;
 	CMarkerHistogram	* pMarker;
@@ -37,21 +34,6 @@ void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param
 
 		pot.release();
 		potImg.release();
-	}
-}
-
-void histogramWindowMouseHandler(int Event, int x, int y, int flags, void *param)
-{
-	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == CV_EVENT_LBUTTONDOWN) {
-		CvScalar color;
-		color.val[0] = histogramImg.at<byte>(y, 3 * x + 0);	// Blue
-		color.val[1] = histogramImg.at<byte>(y, 3 * x + 1);	// Green
-		color.val[2] = histogramImg.at<byte>(y, 3 * x + 2);	// Red
-
-		histogramImg.release();
-		histogramImg = pUserData->pMarker->drawHistogram(color);
-		imshow("Histogram", histogramImg);
 	}
 }
 
@@ -167,8 +149,7 @@ int main(int argc, char *argv[])
 	imshow("Solution", img);
 	
 	// Feature distribution histograms
-	histogramImg = marker->drawHistogram();
-	imshow("Histogram", histogramImg);
+	marker->showHistogram();
 
 	// Confusion matrix
 	Mat cMat	= confMat->getConfusionMatrix();
@@ -181,7 +162,6 @@ int main(int argc, char *argv[])
 	userData.pMarker	= marker;
 	userData.imgWidth	= width;
 	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
-	cvSetMouseCallback("Histogram", histogramWindowMouseHandler, &userData);
 
 	cvWaitKey();
 
