@@ -125,13 +125,14 @@ namespace DirectGraphicalModels {
 		DGM_ASSERT(m1[0].type() == CV_8UC1);
 		DGM_ASSERT(m2.type() == CV_8UC1);
 
-		Mat vec(static_cast<word>(m1.size()), 1, CV_8UC1);
+		const word nFeatures = static_cast<word>(m1.size());
+		Mat vec(nFeatures, 1, CV_8UC1);
+		std::vector<const byte *> vM1(nFeatures);
 		for (register int y = 0; y < m2.rows; y++) {
-			byte const **pM1 = new const byte *[vec.rows];
-			for (register int f = 0; f < vec.rows; f++) pM1[f] = m1[f].ptr<byte>(y);
+			for (register int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
 			for (register int x = 0; x < m2.cols; x++) {
-				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = pM1[f][x];
+				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
 				(self.*SomeMethod)(vec, pM2[x]);
 			} // x
 		} // y
