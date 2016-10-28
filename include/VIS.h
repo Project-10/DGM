@@ -9,12 +9,14 @@
 @section sec_marker_title Visualization Module
 
 Marker module provides with a variety of tools for visualizing and analyzing used data as well as intermediate and final results:
-- <b>markClasses</b>         : DirectGraphicalModels::vis::CMarker::markClasses()            for visualizing the classification results;
-- <b>drawPotentials</b>      : DirectGraphicalModels::vis::CMarker::drawPotentials()         for visualizing the node and edge potentials;
-- <b>drawConfusionMatrix</b> : DirectGraphicalModels::vis::CMarker::drawConfusionMatrix()    for visualizing and analyzing the qualitative classification results;
-- <b>drawHistogram</b>       : DirectGraphicalModels::vis::CMarkerHistogram::drawHistogram() for visualizing and analyzing distribution of features for given classes;
-- <b>drawDictionary</b>      : DirectGraphicalModels::vis::drawDictionary()                  for visualizing the sparse dictionaries;
-- <b>drawGraph</b>           : DirectGraphicalModels::vis::drawGraph()                       for visualizing the graphical models;
+- @ref DirectGraphicalModels::vis::CMarker::markClasses()            "CMarker::markClasses()" for visualizing the classification results;
+- @ref DirectGraphicalModels::vis::CMarker::drawPotentials()         "CMarker::drawPotentials()" for visualizing the node and edge potentials;
+- @ref DirectGraphicalModels::vis::CMarker::drawConfusionMatrix()    "CMarker::drawConfusionMatrix()" for visualizing and analyzing the qualitative classification results;
+- @ref DirectGraphicalModels::vis::CMarkerHistogram::drawHistogram() "CMarkerHistogram::drawHistogram()" for visualizing and analyzing distribution of features for given classes;
+- @ref DirectGraphicalModels::vis::CMarkerHistogram::showHistogram() "CMarkerHistogram::showHistogram()" for showing the window with the feature distribution histograms with <b>user interaction</b> capacity;
+- @ref DirectGraphicalModels::vis::drawDictionary()                  "drawDictionary()" for visualizing the sparse dictionaries;
+- @ref DirectGraphicalModels::vis::drawGraph()                       "drawGraph()" for visualizing the graphical models;
+- @ref DirectGraphicalModels::vis::showGraph3D()                     "showGraph3D()" for visualizing the graphical models in 3D with <b>user interaction</b> capacity.
 
 For user interaction capacity, there are more functions, which allow for handling the mouse clicks over the figures. Please see our tutorial @ref demovis for more details.
 

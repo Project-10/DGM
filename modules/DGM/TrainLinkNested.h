@@ -55,6 +55,7 @@ namespace DirectGraphicalModels
 			m_pPrior = new CPriorNode(static_cast<byte>(nStates));
 			m_pTrainer = new Trainer(static_cast<byte>(nStates), nFeatures, params);
 		}
+		
 		virtual ~CTrainLinkNested(void) 
 		{ 
 			delete m_pPrior;
@@ -71,6 +72,7 @@ namespace DirectGraphicalModels
 			m_pPrior->addNodeGroundTruth(gt);
 			m_pTrainer->addFeatureVec(featureVector, gt);
 		}
+		
 		virtual void	train(void) 
 		{ 
 			// Fill holes in trainig

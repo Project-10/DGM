@@ -183,12 +183,12 @@ In order to build the DGM library, the OpenCV library should be built and instal
 -# In case you want to build the library follow these instructions, otherwise - skip this step
 	-# Download and install <a href="https://cmake.org/" target="_blank">CMake</a>
     -# Run \b cmake-gui.exe
-    -# In the <i>“Where is the source code”</i> field choose the DGM source directory: \b C:\\DGM\\sources<br>
+    -# In the <i>“Where is the source code”</i> field choose the DGM source directory: \b C:\\DGM<br>
        In the <i>“Where to build the binaries”</i> field choose directory for VS compiled DGM: \b C:\\DGM\\builds
     -# Press \a Configure button and choose <i>Visual Studio 14 2015</i> or <i>Visual Studio 14 2015 Win64</i>  (or whatever) as building environment
     -# Be sure that the \a OpenCV_DIR is pointing to the OpenCV build directory (\a e.g. \b C:\\OpenCV\\build), where \b OpenCVConfig.cmake file is located
     -# Press one more time \a Configure and then \a Generate, so the VS project will be generated in the \b C:\\DGM\\builds
-    -# Open the solution (\b DGM.sln file) 
+    -# Open the solution (\b C:\\DGM\\builds\\DGM.sln file) 
     -# Build \b ALL_BUILD and \b INSTALL projects first for \a Debug and then for \a Release configuration. That will copy DGM headers, binaries and demonstration applications to \b C:\\DGM\\builds\\install
     -# (Optionally) you can copy the content of the \b C:\\DGM\\builds\\install to another folder, e.g. \b C:\\DGM\\build 
 -# Specify the following paths and library

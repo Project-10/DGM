@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Calculates the node potential, based on the feature vector.
 		* @details This function calculates the potentials of the node, described with the sample \b featureVector (\f$ \textbf{f} \f$):
-		* \f[ nodePot_s = \prod_{f\in\mathbb{F}} (H_{s,f}.data[\textbf{f}_f] / H_{s,f}.n); \forall s\in\mathbb{S}, \f] 
+		* \f[ nodePot_s = prior_s\cdot\prod_{f\in\mathbb{F}} (H_{s,f}.data[\textbf{f}_f] / H_{s,f}.n); \forall s\in\mathbb{S}, \f] 
 		* where \f$\mathbb{S}\f$ and \f$\mathbb{F}\f$ are sets of all states (classes) and features correspondently. In other words, the indexes: 
 		* \f$ s \in [0; nStates) \f$ and \f$ f \in [0; nFeatures) \f$.
 		* Here \f$ H.data[256] \f$ is a 1D histogram, \f$ H.n \f$ is the number of entries in histogram, \a i.e.  \f$ H.n = \sum^{255}_{i = 0} H.data[i] \f$.

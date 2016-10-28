@@ -99,13 +99,19 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
-		* @brief
-		* @param A
-		* @param B
-		* @param C
-		* @param group
+		* @brief Assign the edges, which cross the given line to the grop \b group.
+		* @details The line is given by the equation: <b>A</b>x + <b>B</b>y + <b>C</b> = 0. \b A and \b B are not both equal to zero.
+		* @param A Constant line parameter
+		* @param B Constant line parameter
+		* @param C Constant line parameter
+		* @param group New group ID
 		*/
 		DllExport virtual void defineEdgeGroup(float A, float B, float C, byte group);
+		/**
+		* @brief
+		* @param group
+		* @param pot
+		*/
 		DllExport virtual void setGroupPot(byte group, const Mat &pot);
 		/**
 		* @brief Marginalizes a set of nodes

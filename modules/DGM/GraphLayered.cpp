@@ -305,14 +305,17 @@ namespace DirectGraphicalModels
 
 	void CGraphLayered::defineEdgeGroup(float A, float B, float C, byte group)
 	{
-		// TODO: add parallel y
+		// Assertion
+		DGM_ASSERT_MSG(A != 0 || B != 0, "Wrong arguments");
+
 #ifdef ENABLE_PPL
+		concurrency::parallel_for(0, m_size.height, [&](int y) {
 #else
+		for (int y = 0; y < m_size.height; y++) {
 #endif
-		for (int y = 0; y < m_size.height; y++ ) {
-			int i = y * m_size.width * m_nLayers;
 			for (int x = 0; x < m_size.width; x++) {
-				int s = SIGN(A * x + B * y + C);
+				int i = (y * m_size.width + x) * m_nLayers;							// index of the current node from the base layer	
+				int s = SIGN(A * x + B * y + C);									// sign of the current pixel according to the given line
 
 				if (m_gType & GRAPH_EDGES_GRID) {
 					if (x > 0) {
@@ -343,20 +346,51 @@ namespace DirectGraphicalModels
 						if (s != _s) setArcGroup(i, i - m_nLayers * m_size.width + m_nLayers, group);
 					} // x, y
 				}
-				i += m_nLayers;
 			} // x
 		} // y
+#ifdef ENABLE_PPL
+		);
+#endif
 	}
 
 	void CGraphLayered::setGroupPot(byte group, const Mat &pot)
 	{
-		const size_t nNodes = getNumNodes();
-		for (size_t n = 0; n < nNodes; n++) {
-			vec_size_t vChilds;
-			getChildNodes(n, vChilds);
-			for (size_t c : vChilds) {
-				if (getEdgeGroup(n, c) == group)
-					setEdge(n, c, pot);
+		if (false) {
+			for (int y = 0; y < m_size.height; y++) {
+				for (int x = 0; x < m_size.width; x++) {
+					int i = (y * m_size.width + x) * m_nLayers;							// index of the current node from the base layer	
+					if (m_gType & GRAPH_EDGES_GRID) {
+						if (x > 0) {
+							if (getEdgeGroup(i, i - m_nLayers) == group)
+								setArc(i, i - m_nLayers, pot);
+						}
+						if (y > 0) {
+							if (getEdgeGroup(i, i - m_nLayers * m_size.width) == group)
+								setArc(i, i - m_nLayers * m_size.width, pot);
+						}
+					}
+					if (m_gType & GRAPH_EDGES_DIAG) {
+						if ((x > 0) && (y > 0)) {
+							if (getEdgeGroup(i, i - m_nLayers * m_size.width - m_nLayers) == group)
+								setArc(i, i - m_nLayers * m_size.width - m_nLayers, pot);
+						}
+						if ((x < m_size.width - 1) && (y > 0)) {
+							if (getEdgeGroup(i, i - m_nLayers * m_size.width + m_nLayers) == group)
+								setArc(i, i - m_nLayers * m_size.width + m_nLayers, pot);
+						}
+					}
+				} // x
+			} // y
+		}
+		else {
+			const size_t nNodes = getNumNodes();
+			for (size_t n = 0; n < nNodes; n++) {
+				vec_size_t vChilds;
+				getChildNodes(n, vChilds);
+				for (size_t c : vChilds) {
+					if (getEdgeGroup(n, c) == group)
+						setEdge(n, c, pot);
+				}
 			}
 		}
 	}
@@ -416,5 +450,4 @@ namespace DirectGraphicalModels
 		} // n
 
 	}
-
 }
