@@ -3,7 +3,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-green.svg)](License.txt)
 [![Version](https://img.shields.io/github/release/Project-10/DGM.svg)](https://github.com/Project-10/DGM/releases)
-[![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt.svg?maxAge=2592000)](https://ci.appveyor.com/project/ProjectX/dgm)
+[![Build status](https://ci.appveyor.com/api/projects/status/0phsc4anotab6pvv?svg=true)](https://ci.appveyor.com/project/ProjectX/dgm)
 
 DGM is a C++ library implementing various tasks in probabilistic graphical models with pairwise 
 dependencies. The library aims to be used for the Markov and Conditional Random Fields (MRF / CRF),
