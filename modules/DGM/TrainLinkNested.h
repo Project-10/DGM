@@ -73,7 +73,7 @@ namespace DirectGraphicalModels
 			m_pTrainer->addFeatureVec(featureVector, gt);
 		}
 		
-		virtual void	train(void) 
+		virtual void	train(bool doClean = false)
 		{ 
 			// Fill holes in trainig
 			Mat fv(m_nFeatures, 1, CV_8UC1, Scalar(0));
@@ -83,7 +83,7 @@ namespace DirectGraphicalModels
 					m_pTrainer->addFeatureVec(fv, i);
 				
 			
-			m_pTrainer->train(); 
+			m_pTrainer->train(doClean); 
 		}
 
 

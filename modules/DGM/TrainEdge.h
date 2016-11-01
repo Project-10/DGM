@@ -34,7 +34,7 @@ namespace DirectGraphicalModels
 		* @param gt2 The ground-truth state (class) of the second node of the edge, given by \b featureVector2 
 		*/		
 		DllExport virtual void	addFeatureVecs(const Mat &featureVector1, byte gt1, const Mat &featureVector2, byte gt2) = 0;			
-		DllExport virtual void	train(void) {}
+		DllExport virtual void	train(bool doClean = false) {}
 		/**
 		* @brief Returns the edge potential, based on the feature vectors
 		* @details This function calls calculateEdgePotentials() function, which should be implemented in derived classes. After that,

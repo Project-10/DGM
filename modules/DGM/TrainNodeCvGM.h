@@ -18,12 +18,12 @@ namespace DirectGraphicalModels
 	class CTrainNodeCvGM : public CTrainNodeCvGMM
 	{
 	public:
-/**
-@brief Constructor
-@param nStates Number of states (classes)
-@param nFeatures Number of features
-*/
-		DllExport CTrainNodeCvGM(byte nStates, word nFeatures) : CTrainNodeCvGMM(nStates, nFeatures, 1), CBaseRandomModel(nStates) {}
+		/**
+		* @brief Constructor
+		* @param nStates Number of states (classes)
+		* @param nFeatures Number of features
+		*/
+		DllExport CTrainNodeCvGM(byte nStates, word nFeatures) : CTrainNodeCvGMM(nStates, nFeatures, 0, 1), CBaseRandomModel(nStates) {}
 		DllExport ~CTrainNodeCvGM(void) {}
 	};
 }

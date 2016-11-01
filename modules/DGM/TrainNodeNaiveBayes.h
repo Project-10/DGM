@@ -40,7 +40,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void	  reset(void);		
 
 		DllExport virtual void	  addFeatureVec(const Mat &featureVector, byte gt);	
-		DllExport virtual void	  train(void);
+		DllExport virtual void	  train(bool doClean = false);
 
 		/**
 		* @brief Returns the normalized probability density function for specific state (class) and feature 

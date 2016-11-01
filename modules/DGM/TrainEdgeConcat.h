@@ -79,7 +79,7 @@ namespace DirectGraphicalModels
 			m_pTrainer->addFeatureVec(m_featureVector, gt);
 
 		}
-		virtual void	train(void) { m_pTrainer->train(); }
+		virtual void	train(bool doClean = false) { m_pTrainer->train(doClean); }
 
 
 	protected:

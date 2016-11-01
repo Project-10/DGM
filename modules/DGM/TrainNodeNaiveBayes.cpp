@@ -88,7 +88,7 @@ void CTrainNodeNaiveBayes::addFeatureVec(const Mat &featureVector, byte gt)
 #endif				// --- ----- ---
 }
 
-void CTrainNodeNaiveBayes::train(void)
+void CTrainNodeNaiveBayes::train(bool)
 {
 	calculatePrior(); 
 }

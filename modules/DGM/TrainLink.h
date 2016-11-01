@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		* @param gto The ground-truth state (class) of the second node of the edge, corresponding to the occlusion layer
 		*/
 		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gtb, byte gto) = 0;
-		DllExport virtual void	train(void) {}
+		DllExport virtual void	train(bool doClean = false) {}
 		/**
 		* @brief Returns the link potential, based on the feature vector
 		* @details This function calls calculateLinkPotentials() function, which should be implemented in derived classes. After that,

@@ -27,8 +27,9 @@ namespace DirectGraphicalModels
 		* @brief Random model training
 		* @details Auxilary function for training - some derived classes may use this function inbetween training and classification phases
 		* @note This function \b must be called inbetween the training and classification phases
+		* @param doClean Flag indicating if the memory, keeping the trining data should be released after training
 		*/		
-		DllExport virtual void	train(void) = 0;	
+		DllExport virtual void	train(bool doClean = false) = 0;	
 		/**
 		* @brief Returns number of features
 		* @return Number of features @ref m_nFeatures

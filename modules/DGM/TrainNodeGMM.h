@@ -57,7 +57,7 @@ namespace DirectGraphicalModels
 		DllExport void	reset(void);		
 
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
-		DllExport void	train(void);	
+		DllExport void	train(bool doClean = false);
 
 	///@cond
 	#ifdef DEBUG_PRINT_INFO	

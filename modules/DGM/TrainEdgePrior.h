@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void	reset(void);	
 
 		DllExport virtual void	addFeatureVecs(const Mat &featureVector1, byte gt1, const Mat &featureVector2, byte gt2);
-		DllExport virtual void	train(void);
+		DllExport virtual void	train(bool doClean = false);
 
 	protected:
 		DllExport virtual void 	saveFile(FILE *pFile) const;

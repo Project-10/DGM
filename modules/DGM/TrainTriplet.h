@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		DllExport void	reset(void) {CPriorTriplet::reset(); }
 
 
-		DllExport void	train(void) {};
+		DllExport void	train(bool doClean = false) {};
 
 		DllExport Mat	getTripletPotentials(const Mat &featureVector1, const Mat &featureVector2, const Mat &featureVector3) const;
 

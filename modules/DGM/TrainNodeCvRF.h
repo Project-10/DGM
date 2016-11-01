@@ -72,8 +72,7 @@ namespace DirectGraphicalModels
 		DllExport void	load(const std::string &path, const std::string &name = std::string(), short idx = -1); 
 	
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
-
-		DllExport void	train(void);	
+		DllExport void	train(bool doClean = false);
 
 		/**
 		* @brief Returns the feature importance vector
@@ -91,7 +90,6 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		vec_mat_t		m_vSamplesAcc;						///< Samples container for all states
 		Ptr<CRForest>	m_pRF;								///< Random Forest
 
 
@@ -100,7 +98,9 @@ namespace DirectGraphicalModels
 		
 		
 	private:		
-		int				m_maxSamples;						// = INFINITY;	// for optimisation purposes
+		vec_mat_t		m_vSamplesAcc;						// = vec_mat_t(nStates);	// Samples container for all states
+		vec_int_t		m_vNumInputSamples;					// = vec_int_t(nStates, 0);	// Amount of input samples for all states
+		int				m_maxSamples;						// = INFINITY;				// for optimisation purposes
 	};
 }
 

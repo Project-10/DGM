@@ -1,4 +1,5 @@
 #include "TrainNodeMsRF.h"
+#include "random.h"
 #include "macroses.h"
 
 #ifdef USE_SHERWOOD
@@ -17,13 +18,13 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)//, pData(NULL), pForest(NULL)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;
@@ -32,6 +33,8 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : C
 
 void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 {
+	m_vSamplesAcc = vec_mat_t(m_nStates);
+	m_vNumInputSamples = vec_int_t(m_nStates, 0);
 	// Some default parameters
 	m_pParams = std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
 	m_pParams->MaxDecisionLevels						= params.max_decision_levels - 1;
@@ -40,10 +43,7 @@ void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 	m_pParams->NumberOfTrees							= params.num_ot_trees;
 	m_pParams->Verbose									= params.verbose;
 
-	m_pData = std::auto_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
-	m_pData->m_dimension = m_nFeatures;
-
-	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<dword>::max();
+	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
 	else m_maxSamples = params.maxSamples;
 }
 
@@ -53,66 +53,77 @@ CTrainNodeMsRF::~CTrainNodeMsRF(void)
 
 void CTrainNodeMsRF::reset(void) 
 {
-	m_pData->m_vData.clear();
-	m_pData->m_vLabels.clear();
-	m_pForest.reset();
+	for (Mat &acc : m_vSamplesAcc) acc.release();
+	std::fill(m_vNumInputSamples.begin(), m_vNumInputSamples.end(), 0);
+	m_pRF.reset();
 }
 
 void CTrainNodeMsRF::save(const std::string &path, const std::string &name, short idx) const
 {
 	std::string fileName = generateFileName(path, name.empty() ?  "TrainNodeMsRF" : name, idx);
-	m_pForest->Serialize(fileName);
+	m_pRF->Serialize(fileName);
 }
 
 void CTrainNodeMsRF::load(const std::string &path, const std::string &name, short idx)
 {
 	std::string fileName = generateFileName(path, name.empty() ?  "TrainNodeMsRF" : name, idx);
-	m_pForest = sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>::Deserialize(fileName);
+	m_pRF = sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>::Deserialize(fileName);
 }
 
 void CTrainNodeMsRF::addFeatureVec(const Mat &featureVector, byte gt) 
 {
-	// Assertions
-	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %u is out of range [0; %u)", gt, m_nStates);
-	DGM_ASSERT_MSG(featureVector.type() == CV_8UC1, "The feature vector has incorrect type");
+	// Assertions:
+	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
 
-	m_pData->m_vLabels.push_back(gt);
-	
-	for (word f = 0; f < m_nFeatures; f++) {
-		byte fval = featureVector.at<byte>(f, 0);
-		m_pData->m_vData.push_back(fval);
-	}	
+	if (m_vSamplesAcc[gt].rows < m_maxSamples) {
+		m_vSamplesAcc[gt].push_back(featureVector.t());
+	}
+	else {
+		if (random::u(0, m_vNumInputSamples[gt]) < m_maxSamples) {
+			int k = random::u(0, m_maxSamples - 1);
+			m_vSamplesAcc[gt].row(k) = featureVector.t();
+		}
+	}
+	m_vNumInputSamples[gt]++;
 }	
 
-void CTrainNodeMsRF::train(void) 
+void CTrainNodeMsRF::train(bool doClean)
 {
-/*	size_t * toDel = new size_t[m_nStates];
-	size_t * excessSamples = 0;
-	for (byte s = 0; s < m_nStates; s++) {
-		toDel[s] = MAX(0, static_cast<long>(m_pData->Count(s)) - static_cast<long>(m_maxSamples));
-		excessSamples += toDel[s];
-		printf("Class[%d] has %d samples. %d samples will be deleted\n", s, m_pData->Count(s), toDel[s]);
-	}
+#ifdef DEBUG_PRINT_INFO
+	printf("\n");
+#endif
+	// Filling <pData>
+	sw::DataPointCollection * pData = new sw::DataPointCollection();
+	pData->m_dimension = m_nFeatures;
 
-	srand(static_cast<unsigned int>(time(NULL)));	
-	dword allSamples = m_pData->Count();
-	while (excessSamples > 0) {
-		dRand() % allSamples;
+	for (byte s = 0; s < m_nStates; s++) {						// states
+		int nSamples = m_vSamplesAcc[s].rows;
+		DGM_ASSERT(nSamples <= m_maxSamples);
+#ifdef DEBUG_PRINT_INFO		
+		printf("State[%d] - %d of %d samples\n", s, nSamples, m_vNumInputSamples[s]);
+#endif
+		for (int smp = 0; smp < nSamples; smp++) {
+			for (word f = 0; f < m_nFeatures; f++) {			// features
+				byte fval = m_vSamplesAcc[s].at<byte>(smp, f);
+				pData->m_vData.push_back(fval);
+			} // f
+			pData->m_vLabels.push_back(s);
+		} // smp
+		if (doClean) m_vSamplesAcc[s].release();				// free memory
+	} // s
 
-		excessSamples--;
-	}
-	
-	delete [] toDel;*/
-	
-	
+
+	// Training
 	sw::Random random;
 	sw::ClassificationTrainingContext classificationContext(m_nStates, m_nFeatures);
 #ifdef ENABLE_PPL
 	// Use this function with cautions - it is not verifiied!
-	m_pForest = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *m_pData);
+	m_pRF = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *pData);
 #else
-	m_pForest = sw::ForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *m_pData);
+	m_pRF = sw::ForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *pData);
 #endif
+
+	delete pData;
 }	
 
 void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
@@ -125,13 +136,13 @@ void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 	}
 
 	std::vector<std::vector<int>> leafNodeIndices;
-	m_pForest->Apply(*testData, leafNodeIndices);
+	m_pRF->Apply(*testData, leafNodeIndices);
 	
 	sw::HistogramAggregator h(m_nStates);
 	int index = 0;
-	for (size_t t = 0; t < m_pForest->TreeCount(); t++) {
+	for (size_t t = 0; t < m_pRF->TreeCount(); t++) {
 		int leafIndex = leafNodeIndices[t][index];
-		h.Aggregate(m_pForest->GetTree((t)).GetNode(leafIndex).TrainingDataStatistics);
+		h.Aggregate(m_pRF->GetTree((t)).GetNode(leafIndex).TrainingDataStatistics);
 	} // t
 
 	float mudiness = static_cast<float> (0.5 * h.Entropy());
