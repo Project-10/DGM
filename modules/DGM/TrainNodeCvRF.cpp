@@ -74,10 +74,9 @@ void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
 		m_vSamplesAcc[gt].push_back(featureVector.t());
 	}
 	else {
-		if (random::u(0, m_vNumInputSamples[gt]) < m_maxSamples) {
-			int k = random::u(0, m_maxSamples - 1);
+		int k = random::u(0, m_vNumInputSamples[gt]);
+		if (k < m_maxSamples) 
 			m_vSamplesAcc[gt].row(k) = featureVector.t();
-		}
 	}
 	m_vNumInputSamples[gt]++;
 }
