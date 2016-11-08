@@ -1,6 +1,7 @@
 #include "GraphLayered.h"
 #include "TrainNode.h"
 #include "TrainEdge.h"
+#include "TrainEdgePotts.h"
 #include "TrainLink.h"
 #include "macroses.h"
 
@@ -11,7 +12,7 @@ namespace DirectGraphicalModels
 		if (getNumNodes() != 0) reset();
 		m_size = graphSize;
 
-		size_t l;
+		word l;
 		for (int y = 0; y < m_size.height; y++)
 			for (int x = 0; x < m_size.width; x++) {
 				// Nodes
@@ -19,11 +20,10 @@ namespace DirectGraphicalModels
 				for (l = 1; l < m_nLayers; l++) addNode();
 
 				if (m_gType & GRAPH_EDGES_LINK) {
-					word nLayers = MIN(2, m_nLayers);
-					for (l = 0; l < nLayers - 1; l++)
-						addArc(idx + l, idx + l + 1);
-					//for (l = nLayers - 1; l < m_nLayers - 1; l++)
-					//	addEdge(idx + l, idx + l + 1);
+					if (m_nLayers >= 2)
+						addArc(idx, idx + 1);
+					for (l = 2; l < m_nLayers; l++)
+						addEdge(idx + l - 1, idx + l);
 				} // if LINK
 
 				if (m_gType & GRAPH_EDGES_GRID) {
@@ -56,40 +56,45 @@ namespace DirectGraphicalModels
 
 	void CGraphLayered::fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const Mat &featureVectors, float weightBase, float weightOccl)
 	{
-		const int	height		= featureVectors.rows;
-		const int	width		= featureVectors.cols;
 		const word	nFeatures	= featureVectors.channels();
 
 		// Assertions
+		DGM_ASSERT(m_size.height == featureVectors.rows);
+		DGM_ASSERT(m_size.width == featureVectors.cols);
 		DGM_ASSERT(nFeatures == nodeTrainerBase->getNumFeatures());
 		if (nodeTrainerOccl) DGM_ASSERT(nFeatures == nodeTrainerOccl->getNumFeatures());
-		DGM_ASSERT(width * height * m_nLayers == getNumNodes());
+		DGM_ASSERT(m_size.width * m_size.height * m_nLayers == getNumNodes());
 
 		Rect ROIb(0, 0, 1, nodeTrainerBase->getNumStates());
 		Rect ROIo = nodeTrainerOccl ? cvRect(0, m_nStates - nodeTrainerOccl->getNumStates(), 1, nodeTrainerOccl->getNumStates()) : cvRect(0, 0, 0, 0);
 
 #ifdef ENABLE_PPL
-		concurrency::parallel_for(0, height, [&, width, nFeatures, ROIb, ROIo](int y) {
+		concurrency::parallel_for(0, m_size.height, [&, nFeatures, ROIb, ROIo] (int y) {
 			Mat featureVector(nFeatures, 1, CV_8UC1);
 			Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+			Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+			nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 #else
 		Mat featureVector(nFeatures, 1, CV_8UC1);
 		Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-		for (int y = 0; y < height; y++) {
+		Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+		nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+		for (int y = 0; y < m_size.height; y++) {
 #endif
 			const byte *pFv = featureVectors.ptr<byte>(y);
-			int i = y * width * m_nLayers;
-			for (int x = 0; x < width; x++) {
+			for (int x = 0; x < m_size.width; x++) {
+				size_t idx = (y * m_size.width + x) * m_nLayers;
 				for (word f = 0; f < nFeatures; f++) featureVector.at<byte>(f, 0) = pFv[nFeatures * x + f];
 				nodeTrainerBase->getNodePotentials(featureVector, weightBase).copyTo(nPotBase(ROIb));
-				setNode(i, nPotBase);
+				setNode(idx, nPotBase);
 				if (m_nLayers >= 2) {
 					nodeTrainerOccl->getNodePotentials(featureVector, weightOccl).copyTo(nPotOccl(ROIo));
-					setNode(i + 1, nPotOccl);
+					setNode(idx + 1, nPotOccl);
 				}
-				i += m_nLayers;
+				for (word l = 2; l < m_nLayers; l++)
+					setNode(idx + l, nPotIntr);
 			} // x	
 #ifdef ENABLE_PPL
 		}); // y
@@ -100,42 +105,46 @@ namespace DirectGraphicalModels
 
 	void CGraphLayered::fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVectors, float weightBase, float weightOccl)
 	{
-		const int	height		= featureVectors[0].rows;
-		const int	width		= featureVectors[0].cols;
 		const word	nFeatures	= static_cast<word>(featureVectors.size());
 
 		// Assertions
+		DGM_ASSERT(m_size.height == featureVectors[0].rows);
+		DGM_ASSERT(m_size.width == featureVectors[0].cols);
 		DGM_ASSERT(nFeatures == nodeTrainerBase->getNumFeatures());
 		if (nodeTrainerOccl) DGM_ASSERT(nFeatures == nodeTrainerOccl->getNumFeatures());
-		DGM_ASSERT(width * height * m_nLayers == getNumNodes());
+		DGM_ASSERT(m_size.width * m_size.height * m_nLayers == getNumNodes());
 
 		Rect ROIb(0, 0, 1, nodeTrainerBase->getNumStates());
 		Rect ROIo = nodeTrainerOccl ? cvRect(0, m_nStates - nodeTrainerOccl->getNumStates(), 1, nodeTrainerOccl->getNumStates()) : cvRect(0, 0, 0, 0);
 
 #ifdef ENABLE_PPL
-		concurrency::parallel_for(0, height, [&, width, nFeatures, ROIb, ROIo](int y) {
+		concurrency::parallel_for(0, m_size.height, [&, nFeatures, ROIb, ROIo](int y) {
 			Mat featureVector(nFeatures, 1, CV_8UC1);
 			Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+			Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+			nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 #else
 		Mat featureVector(nFeatures, 1, CV_8UC1);
 		Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-		for (int y = 0; y < height; y++) {
+		Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
+		nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+		for (int y = 0; y < m_size.height; y++) {
 #endif
 			byte const **pFv = new const byte *[nFeatures];
 			for (word f = 0; f < nFeatures; f++) pFv[f] = featureVectors[f].ptr<byte>(y);
-			int i = y * width * m_nLayers;
-			for (int x = 0; x < width; x++) {
+			for (int x = 0; x < m_size.width; x++) {
+				size_t idx = (y * m_size.width + x) * m_nLayers;
 				for (word f = 0; f < nFeatures; f++) featureVector.at<byte>(f, 0) = pFv[f][x];
-				Mat nnnPot = nodeTrainerBase->getNodePotentials(featureVector, weightBase);
-				nnnPot.copyTo(nPotBase(ROIb));
-				setNode(i, nPotBase);
+				nodeTrainerBase->getNodePotentials(featureVector, weightBase).copyTo(nPotBase(ROIb));
+				setNode(idx, nPotBase);
 				if (m_nLayers >= 2) { 
 					nodeTrainerOccl->getNodePotentials(featureVector, weightOccl).copyTo(nPotOccl(ROIo));
-					setNode(i + 1, nPotOccl);
+					setNode(idx + 1, nPotOccl);
 				}
-				i += m_nLayers;
+				for (word l = 2; l < m_nLayers; l++)
+					setNode(idx + l, nPotIntr);
 			} // x	
 #ifdef ENABLE_PPL
 		}); // y
@@ -177,11 +186,11 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_LINK) {
 					ePot = linkTrainer->getLinkPotentials(featureVector1, linkWeight);
 					add(ePot, ePot.t(), ePot);
-					word nLayers = MIN(2, m_nLayers);
-					for (l = 0; l < nLayers - 1; l++)
-						setArc(idx + l, idx + l + 1, ePot);
-					//for (l = nLayers - 1; l < m_nLayers - 1; l++)
-					//	setEdge(i + l, i + l + 1);
+					if (m_nLayers >= 2)
+						setArc(idx, idx + 1, ePot);
+					ePot = CTrainEdgePotts::getEdgePotentials(100, m_nStates);
+					for (l = 2; l < m_nLayers; l++)
+						setEdge(idx + l - 1, idx + l, ePot);
 				} // edges_link
 
 				if (m_gType & GRAPH_EDGES_GRID) {
@@ -218,7 +227,7 @@ namespace DirectGraphicalModels
 		} // y
 #endif
 	}
-	
+
 	void CGraphLayered::fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight, float linkWeight)
 	{
 		const word	nFeatures	=static_cast<word>(featureVectors.size());
@@ -259,11 +268,11 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_LINK) {
 					ePot = linkTrainer->getLinkPotentials(featureVector1, linkWeight);
 					add(ePot, ePot.t(), ePot);
-					word nLayers = MIN(2, m_nLayers);
-					for (l = 0; l < nLayers - 1; l++)
-						setArc(idx + l, idx + l + 1, ePot);
-					//for (l = nLayers - 1; l < m_nLayers - 1; l++)
-					//	setEdge(i + l, i + l + 1);
+					if (m_nLayers >= 2)
+						setArc(idx, idx + 1, ePot);
+					ePot = CTrainEdgePotts::getEdgePotentials(100, m_nStates);
+					for (l = 2; l < m_nLayers; l++)
+						setEdge(idx + l - 1, idx + l, ePot);
 				} // edges_link
 
 				if (m_gType & GRAPH_EDGES_GRID) {
