@@ -24,7 +24,6 @@ source_group("Source Files\\Feature Extractor\\Variance" FILES "Variance.h" "Var
 include_directories(${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/modules
 					${OpenCV_INCLUDE_DIRS} 
-					${OpenCV_INCLUDE_DIRS}2
 				)
   
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)

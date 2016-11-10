@@ -89,7 +89,6 @@ source_group("Source Files\\Random Model\\Training\\Triplet" FILES "TrainTriplet
 include_directories(${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/3rdparty
 					${OpenCV_INCLUDE_DIRS} 
-					${OpenCV_INCLUDE_DIRS}2
 				)
  
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)

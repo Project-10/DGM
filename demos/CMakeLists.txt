@@ -3,7 +3,6 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/modules
 					${PROJECT_SOURCE_DIR}/3rdparty
 					${OpenCV_INCLUDE_DIRS} 
-					${OpenCV_INCLUDE_DIRS}2
 				)
 
 # Properties -> Linker -> General -> Additional Library Directories

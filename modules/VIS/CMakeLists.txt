@@ -24,7 +24,6 @@ source_group("Source Files\\Common\\Trackball Camera" FILES "./Trackball Camera/
 include_directories(${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/modules
 					${OpenCV_INCLUDE_DIRS} 
-					${OpenCV_INCLUDE_DIRS}2
 				)
   
 # Properties -> Linker -> General -> Additional Library Directories

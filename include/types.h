@@ -23,7 +23,7 @@
 #ifdef ENABLE_AMP
 #include <amp.h>
 #endif
-#include "opencv.hpp"
+#include "opencv2\opencv.hpp"
 
 using namespace cv;
 
