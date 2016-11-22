@@ -74,13 +74,13 @@ namespace DirectGraphicalModels
 			Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-			nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+			if (nodeTrainerOccl) nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 #else
 		Mat featureVector(nFeatures, 1, CV_8UC1);
 		Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-		nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+		if (nodeTrainerOccl) nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 		for (int y = 0; y < m_size.height; y++) {
 #endif
 			const byte *pFv = featureVectors.ptr<byte>(y);
@@ -123,13 +123,13 @@ namespace DirectGraphicalModels
 			Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 			Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-			nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+			if (nodeTrainerOccl) nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 #else
 		Mat featureVector(nFeatures, 1, CV_8UC1);
 		Mat nPotBase(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotOccl(m_nStates, 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotIntr(m_nStates, 1, CV_32FC1, Scalar(0.0f));
-		nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
+		if (nodeTrainerOccl) nPotIntr(ROIo).setTo(100.0f / nodeTrainerOccl->getNumStates());
 		for (int y = 0; y < m_size.height; y++) {
 #endif
 			byte const **pFv = new const byte *[nFeatures];
