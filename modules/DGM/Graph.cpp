@@ -63,6 +63,14 @@ namespace DirectGraphicalModels
 	{
 		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
 		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
+		
+		// Check if the edge exists
+		if (m_vNodes[srcNode]->to.size() < m_vNodes[dstNode]->from.size())
+			for (size_t &e : m_vNodes[srcNode]->to) { DGM_ASSERT(m_vEdges[e]->node2 != dstNode); }
+		else
+			for (size_t &e : m_vNodes[dstNode]->from) { DGM_ASSERT(m_vEdges[e]->node1 != srcNode); }
+
+		// Else: create a new one
 		size_t e = m_vEdges.size();
 		m_vEdges.push_back(ptr_edge_t(new Edge(srcNode, dstNode))); 
 		m_vNodes[srcNode]->to.push_back(e);
@@ -76,7 +84,10 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
 
 		// Check if the edge exists
-		for (size_t e: m_vNodes[srcNode]->to) { DGM_ASSERT(m_vEdges[e]->node2 != dstNode); }
+		if (m_vNodes[srcNode]->to.size() < m_vNodes[dstNode]->from.size())
+			for (size_t &e : m_vNodes[srcNode]->to) { DGM_ASSERT(m_vEdges[e]->node2 != dstNode); }
+		else
+			for (size_t &e : m_vNodes[dstNode]->from) { DGM_ASSERT(m_vEdges[e]->node1 != srcNode); }
 
 		// Else: create a new one
 		size_t e = m_vEdges.size();
