@@ -26,7 +26,8 @@ namespace DirectGraphicalModels
 
 		Node(size_t _id, const Mat &p) : id(_id), sol(0) { p.copyTo(Pot); }
 	};
-	using vec_node_t = std::vector<Node>;
+	using ptr_node_t = std::unique_ptr<Node>;
+	using vec_node_t = std::vector<ptr_node_t>;
 
 	// =============================== Edge Structure ==============================
 	/**
@@ -46,7 +47,14 @@ namespace DirectGraphicalModels
 
 		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
 
-		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
+		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(new float[10000]), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
+
+		//~Edge(void) {
+		//	if (msg != NULL) {
+		//		delete msg;
+		//		msg = NULL;
+		//	}
+		//}
 
 		void msg_swap(void) {
 			float *tmp = msg;
@@ -54,7 +62,8 @@ namespace DirectGraphicalModels
 			msg_temp = tmp;
 		}
 	};
-	using	vec_edge_t = std::vector<Edge>;
+	using	ptr_edge_t = std::unique_ptr<Edge>;
+	using	vec_edge_t = std::vector<ptr_edge_t>;
 
 	// ================================ Graph Class ================================
 	/**

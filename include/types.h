@@ -42,7 +42,7 @@ using vec_size_t		= std::vector<size_t>;
 using vec_string_t		= std::vector<std::string>;
 using vec_scalar_t		= std::vector<CvScalar>;
 
-using ptr_float_u	= std::unique_ptr<float[]>;
+using ptr_float_u		= std::unique_ptr<float[]>;
 
 const double	Pi	= 3.1415926;			///< Pi number
 const float		Pif	= 3.1415926f;			///< Pi number

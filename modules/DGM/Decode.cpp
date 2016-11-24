@@ -63,18 +63,11 @@ vec_float_t CDecode::calculatePotentials(void) const
 	res.resize(nConfigurations, 1.0f);
 
 	setState(state, 0);
-	std::for_each(res.begin(), res.end(), [&](float & p) {
-		
-		std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&](Node &node) {
-			p *= node.Pot.at<float>(state[node.id], 0);
-		});
-
-		std::for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [&](Edge &edge) {
-			p *= edge.Pot.at<float>(state[edge.node1], state[edge.node2]);
-		});
-
+	for (float &p: res) {
+		for (ptr_node_t &node: m_pGraph->m_vNodes)	p *= node->Pot.at<float>(state[node->id], 0); 
+		for (ptr_edge_t &edge : m_pGraph->m_vEdges) p *= edge->Pot.at<float>(state[edge->node1], state[edge->node2]);
 		incState(state);
-	}); 
+	} 
 
 	return res;
 }
