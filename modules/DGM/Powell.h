@@ -109,8 +109,8 @@ namespace DirectGraphicalModels
 		float		m_koeff;		// koefficient for optimized Powell search method
 		float		m_acceleration;	// acceleration of search along one direction
 		
-		ptr_float_u m_pParam;		// array of the parameters
-		ptr_float_u	m_pDelta;		// array of the delta values for each parameter
+		ptr_float_t m_pParam;		// array of the parameters
+		ptr_float_t	m_pDelta;		// array of the delta values for each parameter
 		vec_float_t	m_vMin;			// array of minimal parameter values
 		vec_float_t	m_vMax;			// array of maximal parameter values
 		vec_float_t	m_vKappa;		// method's auxilary array 

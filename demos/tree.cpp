@@ -35,13 +35,13 @@ CGraph * CTree::buildTree()
 	for (size_t n = 0; n < nNodes; n++)	graph->addNode(nPot);
 
 	// Create weighted edges with random weights
-	std::vector<std::pair<Edge, float>> edges; 
+	std::vector<std::pair<ptr_edge_t, float>> edges; 
 	for (size_t n1 = 0; n1 < nNodes; n1++) 
 		for (size_t n2 = n1 + 1; n2 < nNodes; n2++) 
-			edges.push_back(std::make_pair(Edge(n1, n2), static_cast<float>(rand()) / RAND_MAX));
+			edges.push_back(std::make_pair(ptr_edge_t(new Edge(n1, n2)), static_cast<float>(rand()) / RAND_MAX));
 
 	// Sort these edges by weight
-	std::sort(edges.begin(), edges.end(), [](std::pair<Edge, float> &left, std::pair<Edge, float> &right) { return left.second < right.second; });
+	std::sort(edges.begin(), edges.end(), [](std::pair<ptr_edge_t, float> &left, std::pair<ptr_edge_t, float> &right) { return left.second < right.second; });
 	
 	Mat edgePot;													// Default symmetric edge potentials
 	addWeighted(getEdgePot(), 0.5, getEdgePot().t(), 0.5, 0.0, edgePot);
@@ -50,10 +50,10 @@ CGraph * CTree::buildTree()
 	std::vector<bool> N(nNodes, false);							// Accounted nodes
 	N[0] = true;												// Start from the first node
 	while (std::find(N.begin(), N.end(), false) != N.end()) {	// while there is at least one non-accounted node
-		std::vector<std::pair<Edge, float>>::iterator it;		// Find an edge with minimal weight, such that one node is accounted and the second is not
-		while ((it = std::find_if(edges.begin(), edges.end(), [&](std::pair<Edge, float> edge) { return N[edge.first.node1] ^ N[edge.first.node2]; })) != edges.end()) {
-			size_t n1 = it->first.node1;
-			size_t n2 = it->first.node2;
+		std::vector<std::pair<ptr_edge_t, float>>::iterator it;		// Find an edge with minimal weight, such that one node is accounted and the second is not
+		while ((it = std::find_if(edges.begin(), edges.end(), [&](std::pair<ptr_edge_t, float> &edge) { return N[edge.first->node1] ^ N[edge.first->node2]; })) != edges.end()) {
+			size_t n1 = it->first->node1;
+			size_t n2 = it->first->node2;
 			graph->addArc(n1, n2, edgePot);						// Add an arc to the tree
 			N[n1] = N[n2] = true;								// Now both nodes are accounted
 		}
@@ -91,27 +91,27 @@ void CTree::Main(void)
 	// Setting the node and edge potentials in the tree
 	// Nodes
 	Mat nodePot = getNodePot();
-	std::for_each(sources.begin(), sources.end(), [&](size_t n) { graph->setNode(n, nodePot); });
+	for(size_t n: sources) graph->setNode(n, nodePot);
 
 	// Edges
 	std::vector<bool> ifSource(nNodes, false); 
-	std::for_each(sources.begin(), sources.end(), [&](size_t n) { 
+	for(size_t n: sources) { 
 		ifSource[n] = true; 
 		sourceQueue.push_back(n);
-	});	
+	}	
 
 	Mat edgePot = getEdgePot();
 	while (!sourceQueue.empty()) {
 		size_t n1 = sourceQueue.front();			// pop the front index of a source node
 		sourceQueue.pop_front();
 		graph->getChildNodes(n1, vChilds);
-		std::for_each(vChilds.begin(), vChilds.end(), [&, n1](size_t n2) {
+		for(size_t n2: vChilds) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
 				graph->setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}
-		});
+		}
 	}
 
 	inferer->infer();

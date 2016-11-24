@@ -47,14 +47,12 @@ namespace DirectGraphicalModels
 
 		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
 
-		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(new float[10000]), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
+		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
 
-		//~Edge(void) {
-		//	if (msg != NULL) {
-		//		delete msg;
-		//		msg = NULL;
-		//	}
-		//}
+		~Edge(void) {
+			if (msg)	  delete msg;
+			if (msg_temp) delete msg_temp;
+		}
 
 		void msg_swap(void) {
 			float *tmp = msg;
