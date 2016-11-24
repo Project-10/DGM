@@ -322,7 +322,8 @@ namespace DirectGraphicalModels { namespace vis
 	void showGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
-		const size_t	nNodes = pGraph->getNumNodes();
+		const size_t	nNodes			= pGraph->getNumNodes();
+		const bool		isGroupsColor	= groupsColor.size() > 0;
 
 		// Initialise GLFW
 		DGM_ASSERT_MSG(glfwInit(), "Failed to initialize GLFW");
@@ -358,7 +359,7 @@ namespace DirectGraphicalModels { namespace vis
 		//glEnable(GL_DEPTH_TEST);											// Ebable depth buffer
 		//glDepthFunc(GL_LESS);												// Specify the value used for depth buffer comparisons
 		glEnable(GL_PROGRAM_POINT_SIZE);
-		//glEnable(GL_BLEND);													// Enable blending
+		glEnable(GL_BLEND);													// Enable blending
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		glFrontFace(GL_CW);													// Define front- and back-facing polygons
 		glEnable(GL_CULL_FACE);
@@ -402,7 +403,7 @@ namespace DirectGraphicalModels { namespace vis
 				vIndices.push_back(static_cast<word>(n));				// src
 				vIndices.push_back(static_cast<word>(c));				// dst
 				
-				if (groupsColor.size() > 0) {
+				if (isGroupsColor) {
 					byte group = pGraph->getEdgeGroup(n, c);
 					CvScalar color = groupsColor[group % groupsColor.size()];
 					color = static_cast<Scalar>(color) / 255;
@@ -429,9 +430,11 @@ namespace DirectGraphicalModels { namespace vis
 		glBufferData(GL_ARRAY_BUFFER, vColors.size() * sizeof(glm::vec3), &vColors[0], GL_STATIC_DRAW);
 
 		GLuint groupColorBuffer;
-		glGenBuffers(1, &groupColorBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, groupColorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, vGroupColors.size() * sizeof(glm::vec3), &vGroupColors[0], GL_STATIC_DRAW);
+		if (isGroupsColor) {
+			glGenBuffers(1, &groupColorBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, groupColorBuffer);
+			glBufferData(GL_ARRAY_BUFFER, vGroupColors.size() * sizeof(glm::vec3), &vGroupColors[0], GL_STATIC_DRAW);
+		}
 
 		GLuint indexBuffer;
 		glGenBuffers(1, &indexBuffer);
@@ -465,6 +468,13 @@ namespace DirectGraphicalModels { namespace vis
 			glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
+			// 3-rd attribute buffer : group-colors
+			if (isGroupsColor) {
+				glEnableVertexAttribArray(1);
+				glBindBuffer(GL_ARRAY_BUFFER, groupColorBuffer);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+			}
+
 			if (true) { // Draw nodes
 				glUseProgram(NodeProgramID);
 
@@ -495,7 +505,7 @@ namespace DirectGraphicalModels { namespace vis
 		// Cleanup VBO and shader
 		glDeleteBuffers(1, &vertexBuffer);
 		glDeleteBuffers(1, &colorBuffer);
-		glDeleteBuffers(1, &groupColorBuffer);
+		if (isGroupsColor) glDeleteBuffers(1, &groupColorBuffer);
 		glDeleteBuffers(1, &indexBuffer);
 		
 		glDeleteProgram(NodeProgramID);
