@@ -19,17 +19,57 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Constructor.
 		* @param img Input image.
 		*/
-		DllExport IFeatureExtractor(const Mat &img) : m_img(img) {}
-		DllExport virtual ~IFeatureExtractor(void) {}
+		IFeatureExtractor(const Mat &img) : m_img(img) {}
+		virtual ~IFeatureExtractor(void) {}
+
+
+	protected:
+		const Mat	m_img;		///< Container for the image, from which the features are to be extracted.
+	};
+
+	
+	// ================================ Base LOCAL Feature Extractor Class ==============================
+	/**
+	* @brief Interface class for local feature extraction algorithms
+	* @details The derived algorithms are supposed to extract features for each image pixel
+	* @ingroup moduleFEX
+	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/
+	class ILocalFeatureExtractor : public IFeatureExtractor
+	{
+	public:
+		/**
+		* @brief Constructor.
+		* @param img Input image.
+		*/
+		ILocalFeatureExtractor(const Mat &img) : IFeatureExtractor(img) {}
+		virtual ~ILocalFeatureExtractor(void) {}
 
 		/**
 		* @brief Extracts and returns the required feature.
 		* @returns The feature image.
 		*/
-		DllExport virtual Mat	get(void) const = 0;
+		virtual Mat	get(void) const = 0;
+	};
 
+	
+	// ================================ Base GLOBAL Feature Extractor Class ==============================
+	/**
+	* @brief Interface class for global feature extraction algorithms
+	* @details The derived algorithms are supposed to extract one feature per image
+	* @ingroup moduleFEX
+	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/
+	class IGlobaFeatureExtractor : public IFeatureExtractor
+	{
+	public:
+		/**
+		* @brief Constructor.
+		* @param img Input image.
+		*/
+		IGlobaFeatureExtractor(const Mat &img) : IFeatureExtractor(img) {}
+		virtual ~IGlobaFeatureExtractor(void) {}
 
-	protected:
-		const Mat	m_img;		///< Container for the image, from which the features are to be extracted.
+		virtual float get(void) const = 0;
 	};
 } }

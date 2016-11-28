@@ -12,14 +12,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @details This class is applied to perform the distance transformation.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CDistance : public IFeatureExtractor
+	class CDistance : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CDistance(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CDistance(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CDistance(void) {}
 
 		DllExport virtual Mat get(void) const {return get(m_img);}

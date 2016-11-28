@@ -14,14 +14,14 @@ namespace DirectGraphicalModels {
 		* @brief Sparse Coding feature extraction class.
 		* @author Sergey G. Kosov, sergey.kosov@project-10.de
 		*/
-		class CSparseCoding : public IFeatureExtractor, public CSparseDictionary
+		class CSparseCoding : public ILocalFeatureExtractor, public CSparseDictionary
 		{
 		public:
 			/**
 			* @brief Constructor.
 			* @param img Input image of type \b CV_8UC1.
 			*/
-			DllExport CSparseCoding(const Mat &img) : IFeatureExtractor(img) {}
+			DllExport CSparseCoding(const Mat &img) : ILocalFeatureExtractor(img) {}
 			DllExport virtual ~CSparseCoding(void) {}
 
 			DllExport virtual Mat		get(void) const { return get(m_img, getDictionary()); }

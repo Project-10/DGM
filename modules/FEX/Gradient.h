@@ -12,7 +12,7 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Gradient feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		
-	class CGradient : public IFeatureExtractor
+	class CGradient : public ILocalFeatureExtractor
 	{
 	friend class CHOG;
 	public:
@@ -20,7 +20,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CGradient(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CGradient(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CGradient(void) {}
 
 		DllExport virtual Mat get(void) const {return get(m_img);}
