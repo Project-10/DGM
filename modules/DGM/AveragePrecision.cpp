@@ -1,9 +1,9 @@
-#include "MAP.h"
+#include "AveragePrecision.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels 
 {
-	float getMAP(const vec_byte_t &predictions, const vec_float_t &potentials, const vec_byte_t &gt, byte state)
+	float getAveragePrecision(const vec_byte_t &predictions, const vec_float_t &potentials, const vec_byte_t &gt, byte state)
 	{
 		// Assertions
 		DGM_ASSERT(predictions.size() == potentials.size());
