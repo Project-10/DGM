@@ -41,7 +41,6 @@ void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 
 CTrainNodeCvGMM::~CTrainNodeCvGMM(void)
 {
-	for(byte s = 0; s < m_nStates; s++) delete m_vpEM[s];
 	m_vpEM.clear();
 }
 

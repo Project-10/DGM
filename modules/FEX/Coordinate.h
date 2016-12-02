@@ -21,14 +21,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @details This class allows extracting features, which depend only on the coordinates of the coresponding image pixels.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CCoordinate :	public IFeatureExtractor
+	class CCoordinate :	public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image.
 		*/
-		DllExport CCoordinate(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CCoordinate(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CCoordinate(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

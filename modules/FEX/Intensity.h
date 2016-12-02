@@ -11,14 +11,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Intensity feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CIntensity : public IFeatureExtractor
+	class CIntensity : public ILocalFeatureExtractor
 	{
 	public: 
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-		DllExport CIntensity(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CIntensity(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CIntensity(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

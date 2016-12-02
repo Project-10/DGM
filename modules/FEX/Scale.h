@@ -13,14 +13,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @details This class allow for multi-scale feature extraction.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		
-	class CScale : public IFeatureExtractor
+	class CScale : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CScale(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CScale(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CScale(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

@@ -11,14 +11,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Hue, Saturation and Value feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CHSV : public IFeatureExtractor
+	class CHSV : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-		DllExport CHSV(Mat &img) : IFeatureExtractor(img) {}
+		DllExport CHSV(Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CHSV(void) {}
 
 		DllExport virtual Mat get(void) const { return get(m_img); }

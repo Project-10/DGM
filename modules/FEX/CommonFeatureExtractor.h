@@ -47,14 +47,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/			
-	class CCommonFeatureExtractor : public IFeatureExtractor
+	class CCommonFeatureExtractor : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image.
 		*/		
-		DllExport CCommonFeatureExtractor(Mat &img) : IFeatureExtractor(img) {}
+		DllExport CCommonFeatureExtractor(Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CCommonFeatureExtractor(void) {}
 
 		/**

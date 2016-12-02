@@ -12,14 +12,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients">histogram of oriented gradients</a>) feature extraction class.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/		
-	class CHOG : public IFeatureExtractor
+	class CHOG : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-		DllExport CHOG(const Mat &img) : IFeatureExtractor(img) {}
+		DllExport CHOG(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CHOG(void) {}
 
 		DllExport virtual Mat	get(void) const {return get(m_img);}

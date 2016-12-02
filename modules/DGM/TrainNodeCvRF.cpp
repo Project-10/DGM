@@ -42,9 +42,7 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 
 // Destructor
 CTrainNodeCvRF::~CTrainNodeCvRF(void)
-{
-	delete m_pRF;
-}
+{ }
 
 void CTrainNodeCvRF::reset(void)
 {

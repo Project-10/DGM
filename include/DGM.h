@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DGM/CMat.h"
-#include "DGM/MAP.h"
+#include "DGM/AveragePrecision.h"
 #include "DGM/FeaturesConcatenator.h"
 #include "DGM/NDGauss.h"
 #include "DGM/random.h"
