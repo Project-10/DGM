@@ -108,9 +108,9 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void defineEdgeGroup(float A, float B, float C, byte group);
 		/**
-		* @brief
-		* @param group
-		* @param pot
+		* @brief Sets potential \b pot to all edges in the group \b group
+		* @param group The edge group ID
+		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void setGroupPot(byte group, const Mat &pot);
 		/**
@@ -122,7 +122,16 @@ namespace DirectGraphicalModels
 		* @param nodes Set of nodes to be marginalized out from the graph
 		*/
 		DllExport virtual void marginalize(const vec_size_t &nodes);
-
+		/**
+		* @brief Returns the type of the graph
+		* @returns The type of the graph (Ref. @ref graphType)
+		*/
+		DllExport byte getType(void) const { return m_gType; }
+		/**
+		* @brief Returns the size of the graph
+		* @return The size of the Graph
+		*/
+		DllExport CvSize getSize(void) const { return m_size; }
 
 
 	protected:

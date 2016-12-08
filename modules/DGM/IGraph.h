@@ -90,7 +90,7 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		getEdge(size_t srcNode, size_t dstNode, Mat &pot) const = 0;
 		/**
-		* @brief Assigns a directed edge (\b srcNode) -> (\b dstNode) to the group \b group
+		* @brief Assigns a directed edge (\b srcNode) --> (\b dstNode) to the group \b group
 		* @param srcNode index of the source node
 		* @param dstNode index of the destination node
 		* @param group The edge group ID
@@ -158,6 +158,10 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		setArc(size_t Node1, size_t Node2, const Mat &pot) = 0;
 		/**
+		* @brief Assigns an undirected edge (arc) (\b Node1) -- (\b Node2) to the group \b group
+		* @param Node1 index of the source node
+		* @param Node2 index of the destination node
+		* @param group The edge group ID
 		*/
 		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) = 0;
 		/**

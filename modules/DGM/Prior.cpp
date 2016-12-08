@@ -5,7 +5,7 @@ namespace DirectGraphicalModels
 // Constructor
 CPrior::CPrior(byte nStates, RandomModelType type) : CBaseRandomModel(nStates), m_type(type)
 {
-	const int size[] = {m_nStates, m_nStates, m_nStates};
+	const int size[] = { m_nStates, m_nStates, m_nStates};
 	m_histogramPrior = Mat(type, size, CV_32SC1);
 	m_histogramPrior.setTo(0);
 }
