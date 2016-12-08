@@ -39,6 +39,14 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void			addFeatureVec(const Mat &featureVectors, const Mat &gtb, const Mat &gto);
 		/**
+		* @brief Adds a block of new feature vectors
+		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gtb and \b gto for training
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gtb Matrix, each element of which is a ground-truth state (class), corresponding to the base layer
+		* @param gto Matrix, each element of which is a ground-truth state (class), corresponding to the occlusion layer
+		*/
+		DllExport void			addFeatureVec(const vec_mat_t &featureVectors, const Mat &gtb, const Mat &gto);
+		/**
 		* @brief Adds a feature vector
 		* @details Used to add \b featureVector, corresponding to the ground-truth states (classes) \b gtb and \b gto for training.
 		* Here the couple \b {gtb, \b gto} corresponds to the nodes from base aod occlusion layers.

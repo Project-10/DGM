@@ -160,4 +160,28 @@ namespace DirectGraphicalModels {
 			} // x
 		} // y
 	}
+
+	template<typename T, void (T::*SomeMethod)(const Mat &vec, byte b1, byte b2)>
+	inline void DGM_VECTORWISE2(T &self, const vec_mat_t &m1, const Mat &m2, const Mat &m3)
+	{
+		// Assertions
+		DGM_ASSERT(m1[0].size() == m2.size());
+		DGM_ASSERT(m1[0].size() == m3.size());
+		DGM_ASSERT(m1[0].type() == CV_8UC1);
+		DGM_ASSERT(m2.type() == CV_8UC1);
+		DGM_ASSERT(m3.type() == CV_8UC1);
+
+		const word nFeatures = static_cast<word>(m1.size());
+		Mat vec(nFeatures, 1, CV_8UC1);
+		std::vector<const byte *> vM1(nFeatures);
+		for (register int y = 0; y < m2.rows; y++) {
+			for (register int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
+			const byte *pM2 = m2.ptr<byte>(y);
+			const byte *pM3 = m3.ptr<byte>(y);
+			for (register int x = 0; x < m2.cols; x++) {
+				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
+				(self.*SomeMethod)(vec, pM2[x], pM3[x]);
+			} // x
+		} // y
+	}
 }
