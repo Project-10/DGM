@@ -15,6 +15,7 @@ source_group("Source Files\\Feature Extractor\\Local\\Coordinate" FILES "Coordin
 source_group("Source Files\\Feature Extractor\\Local\\Distance" FILES "Distance.h" "Distance.cpp")
 source_group("Source Files\\Feature Extractor\\Local\\Gradient" FILES "Gradient.h" "Gradient.cpp")
 source_group("Source Files\\Feature Extractor\\Local\\HOG" FILES "HOG.h" "HOG.cpp")
+source_group("Source Files\\Feature Extractor\\Local\\SIFT" FILES "SIFT.h" "SIFT.cpp")
 source_group("Source Files\\Feature Extractor\\Local\\HSV" FILES "HSV.h" "HSV.cpp")
 source_group("Source Files\\Feature Extractor\\Local\\Intensity" FILES "Intensity.h" "Intensity.cpp")
 source_group("Source Files\\Feature Extractor\\Local\\NDVI" FILES "NDVI.h" "NDVI.cpp")
