@@ -8,7 +8,7 @@
 
 namespace DirectGraphicalModels
 {
-	// ================================ Random Class ==============================
+	// ================================ Random Namespace ==============================
 	/**
 	* @brief Random number generation
 	* @details This namespace collects methods for generating random numbers and vectors with uniform and normal distributions

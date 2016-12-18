@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "IFeatureExtractor.h"
+#include "ILocalFeatureExtractor.h"
 #include "SquareNeighborhood.h"
 
 namespace DirectGraphicalModels { namespace fex

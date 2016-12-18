@@ -13,6 +13,7 @@
 #include "Variance.h"
 #include "Scale.h"
 #include "SparseCoding.h"
+#include "GlobalFeatureExtractor.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex
@@ -31,8 +32,7 @@ namespace DirectGraphicalModels { namespace fex
 		CH_VALUE			///< Value channel
 	};
 
-
-
+	
 	// ================================ Common Feature Extractor Class ==============================
 	/**
 	* @ingroup moduleFEX
@@ -41,9 +41,10 @@ namespace DirectGraphicalModels { namespace fex
 	* Please see the example code below for more details.
 	* @code
 	* CCommonFeatureExtractor fex(img);
-	* Mat saturation = fex.getSaturation().invert().get();					// Inverted saturation feature
-	* Mat variance   = fex.getGradient().getVariance().blur().get();			// Varience of the gradient feature, after Gaussian blur
-	* Mat intesity   = fex.getIntensity().reScale(sqNeighbourhood(2)).get();	// Intencity feature, calculated at scale of window size 5 x 5 pixels
+	* Mat    saturation = fex.getSaturation().invert().get();                   // Inverted saturation feature
+	* Mat    variance   = fex.getGradient().getVariance().blur().get();         // Varience of the gradient feature, after Gaussian blur
+	* Mat    intesity   = fex.getIntensity().reScale(sqNeighbourhood(2)).get(); // Intencity feature, calculated at scale of window size 5 x 5 pixels
+	* size_t nLines     = fex.autoContrast().toGlobal().getNumLines();          // Global-feature: quantity of straight lines in image
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/			
@@ -54,7 +55,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Constructor.
 		* @param img Input image.
 		*/		
-		DllExport CCommonFeatureExtractor(Mat &img) : ILocalFeatureExtractor(img) {}
+		DllExport CCommonFeatureExtractor(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CCommonFeatureExtractor(void) {}
 
 		/**
@@ -63,6 +64,11 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport Mat virtual get(void) const { return m_img; }
 
+		/**
+		* @brief Allows for global-features extraction
+		* @returns The base global feature extractor class
+		*/
+		DllExport CGlobalFeatureExtractor toGlobal(void) const { return CGlobalFeatureExtractor(m_img); }
 		/**
 		* @brief Extracts a coordinate feature.
 		* @details This function calculates the coordinate feature of image pixels, based inly on theirs coordinates.
@@ -173,42 +179,29 @@ namespace DirectGraphicalModels { namespace fex
 		* @return Common feature extractor class with extracted scale feature of type \b CV_8UC1.
 		*/
 		DllExport CCommonFeatureExtractor reScale(SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CScale::get(m_img, nbhd)); }
+		
+		
 		/**
 		* @brief Inverts the source image
 		* @returns Common feature extractor class with the inverted feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor invert(void) const 
-		{
-			Mat res;
-			bitwise_not(m_img, res);
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport inline CCommonFeatureExtractor invert(void) const;
 		/**
 		* @brief Performs Gaussian blurring of the source image
 		* @param R Radius of the Gaussian filter box: \f$(2R+1)\times(2R+1)\f$.
 		* @returns Common feature extractor class with blurred feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor blur(int R = 2) const
-		{
-			Mat res;
-			R = 2 * R + 1;
-			GaussianBlur(m_img, res, cvSize(R, R), 0.0, 0.0, BORDER_REFLECT);
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport inline CCommonFeatureExtractor blur(int R = 2) const;
+		/**
+		* @brief Performs histogram stretching of the source image
+		* @returns Common feature extractor class with with contrast-enhanced feature with the same number of channels.
+		*/
+		DllExport inline CCommonFeatureExtractor autoContrast(void) const;
 		/**
 		* @brief Extracts one channel from the source image
 		* @param channel Index of the required channel.
 		* @returns Common feature extractor class with the required channel as a feature.
 		*/
-		DllExport inline CCommonFeatureExtractor getChannel(int channel) const
-		{
-			DGM_ASSERT_MSG(channel < m_img.channels(), "The required channel %d does not exist in the %d-channel source image", channel, m_img.channels());
-			Mat res;
-			vec_mat_t vChannels;
-			split(m_img, vChannels);
-			vChannels.at(channel).copyTo(res);
-			vChannels.clear();
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport inline CCommonFeatureExtractor getChannel(int channel) const;
 	};
 } }
