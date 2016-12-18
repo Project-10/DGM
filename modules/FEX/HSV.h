@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2016 for Project X
 #pragma once
 
-#include "IFeatureExtractor.h"
+#include "ILocalFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {

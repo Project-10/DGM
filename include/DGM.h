@@ -68,6 +68,8 @@ DGM library consists of three modules:
 	- @ref sec_main_paramest
 	- @ref moduleEva
 - Feature extraction @ref moduleFEX, which allows for extracting the main data features, used nowadays in image classification.
+	- @ref moduleLFEX for pixel-level features.
+	- @ref moduleGFEX for image-level features.
 - Visualization @ref moduleVIS, wich allows for visualizing the used data and features as well as intermediate and final classification results.
 
 These tasks are optimized for speed, @a i.e. high-efficient calculations. The code is written entirely in C++ and can be compiled with Microsoft Visual C++.
