@@ -6,6 +6,8 @@
 
 namespace DirectGraphicalModels { namespace fex
 {
+
+	
 	// ================================ SIFT Class ==============================
 	/**
 	* @brief SIFT (<a href="https://en.wikipedia.org/wiki/Scale-invariant_feature_transform" target="_blank">scale-invariant feature transform</a>) feature extraction class.
