@@ -1,28 +1,62 @@
 #include "SIFT.h"
 #include "opencv\SIFT.h"
+#include "LinearMapper.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
 	Mat	CSIFT::get(const Mat &img)
 	{
+		register int	i;						// feature index
+		register int	x, y;
+		int				width	= img.cols;
+		int				height	= img.rows;
+		
 		// Converting to one channel image
 		Mat	I;
 		if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
 		else img.copyTo(I);
 
 		Ptr<xfeatures2d::SIFT> sift = xfeatures2d::SIFT::create();
-		std::vector<KeyPoint> keyPoints;
-		sift->detect(img, keyPoints);
-		drawKeypoints(
-			  img
-			, keyPoints
-			, img
-//			, DrawMatchesFlags::DRAW_RICH_KEYPOINTS
-		);
+		
+		// Prepare key points
+		std::vector<KeyPoint> vKeyPoints;
+//		sift->detect(img, vKeyPoints);
+		for (y = 0; y < height; y++)
+			for (x = 0; x < width; x++)
+				vKeyPoints.push_back(KeyPoint(x, y, 1.0f));
+
+//		drawKeypoints(img, vKeyPoints, img, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
 		Mat descriptors;
-		sift->detectAndCompute(I, Mat(), keyPoints, descriptors, true);
+		sift->detectAndCompute(I, Mat(), vKeyPoints, descriptors, true);
 
+		const int nFeatures = descriptors.cols;			// 128
+		DGM_ASSERT(nFeatures == 128);
+		DGM_ASSERT(nFeatures < CV_CN_MAX);
 
-		return img;
+		// Initializing features
+		vec_mat_t			vFeatures(nFeatures);
+		std::vector<byte *> pFeatures(nFeatures);
+
+		float min = 0;
+		float max = 0;
+		for (y = 0; y < height; y++) {
+			for (i = 0; i < nFeatures; i++) {
+				vFeatures[i].create(img.size(), CV_8UC1);
+				pFeatures[i] = vFeatures[i].ptr<byte>(y);
+			} // i
+			for (x = 0; x < width; x++) {
+				float *pDescriptors = descriptors.ptr<float>(y * width + x);
+				for (i = 0; i < nFeatures; i++) {
+					pFeatures[i][x] = linear_mapper(pDescriptors[i], 0.0f, 255.0f);			// features[i] (x, y) = descriptors (i, pixel_idx)
+				} // i
+			} // x
+		} // y
+
+		Mat res;
+		merge(vFeatures, res);
+
+		return res;
 	}
 } }
