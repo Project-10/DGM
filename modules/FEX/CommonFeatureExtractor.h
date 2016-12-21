@@ -10,6 +10,7 @@
 #include "NDVI.h"
 #include "Distance.h"
 #include "HOG.h"
+#include "SIFT.h"
 #include "Variance.h"
 #include "Scale.h"
 #include "SparseCoding.h"
@@ -153,6 +154,9 @@ namespace DirectGraphicalModels { namespace fex
 		* @return Common feature extractor class with extracted HOG feature of type \b CV_8UC{n}, where \f$n=nBins\f$.
 		*/
 		DllExport CCommonFeatureExtractor getHOG(int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CHOG::get(m_img, nBins, nbhd)); }
+		/**
+		*/
+		DllExport CCommonFeatureExtractor getSIFT() const { return CCommonFeatureExtractor(CSIFT::get(m_img)); }
 		/**
 		* @brief Extracts the variance feature.
 		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \b nbhd.

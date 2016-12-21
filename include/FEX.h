@@ -54,6 +54,7 @@ Please see also our tutorial: @ref demofex.
  Distance             | DirectGraphicalModels::fex::CDistance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
  Gradient             | DirectGraphicalModels::fex::CGradient	  | CV_8UC1 or CV_8UC3 | CV_8UC1
  HOG                  | DirectGraphicalModels::fex::CHOG		  | CV_8UC1 or CV_8UC3 | CV_8UC{nBins}
+ SIFT                 | DirectGraphicalModels::fex::CSIFT		  | CV_8UC1 or CV_8UC3 | CV_8UC{128}
  Intensity            | DirectGraphicalModels::fex::CIntensity    | CV_8UC3            | CV_8UC1
  NDVI                 | DirectGraphicalModels::fex::CNDVI		  | CV_8UC3            | CV_8UC1
  Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV          | CV_8UC3            | CV_8UC3

@@ -10,7 +10,8 @@ set (DGM_VERSION_PATCH 1)
 configure_file(${PROJECT_SOURCE_DIR}/cmake/types.h.in ${PROJECT_SOURCE_DIR}/include/types.h)
 
 # OpenCV
-find_package(OpenCV 3 REQUIRED core highgui imgproc imgcodecs ml PATHS "$ENV{OPENCVDIR}/build")
+# find_package(OpenCV 3 REQUIRED core features2d highgui imgproc imgcodecs ml PATHS "$ENV{OPENCVDIR}/build")
+find_package(OpenCV 3 REQUIRED PATHS "$ENV{OPENCVDIR}/build")
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
