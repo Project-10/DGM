@@ -36,21 +36,17 @@ namespace DirectGraphicalModels { namespace fex
 		DGM_ASSERT(nFeatures < CV_CN_MAX);
 
 		// Initializing features
-		vec_mat_t			vFeatures(nFeatures);
-		std::vector<byte *> pFeatures(nFeatures);
+		vec_mat_t vFeatures(nFeatures);
+		for (i = 0; i < nFeatures; i++) vFeatures[i].create(img.size(), CV_8UC1);
 
-		float min = 0;
-		float max = 0;
+		std::vector<byte *> pFeatures(nFeatures);
+		
 		for (y = 0; y < height; y++) {
-			for (i = 0; i < nFeatures; i++) {
-				vFeatures[i].create(img.size(), CV_8UC1);
-				pFeatures[i] = vFeatures[i].ptr<byte>(y);
-			} // i
+			for (i = 0; i < nFeatures; i++) pFeatures[i] = vFeatures[i].ptr<byte>(y);
 			for (x = 0; x < width; x++) {
 				float *pDescriptors = descriptors.ptr<float>(y * width + x);
-				for (i = 0; i < nFeatures; i++) {
+				for (i = 0; i < nFeatures; i++) 
 					pFeatures[i][x] = linear_mapper(pDescriptors[i], 0.0f, 255.0f);			// features[i] (x, y) = descriptors (i, pixel_idx)
-				} // i
 			} // x
 		} // y
 
