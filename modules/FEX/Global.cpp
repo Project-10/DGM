@@ -2,7 +2,7 @@
 
 namespace DirectGraphicalModels { namespace fex { namespace global
 {
-size_t getNumLines(const Mat &img, double threshold1, double threshold2)
+size_t getNumLines(const Mat &img, int threshold1, int threshold2)
 {
 	// Converting to one channel image
 	Mat I;
@@ -68,7 +68,7 @@ size_t getNumLines(const Mat &img, double threshold1, double threshold2)
 	return vLines.size();
 }
 
-size_t getNumCircles(const Mat &img, double threshold1, double threshold2)
+size_t getNumCircles(const Mat &img, int threshold1, int threshold2)
 {
 	// Converting to one channel image
 	Mat I;
@@ -107,6 +107,49 @@ size_t getNumCircles(const Mat &img, double threshold1, double threshold2)
 	}
 
 	return vCircles.size();
+}
+
+float getOpacity(const Mat &img)
+{
+	int		width	= img.cols;
+	int		height	= img.rows;
+	float	R		= -1.0f;
+
+	// Converting to one channel image
+	Mat I;
+	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	else img.copyTo(I);
+
+	float _mean = static_cast<float>(mean(I)[0]);
+	float res	= 0.0f;
+
+	for (int y = 0; y < height; y++) {
+		byte *pI = I.ptr<byte>(y);
+		for (int x = 0; x < width; x++) {
+			float dx	= x - 0.5f * width;
+			float dy	= y - 0.5f * height;
+			float dist	= sqrtf(dx*dx + dy*dy);
+			if (R < 0) R = dist;
+			float weight = 1.0f - dist / R;
+			res += weight * fabs(static_cast<float>(pI[x]) - _mean);
+		} // x
+	} // y
+
+	return res / (width * height);
+}
+
+float getVariance(const Mat &img)
+{
+	// Converting to one channel image
+	Mat I;
+	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	else img.copyTo(I);
+
+	Scalar mean, stddev;
+	meanStdDev(I, mean, stddev);
+	float res = static_cast<float>(stddev[0] * stddev[0]);
+
+	return res;
 }
 
 } } }

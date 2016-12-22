@@ -69,6 +69,8 @@ Method               | Class                                             | Input
 -------------------- | ------------------------------------------------- | :----------------: | :-----:
 Number of Lines      | DirectGraphicalModels::fex::global::getNumLines   | CV_8UC1 or CV_8UC3 | size_t
 Number of Circles    | DirectGraphicalModels::fex::global::getNumCircles | CV_8UC1 or CV_8UC3 | size_t
+Opacity              | DirectGraphicalModels::fex::global::getOpacity    | CV_8UC1 or CV_8UC3 | float
+Variance             | DirectGraphicalModels::fex::global::getVariance   | CV_8UC1 or CV_8UC3 | float
 
 */
 
