@@ -5,8 +5,8 @@ file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
 					
-file(GLOB 3RD_OPENCV_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/opencv/*.h"
-								"${PROJECT_SOURCE_DIR}/3rdparty/opencv/*.cpp"
+file(GLOB 3RD_OPENCV_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/opencv/DTrees.h" "${PROJECT_SOURCE_DIR}/3rdparty/opencv/RTrees.h"
+								"${PROJECT_SOURCE_DIR}/3rdparty/opencv/DTrees.cpp" "${PROJECT_SOURCE_DIR}/3rdparty/opencv/RTrees.cpp"
 							)
 							
 if (USE_SHERWOOD)
