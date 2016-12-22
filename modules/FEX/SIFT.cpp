@@ -24,7 +24,7 @@ namespace DirectGraphicalModels { namespace fex
 //		sift->detect(img, vKeyPoints);
 		for (y = 0; y < height; y++)
 			for (x = 0; x < width; x++)
-				vKeyPoints.push_back(KeyPoint(x, y, 1.0f));
+				vKeyPoints.push_back(KeyPoint(static_cast<float>(x), static_cast<float>(y), 1.0f));
 
 //		drawKeypoints(img, vKeyPoints, img, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
