@@ -28,7 +28,7 @@ void CPDFHistogram::addPoint(float point)
 float CPDFHistogram::getDensity(float point) 
 {
 	byte i = static_cast<byte>(MIN(255, MAX(0, point)));
-	return static_cast<float>(m_data[i]) / m_nPoints;
+	return m_nPoints ? static_cast<float>(m_data[i]) / m_nPoints : 0;
 }
 
 void CPDFHistogram::smooth(int nIt)
