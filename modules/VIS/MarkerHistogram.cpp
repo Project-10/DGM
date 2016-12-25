@@ -17,16 +17,12 @@ void CMarkerHistogram::showHistogram(void)
 	namedWindow(wndName.c_str(), WINDOW_AUTOSIZE);
 	imshow(wndName.c_str(), histogramImg);
 	setMouseCallback(wndName.c_str(), [](int Event, int x, int y, int flags, void *param) {
-		CMarkerHistogram   * pUserData = static_cast<CMarkerHistogram *>(param);
-		if (Event == CV_EVENT_LBUTTONDOWN) {
-			CvScalar color;
-			color.val[0] = histogramImg.at<byte>(y, 3 * x + 0); // Blue        
-			color.val[1] = histogramImg.at<byte>(y, 3 * x + 1); // Green        
-			color.val[2] = histogramImg.at<byte>(y, 3 * x + 2); // Red        
-			histogramImg.release();
-			histogramImg = pUserData->drawHistogram(color);
-			imshow("Feature Histogram Viewer", histogramImg);
-		}
+		if (Event != CV_EVENT_LBUTTONDOWN) return;
+		CMarkerHistogram *pUserData = static_cast<CMarkerHistogram *>(param);
+		Vec3b color = histogramImg.at<Vec3b>(y, x);	// BGR
+		histogramImg.release();
+		histogramImg = pUserData->drawHistogram(CV_RGB(color[2], color[1], color[0]));
+		imshow(wndName.c_str(), histogramImg);		
 	}, this);
 }
 
