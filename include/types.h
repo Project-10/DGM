@@ -3,7 +3,7 @@
 
 #define DGM_VERSION_MAJOR 1
 #define DGM_VERSION_MINOR 5
-#define DGM_VERSION_PATCH 1
+#define DGM_VERSION_PATCH 2
 
 #define DEBUG_MODE			
 #define DEBUG_PRINT_INFO	
