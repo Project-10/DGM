@@ -40,6 +40,22 @@ CCommonFeatureExtractor CCommonFeatureExtractor::autoContrast(void) const
 	return CCommonFeatureExtractor(res);
 }
 
+CCommonFeatureExtractor CCommonFeatureExtractor::thresholding(byte threshold) const
+{
+	// Converting to one channel image
+	Mat res;
+	if (m_img.channels() != 1) cvtColor(m_img, res, CV_RGB2GRAY);
+	else m_img.copyTo(res);
+
+	for (int y = 0; y < res.rows; y++) {
+		byte *pRes = res.ptr<byte>(y);
+		for (int x = 0; x < res.cols; x++) 
+			pRes[x] = (pRes[x] > threshold) ? 225 : 0;
+	} // y
+
+	return CCommonFeatureExtractor(res);
+}
+
 CCommonFeatureExtractor CCommonFeatureExtractor::getChannel(int channel) const
 {
 	DGM_ASSERT_MSG(channel < m_img.channels(), "The required channel %d does not exist in the %d-channel source image", channel, m_img.channels());

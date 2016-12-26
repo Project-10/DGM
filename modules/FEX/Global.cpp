@@ -152,4 +152,50 @@ float getVariance(const Mat &img)
 	return res;
 }
 
+int getArea(const Mat &img)
+{
+	// Converting to one channel image
+	Mat I;
+	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	else img.copyTo(I);
+
+	int res = 0;
+	for (int y = 0; y < I.rows; y++) {
+		byte *pI = I.ptr<byte>(y);
+		for (int x = 0; x < I.cols; x++)
+			if (pI[x] > 0) res++;
+	} // y
+	
+	return res;
+}
+
+int getPerimeter(const Mat &img)
+{
+	// Converting to one channel image
+	Mat I;
+	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	else img.copyTo(I);
+
+	Mat tmp(I.size(), CV_8UC1, Scalar(0));
+
+	for (int y = 1; y < I.rows; y++) {
+		byte *pTmp	= tmp.ptr<byte>(y);
+		byte *pI	= I.ptr<byte>(y);
+		byte *pI1	= I.ptr<byte>(y - 1);
+		for (int x = 1; x < I.cols; x++) 
+			if ((pI[x] != pI[x - 1]) || (pI[x] != pI1[x])) pTmp[x] = 255;
+	} // y
+
+	imshow("tmp", tmp);
+
+	return getArea(tmp);
+}
+
+float getCompactness(const Mat &img)
+{
+	float S = getArea(img);
+	float P = getPerimeter(img);
+	return (S > 0) ? P * P / (S * 4 * Pif) : 0;
+}
+
 } } }

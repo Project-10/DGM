@@ -51,6 +51,23 @@ namespace DirectGraphicalModels { namespace fex
 		* @returns The variance of the source image
 		*/
 		DllExport float getVariance(void) { return global::getVariance(m_img); }
+		/**
+		* @brief Returns the number of non-zero pixels in the source image.
+		* @returns The number of non-zero pixels in the source image.
+		*/
+		DllExport int getArea(void) { return global::getArea(m_img); }
+		/**
+		* @brief Returns the perimeter of an object in the source image.
+		* @details This function retunrs the number of edge pixels, assuming a pixel to belong to an edge if any of its neighboring pixels have different value.
+		* @returns The number of edge pixels in the source image.
+		*/
+		DllExport int getPerimeter(void) { return global::getPerimeter(m_img); }
+		/**
+		* @brief Returns the compactness of the object in the source image.
+		* @details The compactness is calculates as follows: \f$\frac{P^2}{4\Pi S}\f$, where \a P and \a S are perimeter and area of the object, respectively.
+		* @returns The compactness of the object in the source image.
+		*/
+		DllExport float getCompactness(void) { return global::getCompactness(m_img); }
 	};
 
 } }

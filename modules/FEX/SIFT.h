@@ -27,6 +27,9 @@ namespace DirectGraphicalModels { namespace fex
 
 		/**
 		* @brief Extracts the SIFT feature.
+		* @details For each pixel of the source image this function performs the scale-invariant feature transform.
+		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
+		* @return Common feature extractor class with extracted SIFT feature of type \b CV_8UC{128}.
 		*/
 		DllExport static Mat	get(const Mat &img);
 	};

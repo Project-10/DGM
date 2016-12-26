@@ -65,12 +65,16 @@ Please see also our tutorial: @ref demofex.
 @defgroup moduleGFEX Global Features Extraction
 @ingroup moduleFEX
 
-Method               | Class                                             | Input              | Output
--------------------- | ------------------------------------------------- | :----------------: | :-----:
-Number of Lines      | DirectGraphicalModels::fex::global::getNumLines   | CV_8UC1 or CV_8UC3 | size_t
-Number of Circles    | DirectGraphicalModels::fex::global::getNumCircles | CV_8UC1 or CV_8UC3 | size_t
-Opacity              | DirectGraphicalModels::fex::global::getOpacity    | CV_8UC1 or CV_8UC3 | float
-Variance             | DirectGraphicalModels::fex::global::getVariance   | CV_8UC1 or CV_8UC3 | float
+Method               | Class                                              | Input              | Output
+-------------------- | -------------------------------------------------- | :----------------: | :-----:
+Number of Lines      | DirectGraphicalModels::fex::global::getNumLines    | CV_8UC1 or CV_8UC3 | size_t
+Number of Circles    | DirectGraphicalModels::fex::global::getNumCircles  | CV_8UC1 or CV_8UC3 | size_t
+Opacity              | DirectGraphicalModels::fex::global::getOpacity     | CV_8UC1 or CV_8UC3 | float
+Variance             | DirectGraphicalModels::fex::global::getVariance    | CV_8UC1 or CV_8UC3 | float
+Area                 | DirectGraphicalModels::fex::global::getArea        | CV_8UC1 or CV_8UC3 | int
+Perimeter            | DirectGraphicalModels::fex::global::getPerimeter   | CV_8UC1 or CV_8UC3 | int
+Compactness          | DirectGraphicalModels::fex::global::getCompactness | CV_8UC1 or CV_8UC3 | float
+
 
 */
 

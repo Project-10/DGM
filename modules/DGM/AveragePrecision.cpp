@@ -9,9 +9,10 @@ namespace DirectGraphicalModels
 		DGM_ASSERT(predictions.size() == potentials.size());
 		DGM_ASSERT(predictions.size() == gt.size());
 		
-		std::vector<std::tuple<byte, float, byte>> container;			// prediction | pot | gt
+		std::vector<std::tuple<byte, float, byte>> container;			// < prediction | pot | gt >
 		for (size_t i = 0; i < predictions.size(); i++)
 			container.push_back(std::make_tuple(predictions[i], potentials[i], gt[i]));
+		// Sorting on potentials
 		std::sort(container.begin(), container.end(), [](auto const &left, auto const &right) { return std::get<1>(left) > std::get<1>(right); });
 	
 		float	res				= 0.0f;

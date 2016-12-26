@@ -146,7 +146,7 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport CCommonFeatureExtractor getDistance(byte threshold = 16, double multiplier = 4.0) const { return CCommonFeatureExtractor(CDistance::get(m_img, threshold, multiplier)); }
 		/**
-		* @brief Extracts the HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients">histogram of oriented gradients</a>) feature.
+		* @brief Extracts the HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients"target="_blank">histogram of oriented gradients</a>) feature.
 		* @details For each pixel of the source image this function calculates the histogram of oriented gradients inside the pixel's neighbourhood \b nbhd.
 		* The histogram consists of \b nBins values, it is normalized, and stored as \b nBins channel image, thus, the channel index corresponds to the histogram index.
 		* @param nBins Number of bins. Hence a single bin covers an angle of \f$\frac{180^\circ}{nBins}\f$.
@@ -155,6 +155,9 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport CCommonFeatureExtractor getHOG(int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CHOG::get(m_img, nBins, nbhd)); }
 		/**
+		* @brief Extracts the SIFT (<a href="https://en.wikipedia.org/wiki/Scale-invariant_feature_transform" target="_blank">scale-invariant feature transform</a>) feature.
+		* @details For each pixel of the source image this function performs the scale-invariant feature transform.
+		* @return Common feature extractor class with extracted SIFT feature of type \b CV_8UC{128}.
 		*/
 		DllExport CCommonFeatureExtractor getSIFT() const { return CCommonFeatureExtractor(CSIFT::get(m_img)); }
 		/**
@@ -183,29 +186,36 @@ namespace DirectGraphicalModels { namespace fex
 		* @return Common feature extractor class with extracted scale feature of type \b CV_8UC1.
 		*/
 		DllExport CCommonFeatureExtractor reScale(SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CScale::get(m_img, nbhd)); }
-		
-		
 		/**
 		* @brief Inverts the source image
-		* @returns Common feature extractor class with the inverted feature with the same number of channels.
+		* @return Common feature extractor class with the inverted feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor invert(void) const;
+		DllExport CCommonFeatureExtractor invert(void) const;
 		/**
 		* @brief Performs Gaussian blurring of the source image
 		* @param R Radius of the Gaussian filter box: \f$(2R+1)\times(2R+1)\f$.
-		* @returns Common feature extractor class with blurred feature with the same number of channels.
+		* @return Common feature extractor class with blurred feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor blur(int R = 2) const;
+		DllExport CCommonFeatureExtractor blur(int R = 2) const;
 		/**
 		* @brief Performs histogram stretching of the source image
-		* @returns Common feature extractor class with with contrast-enhanced feature with the same number of channels.
+		* @return Common feature extractor class with with contrast-enhanced feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor autoContrast(void) const;
+		DllExport CCommonFeatureExtractor autoContrast(void) const;
+		/**
+		* @brief Performs thresholding on the source image
+		* @details \f[ res_i = \left\{\begin{array}{ll}
+		* 255 & \text{if}~~res_i > threshold \\
+		* 0   & \text{otherwise}
+		* \end{array} \right. \f]
+		* @return A binary image of type CV_8UC1 with values {\b 0, \b 255 }
+		*/
+		DllExport CCommonFeatureExtractor thresholding(byte threshold) const;
 		/**
 		* @brief Extracts one channel from the source image
 		* @param channel Index of the required channel.
-		* @returns Common feature extractor class with the required channel as a feature.
+		* @return Common feature extractor class with the required channel as a feature.
 		*/
-		DllExport inline CCommonFeatureExtractor getChannel(int channel) const;
+		DllExport CCommonFeatureExtractor getChannel(int channel) const;
 	};
 } }
