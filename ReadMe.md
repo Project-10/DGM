@@ -14,6 +14,7 @@ Markov Chains, Bayesian Networks, _etc_. Specifically, it includes a variety of 
 * __Evaluation / Visualization__: Evaluation and visualization of the classification results
 * __Data Analysis__: Extraction, analysis and visualization of valuable knowlage from training data
 * __Feature Engineering__: Extraction of various descriptors from images, which are useful for classification
+
 These tasks are optimized for speed, _i.e._ high-efficient calculations. The code is written in optimized C++11, compiled with Microsoft Visual Studio and can take advantage of multi-core processing. DGM is released under a BSD license and hence it is free for both academic and commercial use.
 
 Check out the [project site](http://research.project-10.de/dgm/) for all the details like
