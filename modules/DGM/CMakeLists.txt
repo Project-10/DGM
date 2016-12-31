@@ -1,11 +1,14 @@
 file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 						${PROJECT_SOURCE_DIR}/include/types.h
 						${PROJECT_SOURCE_DIR}/include/macroses.h
-						${PROJECT_SOURCE_DIR}/include/parallel.h
 						)
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
-	
+					
+file(GLOB 3RD_OPENCV_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/opencv/DTrees.h" "${PROJECT_SOURCE_DIR}/3rdparty/opencv/RTrees.h"
+								"${PROJECT_SOURCE_DIR}/3rdparty/opencv/DTrees.cpp" "${PROJECT_SOURCE_DIR}/3rdparty/opencv/RTrees.cpp"
+							)
+							
 if (USE_SHERWOOD)
 file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
 										"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
@@ -16,23 +19,21 @@ endif()
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${DGM_INCLUDE})
 source_group("" FILES ${DGM_SOURCES} ${DGM_HEADERS})
+source_group("3rdparty\\opencv" FILES ${3RD_OPENCV_SOURCES})
 source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
-source_group("Source Files\\Common\\Marker" FILES	"Marker.h"
-													"Marker.cpp"
-													"MarkerGraph.h"
-													"MarkerGraph.cpp"
-													"MarkerHistogram.h"
-													"MarkerHistogram.cpp"
-												)
+source_group("Source Files\\Common\\Average Precision" FILES "AveragePrecision.h" "AveragePrecision.cpp")
 source_group("Source Files\\Common\\NDGauss" FILES "NDGauss.h" "NDGauss.cpp")
-source_group("Source Files\\Common\\Random" FILES "Random.h" "Random.cpp")
+source_group("Source Files\\Common\\Random" FILES "random.h")
+source_group("Source Files\\Common\\Parallel" FILES "parallel.h")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" FILES	"BaseGraph.h"
+source_group("Source Files\\Graph" FILES	"IGraph.h"
 											"Graph.h"
 											"Graph.cpp"
+											"GraphWeiss.h"
+											"GraphWeiss.cpp"
 											"Graph3.h"
 											"Graph3.cpp"
 											"GraphBoost.h"
@@ -51,14 +52,14 @@ source_group("Source Files\\Inference\\Message Passing\\TRW" FILES "InferTRW.h" 
 source_group("Source Files\\Inference\\Message Passing\\Viterbi" FILES "InferViterbi.h")
 source_group("Source Files\\Param Estimation" FILES "Powell.h" "Powell.cpp")
 source_group("Source Files\\Random Model" FILES "BaseRandomModel.h" "BaseRandomModel.cpp")
-source_group("Source Files\\Random Model\\PDF" FILES "PDF.h")
+source_group("Source Files\\Random Model\\PDF" FILES "IPDF.h")
 source_group("Source Files\\Random Model\\PDF\\Gaussian" FILES "PDFGaussian.h" "PDFGaussian.cpp")
 source_group("Source Files\\Random Model\\PDF\\Histogram" FILES "PDFHistogram.h" "PDFHistogram.cpp")
 source_group("Source Files\\Random Model\\Prior" FILES "Prior.h" "Prior.cpp")
 source_group("Source Files\\Random Model\\Prior\\Edge" FILES "PriorEdge.h" "PriorEdge.cpp")
 source_group("Source Files\\Random Model\\Prior\\Node" FILES "PriorNode.h" "PriorNode.cpp")
 source_group("Source Files\\Random Model\\Prior\\Triplet" FILES "PriorTriplet.h" "PriorTriplet.cpp")
-source_group("Source Files\\Random Model\\Training" FILES "Train.h")
+source_group("Source Files\\Random Model\\Training" FILES "ITrain.h")
 source_group("Source Files\\Random Model\\Training\\Edge" FILES "TrainEdge.h" "TrainEdge.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Contrast Sensitive" FILES "TrainEdgePottsCS.h" "TrainEdgePottsCS.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Data Dependent" FILES "TrainEdgePrior.h" "TrainEdgePrior.cpp" "TrainEdgeConcat.h")
@@ -88,7 +89,6 @@ source_group("Source Files\\Random Model\\Training\\Triplet" FILES "TrainTriplet
 include_directories(${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/3rdparty
 					${OpenCV_INCLUDE_DIRS} 
-					${OpenCV_INCLUDE_DIRS}2
 				)
  
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)
@@ -104,16 +104,17 @@ set_target_properties(DGM PROPERTIES OUTPUT_NAME_DEBUG dgm${DGM_VERSION_MAJOR}${
 
 #install
 install(TARGETS DGM 
-	RUNTIME DESTINATION ${PROJECT_INSTALL_PREFIX}/bin 
-	LIBRARY DESTINATION ${PROJECT_INSTALL_PREFIX}/lib
-	ARCHIVE DESTINATION ${PROJECT_INSTALL_PREFIX}/lib)
-install(FILES ${DGM_INCLUDE} DESTINATION ${PROJECT_INSTALL_PREFIX}/include)
-install(FILES ${DGM_HEADERS} DESTINATION ${PROJECT_INSTALL_PREFIX}/include/DGM)
+	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(FILES ${DGM_INCLUDE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(FILES ${DGM_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/DGM)
 	
 # 3rdparty code
-target_sources(DGM PRIVATE ${3RD_SHERWOOD_SOURCES})
+target_sources(DGM PRIVATE	${3RD_OPENCV_SOURCES}
+							${3RD_SHERWOOD_SOURCES}
+						)
  
 # Creates folder "Modules" and adds target project 
 set_target_properties(DGM PROPERTIES FOLDER "Modules")
-
 

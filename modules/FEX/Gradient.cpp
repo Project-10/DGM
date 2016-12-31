@@ -1,4 +1,5 @@
 #include "Gradient.h"
+#include "LinearMapper.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex

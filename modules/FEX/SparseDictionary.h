@@ -21,18 +21,19 @@ namespace DirectGraphicalModels { namespace fex
 	* where \f$D\f$ is the dictionary.<br>
 	* The implementation is based on <a href="http://ufldl.stanford.edu/wiki/index.php/Sparse_Coding:_Autoencoder_Interpretation">Sparse Coding: Autoencoder Interpretation</a> article,
 	* where the task of the dictionary learning turns into the following minimization problem:
-	* \f[ argmin_{D, W} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \lambda\left\|W\right\|_1 + \gamma\left\|D\right\|^{2}_{2}, \f]
+	* \f[ \text{arg}\,\min\limits_{D,W} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \lambda\left\|W\right\|_1 + \gamma\left\|D\right\|^{2}_{2}, \f]
 	* where \f$D\in\mathbb{R}^{sampleLen \times nWords}\f$, \f$W\in\mathbb{R}^{nWords \times nSamples}\f$ is the matrix, containing weighting coefficients for every word and every sample
 	* and \f$X\in\mathbb{R}^{sampleLen \times nSamples}\f$ contains the training data as row-vectors samples.<br>
 	* In order to minimize \f$J(D, W)\f$ we use the <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient Descent</a> algorithm.  
 	* We also use \f$\sum_{i,j}\sqrt{w^{2}_{i,j} + \epsilon}\f$ in place of \f$\left\|W\right\|_1\f$ to make \f$J(D, W)\f$ differentiable at \f$W = 0\f$.<br>
 	* In order to train the dictionary, one may use the code:
 	* @code
-	*	using namespace DirectGraphicalModels::fex;
+	* using namespace DirectGraphicalModels;
+	* using namespace DirectGraphicalModels::fex;
 	*
 	*	CSparseCoding *sparseCoding = new CSparseCoding(img);
 	*	Mat X = CSparseDictionary::img2data(img, blockSize);	// sampleLen = blockSize * blockSize
-	*	CSparseDictionary::shuffleRows(X);
+	*	parallel::shuffleRows(X);
 	*	sparseCoding->train(X, nWords);
 	*	sparseCoding->save("dictionary.dic");
 	* @endcode
@@ -128,7 +129,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @brief Converts image into data \f$X\f$
 		* @details This functions generates a set of data samples (\b blockSize x \b blockSize patches) from a single image.
 		* The extracted pathces are overlapping, thus the maximal number of data samples is: nMaxSamples = (img.width - \b blockSize + 1) x (img.height - \b blockSize + 1)
-		* > It is recommended to suffle the samples with shuffleRows() function before training dictionary with train()
+		* > It is recommended to suffle the samples with parallel::shuffleRows() function before training dictionary with train()
 		* @param img The input image
 		* @param blockSize Size of the quadratic patch
 		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
@@ -150,14 +151,6 @@ namespace DirectGraphicalModels { namespace fex
 		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1)
 		*/
 		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
-		/**
-		* @brief Randomly shuffles the rows of the input matrix.
-		* @details > This function supports PPL.<br>
-		* > When using PPL, the result of this function is biased.
-		* @param[in,out] X The input/output data, which rows should be shffled.
-		* @todo Eliminate the bias, caused by parallel processing.
-		*/
-		DllExport static void shuffleRows(Mat &X);
 
 	
 	protected:
@@ -170,7 +163,7 @@ namespace DirectGraphicalModels { namespace fex
 		/**
 		* @brief Evaluates weighting coefficients matrix \f$W\f$
 		* @details Finds the \f$W\f$, that minimizes \f$J(D, W)\f$ for the given \f$D\f$:
-		* \f[ argmin_{W} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \lambda\sum_{i,j}{\sqrt{w^{2}_{i,j} + \epsilon}} \f]
+		* \f[ \text{arg}\,\min\limits_{W} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \lambda\sum_{i,j}{\sqrt{w^{2}_{i,j} + \epsilon}} \f]
 		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_32FC1)
 		* @param[in] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_32FC1)
 		* @param[in,out] W  Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_32FC1)
@@ -183,7 +176,7 @@ namespace DirectGraphicalModels { namespace fex
 		/**
 		* @brief Evaluates dictionary \f$D\f$
 		* @details Finds the \f$D\f$, that minimizes \f$J(D, W)\f$ for the given \f$W\f$:
-		* \f[ argmin_{D} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \gamma\left\|D\right\|^{2}_{2}, \f]
+		* \f[ \text{arg}\,\min\limits_{D} J(D, W) = \left\| W \times D - X \right\|^{2}_{2} + \gamma\left\|D\right\|^{2}_{2}, \f]
 		* @param[in] X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_32FC1)
 		* @param[in,out] D Dictionary \f$D\f$:  Mat(size nWords x sampleLen; type CV_32FC1)
 		* @param[in] W Weighting coefficients \f$W\f$:  Mat(size nSamples x nWords; type CV_32FC1)

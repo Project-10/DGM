@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "ILocalFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -11,14 +11,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief NDVI (<a href="http://en.wikipedia.org/wiki/Normalized_Difference_Vegetation_Index">normalized difference vegetation index</a>) feature extraction class.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CNDVI : public CBaseFeatureExtractor
+	class CNDVI : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-		DllExport CNDVI(const Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CNDVI(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CNDVI(void) {}
 
 		DllExport virtual Mat	get(void) const { return get(m_img); }

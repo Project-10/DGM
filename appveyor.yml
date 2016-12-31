@@ -1,0 +1,31 @@
+#-----------------------------------------------------------------------------
+#  Configuration for continuous integration service at appveyor.com
+#-----------------------------------------------------------------------------
+version: 1.5.2:{build}
+
+branches:
+  only:
+  - master
+  - OpenGL
+
+# Operating system (build VM template)
+os: Visual Studio 2015
+
+# scripts that are called at very beginning, before repo cloning
+init:
+
+# clone directory
+clone_folder: c:\projects\dgm
+
+platform: x64
+
+#install:
+#  -cmd: choco install OpenCV
+
+build_script:
+  - choco install opencv 
+  - cd c:\projects\dgm
+  - md build
+  - cd build
+  - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win64" -DUSE_OPENGL=ON ..
+  - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln

@@ -7,29 +7,16 @@
 @defgroup moduleFEX FEX Module
 @section sec_fex_title Feature Extraction Module
 
-allows for extracting various descriptors from images, which are useful for classification. 
+allows for extracting various descriptors from images, which are useful for classification.
 
 For the practical application, the original input data is preprocessed to transform it into some new space of descriptors (features) where, it is hoped, the classification problem will be easier to solve.
 The main idea of this preprocessing is to reduce the variability of input data for each class, and thus to make it much easier for a subsequent classification algorithm to distinguish between the
 different classes. This preprocessing stage is also called feature extraction. Note that new test data must be preprocessed using the same steps as the training data.
 
+This module consists of \ref moduleLFEX "local-features" and \ref moduleGFEX "global-features" extractors. The local features are extracted for every pixel of an image, whereas the global features - 
+for the whole image. There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of a local feature \a coordinate.
 
- Method               | Class                                     | Input              | Output
- -------------------- | ----------------------------------------- | :----------------: | :-----:
- Coordinate           | DirectGraphicalModels::fex::CCoordinate   | any                | CV_8UC1
- Distance             | DirectGraphicalModels::fex::CDistance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
- Gradient             | DirectGraphicalModels::fex::CGradient	  | CV_8UC1 or CV_8UC3 | CV_8UC1
- HOG                  | DirectGraphicalModels::fex::CHOG		  | CV_8UC1 or CV_8UC3 | CV_8UC{nBins}
- Intensity            | DirectGraphicalModels::fex::CIntensity    | CV_8UC3            | CV_8UC1
- NDVI                 | DirectGraphicalModels::fex::CNDVI		  | CV_8UC3            | CV_8UC1
- Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV          | CV_8UC3            | CV_8UC3
- Scale                | DirectGraphicalModels::fex::CScale	      | any                | CV_8UC1
- Variance             | DirectGraphicalModels::fex::CVariance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
- Sparse Coding        | DirectGraphicalModels::fex::CSparseCoding | CV_8UC1 or CV_8UC3 | CV_8UC{nWords}
-
-There are 3 ways of using the feature extraction module in your code. Let us cosider the extraction of \a coordinate feature.
-
-The first way is to declare the correspondig class and call its method DirectGraphicalModels::fex::CBaseFeatureExtractor::get() :
+The first way is to declare the correspondig class and call its method DirectGraphicalModels::fex::ILocalFeatureExtractor::get() :
 @code
 using namespace DirectGraphicalModels::fex;
 
@@ -44,18 +31,51 @@ using namespace DirectGraphicalModels::fex;
 Mat coordinatate = CCoordinate::get(img);
 @endcode
 
-The third way is to use the common feature extracton interface DirectGraphicalModels::fex::CCommonFeatureExtractor, which supports <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a>. 
+The third way is to use the common feature extracton interface DirectGraphicalModels::fex::CCommonFeatureExtractor, which supports <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a>.
 Please see also the class documentation for more details:
 @code
 using namespace DirectGraphicalModels::fex;
 
 CCommonFeatureExtractor fExtractor(img);
-Mat coordinatate = fExtractor.getCoordinate().get();	
+Mat coordinatate = fExtractor.getCoordinate().get();	// local feature
+size_t numLines = fExtractor.toGlobal().getNumLines();	// global feature
 @endcode
 
 Please see also our tutorial: @ref demofex.
 
 @author Sergey G. Kosov, sergey.kosov@project-10.de
+	
+@defgroup moduleLFEX Local Features Extraction
+@ingroup moduleFEX
+
+ Method               | Class                                     | Input              | Output
+ -------------------- | ----------------------------------------- | :----------------: | :-----:
+ Coordinate           | DirectGraphicalModels::fex::CCoordinate   | any                | CV_8UC1
+ Distance             | DirectGraphicalModels::fex::CDistance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
+ Gradient             | DirectGraphicalModels::fex::CGradient	  | CV_8UC1 or CV_8UC3 | CV_8UC1
+ HOG                  | DirectGraphicalModels::fex::CHOG		  | CV_8UC1 or CV_8UC3 | CV_8UC{nBins}
+ SIFT                 | DirectGraphicalModels::fex::CSIFT		  | CV_8UC1 or CV_8UC3 | CV_8UC{128}
+ Intensity            | DirectGraphicalModels::fex::CIntensity    | CV_8UC3            | CV_8UC1
+ NDVI                 | DirectGraphicalModels::fex::CNDVI		  | CV_8UC3            | CV_8UC1
+ Hue-Saturation-Value | DirectGraphicalModels::fex::CHSV          | CV_8UC3            | CV_8UC3
+ Scale                | DirectGraphicalModels::fex::CScale	      | any                | CV_8UC1
+ Variance             | DirectGraphicalModels::fex::CVariance	  | CV_8UC1 or CV_8UC3 | CV_8UC1
+ Sparse Coding        | DirectGraphicalModels::fex::CSparseCoding | CV_8UC1 or CV_8UC3 | CV_8UC{nWords}
+
+@defgroup moduleGFEX Global Features Extraction
+@ingroup moduleFEX
+
+Method               | Class                                              | Input              | Output
+-------------------- | -------------------------------------------------- | :----------------: | :-----:
+Number of Lines      | DirectGraphicalModels::fex::global::getNumLines    | CV_8UC1 or CV_8UC3 | size_t
+Number of Circles    | DirectGraphicalModels::fex::global::getNumCircles  | CV_8UC1 or CV_8UC3 | size_t
+Opacity              | DirectGraphicalModels::fex::global::getOpacity     | CV_8UC1 or CV_8UC3 | float
+Variance             | DirectGraphicalModels::fex::global::getVariance    | CV_8UC1 or CV_8UC3 | float
+Area                 | DirectGraphicalModels::fex::global::getArea        | CV_8UC1 or CV_8UC3 | int
+Perimeter            | DirectGraphicalModels::fex::global::getPerimeter   | CV_8UC1 or CV_8UC3 | int
+Compactness          | DirectGraphicalModels::fex::global::getCompactness | CV_8UC1 or CV_8UC3 | float
+
+
 */
 
 /**

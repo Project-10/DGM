@@ -95,7 +95,7 @@ void CTrainNodeGMM::addFeatureVec(const Mat &featureVector, byte gt)
 	point.release();
 }
 
-void CTrainNodeGMM::train(void)
+void CTrainNodeGMM::train(bool)
 {
 	register byte	s;
 

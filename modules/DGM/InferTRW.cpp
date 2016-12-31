@@ -11,12 +11,12 @@ void CInferTRW::infer(unsigned int nIt)
 	// ====================================== Initialization ======================================			
 	createMessages();
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [nStates](Edge &edge) {
+	concurrency::parallel_for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #else
-	std::for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [nStates](Edge &edge) {
+	std::for_each(m_pGraph->m_vEdges.begin(), m_pGraph->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #endif
-		std::fill(edge.msg, edge.msg + nStates, 1.0f);
-		std::fill(edge.msg_temp, edge.msg_temp + nStates, 1.0f);
+		std::fill(edge->msg, edge->msg + nStates, 1.0f);
+		std::fill(edge->msg_temp, edge->msg_temp + nStates, 1.0f);
 	});
 
 	// =================================== Calculating messages ==================================	
@@ -25,24 +25,24 @@ void CInferTRW::infer(unsigned int nIt)
 
 	// =================================== Calculating beliefs ===================================	
 
-	for (Node &node : m_pGraph->m_vNodes) {
+	for (ptr_node_t &node : m_pGraph->m_vNodes) {
 		// backward edges
-		for (size_t e_f : node.from) {
-			Edge &edge_from = m_pGraph->m_vEdges[e_f];
-			if (edge_from.node1 > edge_from.node2) continue;
-			Node &src = m_pGraph->m_vNodes[edge_from.node1];
-			for (byte s = 0; s < nStates; s++) node.Pot.at<float>(s, 0) *= edge_from.Pot.at<float>(src.sol, s);
+		for (size_t e_f : node->from) {
+			Edge * edge_from = m_pGraph->m_vEdges[e_f].get();
+			if (edge_from->node1 > edge_from->node2) continue;
+			Node *src = m_pGraph->m_vNodes[edge_from->node1].get();
+			for (byte s = 0; s < nStates; s++) node->Pot.at<float>(s, 0) *= edge_from->Pot.at<float>(src->sol, s);
 		}
 		// forward edges
-		for (size_t e_t : node.to) {
-			Edge &edge_to = m_pGraph->m_vEdges[e_t];
-			if (edge_to.node1 > edge_to.node2) continue;
-			for (byte s = 0; s < nStates; s++) node.Pot.at<float>(s, 0) *= edge_to.msg[s];
+		for (size_t e_t : node->to) {
+			Edge *edge_to = m_pGraph->m_vEdges[e_t].get();
+			if (edge_to->node1 > edge_to->node2) continue;
+			for (byte s = 0; s < nStates; s++) node->Pot.at<float>(s, 0) *= edge_to->msg[s];
 		}
 
 		Point extremumLoc;
-		minMaxLoc(node.Pot, NULL, NULL, NULL, &extremumLoc);
-		node.sol = static_cast<byte> (extremumLoc.y);
+		minMaxLoc(node->Pot, NULL, NULL, NULL, &extremumLoc);
+		node->sol = static_cast<byte> (extremumLoc.y);
 	}
 
 	deleteMessages();
@@ -61,51 +61,51 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 		if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
 		// Forward pass
-		std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&](Node &node) {									
-			memcpy(data, node.Pot.data, nStates * sizeof(float));							// data = node.pot
+		std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&](ptr_node_t &node) {
+			memcpy(data, node->Pot.data, nStates * sizeof(float));							// data = node.pot
 
 			int	nForward = 0;
-			for (size_t e_t : node.to) {
-				Edge &edge_to = m_pGraph->m_vEdges[e_t];
-				if (edge_to.node1 > edge_to.node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_to.msg[s];				// data = node.pot * edge_to.msg
+			for (size_t e_t : node->to) {
+				Edge *edge_to = m_pGraph->m_vEdges[e_t].get();
+				if (edge_to->node1 > edge_to->node2) continue;
+				for (byte s = 0; s < nStates; s++) data[s] *= edge_to->msg[s];				// data = node.pot * edge_to.msg
 				nForward++;
 			} // e_t
 			
 			int	nBackward = 0;
-			for (size_t e_f : node.from) {
-				Edge &edge_from = m_pGraph->m_vEdges[e_f];
-				if (edge_from.node1 > edge_from.node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_from.msg[s];				// data = node.pot * edge_to.msg * edge_from.msg
+			for (size_t e_f : node->from) {
+				Edge *edge_from = m_pGraph->m_vEdges[e_f].get();
+				if (edge_from->node1 > edge_from->node2) continue;
+				for (byte s = 0; s < nStates; s++) data[s] *= edge_from->msg[s];				// data = node.pot * edge_to.msg * edge_from.msg
 				nBackward++;
 			} // e_f
 
 			for (byte s = 0; s < nStates; s++) data[s] = static_cast<float>(fastPow(data[s], 1.0f / MAX(nForward, nBackward)));
 
 			// pass messages from i to nodes with higher m_ordering
-			for (size_t e_t : node.to) {
-				Edge &edge_to = m_pGraph->m_vEdges[e_t];
-				if (edge_to.node1 < edge_to.node2) calculateMessage(edge_to, temp, data);
+			for (size_t e_t : node->to) {
+				Edge *edge_to = m_pGraph->m_vEdges[e_t].get();
+				if (edge_to->node1 < edge_to->node2) calculateMessage(*edge_to, temp, data);
 			} // e_t
-		}); 
+		});
 
 		// Backward pass
-		std::for_each(m_pGraph->m_vNodes.rbegin(), m_pGraph->m_vNodes.rend(), [&](Node &node) {										
-			memcpy(data, node.Pot.data, nStates * sizeof(float));							// data = node.pot
+		std::for_each(m_pGraph->m_vNodes.rbegin(), m_pGraph->m_vNodes.rend(), [&](ptr_node_t &node) {
+			memcpy(data, node->Pot.data, nStates * sizeof(float));							// data = node.pot
 
 			int	nForward = 0;
-			for (size_t e_t : node.to) {
-				Edge &edge_to = m_pGraph->m_vEdges[e_t];
-				if (edge_to.node1 > edge_to.node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_to.msg[s];
+			for (size_t e_t : node->to) {
+				Edge *edge_to = m_pGraph->m_vEdges[e_t].get();
+				if (edge_to->node1 > edge_to->node2) continue;
+				for (byte s = 0; s < nStates; s++) data[s] *= edge_to->msg[s];
 				nForward++;
 			} // e_t
 			
 			int	nBackward = 0;
-			for (size_t e_f : node.from) {
-				Edge &edge_from = m_pGraph->m_vEdges[e_f];
-				if (edge_from.node1 > edge_from.node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_from.msg[s];
+			for (size_t e_f : node->from) {
+				Edge *edge_from = m_pGraph->m_vEdges[e_f].get();
+				if (edge_from->node1 > edge_from->node2) continue;
+				for (byte s = 0; s < nStates; s++) data[s] *= edge_from->msg[s];
 				nBackward++;
 			} // e_f
 
@@ -116,9 +116,9 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (byte s = 0; s < nStates; s++) data[s] = static_cast<float>(fastPow(data[s], 1.0f / MAX(nForward, nBackward)));
 
 			// pass messages from i to nodes with smaller m_ordering
-			for (size_t e_f : node.from) {
-				Edge &edge_from = m_pGraph->m_vEdges[e_f];
-				if (edge_from.node1 < edge_from.node2) calculateMessage(edge_from, temp, data);
+			for (size_t e_f : node->from) {
+				Edge *edge_from = m_pGraph->m_vEdges[e_f].get();
+				if (edge_from->node1 < edge_from->node2) calculateMessage(*edge_from, temp, data);
 			} // e_f
 		}); // All Nodes
 

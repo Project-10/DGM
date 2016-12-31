@@ -6,6 +6,8 @@
 
 namespace DirectGraphicalModels
 {
+	struct Edge;
+	
 	// ==================== Microsoft TRW Decode Class ==================
 	/**
 	* @ingroup moduleDecode

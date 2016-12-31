@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
 		* @brief Returns number of features
 		* @return Number of features 
 		*/		
-		DllExport byte			getNumStates(void) const {return m_nStates;}	
+		DllExport byte			getNumStates(void) const { return m_nStates; }	
 
 
 	protected:

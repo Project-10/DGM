@@ -2,7 +2,7 @@
 // Writtem by Sergey G. Kosov in 2015 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "IFeatureExtractor.h"
 #include "Coordinate.h"
 #include "Intensity.h"
 #include "HSV.h"
@@ -10,9 +10,11 @@
 #include "NDVI.h"
 #include "Distance.h"
 #include "HOG.h"
+#include "SIFT.h"
 #include "Variance.h"
 #include "Scale.h"
 #include "SparseCoding.h"
+#include "GlobalFeatureExtractor.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex
@@ -31,29 +33,30 @@ namespace DirectGraphicalModels { namespace fex
 		CH_VALUE			///< Value channel
 	};
 
-
-
+	
 	// ================================ Common Feature Extractor Class ==============================
 	/**
+	* @ingroup moduleFEX
 	* @brief Common class, which unites feature extraction algorithms.
 	* @details In order to simplify the user feature extraction code, this class provides <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a>. 
 	* Please see the example code below for more details.
 	* @code
 	* CCommonFeatureExtractor fex(img);
-	* Mat saturation = fex.getSaturation().invert().get();					// Inverted saturation feature
-	* Mat variance   = fex.getGradient().getVariance().blur().get();			// Varience of the gradient feature, after Gaussian blur
-	* Mat intesity   = fex.getIntensity().reScale(sqNeighbourhood(2)).get();	// Intencity feature, calculated at scale of window size 5 x 5 pixels
+	* Mat    saturation = fex.getSaturation().invert().get();                   // Inverted saturation feature
+	* Mat    variance   = fex.getGradient().getVariance().blur().get();         // Varience of the gradient feature, after Gaussian blur
+	* Mat    intesity   = fex.getIntensity().reScale(sqNeighbourhood(2)).get(); // Intencity feature, calculated at scale of window size 5 x 5 pixels
+	* size_t nLines     = fex.autoContrast().toGlobal().getNumLines();          // Global-feature: quantity of straight lines in image
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/			
-	class CCommonFeatureExtractor : public CBaseFeatureExtractor
+	class CCommonFeatureExtractor : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image.
 		*/		
-		DllExport CCommonFeatureExtractor(Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CCommonFeatureExtractor(const Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CCommonFeatureExtractor(void) {}
 
 		/**
@@ -62,6 +65,11 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport Mat virtual get(void) const { return m_img; }
 
+		/**
+		* @brief Allows for global-features extraction
+		* @returns The base global feature extractor class
+		*/
+		DllExport CGlobalFeatureExtractor toGlobal(void) const { return CGlobalFeatureExtractor(m_img); }
 		/**
 		* @brief Extracts a coordinate feature.
 		* @details This function calculates the coordinate feature of image pixels, based inly on theirs coordinates.
@@ -138,7 +146,7 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport CCommonFeatureExtractor getDistance(byte threshold = 16, double multiplier = 4.0) const { return CCommonFeatureExtractor(CDistance::get(m_img, threshold, multiplier)); }
 		/**
-		* @brief Extracts the HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients">histogram of oriented gradients</a>) feature.
+		* @brief Extracts the HOG (<a href="http://en.wikipedia.org/wiki/Histogram_of_oriented_gradients"target="_blank">histogram of oriented gradients</a>) feature.
 		* @details For each pixel of the source image this function calculates the histogram of oriented gradients inside the pixel's neighbourhood \b nbhd.
 		* The histogram consists of \b nBins values, it is normalized, and stored as \b nBins channel image, thus, the channel index corresponds to the histogram index.
 		* @param nBins Number of bins. Hence a single bin covers an angle of \f$\frac{180^\circ}{nBins}\f$.
@@ -146,6 +154,12 @@ namespace DirectGraphicalModels { namespace fex
 		* @return Common feature extractor class with extracted HOG feature of type \b CV_8UC{n}, where \f$n=nBins\f$.
 		*/
 		DllExport CCommonFeatureExtractor getHOG(int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CHOG::get(m_img, nBins, nbhd)); }
+		/**
+		* @brief Extracts the SIFT (<a href="https://en.wikipedia.org/wiki/Scale-invariant_feature_transform" target="_blank">scale-invariant feature transform</a>) feature.
+		* @details For each pixel of the source image this function performs the scale-invariant feature transform.
+		* @return Common feature extractor class with extracted SIFT feature of type \b CV_8UC{128}.
+		*/
+		DllExport CCommonFeatureExtractor getSIFT() const { return CCommonFeatureExtractor(CSIFT::get(m_img)); }
 		/**
 		* @brief Extracts the variance feature.
 		* @details For each pixel of the source image this function calculates the variance within the pixel's neighbourhood \b nbhd.
@@ -174,40 +188,34 @@ namespace DirectGraphicalModels { namespace fex
 		DllExport CCommonFeatureExtractor reScale(SqNeighbourhood nbhd = sqNeighbourhood(5)) const { return CCommonFeatureExtractor(CScale::get(m_img, nbhd)); }
 		/**
 		* @brief Inverts the source image
-		* @returns Common feature extractor class with the inverted feature with the same number of channels.
+		* @return Common feature extractor class with the inverted feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor invert(void) const 
-		{
-			Mat res;
-			bitwise_not(m_img, res);
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport CCommonFeatureExtractor invert(void) const;
 		/**
 		* @brief Performs Gaussian blurring of the source image
 		* @param R Radius of the Gaussian filter box: \f$(2R+1)\times(2R+1)\f$.
-		* @returns Common feature extractor class with blurred feature with the same number of channels.
+		* @return Common feature extractor class with blurred feature with the same number of channels.
 		*/
-		DllExport inline CCommonFeatureExtractor blur(int R = 2) const
-		{
-			Mat res;
-			R = 2 * R + 1;
-			GaussianBlur(m_img, res, cvSize(R, R), 0.0, 0.0, BORDER_REFLECT);
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport CCommonFeatureExtractor blur(int R = 2) const;
+		/**
+		* @brief Performs histogram stretching of the source image
+		* @return Common feature extractor class with with contrast-enhanced feature with the same number of channels.
+		*/
+		DllExport CCommonFeatureExtractor autoContrast(void) const;
+		/**
+		* @brief Performs thresholding on the source image
+		* @details \f[ res_i = \left\{\begin{array}{ll}
+		* 255 & \text{if}~~res_i > threshold \\
+		* 0   & \text{otherwise}
+		* \end{array} \right. \f]
+		* @return A binary image of type CV_8UC1 with values {\b 0, \b 255 }
+		*/
+		DllExport CCommonFeatureExtractor thresholding(byte threshold) const;
 		/**
 		* @brief Extracts one channel from the source image
 		* @param channel Index of the required channel.
-		* @returns Common feature extractor class with the required channel as a feature.
+		* @return Common feature extractor class with the required channel as a feature.
 		*/
-		DllExport inline CCommonFeatureExtractor getChannel(int channel) const
-		{
-			DGM_ASSERT_MSG(channel < m_img.channels(), "The required channel %d does not exist in the %d-channel source image", channel, m_img.channels());
-			Mat res;
-			vec_mat_t vChannels;
-			split(m_img, vChannels);
-			vChannels.at(channel).copyTo(res);
-			vChannels.clear();
-			return CCommonFeatureExtractor(res);
-		}
+		DllExport CCommonFeatureExtractor getChannel(int channel) const;
 	};
 } }

@@ -2,7 +2,7 @@
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
-#include "PDF.h"
+#include "IPDF.h"
 
 namespace DirectGraphicalModels 
 {
@@ -13,7 +13,7 @@ namespace DirectGraphicalModels
 	* thus arguments \b point of the addPoint() and getDensity() functions should be 8-bit long.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPDFHistogram : public CPDF
+	class CPDFHistogram : public IPDF
 	{
 	public:
 		DllExport CPDFHistogram(void);

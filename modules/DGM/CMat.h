@@ -10,11 +10,11 @@ namespace DirectGraphicalModels
 
 	// ================================ Confusion Matrix Class ================================
 	/**
-	* @ingroup moduleVis
+	* @ingroup moduleEva
 	* @brief Confusion matrix class.
-	* @details This class estimates the <a href="http://en.wikipedia.org/wiki/Confusion_matrix">confusion matrix</a>, which  
+	* @details This class estimates the <a href="http://en.wikipedia.org/wiki/Confusion_matrix" target="_blank">confusion matrix</a>, which  
 	* allows for evaluation of the classification results in terms of the overall classification accuracy, as well as of
-	* <a href="http://en.wikipedia.org/wiki/Precision_and_recall">precision and recall</a>. 
+	* <a href="http://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">precision and recall</a>. 
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
 	class CCMat
@@ -52,16 +52,10 @@ namespace DirectGraphicalModels
 		* @brief Estimates the confusion matrix
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		* @param solution Matrix with the predicted states, provided by classifier
-		*/
-		DllExport void  estimate(const Mat &gt, const Mat &solution);
-		/**
-		* @brief Estimates the confusion matrix
-		* @param gt Matrix, each element of which is a ground-truth state (class)
-		* @param solution Matrix with the predicted states, provided by classifier
 		* @param mask Operation mask. Its non-zero elements indicate which matrix elements need to be stimated. 
 		* Mask should have the same size as \b gt and \b solution and be of type \b CV_8UC1 .
 		*/
-		DllExport void  estimate(const Mat &gt, const Mat &solution, const Mat &mask);
+		DllExport void  estimate(const Mat &gt, const Mat &solution, const Mat &mask = Mat());
 		/**
 		* @brief Estimates the confusion matrix
 		* @param gt	The ground-truth state (class)

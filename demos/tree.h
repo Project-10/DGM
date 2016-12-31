@@ -76,9 +76,8 @@ returned with function \b getNodePot():
 @code
 	Mat nodePot = getNodePot();
 
-	std::for_each(sources.begin(), sources.end(), [&](size_t n) { 
+	for(size_t n: sources)  
 		graph->setNode(n, nodePot); 
-	});
 @endcode
 
 The edge potential matrix is represented here as a transition matrix:
@@ -102,23 +101,23 @@ DirectGraphicalModels::CGraph::setArc(size_t src, size_t dst, const Mat& edgePot
 	std::vector<bool>	ifSource(nNodes, false);
 	std::deque<size_t>	sourceQueue;				// queue with indexes of the source nodes
 
-	std::for_each(sources.begin(), sources.end(), [&](size_t n) {
+	for(size_t n: sources) {
 		ifSource[n] = true;
 		sourceQueue.push_back(n);
-	});
+	}
 
 	Mat edgePot = getEdgePot();
 	while (!sourceQueue.empty()) {
 		size_t n1 = sourceQueue.front();			// pop the front index of a source node
 		sourceQueue.pop_front();
 		graph->getChildNodes(n1, vChilds);
-		std::for_each(vChilds.begin(), vChilds.end(), [&, n1](size_t n2) {
+		for(size_t n2: vChilds) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
 				graph->setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}
-		});
+		}
 	}
 @endcode
 

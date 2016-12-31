@@ -6,6 +6,8 @@
 
 namespace DirectGraphicalModels
 {
+	struct Edge;
+
 	// ==================== Message Passing Base Abstract Class ==================
 	/**
 	* @ingroup moduleDecode

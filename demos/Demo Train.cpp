@@ -1,7 +1,9 @@
 // Example "Training" 2D-case with model training
 #include "DGM.h"
+#include "VIS.h"
 
 using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::vis;
 
 void print_help(void)
 {
@@ -60,7 +62,10 @@ int main(int argv, char *argc[])
 		case 3: nodeTrainer = new CTrainNodeCvGM(nStates, nFeatures);		break;
 		case 4: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
 		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;		
+#ifdef USE_SHERWOOD
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+#endif
+		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
 	switch(edgeModel) {
 		case 0: params[0] = 1;	// Emulate "No edges"
@@ -71,6 +76,7 @@ int main(int argv, char *argc[])
 			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
+		default: printf("Unknown edge_training_model is given\n"); print_help(); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================

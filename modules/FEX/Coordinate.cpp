@@ -1,4 +1,5 @@
 #include "Coordinate.h"
+#include "LinearMapper.h"
 
 namespace DirectGraphicalModels { namespace fex
 {

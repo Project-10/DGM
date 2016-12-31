@@ -2,10 +2,12 @@
 // Written by Sergey G. Kosov in 2013-2015 for Project X
 #pragma once
 
-#include "train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
+	class CGraphExt;
+	
 	// ============================= Edge Train Class =============================
 	/**
 	* @ingroup moduleTrainEdge
@@ -13,7 +15,7 @@ namespace DirectGraphicalModels
 	* @details Refer to the @ref demotrain for the application and common usage example
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainEdge : public CTrain
+	class CTrainEdge : public ITrain
 	{
 	public:
 		/**
@@ -21,9 +23,29 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainEdge(byte nStates, word nFeatures) : CTrain(nStates, nFeatures), CBaseRandomModel(nStates) {}
+		DllExport CTrainEdge(byte nStates, word nFeatures) : ITrain(nStates, nFeatures), CBaseRandomModel(nStates) {}
 		DllExport virtual ~CTrainEdge(void) {}
 
+		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts 
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure, 
+		* provided via \b pGraph
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
+		*/
+		DllExport void			addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphExt *pGraph);
+		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
+		* provided via \b pGraph
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
+		*/
+		DllExport void			addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphExt *pGraph);
 		/**
 		* @brief Adds a pair of feature vectors
 		* @details Used to add \b featureVector1 and \b featureVector2, corresponding to the ground-truth states (classes) \b gt1 and \b gt2 for training.
@@ -34,7 +56,7 @@ namespace DirectGraphicalModels
 		* @param gt2 The ground-truth state (class) of the second node of the edge, given by \b featureVector2 
 		*/		
 		DllExport virtual void	addFeatureVecs(const Mat &featureVector1, byte gt1, const Mat &featureVector2, byte gt2) = 0;			
-		DllExport virtual void	train(void) {}
+		DllExport virtual void	train(bool doClean = false) {}
 		/**
 		* @brief Returns the edge potential, based on the feature vectors
 		* @details This function calls calculateEdgePotentials() function, which should be implemented in derived classes. After that,

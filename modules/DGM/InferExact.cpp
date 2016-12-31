@@ -16,13 +16,12 @@ void CInferExact::infer(unsigned int)
 	float Z = std::accumulate(P.cbegin(), P.cend(), 0.0f);
 	
 	// Filling node potentials with marginal probabilities
-	std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [](Node &node) {node.Pot.setTo(0);});
+	for (ptr_node_t &node : m_pGraph->m_vNodes) node->Pot.setTo(0);
 	setState(state, 0);
-	std::for_each(P.begin(), P.end(), [&](float &p) {
-		std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&](Node &node) {
-			node.Pot.at<float>(state[node.id], 0) += p / Z;
-		});
+	for(float &p : P) {
+		for (ptr_node_t &node: m_pGraph->m_vNodes) 
+			node->Pot.at<float>(state[node->id], 0) += p / Z;
 		incState(state);
-	});
+	};
 }
 }

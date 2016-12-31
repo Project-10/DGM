@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2016 for Project X
 #pragma once
 
-#include "Train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
@@ -12,7 +12,7 @@ namespace DirectGraphicalModels
 	* @brief Base abstract class for link (inter-layer edge) potentials training
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainLink : public CTrain
+	class CTrainLink : public ITrain
 	{
 	public:
 		/**
@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainLink(byte nStatesBase, byte nStatesOccl, word nFeatures) 
-			: CTrain(nStatesBase * nStatesOccl, nFeatures)
+			: ITrain(nStatesBase * nStatesOccl, nFeatures)
 			, CBaseRandomModel(nStatesBase * nStatesOccl)
 			, m_nStatesBase(nStatesBase)
 			, m_nStatesOccl(nStatesOccl)
@@ -39,6 +39,14 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void			addFeatureVec(const Mat &featureVectors, const Mat &gtb, const Mat &gto);
 		/**
+		* @brief Adds a block of new feature vectors
+		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gtb and \b gto for training
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gtb Matrix, each element of which is a ground-truth state (class), corresponding to the base layer
+		* @param gto Matrix, each element of which is a ground-truth state (class), corresponding to the occlusion layer
+		*/
+		DllExport void			addFeatureVec(const vec_mat_t &featureVectors, const Mat &gtb, const Mat &gto);
+		/**
 		* @brief Adds a feature vector
 		* @details Used to add \b featureVector, corresponding to the ground-truth states (classes) \b gtb and \b gto for training.
 		* Here the couple \b {gtb, \b gto} corresponds to the nodes from base aod occlusion layers.
@@ -47,7 +55,7 @@ namespace DirectGraphicalModels
 		* @param gto The ground-truth state (class) of the second node of the edge, corresponding to the occlusion layer
 		*/
 		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gtb, byte gto) = 0;
-		DllExport virtual void	train(void) {}
+		DllExport virtual void	train(bool doClean = false) {}
 		/**
 		* @brief Returns the link potential, based on the feature vector
 		* @details This function calls calculateLinkPotentials() function, which should be implemented in derived classes. After that,

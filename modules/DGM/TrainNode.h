@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2013 for Project X
 #pragma once
 
-#include "Train.h"
+#include "ITrain.h"
 
 namespace DirectGraphicalModels
 {
@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 	* See @ref demotrain for more details
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainNode : public CTrain
+	class CTrainNode : public ITrain
 	{
 	public:
 		/**
@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
 		* @param gt Corresponding ground-truth state (class)
 		*/		
 		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gt) = 0;	
-		DllExport virtual void	train(void) {}	
+		DllExport virtual void	train(bool doClean = false) {}
 		/**
 		* @brief Returns the node potential, based on the feature vector
 		* @details This function calls calculateNodePotentials() function, which should be implemented in derived classes. After that,

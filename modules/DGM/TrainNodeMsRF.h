@@ -45,7 +45,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleTrainNode
 	* @brief Microsoft Sherwood Random Forest training class
 	* @details This class is based on the <a href="http://research.microsoft.com/en-us/downloads/52d5b9c3-a638-42a1-94a5-d549e2251728/">Sherwood C++ code library for decision forests</a> v.1.0.0
-	* > In order to use the Sherwood library, DGM must be build with the \b USE_SHERWOOD flag
+	* > In order to use the Sherwood library, DGM must be built with the \b USE_SHERWOOD flag
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeMsRF : public CTrainNode
@@ -66,9 +66,6 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function		
 		* @note This implementation of the random forest is not weighted
-		* @note In this version the argument \b maxSamples makes no effect
-		* @todo Add the "maxSamples" functionality
-		* @todo Try Parallel implementation with ParallelForestTrainer.h
 		*/
 		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples);
 		DllExport virtual ~CTrainNodeMsRF(void);
@@ -84,7 +81,7 @@ namespace DirectGraphicalModels
 		DllExport void  load(const std::string &path, const std::string &name = std::string(), short idx = -1); 
 
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
-		DllExport void	train(void);	
+		DllExport void	train(bool doClean = false);
 
 
 	protected:
@@ -94,8 +91,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		std::auto_ptr<sw::DataPointCollection>											m_pData;		///< Samples container
-		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>>	m_pForest;		///< Random Forest classifier
+		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>>	m_pRF;			///< Random Forest classifier
 
 
 	private:
@@ -104,7 +100,9 @@ namespace DirectGraphicalModels
 
 	private:
 		std::auto_ptr<sw::TrainingParameters>											m_pParams;
-		size_t																			m_maxSamples;
+		vec_mat_t																		m_vSamplesAcc;			// = vec_mat_t(nStates);	// Samples container for all states
+		vec_int_t																		m_vNumInputSamples;		// = vec_int_t(nStates, 0);	// Amount of input samples for all states
+		int																				m_maxSamples;			// = INFINITY;				// for optimisation purposes		
 	};
 }
 #endif

@@ -29,7 +29,7 @@ void CTrainEdgePrior::addFeatureVecs(const Mat &, byte gt1, const Mat &, byte gt
 	CPriorEdge::addEdgeGroundTruth(gt1, gt2);
 }
 
-void CTrainEdgePrior::train(void)
+void CTrainEdgePrior::train(bool)
 {
 	loadPriorMatrix();
 }

@@ -5,16 +5,14 @@ namespace DirectGraphicalModels
 {
 // Constructor
 CTrainNode::CTrainNode(byte nStates, word nFeatures) 
-	: CTrain(nStates, nFeatures)
+	: ITrain(nStates, nFeatures)
 	, CBaseRandomModel(nStates)
 	, m_mask(Mat(nStates, 1, CV_8UC1))
 {}
 
 // Destructor
 CTrainNode::~CTrainNode(void) 
-{
-	m_mask.release();
-}
+{ }
 	
 void CTrainNode::addFeatureVec(const Mat &featureVectors, const Mat &gt)
 {
@@ -24,7 +22,7 @@ void CTrainNode::addFeatureVec(const Mat &featureVectors, const Mat &gt)
 
 void CTrainNode::addFeatureVec(const vec_mat_t &featureVectors, const Mat &gt)
 {
-	DGM_ASSERT_MSG(featureVectors.size() == m_nFeatures, "Number of features in the <featureVectors> (%llu) does not correspond to the specified (%d)", featureVectors.size(), m_nFeatures);
+	DGM_ASSERT_MSG(featureVectors.size() == m_nFeatures, "Number of features in the <featureVectors> (%zu) does not correspond to the specified (%d)", featureVectors.size(), m_nFeatures);
 	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
 }
 

@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2016 for Project X
 #pragma once
 
-#include "BaseFeatureExtractor.h"
+#include "ILocalFeatureExtractor.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -11,14 +11,14 @@ namespace DirectGraphicalModels { namespace fex
 	* @brief Hue, Saturation and Value feature extraction class
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CHSV : public CBaseFeatureExtractor
+	class CHSV : public ILocalFeatureExtractor
 	{
 	public:
 		/**
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-		DllExport CHSV(Mat &img) : CBaseFeatureExtractor(img) {}
+		DllExport CHSV(Mat &img) : ILocalFeatureExtractor(img) {}
 		DllExport virtual ~CHSV(void) {}
 
 		DllExport virtual Mat get(void) const { return get(m_img); }

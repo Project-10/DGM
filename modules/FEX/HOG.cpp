@@ -23,24 +23,26 @@ Mat CHOG::get(const Mat &img, int nBins, SqNeighbourhood nbhd)
 	Mat Iy = CGradient::getDerivativeY(I);
 
 	// Initializing bins and integrals
-	Mat *pTemp	= new Mat[nBins];
-	Mat *pBins	= new Mat[nBins];
-	Mat *pInts	= new Mat[nBins];
+	vec_mat_t vTemp(nBins);
+	vec_mat_t vBins(nBins);
+	vec_mat_t vInts(nBins);
+
 	for (i = 0; i < nBins; i++) {
-		pTemp[i].create(img.size(), CV_8UC1);
-		pBins[i].create(img.size(), CV_32FC1);	pBins[i].setTo(0);
+		vTemp[i].create(img.size(), CV_8UC1);
+		vBins[i].create(img.size(), CV_32FC1);	
+		vBins[i].setTo(0);
 	}
 
-	float	**ppBins	= new float *[nBins];
-	double	**ppInts0	= new double*[nBins];
-	double	**ppInts1	= new double*[nBins];
-	byte	**ppTemp	= new byte  *[nBins];
+	std::vector<float *>	pBins(nBins);
+	std::vector<double *>	pInts0(nBins);
+	std::vector<double *>	pInts1(nBins);
+	std::vector<byte *>		pTemp(nBins);
 	
 	// Caclculating the bins
 	for (y = 0; y < height; y++) {
 		float *pIx = Ix.ptr<float>(y);
 		float *pIy = Iy.ptr<float>(y);
-		for (i = 0; i < nBins; i++) ppBins[i] = pBins[i].ptr<float>(y);
+		for (i = 0; i < nBins; i++) pBins[i] = vBins[i].ptr<float>(y);
 		for (x = 0; x < width; x++) {
 			float ix = pIx[x];
 			float iy = pIy[x];
@@ -57,41 +59,36 @@ Mat CHOG::get(const Mat &img, int nBins, SqNeighbourhood nbhd)
 			float gOrtStep = 180.0f / nBins;
 			for (i = 0; i < nBins; i++)
 				if (gOrt <= (i + 1) * gOrtStep) {
-					ppBins[i][x] = gMgn;
+					pBins[i][x] = gMgn;
 					break;
 				}
 		}
 	}
 
 	// Calculating the integrals
-	for (i = 0; i < nBins; i++) integral(pBins[i], pInts[i]);
+	for (i = 0; i < nBins; i++) integral(vBins[i], vInts[i]);
 	
 	for (y = 0; y < height; y++) {	
 		int y0 = MAX(0, y - nbhd.upperGap);		
 		int y1 = MIN(y + nbhd.lowerGap, height - 1);
-		for (i = 0; i < nBins; i++) ppInts0[i] = pInts[i].ptr<double>(y0);
-		for (i = 0; i < nBins; i++) ppInts1[i] = pInts[i].ptr<double>(y1 + 1);
-		for (i = 0; i < nBins; i++) ppTemp[i] = pTemp[i].ptr<byte>(y);
+		for (i = 0; i < nBins; i++) pInts0[i] = vInts[i].ptr<double>(y0);
+		for (i = 0; i < nBins; i++) pInts1[i] = vInts[i].ptr<double>(y1 + 1);
+		for (i = 0; i < nBins; i++) pTemp[i]  = vTemp[i].ptr<byte>(y);
 		for (x = 0; x < width; x++) {
 			int x0 = MAX(0, x - nbhd.leftGap);
 			int x1 = MIN(x + nbhd.rightGap, width - 1);
 
 			Mat HOGcell(cvSize(nBins, 1), CV_64FC1);
 			double *pHOGcell = HOGcell.ptr<double>(0);
-			for (i = 0; i < nBins; i++) pHOGcell[i] = ppInts1[i][x1 + 1] - ppInts1[i][x0] - ppInts0[i][x1 + 1] + ppInts0[i][x0];
+			for (i = 0; i < nBins; i++) pHOGcell[i] = pInts1[i][x1 + 1] - pInts1[i][x0] - pInts0[i][x1 + 1] + pInts0[i][x0];
 			normalize(HOGcell, HOGcell, 255, 0, CV_MINMAX);
-			for (i = 0; i < nBins; i++) ppTemp[i][x] = static_cast<byte>(pHOGcell[i]);
+			for (i = 0; i < nBins; i++) pTemp[i][x] = static_cast<byte>(pHOGcell[i]);
 			HOGcell.release();
 		} // x
 	} // y
 
 	Mat res;
-	merge(pTemp, nBins, res);
-
-	// Releasing memory
-	delete [] pBins;
-	delete [] pInts;
-	delete [] pTemp;
+	merge(vTemp, res);
 
 	return res;	
 }

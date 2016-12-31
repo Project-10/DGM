@@ -13,9 +13,10 @@ namespace DirectGraphicalModels
 		int		maxCount;					///< Max number of iterations
 		double	epsilon;					///< GMM accuracy
 		int		term_criteria_type;			///< Termination cirteria type (according the the two previous parameters)
+		int 	maxSamples;					///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvGMMParams() {}
-		TrainNodeCvGMMParams(word _numGausses, int _covariance_matrix_type, int _maxCount, double _epsilon, int _term_criteria_type) : numGausses(_numGausses), covariance_matrix_type(_covariance_matrix_type), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type) {}
+		TrainNodeCvGMMParams(word _numGausses, int _covariance_matrix_type, int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : numGausses(_numGausses), covariance_matrix_type(_covariance_matrix_type), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvGMMParams;
 
 	const TrainNodeCvGMMParams TRAIN_NODE_CV_GMM_PARAMS_DEFAULT = TrainNodeCvGMMParams(
@@ -23,7 +24,8 @@ namespace DirectGraphicalModels
 																EM::COV_MAT_DIAGONAL,						// Covariance matrix type
 																100,										// Max number of iterations
 																0.01,										// GMM accuracy
-																TermCriteria::MAX_ITER | TermCriteria::EPS	// Termination cirteria (according the the two previous parameters)
+																TermCriteria::MAX_ITER | TermCriteria::EPS,	// Termination cirteria (according the the two previous parameters)
+																0											// Maximum number of samples to be used in training. 0 means using all the samples														
 																);
 
 	// =========================== OpenCV GMM Train Class ===========================
@@ -46,9 +48,10 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
+		* @param maxSamples Maximum number of samples to be used in training 
 		* @param nGausses The number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
-		DllExport CTrainNodeCvGMM(byte nStates, word nFeatures, byte nGausses);
+		DllExport CTrainNodeCvGMM(byte nStates, word nFeatures, int maxSamples, byte nGausses = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT.numGausses);
 		DllExport virtual ~CTrainNodeCvGMM(void);
 
 		DllExport void	reset(void);	
@@ -57,30 +60,27 @@ namespace DirectGraphicalModels
 
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
 		
-		DllExport void	train(void);	
+		DllExport void	train(bool doClean = false);
 
 
 	protected:
 		DllExport void	saveFile(FILE *pFile) const { } 
 		DllExport void	loadFile(FILE *pFile) { } 
-		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
+		DllExport void  calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
-	
-	protected:
-		vec_mat_t						m_vSamplesAcc;				///< Samples container
-		std::vector<std::auto_ptr<EM>>	m_vpEM;						///< Expectation Maximization for GMM parameters estimation
-	
 
 	private:
-		void		  init(TrainNodeCvGMMParams params);			// This function is called by both constructors
-
+		void		  init(TrainNodeCvGMMParams params);		// This function is called by both constructors
 
 	private:
 		static const double MIN_COEFFICIENT_BASE;
 
-
 	private:
-		long double			  m_minCoefficient;						// = 1;	// auxilary coefficient for scaling gaussian coefficients
+		std::vector<std::auto_ptr<EM>>	m_vpEM;					// Expectation Maximization for GMM parameters estimation
+		long double						m_minCoefficient;		// = 1;						// auxilary coefficient for scaling gaussian coefficients
+		vec_mat_t						m_vSamplesAcc;			// = vec_mat_t(nStates);	// Samples container for all states
+		vec_int_t						m_vNumInputSamples;		// = vec_int_t(nStates, 0);	// Amount of input samples for all states
+		int								m_maxSamples;			// = INFINITY;				// for optimisation purposes
 	};
 }
 

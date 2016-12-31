@@ -1,5 +1,6 @@
 #include "SparseCoding.h"
 #include "SparseDictionary.h"
+#include "LinearMapper.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace fex

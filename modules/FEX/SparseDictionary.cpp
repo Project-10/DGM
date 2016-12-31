@@ -1,6 +1,7 @@
 #include "SparseDictionary.h"
 #include "macroses.h"
-#include "parallel.h"
+#include "DGM\parallel.h"
+#include "DGM\random.h"
 
 namespace DirectGraphicalModels { namespace fex
 {
@@ -8,43 +9,6 @@ namespace DirectGraphicalModels { namespace fex
 const float	CSparseDictionary::SC_LAMBDA	= 5e-5f;		// L1-regularisation parameter (on features)
 const float	CSparseDictionary::SC_EPSILON	= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation parameter (on basis)
-
-// =================================================================================== auxilary functions
-
-template<typename T>
-float calculateMean(const Mat &m)
-{
-	float res = 0.0f;
-	for (int y = 0; y < m.rows; y++) {
-		const T *pM = m.ptr<T>(y);
-		for (int x = 0; x < m.cols; x++) {
-			res += pM[x];
-		}
-	}
-	return res / (m.cols * m.rows);
-}
-
-template<typename T>
-float calculateVariance(const Mat &m)
-{
-	float res = 0.0f;
-	float mean = calculateMean<T>(m);
-	for (int y = 0; y < m.rows; y++) {
-		const T *pM = m.ptr<T>(y);
-		for (int x = 0; x < m.cols; x++) {
-			float val = pM[x];
-			res += (mean - val) * (mean - val);
-		}
-	}
-	return res / (m.cols * m.rows);
-}
-
-inline void Swap(Mat &a, Mat &b)
-{
-	add(a, b, a);		// a = a + b
-	subtract(a, b, b);	// b = a - b
-	subtract(a, b, a);	// a = a - b;
-}
 
 // =================================================================================== public
 void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt, float lRate, const std::string &fileName)
@@ -56,10 +20,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 
 	// 1. Initialize dictionary D randomly
 	if (!m_D.empty()) m_D.release();
-	m_D = Mat(nWords, sampleLen, CV_32FC1);
-
-	RNG rng;
-	rng.fill(m_D, RNG::NORMAL, 0, 0.3);
+	m_D = random::N(cvSize(sampleLen, nWords), CV_32FC1, 0.0f, 0.3f);  
 
 	Mat		_W, W;					// Weights matrix (Size: nStamples x nWords)
 	float	cost;
@@ -71,7 +32,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		printf("--- It: %d ---\n", i);
 #endif
 		// 2.1 Select a random mini-batch of 2000 patches
-		dword rndRow = parallel::rand<dword>(0, nSamples - batch - 1);
+		dword rndRow = random::u<dword>(0, nSamples - batch - 1);
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
 		_X.convertTo(_X, CV_32FC1, 1.0 / 255);
 		
@@ -199,6 +160,7 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 {
 	DGM_IF_WARNING(blockSize % 2 == 0, "The block size is even");
 
+	varianceThreshold = sqrtf(varianceThreshold);
 	// Converting to one channel image
 	Mat I;
 	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
@@ -214,7 +176,9 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 		for (int x = 0; x < dataWidth; x++) {
 			sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);			// sample as a row-vector
 
-			float variance = calculateVariance<byte>(sample);
+			Scalar stddev;
+			meanStdDev(sample, Mat(), stddev);
+			float variance = (float) stddev[0];
 			//printf("variance = %f\n", variance);
 
 			if (variance >= varianceThreshold)
@@ -246,26 +210,6 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 
 	res.convertTo(res, CV_8UC1, 1);
 	return res;
-}
-
-void CSparseDictionary::shuffleRows(Mat &X)
-{
-#ifdef ENABLE_PPL
-	int nCores = MAX(1, std::thread::hardware_concurrency());
-	int step   = MAX(2, X.rows / (nCores * 10));
-	concurrency::parallel_for(0, X.rows, step, [step, &X](int S) {
-		int last = MIN(S + step, X.rows);
-		for (int s = last - 1; s > S; s--) {				// s = [last - 1; S + 1]
-			dword r = parallel::rand<dword>(S, s);			// r = [S; s] = [S; S + 1] -> [S; last - 1]
-			if (r != s) Swap(X.row(s), X.row(r));
-		}
-	});
-#else	
-	for (int s = X.rows - 1; s > 0; s--) {			// s = [n-1; 1]
-		int r = parallel::rand<dword>(0, s);		// r = [0; s] = [0; 1] -> [0; n-1]
-		if (r != s)	Swap(X.row(s), X.row(r));
-	}
-#endif
 }
 
 // =================================================================================== protected

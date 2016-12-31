@@ -7,7 +7,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CPDF;
+	class IPDF;
 
 
 	#ifdef DEBUG_MODE   // --- Debug ---
@@ -40,7 +40,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void	  reset(void);		
 
 		DllExport virtual void	  addFeatureVec(const Mat &featureVector, byte gt);	
-		DllExport virtual void	  train(void);
+		DllExport virtual void	  train(bool doClean = false);
 
 		/**
 		* @brief Returns the normalized probability density function for specific state (class) and feature 
@@ -48,7 +48,7 @@ namespace DirectGraphicalModels
 		* @param feature The feature
 		* @return The probability density function 
 		*/
-		DllExport CPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
+		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
 		
 		/**
 		*/
@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Calculates the node potential, based on the feature vector.
 		* @details This function calculates the potentials of the node, described with the sample \b featureVector (\f$ \textbf{f} \f$):
-		* \f[ nodePot_s = \prod_{f\in\mathbb{F}} (H_{s,f}.data[\textbf{f}_f] / H_{s,f}.n); \forall s\in\mathbb{S}, \f] 
+		* \f[ nodePot_s = prior_s\cdot\prod_{f\in\mathbb{F}} (H_{s,f}.data[\textbf{f}_f] / H_{s,f}.n); \forall s\in\mathbb{S}, \f] 
 		* where \f$\mathbb{S}\f$ and \f$\mathbb{F}\f$ are sets of all states (classes) and features correspondently. In other words, the indexes: 
 		* \f$ s \in [0; nStates) \f$ and \f$ f \in [0; nFeatures) \f$.
 		* Here \f$ H.data[256] \f$ is a 1D histogram, \f$ H.n \f$ is the number of entries in histogram, \a i.e.  \f$ H.n = \sum^{255}_{i = 0} H.data[i] \f$.
@@ -73,7 +73,7 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		CPDF				  *** m_pPDF;				///< The 1D PDF for node potentials	
+		IPDF				  *** m_pPDF;				///< The 1D PDF for node potentials	
 	
 	
 	private:

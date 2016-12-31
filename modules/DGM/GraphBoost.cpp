@@ -2,7 +2,7 @@
 
 namespace DirectGraphicalModels 
 {
-	CGraphBoost::CGraphBoost(byte nStates) : CBaseGraph(nStates)
+	CGraphBoost::CGraphBoost(byte nStates) : IGraph(nStates)
 	{
 	}
 

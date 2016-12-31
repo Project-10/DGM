@@ -22,8 +22,9 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Constructor
 		* @param nStates The number of States (classes)
+		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphExt(byte nStates) : CGraphLayered(nStates, 1, GRAPH_EDGES_GRID) {}
+		DllExport CGraphExt(byte nStates, byte gType = GRAPH_EDGES_GRID) : CGraphLayered(nStates, 1, gType) {}
 		DllExport virtual ~CGraphExt(void) {}
 
 		/**
