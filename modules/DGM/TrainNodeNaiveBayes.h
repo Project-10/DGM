@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 	/** 
 	* @ingroup moduleTrainNode
 	* @brief Naive Bayes training class 
-	* @details This class implements the <a href="http://en.wikipedia.org/wiki/Naive_Bayes_classifier">naive Bayes classifier</a>,
+	* @details This class implements the <a href="http://en.wikipedia.org/wiki/Naive_Bayes_classifier" target="blank">naive Bayes classifier</a>,
 	* which is based on strong (naive) independence assumptions between the features.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
@@ -51,6 +51,8 @@ namespace DirectGraphicalModels
 		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
 		
 		/**
+		* @brief Smothes the underlying Probability Density Functions (PDFs)
+		* @param nIt Number of smooth iterations
 		*/
 		DllExport void			  smooth(int nIt = 1);
 	
