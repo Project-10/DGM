@@ -1,6 +1,5 @@
 #include "TrainNodeMsRF.h"
-#include "random.h"
-#include "macroses.h"
+#include "SamplesAccumulator.h"
 
 #ifdef USE_SHERWOOD
 
@@ -24,7 +23,7 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams
 }
 
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;
@@ -33,28 +32,25 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples) : C
 
 void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 {
-	m_vSamplesAcc = vec_mat_t(m_nStates);
-	m_vNumInputSamples = vec_int_t(m_nStates, 0);
+	m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
+	m_pParams		= std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
 	// Some default parameters
-	m_pParams = std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
 	m_pParams->MaxDecisionLevels						= params.max_decision_levels - 1;
 	m_pParams->NumberOfCandidateFeatures				= params.num_of_candidate_features;
 	m_pParams->NumberOfCandidateThresholdsPerFeature	= params.num_of_candidate_thresholds_per_feature;
 	m_pParams->NumberOfTrees							= params.num_ot_trees;
 	m_pParams->Verbose									= params.verbose;
-
-	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
-	else m_maxSamples = params.maxSamples;
 }
 
 // Destructor
 CTrainNodeMsRF::~CTrainNodeMsRF(void)
-{ }
+{ 
+	delete m_pSamplesAcc;
+}
 
 void CTrainNodeMsRF::reset(void) 
 {
-	for (Mat &acc : m_vSamplesAcc) acc.release();
-	std::fill(m_vNumInputSamples.begin(), m_vNumInputSamples.end(), 0);
+	m_pSamplesAcc->reset();
 	m_pRF.reset();
 }
 
@@ -70,21 +66,10 @@ void CTrainNodeMsRF::load(const std::string &path, const std::string &name, shor
 	m_pRF = sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>::Deserialize(fileName);
 }
 
-void CTrainNodeMsRF::addFeatureVec(const Mat &featureVector, byte gt) 
+void CTrainNodeMsRF::addFeatureVec(const Mat &featureVector, byte gt)
 {
-	// Assertions:
-	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
-
-	if (m_vSamplesAcc[gt].rows < m_maxSamples) {
-		m_vSamplesAcc[gt].push_back(featureVector.t());
-	}
-	else {
-		int k = random::u(0, m_vNumInputSamples[gt]);
-		if (k < m_maxSamples) 
-			m_vSamplesAcc[gt].row(k) = featureVector.t();
-	}
-	m_vNumInputSamples[gt]++;
-}	
+	m_pSamplesAcc->addSample(featureVector, gt);
+}
 
 void CTrainNodeMsRF::train(bool doClean)
 {
@@ -96,19 +81,18 @@ void CTrainNodeMsRF::train(bool doClean)
 	pData->m_dimension = m_nFeatures;
 
 	for (byte s = 0; s < m_nStates; s++) {						// states
-		int nSamples = m_vSamplesAcc[s].rows;
-		DGM_ASSERT(nSamples <= m_maxSamples);
+		int nSamples = m_pSamplesAcc->getNumSamples(s);
 #ifdef DEBUG_PRINT_INFO		
-		printf("State[%d] - %d of %d samples\n", s, nSamples, m_vNumInputSamples[s]);
+		printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
 		for (int smp = 0; smp < nSamples; smp++) {
 			for (word f = 0; f < m_nFeatures; f++) {			// features
-				byte fval = m_vSamplesAcc[s].at<byte>(smp, f);
+				byte fval = m_pSamplesAcc->getSamplesContainer(s).at<byte>(smp, f);
 				pData->m_vData.push_back(fval);
 			} // f
 			pData->m_vLabels.push_back(s);
 		} // smp
-		if (doClean) m_vSamplesAcc[s].release();				// free memory
+		if (doClean) m_pSamplesAcc->release(s);					// releases memory
 	} // s
 
 

@@ -7,6 +7,7 @@
 namespace DirectGraphicalModels
 {
 	class CRForest;
+	class CSamplesAccumulator;
 
 	/// @brief OpenCV Random Forest parameters
 	typedef struct TrainNodeCvRFParams {
@@ -20,7 +21,7 @@ namespace DirectGraphicalModels
 		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
 		double	epsilon;							///< Forest accuracy
 		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)
-		int 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
+		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvRFParams() {}
 		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
@@ -64,14 +65,14 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples);
+		DllExport CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples);
 		DllExport ~CTrainNodeCvRF(void);
 
 		DllExport void	reset(void);		
 		DllExport void	save(const std::string &path, const std::string &name = std::string(), short idx = -1) const; 
 		DllExport void	load(const std::string &path, const std::string &name = std::string(), short idx = -1); 
 	
-		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
+		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);
 		DllExport void	train(bool doClean = false);
 
 		/**
@@ -90,17 +91,13 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		Ptr<CRForest>	m_pRF;								///< Random Forest
-
+		Ptr<CRForest>		  m_pRF;						///< Random Forest
+		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples Accumulator
 
 	private:
 		void			init(TrainNodeCvRFParams params);	// This function is called by both constructors
 		
-		
-	private:		
-		vec_mat_t		m_vSamplesAcc;						// = vec_mat_t(nStates);	// Samples container for all states
-		vec_int_t		m_vNumInputSamples;					// = vec_int_t(nStates, 0);	// Amount of input samples for all states
-		int				m_maxSamples;						// = INFINITY;				// for optimisation purposes
+	
 	};
 }
 

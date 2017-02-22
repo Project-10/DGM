@@ -1,4 +1,5 @@
 #include "TrainNodeCvGMM.h"
+#include "SamplesAccumulator.h"
 #include "random.h"
 #include "macroses.h"
 
@@ -14,7 +15,7 @@ CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, TrainNodeCvGMMPar
 }
 
 // Constructor
-CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, int maxSamples, byte numGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
+CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, size_t maxSamples, byte numGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
 {
 	TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;
@@ -24,9 +25,8 @@ CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, int maxSamples, b
 
 void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 {
-	m_vSamplesAcc = vec_mat_t(m_nStates);
-	m_vNumInputSamples = vec_int_t(m_nStates, 0);
-	
+	m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+
 	for (byte s = 0; s < m_nStates; s++) {
 		Ptr<ml::EM> pEM = ml::EM::create();
 		pEM->setClustersNumber(params.numGausses);
@@ -34,20 +34,18 @@ void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 		pEM->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
 		m_vpEM.push_back(pEM);
 	}
-
-	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
-	else						m_maxSamples = params.maxSamples;
 }
 
+// Destructor
 CTrainNodeCvGMM::~CTrainNodeCvGMM(void)
 {
+	delete m_pSamplesAcc;
 	m_vpEM.clear();
 }
 
 void CTrainNodeCvGMM::reset(void)
 {
-	for (Mat &acc : m_vSamplesAcc) acc.release();
-	std::fill(m_vNumInputSamples.begin(), m_vNumInputSamples.end(), 0);
+	m_pSamplesAcc->reset();
 	for (Ptr<ml::EM> &em : m_vpEM) em->clear();
 }
 
@@ -75,18 +73,7 @@ void CTrainNodeCvGMM::load(const std::string &path, const std::string &name, sho
 
 void CTrainNodeCvGMM::addFeatureVec(const Mat &featureVector, byte gt)
 {
-	// Assertions:
-	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
-	
-	if (m_vSamplesAcc[gt].rows < m_maxSamples) {
-		m_vSamplesAcc[gt].push_back(featureVector.t());
-	}
-	else {
-		int k = random::u(0, m_vNumInputSamples[gt]);
-		if (k < m_maxSamples) 
-			m_vSamplesAcc[gt].row(k) = featureVector.t();
-	}
-	m_vNumInputSamples[gt]++;
+	m_pSamplesAcc->addSample(featureVector, gt);
 }
 
 void CTrainNodeCvGMM::train(bool doClean)
@@ -96,14 +83,13 @@ void CTrainNodeCvGMM::train(bool doClean)
 #endif
 
 	for (byte s = 0; s < m_nStates; s++) {						// states
-		int nSamples = m_vSamplesAcc[s].rows;
-		DGM_ASSERT(nSamples <= m_maxSamples);
+		int nSamples = m_pSamplesAcc->getNumSamples(s);
 #ifdef DEBUG_PRINT_INFO		
-		printf("State[%d] - %d of %d samples\n", s, nSamples, m_vNumInputSamples[s]);
+		printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
 		if (nSamples == 0) continue;
-		DGM_IF_WARNING(!m_vpEM[s]->trainEM(m_vSamplesAcc[s]), "Error EM training!");
-		if (doClean) m_vSamplesAcc[s].release();
+		DGM_IF_WARNING(!m_vpEM[s]->trainEM(m_pSamplesAcc->getSamplesContainer(s)), "Error EM training!");
+		if (doClean) m_pSamplesAcc->release(s);
 	} // s
 	
 	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, m_nFeatures);

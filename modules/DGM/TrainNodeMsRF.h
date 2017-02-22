@@ -18,6 +18,8 @@ namespace sw = MicrosoftResearch::Cambridge::Sherwood;
 
 namespace DirectGraphicalModels
 {
+	class CSamplesAccumulator;
+	
 	///@brief Microsoft Research Random Forest parameters
 	typedef struct TrainNodeMsRFParams {
 		int				max_decision_levels;						///< Maximum number of the decision levels
@@ -25,7 +27,7 @@ namespace DirectGraphicalModels
 		unsigned int	num_of_candidate_thresholds_per_feature;	///< Number of candidate thresholds (per feature)
 		int				num_ot_trees;								///< Number of trees in the forest (time / accuracy)
 		bool			verbose;									///< Verbose mode
-		int				maxSamples;									///< Maximum number of samples to be used in training. 0 means using all the samples
+		size_t			maxSamples;									///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeMsRFParams() {}
 		TrainNodeMsRFParams(int _max_decision_levels, int _num_of_candidate_features, unsigned int _num_of_candidate_thresholds_per_feature, int _num_ot_trees, bool _verbose, int _maxSamples) : max_decision_levels(_max_decision_levels), num_of_candidate_features(_num_of_candidate_features), num_of_candidate_thresholds_per_feature(_num_of_candidate_thresholds_per_feature), num_ot_trees(_num_ot_trees), verbose(_verbose), maxSamples(_maxSamples) {}
@@ -67,7 +69,7 @@ namespace DirectGraphicalModels
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function		
 		* @note This implementation of the random forest is not weighted
 		*/
-		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, int maxSamples);
+		DllExport CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples);
 		DllExport virtual ~CTrainNodeMsRF(void);
 
 		/**
@@ -80,7 +82,7 @@ namespace DirectGraphicalModels
 		DllExport void	save(const std::string &path, const std::string &name = std::string(), short idx = -1) const; 
 		DllExport void  load(const std::string &path, const std::string &name = std::string(), short idx = -1); 
 
-		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);	
+		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);
 		DllExport void	train(bool doClean = false);
 
 
@@ -91,7 +93,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>>	m_pRF;			///< Random Forest classifier
+		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>> 	 m_pRF;			///< Random Forest classifier
+		CSamplesAccumulator															   * m_pSamplesAcc;	///< Samples Accumulator
 
 
 	private:
@@ -100,9 +103,6 @@ namespace DirectGraphicalModels
 
 	private:
 		std::auto_ptr<sw::TrainingParameters>											m_pParams;
-		vec_mat_t																		m_vSamplesAcc;			// = vec_mat_t(nStates);	// Samples container for all states
-		vec_int_t																		m_vNumInputSamples;		// = vec_int_t(nStates, 0);	// Amount of input samples for all states
-		int																				m_maxSamples;			// = INFINITY;				// for optimisation purposes		
 	};
 }
 #endif

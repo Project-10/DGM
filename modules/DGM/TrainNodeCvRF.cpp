@@ -1,5 +1,6 @@
 #include "TrainNodeCvRF.h"
 #include "RForest.h"
+#include "SamplesAccumulator.h"
 #include "random.h"
 #include "macroses.h"
 #include <limits>
@@ -13,7 +14,7 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, TrainNodeCvRFParams
 }
 
 // Constructor
-CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 {
 	TrainNodeCvRFParams params	= TRAIN_NODE_CV_RF_PARAMS_DEFAULT;
 	params.maxSamples			= maxSamples;
@@ -22,8 +23,8 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, int maxSamples) : C
 
 void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 {
-	m_vSamplesAcc		= vec_mat_t(m_nStates);
-	m_vNumInputSamples	= vec_int_t(m_nStates, 0);
+	m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+
 	m_pRF				= CRForest::create();
 	m_pRF->setMaxDepth(params.max_depth);
 	m_pRF->setMinSampleCount(params.min_sample_count);
@@ -35,19 +36,17 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 	m_pRF->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
 
 	m_pRF->setNumStates(m_nStates);
-
-	if (params.maxSamples == 0) m_maxSamples = std::numeric_limits<int>::max();
-	else						m_maxSamples = params.maxSamples;	
 }
 
 // Destructor
 CTrainNodeCvRF::~CTrainNodeCvRF(void)
-{ }
+{ 
+	delete m_pSamplesAcc;
+}
 
 void CTrainNodeCvRF::reset(void)
 {
-	for (Mat &acc : m_vSamplesAcc) acc.release();
-	std::fill(m_vNumInputSamples.begin(), m_vNumInputSamples.end(), 0);
+	m_pSamplesAcc->reset();
 	m_pRF->clear();
 }
 
@@ -64,19 +63,8 @@ void CTrainNodeCvRF::load(const std::string &path, const std::string &name, shor
 }
 
 void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
-{
-	// Assertions:
-	DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
-
-	if (m_vSamplesAcc[gt].rows < m_maxSamples) {
-		m_vSamplesAcc[gt].push_back(featureVector.t());
-	}
-	else {
-		int k = random::u(0, m_vNumInputSamples[gt]);
-		if (k < m_maxSamples) 
-			m_vSamplesAcc[gt].row(k) = featureVector.t();
-	}
-	m_vNumInputSamples[gt]++;
+{ 
+	m_pSamplesAcc->addSample(featureVector, gt); 
 }
 
 void CTrainNodeCvRF::train(bool doClean)
@@ -88,16 +76,15 @@ void CTrainNodeCvRF::train(bool doClean)
 	// Filling the <samples> and <classes>
 	Mat samples, classes;
 	for (byte s = 0; s < m_nStates; s++) {						// states
-		int nSamples = m_vSamplesAcc[s].rows;
-		DGM_ASSERT(nSamples <= m_maxSamples);
+		int nSamples = m_pSamplesAcc->getNumSamples(s);
 #ifdef DEBUG_PRINT_INFO		
-		printf("State[%d] - %d of %d samples\n", s, nSamples, m_vNumInputSamples[s]);
+		printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
-		m_vSamplesAcc[s].convertTo(m_vSamplesAcc[s], CV_32FC1);
-		samples.push_back(m_vSamplesAcc[s]);
+		samples.push_back(m_pSamplesAcc->getSamplesContainer(s));
 		classes.push_back(Mat(nSamples, 1, CV_32FC1, Scalar(s)));
-		if (doClean) m_vSamplesAcc[s].release();				// free memory
+		if (doClean) m_pSamplesAcc->release(s);				// free memory
 	} // s
+	samples.convertTo(samples, CV_32FC1);
 
 	// Filling <var_type>
 	Mat var_type(m_nFeatures + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
