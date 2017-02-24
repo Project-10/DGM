@@ -19,7 +19,7 @@ These tasks are optimized for speed, _i.e._ high-efficient calculations. The cod
 
 Check out the [project site](http://research.project-10.de/dgm/) for all the details like
 
-- [Online documentation](http://www.project-10.de/research/dgm/doc/)
+- [Online documentation](http://research.project-10.de/dgm/doc/)
 - [Installation guide](http://research.project-10.de/dgm/doc/a00002.html)
 - [Tutorials](http://research.project-10.de/dgm/doc/a00004.html)
 
