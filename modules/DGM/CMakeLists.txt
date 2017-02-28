@@ -27,6 +27,7 @@ source_group("Source Files\\Common\\Average Precision" FILES "AveragePrecision.h
 source_group("Source Files\\Common\\NDGauss" FILES "NDGauss.h" "NDGauss.cpp")
 source_group("Source Files\\Common\\Samples Accumulator" FILES "SamplesAccumulator.h" "SamplesAccumulator.cpp")
 source_group("Source Files\\Common\\Random" FILES "random.h")
+source_group("Source Files\\Common\\Math Operations" FILES "mathop.h")
 source_group("Source Files\\Common\\Parallel" FILES "parallel.h")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.cpp")												

@@ -1,5 +1,6 @@
 #include "NDGauss.h"
 #include "random.h"
+#include "mathop.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
@@ -192,17 +193,11 @@ double CNDGauss::getValue(Mat &x, Mat &X, Mat &p1, Mat &p2) const
 
 double CNDGauss::getEuclidianDistance(const Mat &x) const
 {
-	// Assertions
+	// Assertions (mathop::Euclidian also checks that)
 	DGM_ASSERT_MSG(x.size() == m_mu.size(), "Wrong x size");
 	DGM_ASSERT_MSG(x.type() == m_mu.type(), "Wrong x type");
-	
-	double res = 0.0f;
-	int D = m_mu.rows;											// dimension
-	for (register int j = 0; j < D; j++)
-		res += (x.at<double>(j, 0) - m_mu.at<double>(j,0)) * (x.at<double>(j, 0) - m_mu.at<double>(j,0));
 
-	res = sqrt(res);
-	return res;
+	return mathop::Euclidian<double, double>(m_mu, x);
 }
 
 double CNDGauss::getMahalanobisDistance(const Mat &x) const

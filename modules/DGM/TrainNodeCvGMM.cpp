@@ -25,7 +25,7 @@ CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, size_t maxSamples
 
 void CTrainNodeCvGMM::init(TrainNodeCvGMMParams params)
 {
-	m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+	m_pSamplesAcc = new CSamplesAccumulatorContainers(m_nStates, params.maxSamples);
 
 	for (byte s = 0; s < m_nStates; s++) {
 		Ptr<ml::EM> pEM = ml::EM::create();

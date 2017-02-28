@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
+	class CSamplesAccumulatorContainers;
 	
 	///@brief OpenCV Random Forest parameters
 	typedef struct TrainNodeCvGMMParams {
@@ -80,11 +80,11 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		std::vector<Ptr<ml::EM>>	  m_vpEM;					///< Expectation Maximization for GMM parameters estimation
-		CSamplesAccumulator			* m_pSamplesAcc;			///< Samples Accumulator
+		std::vector<Ptr<ml::EM>>		  m_vpEM;					///< Expectation Maximization for GMM parameters estimation
+		CSamplesAccumulatorContainers	* m_pSamplesAcc;			///< Samples Accumulator
 
 	private:
-		long double					  m_minCoefficient;			// = 1;			// auxilary coefficient for scaling gaussian coefficients
+		long double						  m_minCoefficient;			// = 1;			// auxilary coefficient for scaling gaussian coefficients
 	};
 }
 

@@ -18,7 +18,7 @@ namespace sw = MicrosoftResearch::Cambridge::Sherwood;
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
+	class CSamplesAccumulatorContainers;
 	
 	///@brief Microsoft Research Random Forest parameters
 	typedef struct TrainNodeMsRFParams {
@@ -94,7 +94,7 @@ namespace DirectGraphicalModels
 
 	protected:
 		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>> 	 m_pRF;			///< Random Forest classifier
-		CSamplesAccumulator															   * m_pSamplesAcc;	///< Samples Accumulator
+		CSamplesAccumulatorContainers												   * m_pSamplesAcc;	///< Samples Accumulator
 
 
 	private:

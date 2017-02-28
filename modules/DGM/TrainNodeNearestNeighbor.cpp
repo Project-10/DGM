@@ -6,7 +6,7 @@ namespace DirectGraphicalModels
 	// Constructor
 	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates) 
 	{
-		m_pSamplesAcc = new CSamplesAccumulator(nStates);
+		m_pSamplesAcc = new CSamplesAccumulatorPairs(nStates);
 	}
 	
 	// Destructor

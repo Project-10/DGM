@@ -23,7 +23,7 @@ CTrainNodeCvRF::CTrainNodeCvRF(byte nStates, word nFeatures, size_t maxSamples) 
 
 void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 {
-	m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+	m_pSamplesAcc = new CSamplesAccumulatorContainers(m_nStates, params.maxSamples);
 
 	m_pRF				= CRForest::create();
 	m_pRF->setMaxDepth(params.max_depth);

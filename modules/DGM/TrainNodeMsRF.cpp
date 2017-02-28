@@ -32,7 +32,7 @@ CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) 
 
 void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 {
-	m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
+	m_pSamplesAcc	= new CSamplesAccumulatorContainers(m_nStates, params.maxSamples);
 	m_pParams		= std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
 	// Some default parameters
 	m_pParams->MaxDecisionLevels						= params.max_decision_levels - 1;

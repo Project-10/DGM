@@ -8,7 +8,7 @@ namespace DirectGraphicalModels
 {
 	// ================================ Samples Accumulator Class ==============================
 	/**
-	* @brief Samples accumulator class
+	* @brief Samples accumulator abstract class
 	* @details This class allows for storing samples (\a e.g. n-dimensinal points in feature space) into the memory
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
@@ -22,23 +22,46 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addSample() function
 		*/
-		CSamplesAccumulator(byte nStates, size_t maxSamples = 0) 
-			: m_vSamplesAcc(vec_mat_t(nStates))
-			, m_vNumInputSamples(vec_int_t(nStates, 0))
-			, m_maxSamples(maxSamples ? maxSamples : std::numeric_limits<size_t>::max())
-		{ }
-		~CSamplesAccumulator(void) {}
+		CSamplesAccumulator(size_t maxSamples) : m_maxSamples(maxSamples ? maxSamples : std::numeric_limits<size_t>::max())	{ }
+		virtual ~CSamplesAccumulator(void) {}
 
 		/**
 		* @brief Resets the accumulator
 		*/
-		void	reset(void);
+		virtual void	reset(void) = 0;
 		/**
 		* @brief Adds new sample to the accumulator
 		* @param featureVector Multi-dimensinal point: Mat(size: nFeatures x 1)
 		* @param state State (class) corresponding to the \b featureVector
 		*/
-		void	addSample(const Mat &featureVector, byte state);
+		virtual void	addSample(const Mat &featureVector, byte state) = 0;
+
+
+	protected:
+		size_t		m_maxSamples;						// = INFINITY;				// for optimisation purposes
+
+	private:
+		// Copy semantics are disabled
+		CSamplesAccumulator(const CSamplesAccumulator &rhs) {}
+		const CSamplesAccumulator & operator= (const CSamplesAccumulator & rhs) { return *this; }
+	};
+
+	
+	
+	// ================================ Samples Accumulator Containers Class ==============================
+	class CSamplesAccumulatorContainers : public CSamplesAccumulator
+	{
+	public:
+		CSamplesAccumulatorContainers(byte nStates, size_t maxSamples = 0)
+			: CSamplesAccumulator(maxSamples)
+			, m_vSamplesAcc(vec_mat_t(nStates))
+			, m_vNumInputSamples(vec_int_t(nStates, 0))
+		{ }
+		virtual ~CSamplesAccumulatorContainers(void) {}
+
+		virtual void	reset(void);
+		virtual void	addSample(const Mat &featureVector, byte state);
+
 		/**
 		* @brief Returns samples container for the state (class) \b state
 		* @param state The state (class)
@@ -59,7 +82,7 @@ namespace DirectGraphicalModels
 		* than the output of the getNumSamples()
 		* @param state The state (class)
 		* @return The number of samples
-		*/		
+		*/
 		int		getNumInputSamples(byte state) const;
 		/**
 		* @brief Releases memory of container for the state (class) \b state
@@ -71,11 +94,23 @@ namespace DirectGraphicalModels
 	private:
 		vec_mat_t	m_vSamplesAcc;						// = vec_mat_t(nStates);	// Samples container for all states
 		vec_int_t	m_vNumInputSamples;					// = vec_int_t(nStates, 0);	// Amount of input samples for all states
-		size_t		m_maxSamples;						// = INFINITY;				// for optimisation purposes
+	};
+
+
+
+	using vec_samplePair_t = std::vector<std::pair<Mat, byte>>;
+	// ================================ Samples Accumulator Pairs Class ==============================
+	class CSamplesAccumulatorPairs : public CSamplesAccumulator
+	{
+	public:
+		CSamplesAccumulatorPairs(size_t maxSamples = 0) : CSamplesAccumulator(maxSamples) {}
+		virtual ~CSamplesAccumulatorPairs(void) {}
+
+		virtual void	reset(void);
+		virtual void	addSample(const Mat &featureVector, byte state);
+
 
 	private:
-		// Copy semantics are disabled
-		CSamplesAccumulator(const CSamplesAccumulator &rhs) {}
-		const CSamplesAccumulator & operator= (const CSamplesAccumulator & rhs) { return *this; }
+		vec_samplePair_t	m_vSamplesPair;
 	};
 }
