@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulatorPairs;
+	class CSamplesAccumulator;
 	
 	// ====================== Nearest Neighbor Train Class =====================
 	/**
@@ -24,13 +24,13 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainNodeNearestNeighbor(byte nStates, word nFeatures);
+		DllExport CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples = 0);
 		DllExport ~CTrainNodeNearestNeighbor(void);
 
 		DllExport virtual void	  reset(void);
 
 		DllExport virtual void	  addFeatureVec(const Mat &featureVector, byte gt);
-		DllExport virtual void	  train(bool doClean = false) {}
+		DllExport virtual void	  train(bool doClean = false);
 
 
 	protected:
@@ -52,7 +52,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CSamplesAccumulatorPairs * m_pSamplesAcc;
+		CSamplesAccumulator * m_pSamplesAcc;
 	
 	private:
 

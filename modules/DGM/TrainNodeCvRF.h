@@ -7,7 +7,7 @@
 namespace DirectGraphicalModels
 {
 	class CRForest;
-	class CSamplesAccumulatorContainers;
+	class CSamplesAccumulator;
 
 	/// @brief OpenCV Random Forest parameters
 	typedef struct TrainNodeCvRFParams {
@@ -91,8 +91,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		Ptr<CRForest>					  m_pRF;						///< Random Forest
-		CSamplesAccumulatorContainers	* m_pSamplesAcc;				///< Samples Accumulator
+		Ptr<CRForest>		  m_pRF;						///< Random Forest
+		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples Accumulator
 
 	private:
 		void			init(TrainNodeCvRFParams params);	// This function is called by both constructors

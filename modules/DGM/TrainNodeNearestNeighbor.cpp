@@ -5,9 +5,9 @@
 namespace DirectGraphicalModels 
 {
 	// Constructor
-	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates) 
+	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 	{
-		m_pSamplesAcc = new CSamplesAccumulatorPairs(nStates);
+		m_pSamplesAcc = new CSamplesAccumulator(nStates, maxSamples);
 	}
 	
 	// Destructor
@@ -26,31 +26,43 @@ namespace DirectGraphicalModels
 		m_pSamplesAcc->addSample(featureVector, gt);
 	}
 
+	void CTrainNodeNearestNeighbor::train(bool doClean)
+	{
+		// Build k-D Tree here
+	}
+
 	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const 
 	{
-		vec_samplePair_t vSamplePairs = m_pSamplesAcc->getSamplesContainer();
-		//std::vector<std::pair<float, byte>> vDist;
-
-		float D = -1;
-		byte sol = 0;
-		for (auto &pair : vSamplePairs) {
-			float dist = mathop::Euclidian<byte, float>(featureVector, pair.first);
-			if (D < 0) D = dist;
-			else if (dist < D) {
-				D = dist;
-				sol = pair.second;
+		float minDist = -1.0f;
+		byte minState;
+		
+		
+		for (byte s = 0; s < m_nStates; s++) {				// states
+			int nSamples = m_pSamplesAcc->getNumSamples(s);
+			
+			if (nSamples == 0) {
+				mask.at<byte>(s, 0) = 0;
+				continue;
 			}
-			//vDist.push_back(std::make_pair(dist, pair.second));
-		}
+			
+			for (int smp = 0; smp < nSamples; smp++) {		// samples
+				Mat sample = m_pSamplesAcc->getSamplesContainer(s).row(smp).t();
+				float dist = mathop::Euclidian<byte, float>(featureVector, sample);
+				
+				if (minDist < -0.5f) {
+					minDist = dist;
+					minState = s;
+				}
+				else if (minDist > dist) {
+					minDist = dist;
+					minState = s;
+				}
+			} // smp 
 
-		//std::sort(vDist.begin(), vDist.end(), [](auto &left, auto &right) { return left.first > right.first; });
+			potential.at<float>(s, 0) = 10.0f;
+		} // s
 
-		//for (int i = 0; i < 100; i++) {
-		//	byte state = vDist[i].second;
-		//	potential.at<float>(state, 0) += 1.0f / 100;
-		//}
 
-		potential.setTo(10);
-		potential.at<float>(sol, 0) = 100;
+		potential.at<float>(minState, 0) = 100;
 	}
 }
