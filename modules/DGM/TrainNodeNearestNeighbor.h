@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
+	class CSamplesAccumulatorPairs;
 	
 	// ====================== Nearest Neighbor Train Class =====================
 	/**
@@ -48,11 +48,11 @@ namespace DirectGraphicalModels
 		* @param[in,out]	potential %Node potentials: Mat(size: nStates x 1; type: CV_32FC1). This parameter should be preinitialized and set to value 0.
 		* @param[in,out]	mask Relevant %Node potentials: Mat(size: nStates x 1; type: CV_8UC1). This parameter should be preinitialized and set to value 1 (all potentials are relevant).
 		*/
-		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const {}
+		DllExport virtual void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
 
 	protected:
-		CSamplesAccumulator * m_pSamplesAcc;
+		CSamplesAccumulatorPairs * m_pSamplesAcc;
 	
 	private:
 

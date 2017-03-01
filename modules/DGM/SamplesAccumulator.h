@@ -109,6 +109,7 @@ namespace DirectGraphicalModels
 		virtual void	reset(void);
 		virtual void	addSample(const Mat &featureVector, byte state);
 
+		vec_samplePair_t getSamplesContainer(void) const { return m_vSamplesPair; }
 
 	private:
 		vec_samplePair_t	m_vSamplesPair;
