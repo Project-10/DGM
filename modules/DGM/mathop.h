@@ -15,13 +15,13 @@ namespace DirectGraphicalModels
 	*/
 	namespace mathop {
 		/**
-		* @brief asd
-		* @details asd
-		* @tparam Targ asd
-		* @tparam Tres asd
-		* @param a asd
-		* @param b asd
-		* @returns asd
+		* @brief Calculates the Euclidian distance between argument matrices \b a and \b b.
+		* @details The Euclidian distance is calculated by the formula : \f$D_E(a, b) = \sqrt{ \sum_{i,j}(a_{ij} - b_{ij})^2 }\f$.
+		* @tparam Targ Type of elements in matrices \b a and \b b (\a e.g. \a byte, \a float, \a double, \a etc.)
+		* @tparam Tres Type of the resulting distance (\a float or \a double)
+		* @param a The first matrix
+		* @param b The second matrix
+		* @returns The Euclidian distance : \f$D_E(a, b)\f$
 		*/
 		template <typename Targ = float, typename Tres = float>
 		inline Tres Euclidian(const Mat &a, const Mat &b)
