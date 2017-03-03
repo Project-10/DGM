@@ -3,194 +3,22 @@
 #pragma once
 
 #include "types.h"
-#include <unordered_set>
+
+#include "KDNode.h"
 
 namespace DirectGraphicalModels
 {
+	
 	template <unsigned int K> class kd_tree_iterator;
 
 	template <unsigned int K>
 	class CKDTree
 	{
-	public:
-		using kd_Box	= std::pair<vec_float_t, vec_float_t>;
-
-		class vec_float_t_Hasher
-		{
-		public:
-			size_t operator() (const vec_float_t &point) const
-			{
-				size_t retVal = 0;
-				for (float p : point) 
-					retVal ^= hash<float>()(p);				// !!! (1,2) and (2,1) hash to the same value
-					//boost::hash_combine(retVal, p);
-				return retVal;
-			}
-		};
-
-
 	protected:
-		// Node class - internal to KD tree
-		class kd_node
-		{
-		public:
-			virtual bool		isInternal(void) const = 0;
-			virtual void		SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, const unsigned Depth = 0) const = 0;
-			virtual void		FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint, float &minDistance, kd_Box &minRegion, const unsigned int Depth = 0) const = 0;
-			virtual void		FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k, float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, vec_float_t_Hasher> &nearSet, const unsigned int Depth = 0) const = 0;
-			virtual unsigned	TreeHeight(void) const = 0;
-			virtual unsigned	nodeCount(bool withInternalNodes) const = 0;
-			virtual kd_Box		boundingBox(void) const = 0;
-		};
 
-		// Internal node class
-		class kd_internal_node : public kd_node
-		{
-		private:
-			float m_splitVal;
-			kd_Box m_boundingBox;
-			std::shared_ptr<kd_node> m_Left, m_Right;
-
-		public:
-			kd_internal_node(const float splitVal, kd_Box &boundingBox, std::shared_ptr<kd_node> Left) :
-				m_splitVal(splitVal), m_boundingBox(boundingBox), m_Left(Left) {}
-
-			kd_internal_node(const float splitVal, kd_Box &boundingBox, std::shared_ptr<kd_node> Left, std::shared_ptr<kd_node> Right) :
-				m_splitVal(splitVal), m_boundingBox(boundingBox), m_Left(Left), m_Right(Right) {}
-
-			float splitVal() const { return m_splitVal; }
-
-			std::shared_ptr<kd_node> Left() const { return m_Left; }
-			std::shared_ptr<kd_node> Right() const { return m_Right; }
-
-			virtual bool isInternal() const override { return true; }
-
-			virtual kd_Box boundingBox() const override { return m_boundingBox; }
-
-			virtual void SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, const unsigned Depth) const override
-			{
-				if (regionCrossesRegion(searchBox, m_Left->boundingBox()))
-					m_Left->SearchKdTree(searchBox, Points, Depth + 1);
-
-				if (m_Right != nullptr && regionCrossesRegion(searchBox, m_Right->boundingBox()))
-					m_Right->SearchKdTree(searchBox, Points, Depth + 1);
-			}
-
-			virtual void FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k,
-				float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, vec_float_t_Hasher> &nearSet,
-				const unsigned int Depth = 0) const override
-			{
-				if (regionCrossesRegion(m_Left->boundingBox(), minRegion))
-					m_Left->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
-
-				if (m_Right != nullptr && regionCrossesRegion(m_Right->boundingBox(), minRegion))
-					m_Right->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
-			}
-
-			virtual void FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint,
-				float &minDistance, kd_Box &minRegion, const unsigned int Depth = 0) const override
-			{
-				if (regionCrossesRegion(m_Left->boundingBox(), minRegion))
-					m_Left->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
-
-				if (m_Right != nullptr && regionCrossesRegion(m_Right->boundingBox(), minRegion))
-					m_Right->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
-			}
-
-			virtual unsigned TreeHeight() const override
-			{
-				return 1 + max(m_Left->TreeHeight(),
-					m_Right != nullptr ? m_Right->TreeHeight() : 0);
-			}
-
-			virtual unsigned nodeCount(bool withInternalNodes) const override
-			{
-				return withInternalNodes ? 1 : 0 +
-					m_Left->nodeCount(withInternalNodes) +
-					(m_Right != nullptr ? m_Right->nodeCount(withInternalNodes) : 0);
-			}
-		};
-
-		// Lead node
-		class kd_leaf_node : public kd_node
-		{
-		private:
-			vec_float_t m_pointCoords;
-
-		public:
-			std::weak_ptr<kd_leaf_node> m_Next, m_Prev;
-
-			kd_leaf_node(const vec_float_t &Point) : m_pointCoords(Point) { }
-
-			vec_float_t pointCoords() const { return m_pointCoords; }
-
-			virtual bool isInternal() const override { return false; }
-
-			virtual unsigned TreeHeight() const override { return 1; }
-
-			virtual unsigned nodeCount(bool withInternalNodes) const override { return 1; }
-
-			virtual void SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, const unsigned Depth) const override
-			{
-				if (pointIsInRegion(m_pointCoords, searchBox))
-					Points.push_back(m_pointCoords);
-			}
-
-			virtual kd_Box boundingBox() const override
-			{
-				kd_Box bounding_box;
-
-				bounding_box.first = bounding_box.second = m_pointCoords;
-
-				return bounding_box;
-			}
-
-			virtual void FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint,
-				float &minDistance, kd_Box &minRegion, const unsigned int Depth = 0) const override
-			{
-				if (Distance(srcPoint, m_pointCoords) <= minDistance)
-				{
-					nearPoint = m_pointCoords;
-					minDistance = Distance(srcPoint, nearPoint);
-
-					for (unsigned index = 0; index < K; index++)
-					{
-						minRegion.first[index] = srcPoint[index] - minDistance;
-						minRegion.second[index] = srcPoint[index] + minDistance;
-					}
-				}
-			}
-
-			virtual void FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k,
-				float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, vec_float_t_Hasher> &nearSet,
-				const unsigned int Depth = 0) const override
-			{
-				if (Distance(srcPoint, m_pointCoords) <= minDistance && nearSet.find(m_pointCoords) == nearSet.end())
-				{
-					nearSet.erase(nearPoints[k - 1]);
-					nearSet.insert(m_pointCoords);
-
-					nearPoints[k - 1] = m_pointCoords;
-
-					for (unsigned i = k - 1; i > 0; i--)
-						if (Distance(srcPoint, nearPoints[i - 1]) > Distance(srcPoint, nearPoints[i]))
-							swap(nearPoints[i - 1], nearPoints[i]);
-						else
-							break;
-
-					minDistance = Distance(srcPoint, nearPoints[k - 1]);
-
-					for (unsigned index = 0; index < K; index++)
-					{
-						minRegion.first[index] = srcPoint[index] - minDistance;
-						minRegion.second[index] = srcPoint[index] + minDistance;
-					}
-				}
-			}
-		};
 
 		// --------------------------------
-		std::shared_ptr<kd_node>		m_Root;
+		std::shared_ptr<CKDNode>		m_Root;
 		std::weak_ptr<kd_leaf_node>		m_firstLeaf;
 		// -----------------------------------------------------------------------------------------------------
 
@@ -216,7 +44,7 @@ namespace DirectGraphicalModels
 
 			return Median;
 		}
-		std::shared_ptr<kd_node>		CreateTree(std::vector<vec_float_t> &Points, std::shared_ptr<kd_leaf_node> &Last_Leaf, const unsigned int Depth = 0)
+		std::shared_ptr<CKDNode>		CreateTree(std::vector<vec_float_t> &Points, std::shared_ptr<kd_leaf_node> &Last_Leaf, const unsigned int Depth = 0)
 		{
 			if (Points.size() == 1)
 			{
@@ -352,7 +180,7 @@ namespace DirectGraphicalModels
 
 			return Distance(srcPoint, node->pointCoords());
 		}
-		void							PrintTree(std::shared_ptr<kd_node> node, unsigned int depth = 0) const
+		void							PrintTree(std::shared_ptr<CKDNode> node, unsigned int depth = 0) const
 		{
 			for (unsigned i = 0; i < depth; i++)
 				cout << " ";
@@ -400,10 +228,6 @@ namespace DirectGraphicalModels
 
 		kd_tree_iterator<K> end();
 		kd_tree_iterator<K> begin();
-
-		static bool		pointIsInRegion(const vec_float_t &Point, const std::pair<vec_float_t, vec_float_t> &Region);
-		static bool		regionCrossesRegion(const std::pair<vec_float_t, vec_float_t> &Region1, const std::pair<vec_float_t, vec_float_t> &Region2);
-		static float	Distance(const vec_float_t &P, const vec_float_t &Q);
 
 		void			insert(std::vector<vec_float_t> &Points)
 		{
@@ -540,42 +364,7 @@ namespace DirectGraphicalModels
 		void			PrintTree(void) const { PrintTree(m_Root); }
 	};
 
-	// -------------------------------------------------------------
 
-	template <unsigned int K>
-	float CKDTree<K>::Distance(const vec_float_t &P, const vec_float_t &Q)
-	{
-		float Sum = 0;
-
-		for (unsigned i = 0; i < K; i++)
-			Sum += (P[i] - Q[i]) * (P[i] - Q[i]);
-
-		return sqrtf(Sum);
-	}
-
-	template <unsigned int K>
-	bool CKDTree<K>::pointIsInRegion(const vec_float_t &point, const std::pair<vec_float_t, vec_float_t> &Region)
-	{
-		for (size_t i = 0; i < point.size(); i++)
-			if (!(Region.first[i] <= point[i] && point[i] <= Region.second[i]))
-				return false;
-
-		return true;
-	}
-
-	template <unsigned int K>
-	bool CKDTree<K>::regionCrossesRegion(const std::pair<vec_float_t, vec_float_t> &Region1, const std::pair<vec_float_t, vec_float_t> &Region2)
-	{
-		bool regionsCross = true;
-
-		for (unsigned i = 0; i < K && regionsCross; i++)
-			if (Region1.first[i] > Region2.second[i] || Region1.second[i] < Region2.first[i])
-				regionsCross = false;
-
-		return regionsCross;
-	}
-
-	// -----------------------
 	//
 	// Iterator implementation
 	//
