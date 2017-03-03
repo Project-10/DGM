@@ -1,5 +1,6 @@
 #include "TrainNodeNearestNeighbor.h"
 #include "SamplesAccumulator.h"
+#include "KDTree.h"
 #include "mathop.h"
 
 namespace DirectGraphicalModels 
@@ -7,13 +8,15 @@ namespace DirectGraphicalModels
 	// Constructor
 	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 	{
-		m_pSamplesAcc = new CSamplesAccumulator(nStates, maxSamples);
+		m_pSamplesAcc	= new CSamplesAccumulator(nStates, maxSamples);
+		//m_pKDTree		= new CKDTree<100>();
 	}
 	
 	// Destructor
 	CTrainNodeNearestNeighbor::~CTrainNodeNearestNeighbor(void) 
 	{
 		delete m_pSamplesAcc;
+		//delete m_pKDTree;
 	}
 
 	void CTrainNodeNearestNeighbor::reset(void) 
