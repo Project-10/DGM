@@ -52,5 +52,14 @@ namespace DirectGraphicalModels
 			return res;
 
 		}
+
+		template <typename T>
+		inline T Euclidian(const std::vector<T> &P, const std::vector<T> &Q)
+		{
+			T sum = 0;
+			for (size_t i = 0; i < P.size(); i++)
+				sum += (P[i] - Q[i]) * (P[i] - Q[i]);
+			return sqrt(sum);
+		}
 	}
 }

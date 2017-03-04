@@ -1,15 +1,8 @@
 #include "KDNode.h"
+#include "mathop.h"
 
 namespace DirectGraphicalModels
 {
-	float	Distance(const vec_float_t &P, const vec_float_t &Q)
-	{
-		float sum = 0;
-		for (size_t i = 0; i < P.size(); i++)
-			sum += (P[i] - Q[i]) * (P[i] - Q[i]);
-		return sqrtf(sum);
-	}
-
 	bool	pointIsInRegion(const vec_float_t &point, const std::pair<vec_float_t, vec_float_t> &Region)
 	{
 		for (size_t i = 0; i < point.size(); i++)
@@ -56,9 +49,9 @@ namespace DirectGraphicalModels
 
 	void kd_leaf_node::FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint, float &minDistance, kd_Box &minRegion, size_t Depth) const
 	{
-		if (Distance(srcPoint, m_pointCoords) <= minDistance) {
+		if (mathop::Euclidian<float>(srcPoint, m_pointCoords) <= minDistance) {
 			nearPoint = m_pointCoords;
-			minDistance = Distance(srcPoint, nearPoint);
+			minDistance = mathop::Euclidian(srcPoint, nearPoint);
 
 			for (size_t i = 0; i < srcPoint.size(); i++) {
 				minRegion.first[i] = srcPoint[i] - minDistance;
@@ -69,19 +62,19 @@ namespace DirectGraphicalModels
 	
 	void kd_leaf_node::FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k, float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, CKDPointHasher> &nearSet, size_t Depth) const
 	{
-		if (Distance(srcPoint, m_pointCoords) <= minDistance && nearSet.find(m_pointCoords) == nearSet.end()) {
+		if (mathop::Euclidian(srcPoint, m_pointCoords) <= minDistance && nearSet.find(m_pointCoords) == nearSet.end()) {
 			nearSet.erase(nearPoints[k - 1]);
 			nearSet.insert(m_pointCoords);
 
 			nearPoints[k - 1] = m_pointCoords;
 
 			for (unsigned i = k - 1; i > 0; i--)
-				if (Distance(srcPoint, nearPoints[i - 1]) > Distance(srcPoint, nearPoints[i]))
+				if (mathop::Euclidian(srcPoint, nearPoints[i - 1]) > mathop::Euclidian(srcPoint, nearPoints[i]))
 					swap(nearPoints[i - 1], nearPoints[i]);
 				else
 					break;
 
-			minDistance = Distance(srcPoint, nearPoints[k - 1]);
+			minDistance = mathop::Euclidian(srcPoint, nearPoints[k - 1]);
 
 			for (size_t i = 0; i < srcPoint.size(); i++) {
 				minRegion.first[i] = srcPoint[i] - minDistance;
