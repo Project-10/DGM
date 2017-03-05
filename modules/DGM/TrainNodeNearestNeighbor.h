@@ -7,7 +7,6 @@
 namespace DirectGraphicalModels
 {
 	class CSamplesAccumulator;
-	//class CKDTree;
 	
 	// ====================== Nearest Neighbor Train Class =====================
 	/**
@@ -57,7 +56,6 @@ namespace DirectGraphicalModels
 
 	protected:
 		CSamplesAccumulator * m_pSamplesAcc;
-		//CKDTree				* m_pKDTree;
 	
 	private:
 

@@ -9,14 +9,12 @@ namespace DirectGraphicalModels
 	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 	{
 		m_pSamplesAcc	= new CSamplesAccumulator(nStates, maxSamples);
-		//m_pKDTree		= new CKDTree<100>();
 	}
 	
 	// Destructor
 	CTrainNodeNearestNeighbor::~CTrainNodeNearestNeighbor(void) 
 	{
 		delete m_pSamplesAcc;
-		//delete m_pKDTree;
 	}
 
 	void CTrainNodeNearestNeighbor::reset(void) 
@@ -31,7 +29,7 @@ namespace DirectGraphicalModels
 
 	void CTrainNodeNearestNeighbor::train(bool doClean)
 	{
-		// Build k-D Tree here
+		CKDTree tree();
 	}
 
 	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const 

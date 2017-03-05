@@ -22,35 +22,39 @@ namespace DirectGraphicalModels
 
 	// -------------------------------------------------------------
 
-	void kd_internal_node::SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, size_t Depth) const
+	size_t CKDNode::getNodeCount(bool withInternalNodes) const
 	{
-		if (regionCrossesRegion(searchBox, m_Left->getBoundingBox()))							m_Left->SearchKdTree(searchBox, Points, Depth + 1);
-		if (m_Right != nullptr && regionCrossesRegion(searchBox, m_Right->getBoundingBox()))	m_Right->SearchKdTree(searchBox, Points, Depth + 1);
+		if (isLeaf()) return 1;			// leaf
+
+		size_t res = m_Left->getNodeCount(withInternalNodes);
+		if (m_Right != nullptr)
+			res += m_Right->getNodeCount(withInternalNodes);
+		if (withInternalNodes) res++;
+		return res;
+	}
+
+	void CKDNode::SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, size_t Depth) const
+	{
+		if (m_Left != nullptr && regionCrossesRegion(searchBox, m_Left->getBoundingBox()))							
+			m_Left->SearchKdTree(searchBox, Points, Depth + 1);
+		if (m_Right != nullptr && regionCrossesRegion(searchBox, m_Right->getBoundingBox()))	
+			m_Right->SearchKdTree(searchBox, Points, Depth + 1);
+
+		// Leaf
+		if (pointIsInRegion(m_point, searchBox))
+			Points.push_back(m_point);
 	}
 	
-	void kd_internal_node::FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint, float &minDistance, kd_Box &minRegion, size_t Depth) const
+	void CKDNode::FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint, float &minDistance, kd_Box &minRegion, size_t Depth) const
 	{
-		if (regionCrossesRegion(m_Left->getBoundingBox(), minRegion))							m_Left->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
-		if (m_Right != nullptr && regionCrossesRegion(m_Right->getBoundingBox(), minRegion))	m_Right->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
-	}
-	
-	void kd_internal_node::FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k, float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, CKDPointHasher> &nearSet, size_t Depth) const
-	{
-		if (regionCrossesRegion(m_Left->getBoundingBox(), minRegion))							m_Left->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
-		if (m_Right != nullptr && regionCrossesRegion(m_Right->getBoundingBox(), minRegion))	m_Right->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
-	}
+		if (m_Left != nullptr && regionCrossesRegion(m_Left->getBoundingBox(), minRegion))							
+			m_Left->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
+		if (m_Right != nullptr && regionCrossesRegion(m_Right->getBoundingBox(), minRegion))	
+			m_Right->FindNearestNeighbor(srcPoint, nearPoint, minDistance, minRegion, Depth + 1);
 
-	// -------------------------------------------------------------
-
-	void kd_leaf_node::SearchKdTree(const kd_Box &searchBox, std::vector<vec_float_t> &Points, size_t Depth) const
-	{
-		if (pointIsInRegion(m_pointCoords, searchBox)) Points.push_back(m_pointCoords);
-	}
-
-	void kd_leaf_node::FindNearestNeighbor(const vec_float_t &srcPoint, vec_float_t &nearPoint, float &minDistance, kd_Box &minRegion, size_t Depth) const
-	{
-		if (mathop::Euclidian<float>(srcPoint, m_pointCoords) <= minDistance) {
-			nearPoint = m_pointCoords;
+		// Leaf
+		if (mathop::Euclidian<float>(srcPoint, m_point) <= minDistance) {
+			nearPoint = m_point;
 			minDistance = mathop::Euclidian(srcPoint, nearPoint);
 
 			for (size_t i = 0; i < srcPoint.size(); i++) {
@@ -60,13 +64,19 @@ namespace DirectGraphicalModels
 		}
 	}
 	
-	void kd_leaf_node::FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k, float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, CKDPointHasher> &nearSet, size_t Depth) const
+	void CKDNode::FindKNearestNeighbors(const vec_float_t &srcPoint, std::vector<vec_float_t> &nearPoints, const unsigned k, float &minDistance, kd_Box &minRegion, std::unordered_set<vec_float_t, CKDPointHasher> &nearSet, size_t Depth) const
 	{
-		if (mathop::Euclidian(srcPoint, m_pointCoords) <= minDistance && nearSet.find(m_pointCoords) == nearSet.end()) {
-			nearSet.erase(nearPoints[k - 1]);
-			nearSet.insert(m_pointCoords);
+		if (m_Left != nullptr && regionCrossesRegion(m_Left->getBoundingBox(), minRegion))							
+			m_Left->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
+		if (m_Right != nullptr && regionCrossesRegion(m_Right->getBoundingBox(), minRegion))	
+			m_Right->FindKNearestNeighbors(srcPoint, nearPoints, k, minDistance, minRegion, nearSet, Depth + 1);
 
-			nearPoints[k - 1] = m_pointCoords;
+		// Leaf
+		if (mathop::Euclidian(srcPoint, m_point) <= minDistance && nearSet.find(m_point) == nearSet.end()) {
+			nearSet.erase(nearPoints[k - 1]);
+			nearSet.insert(m_point);
+
+			nearPoints[k - 1] = m_point;
 
 			for (unsigned i = k - 1; i > 0; i--)
 				if (mathop::Euclidian(srcPoint, nearPoints[i - 1]) > mathop::Euclidian(srcPoint, nearPoints[i]))
@@ -82,4 +92,5 @@ namespace DirectGraphicalModels
 			}
 		}
 	}
+
 }
