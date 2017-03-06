@@ -72,40 +72,139 @@ namespace DirectGraphicalModels { namespace parallel {
 	}
 
 	
-	// ------------------------------------------- SUFFLE ------------------------------------------
-	// ------------------------- fast random shuffle of elements with PPL  -------------------------
+	// -------------------------------------------- SORT -------------------------------------------
+	// --------------------------- fast sorting of Mat elements with PPL  --------------------------
 	namespace {
-		inline void Swap(Mat &a, Mat &b)
+		inline void Swap(Mat &a, Mat &b, Mat &tmp = Mat())
 		{
-			add(a, b, a);		// a = a + b
-			subtract(a, b, b);	// b = a - b
-			subtract(a, b, a);	// a = a - b;
+			a.copyTo(tmp);
+			b.copyTo(a);
+			tmp.copyTo(b);
 		}
+
+		template <typename T>
+		inline void insertion_sort(Mat &m, int x, int begin, int end)
+		{
+			Mat tmp;
+			for (int i = begin; i <= end; i++) {
+				int j = i;
+				while (j > 0 && m.at<T>(j, x) < m.at<T>(j - 1, x)) {
+					Swap(m.row(j), m.row(j - 1), tmp);
+					j--;
+				}
+			}
+		}
+	
+		template <typename T>
+		inline void sequential_quick_sort(Mat &m, int x, int begin, int end, int threshold)
+		{
+			if (end - begin < threshold) insertion_sort<T>(m, x, begin, end);
+			else {
+				int	_begin	= begin;
+				int	_end	= end;
+				T	pivot	= m.at<T>((begin + end) / 2, x);
+
+				// partition
+				while (_begin <= _end) {
+					while (m.at<T>(_begin, x) < pivot) _begin++;
+					while (m.at<T>(_end,   x) > pivot) _end--;
+					if (_begin <= _end) {
+						Swap(m.row(_begin), m.row(_end));
+						_begin++;
+						_end--;
+					}
+				};
+
+				// recursion 
+				if (begin < _end)	sequential_quick_sort<T>(m, x, begin, _end, threshold);
+				if (_begin < end)	sequential_quick_sort<T>(m, x, _begin, end, threshold);
+			}
+		}
+
+#ifdef ENABLE_PPL
+		template <typename T>
+		inline void parallel_quick_sort(Mat &m, int x, int begin, int end, int threshold, int depthRemaining)
+		{
+			if (end - begin < threshold) insertion_sort<T>(m, x, begin, end);
+			else {
+				int	_begin	= begin;
+				int	_end	= end;
+				T	pivot	= m.at<T>((begin + end) / 2, x);
+
+				// partition
+				while (_begin <= _end) {
+					while (m.at<T>(_begin, x) < pivot) _begin++;
+					while (m.at<T>(_end,   x) > pivot) _end--;
+					if (_begin <= _end) {
+						Swap(m.row(_begin), m.row(_end));
+						_begin++;
+						_end--;
+					}
+				};
+
+				// recursion 
+				if (depthRemaining > 0)
+					concurrency::parallel_invoke(
+						[&, x, begin, _end] { if (begin < _end)	parallel_quick_sort<T>(m, x, begin, _end, threshold, depthRemaining - 1); },
+						[&, x, end, _begin] { if (_begin < end)	parallel_quick_sort<T>(m, x, _begin, end, threshold, depthRemaining - 1); }
+				);
+				else {
+					if (begin < _end)	sequential_quick_sort<T>(m, x, begin, _end, threshold);
+					if (_begin < end)	sequential_quick_sort<T>(m, x, _begin, end, threshold);
+				}
+			}
+		}
+#endif
 	}
 
+	/**
+	* @brief Sorts the rows of the input matrix by the given dimension.
+	* @details The result of the sorting may is expressed as: \f$ m_{x,y} < m_{x,y+1}, \forall y \f$.
+	* > This function supports PPL.
+	* @tparam T The type of elements in matrix.
+	* @param[in, out] m The input/output data, which rows should be sorted.
+	* @param x The dimension along which the matrix is sorted.
+	*/
+	template <typename T>
+	DllExport inline void sortRows(Mat &m, int x)
+	{
+		DGM_ASSERT(x < m.cols);
+#ifdef ENABLE_PPL
+		const int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
+		parallel_quick_sort<T>(m, x, 0, m.rows - 1, 200, static_cast<int>(log2f(float(nCores))) + 4);
+#else 
+		sequential_quick_sort<T>(m, x, 0, m.rows - 1, 200);
+#endif
+	}
+
+	// ------------------------------------------- SUFFLE ------------------------------------------
+	// ----------------------- fast random shuffle of Mat elements with PPL  -----------------------
 	/**
 	* @brief Randomly shuffles the rows of the input matrix.
 	* @details > This function supports PPL.
 	* > When using PPL, the result of this function is biased.
-	* @param[in,out] X The input/output data, which rows should be shffled.
+	* @param[in,out] m The input/output data, which rows should be shffled.
 	* @todo Eliminate the bias, caused by parallel processing.
 	*/
-	DllExport inline void shuffleRows(Mat &X)
+	DllExport inline void shuffleRows(Mat &m)
 	{
 #ifdef ENABLE_PPL
-		int nCores = MAX(1, std::thread::hardware_concurrency());
-		int step = MAX(2, X.rows / (nCores * 10));
-		concurrency::parallel_for(0, X.rows, step, [step, &X](int S) {
-			int last = MIN(S + step, X.rows);
-			for (int s = last - 1; s > S; s--) {				// s = [last - 1; S + 1]
+		// int nCores = MAX(1, std::thread::hardware_concurrency());
+		int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
+		int step = MAX(2, m.rows / (nCores * 10));
+		concurrency::parallel_for(0, m.rows, step, [step, &m](int S) {
+			Mat tmp;
+			int last = MIN(S + step, m.rows);
+			for (int s = last - 1; s > S; s--) {									// s = [last - 1; S + 1]
 				dword r = DirectGraphicalModels::random::u<dword>(S, s);			// r = [S; s] = [S; S + 1] -> [S; last - 1]
-				if (r != s) Swap(X.row(s), X.row(r));
+				if (r != s) Swap(m.row(s), m.row(r), tmp);
 			}
 		});
 #else	
-		for (int s = X.rows - 1; s > 0; s--) {			// s = [n-1; 1]
-			int r = random::u<int>(0, s);		// r = [0; s] = [0; 1] -> [0; n-1]
-			if (r != s)	Swap(X.row(s), X.row(r));
+		Mat tmp;
+		for (int s = m.rows - 1; s > 0; s--) {			// s = [n-1; 1]
+			int r = random::u<int>(0, s);				// r = [0; s] = [0; 1] -> [0; n-1]
+			if (r != s)	Swap(m.row(s), m.row(r), tmp);
 		}
 #endif
 	}
