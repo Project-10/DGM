@@ -1,4 +1,6 @@
+// Written by Sergey Kosov in 2016 - 2017 for Project X
 #pragma once
+
 #include "types.h"
 #include "macroses.h"
 #include "Random.h"

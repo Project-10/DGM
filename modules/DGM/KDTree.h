@@ -11,6 +11,6 @@ namespace DirectGraphicalModels
 	class CKDTree
 	{
 	public:
-		DllExport CKDNode * createTree(Mat &vData);
+		DllExport static std::shared_ptr<CKDNode> createTree(Mat &vData);
 	};
 }
