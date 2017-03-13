@@ -193,8 +193,8 @@ int getPerimeter(const Mat &img)
 
 float getCompactness(const Mat &img)
 {
-	float S = getArea(img);
-	float P = getPerimeter(img);
+	float S = static_cast<float>(getArea(img));
+	float P = static_cast<float>(getPerimeter(img));
 	return (S > 0) ? P * P / (S * 4 * Pif) : 0;
 }
 
