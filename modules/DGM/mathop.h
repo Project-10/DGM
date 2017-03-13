@@ -54,12 +54,28 @@ namespace DirectGraphicalModels
 		}
 
 		template <typename T>
-		inline T Euclidian(const std::vector<T> &P, const std::vector<T> &Q)
+		inline T Euclidian(const std::vector<T> &a, const std::vector<T> &b)
 		{
 			T sum = 0;
-			for (size_t i = 0; i < P.size(); i++)
-				sum += (P[i] - Q[i]) * (P[i] - Q[i]);
+			for (size_t i = 0; i < a.size(); i++)
+				sum += (a[i] - b[i]) * (a[i] - b[i]);
 			return sqrt(sum);
+		}
+
+		/**
+		* @brief Checks whether two regions \b box1 and \b box2 overlap each other
+		* @tparam T The type of the elemets, defining the regions \b box1 and \b box2
+		* @retval true if regions overlap
+		* @retval false otherwise
+		*/
+		template<typename T>
+		bool ifOverlap(pair_mat_t &box1, pair_mat_t &box2)
+		{
+			for (int x = 0; x < box1.first.cols; x++) {
+				if (box1.first.at<T>(0, x) > box2.second.at<T>(0, x))	return false;
+				if (box1.second.at<T>(0, x) < box2.first.at<T>(0, x))	return false;
+			}
+			return true;
 		}
 	}
 }

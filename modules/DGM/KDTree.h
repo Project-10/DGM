@@ -11,27 +11,34 @@ namespace DirectGraphicalModels
 	class CKDTree
 	{
 	public:
-//		DllExport CKDTree(void) : m_root(nullptr) {}
-//		DllExport CKDTree(Mat &data) : m_root(nullptr) { build(data); }	
-//		DllExport CKDTree(const CKDTree &obj) = delete;
-//		DllExport ~CKDTree(void) {}
-		
-//		DllExport bool operator==(const CKDTree rhs) = delete;
-//		DllExport bool operator=(const CKDTree rhs)  = delete;
+		DllExport CKDTree(void) : m_root(nullptr) {}
+		DllExport CKDTree(Mat &data) : m_root(nullptr) { build(data); }	
+		DllExport CKDTree(const CKDTree &) = delete;
+		DllExport ~CKDTree(void) {}
 
-//		DllExport void								reset(void) { m_root.reset(); }
-//		DllExport void								build(Mat &data);
+		DllExport bool								operator=(const CKDTree)  = delete;
 
-		DllExport static std::shared_ptr<CKDNode>	createTree(Mat &data);
-		DllExport static float						findNearestNeighbor(std::shared_ptr<CKDNode> root, Mat &key);
-		DllExport static std::shared_ptr<CKDNode>	findNearestNode(std::shared_ptr<CKDNode> root, Mat &key);
+		DllExport void								reset(void) { m_root.reset(); }
+		DllExport void								build(Mat &data);
+
+		DllExport std::shared_ptr<const CKDNode>	findNearestNeighbor(Mat &key) const;
+		DllExport std::shared_ptr<const CKDNode>	findNearestNode(Mat &key) const;
 	
+		/**
+		* @brief Returns the root of the tree
+		* @returns The root of the tree
+		*/
+		DllExport std::shared_ptr<CKDNode>			getRoot(void) const { return m_root; }
 
-//	private:
+	private:
+		/**
+		* @returns The pointer to the root node of the built tree
+		*/
+		std::shared_ptr<CKDNode>					buildTree(Mat &data, pair_mat_t &boundingBox);
 //		DllExport std::shared_ptr<CKDNode>			findNearestNode(Mat &key) const;
 
 
-//	private:
-//		std::shared_ptr<CKDNode>	m_root;
+	private:
+		std::shared_ptr<CKDNode>	m_root;
 	};
 }

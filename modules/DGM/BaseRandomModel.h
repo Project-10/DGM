@@ -15,7 +15,7 @@ namespace DirectGraphicalModels
 		RM_PAIRWISE,	///< Pairwise random model: maximum two nodes in the cliques.
 		RM_TRIPLET		///< %Triplet random model: maximum tree nodes in the cliques.
 	};
-// ================================ Base Random Model Class ================================
+	// ================================ Base Random Model Class ================================
 	/**
 	* @brief Base abstract class for random model training.
 	* @details This class defines basic serialization interface.
