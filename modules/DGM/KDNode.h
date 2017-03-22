@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 		* @param[in,out] searchRadius The radius of a k-d sphere, within which the node is searched
 		* @param[out] nearestNeighbor The resulting nearest node
 		*/
-		DllExport void						findNearestNeighbor(Mat &key, pair_mat_t &searchBox, float &searchRadius, std::shared_ptr<const CKDNode> &nearestNeighbor) const;
+		DllExport void						findNearestNeighbor(const Mat &key, pair_mat_t &searchBox, float &searchRadius, std::shared_ptr<const CKDNode> &nearestNeighbor) const;
 		/**
 		* @brief Returns the key of the leaf-node (k-d point)
 		* @returns The key of the node: Mat(size: 1 x k; type: CV_8UC1)

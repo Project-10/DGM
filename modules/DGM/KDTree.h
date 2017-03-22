@@ -12,17 +12,22 @@ namespace DirectGraphicalModels
 	{
 	public:
 		DllExport CKDTree(void) : m_root(nullptr) {}
-		DllExport CKDTree(Mat &data) : m_root(nullptr) { build(data); }	
+		DllExport CKDTree(Mat &keys, Mat &values) : m_root(nullptr) { build(keys, values); }	
 		DllExport CKDTree(const CKDTree &) = delete;
 		DllExport ~CKDTree(void) {}
 
 		DllExport bool								operator=(const CKDTree)  = delete;
 
 		DllExport void								reset(void) { m_root.reset(); }
-		DllExport void								build(Mat &data);
+		/**
+		* @brief Builds a k-d tree on \b keys with corresponding \b values
+		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
+		* @param values
+		*/
+		DllExport void								build(Mat &keys, Mat &values);
 
-		DllExport std::shared_ptr<const CKDNode>	findNearestNeighbor(Mat &key) const;
-		DllExport std::shared_ptr<const CKDNode>	findNearestNode(Mat &key) const;
+		DllExport std::shared_ptr<const CKDNode>	findNearestNeighbor(const Mat &key) const;
+		DllExport std::shared_ptr<const CKDNode>	findNearestNode(const Mat &key) const;
 	
 		/**
 		* @brief Returns the root of the tree

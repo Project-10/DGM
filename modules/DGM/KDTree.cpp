@@ -63,23 +63,29 @@ namespace DirectGraphicalModels
 	}
 
 	 
-	// left = [0; splitVal)
-	// right = [splitVal; end]
-	void CKDTree::build(Mat &data)
+	/// @todo Delete dublicated keys before building the tree
+	void CKDTree::build(Mat &keys, Mat &values)
 	{
-		if (data.empty()) {
+		if (keys.empty()) {
 			DGM_WARNING("The data is empty");
 			return;
 		}
-		DGM_ASSERT_MSG(data.type() == CV_8UC1, "Incorrect type of the data");
+		DGM_ASSERT_MSG(keys.type() == CV_8UC1, "Incorrect type of the keys");
+		DGM_ASSERT_MSG(values.type() == CV_8UC1, "Incorrect type of the values");
+		DGM_ASSERT_MSG(keys.rows == values.rows, "The amount of keys (%d) does not crrespond to the amount of values (%d)", keys.rows, values.rows);
 		
-		// TODO: check the data for validness
+		pair_mat_t boundingBox = getBoundingBox<byte>(keys);
+		hconcat(keys, values, keys);							// keys = [keys; data]
 
-		pair_mat_t boundingBox = getBoundingBox<byte>(data);
-		m_root = buildTree(data, boundingBox);
+		// TODO: delete dublicated entries
+		//std::sort(keys.begin(), keys.end());
+		//std::vector<vec_float_t>::iterator it = std::unique(keys.begin(), keys.end());
+		//Points.resize(std::distance(keys.begin(), it));
+
+		m_root = buildTree(keys, boundingBox);
 	}
 
-	std::shared_ptr<const CKDNode> CKDTree::findNearestNeighbor(Mat &key) const
+	std::shared_ptr<const CKDNode> CKDTree::findNearestNeighbor(const Mat &key) const
 	{
 		std::shared_ptr<const CKDNode> nearestNode = findNearestNode(key);
 		float					 searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey()) + 0.5f;
@@ -93,7 +99,7 @@ namespace DirectGraphicalModels
 		return nearestNode;
 	}
 
-	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(Mat &key) const
+	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat &key) const
 	{
 		std::shared_ptr<CKDNode> node(m_root);
 
@@ -108,10 +114,13 @@ namespace DirectGraphicalModels
 
 
 	// ----------------------------------------- Private -----------------------------------------
+	// data_i = [key,val]: k + 1 entries 
+	// left = [0; splitVal)
+	// right = [splitVal; end]
 	std::shared_ptr<CKDNode> CKDTree::buildTree(Mat &data, pair_mat_t &boundingBox)
 	{
 		if (data.rows == 1) {
-			std::shared_ptr<CKDNode> res(new CKDNode(data, 77));
+			std::shared_ptr<CKDNode> res(new CKDNode(data(Rect(0, 0, data.cols - 1, 1)), data.at<byte>(0, data.cols - 1)));
 			return res;
 		}
 		else if (data.rows == 2) {
@@ -120,12 +129,12 @@ namespace DirectGraphicalModels
 			byte splitVal = (data.at<byte>(0, splitDim) + data.at<byte>(1, splitDim)) / 2;
 			std::shared_ptr<CKDNode> left, right;
 			if (data.at<byte>(0, splitDim) < data.at<byte>(1, splitDim)) {
-				left = std::shared_ptr<CKDNode>(new CKDNode(data.row(0), 77));
-				right = std::shared_ptr<CKDNode>(new CKDNode(data.row(1), 77));
+				left  = std::shared_ptr<CKDNode>(new CKDNode(data.row(0)(Rect(0, 0, data.cols - 1, 1)), data.at<byte>(0, data.cols - 1)));
+				right = std::shared_ptr<CKDNode>(new CKDNode(data.row(1)(Rect(0, 0, data.cols - 1, 1)), data.at<byte>(1, data.cols - 1)));
 			}
 			else {
-				left = std::shared_ptr<CKDNode>(new CKDNode(data.row(1), 77));
-				right = std::shared_ptr<CKDNode>(new CKDNode(data.row(0), 77));
+				left  = std::shared_ptr<CKDNode>(new CKDNode(data.row(1)(Rect(0, 0, data.cols - 1, 1)), data.at<byte>(1, data.cols - 1)));
+				right = std::shared_ptr<CKDNode>(new CKDNode(data.row(0)(Rect(0, 0, data.cols - 1, 1)), data.at<byte>(0, data.cols - 1)));
 			}
 			std::shared_ptr<CKDNode> res(new CKDNode(boundingBox, splitVal, splitDim, left, right));
 			return res;

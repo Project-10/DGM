@@ -17,6 +17,7 @@ void print_help(void)
 	printf("4: OpenCV Gaussian Mixture Model\n");
 	printf("5: OpenCV Random Forest\n");
 	printf("6: MicroSoft Random Forest\n");
+	printf("7: Nearest Neighbor\n");
 	
 	printf("\nEdge training models:\n");
 	printf("0: Without Edges\n");
@@ -65,7 +66,7 @@ int main(int argv, char *argc[])
 #ifdef USE_SHERWOOD
 		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		case 7: nodeTrainer = new CTrainNodeNearestNeighbor(nStates, nFeatures, 500); break;
+		case 7: nodeTrainer = new CTrainNodeNearestNeighbor(nStates, nFeatures); break;
 		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
 	switch(edgeModel) {
@@ -152,7 +153,7 @@ int main(int argv, char *argc[])
 	imshow("Image", img);
 	cvWaitKey(1000);
 
-	//getchar();
+	getchar();
 
 	return 0;
 }

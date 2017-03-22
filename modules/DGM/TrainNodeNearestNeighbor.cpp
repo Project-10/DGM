@@ -48,45 +48,14 @@ namespace DirectGraphicalModels
 			if (doClean) m_pSamplesAcc->release(s);				// free memory
 		} // s
 
-		// Training
-		printf("Building the tree... ");
-		m_pTree->build(samples);
-		printf("DOne\n");
-		//m_pRF->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+		// Training, e.g. building the tree
+		m_pTree->build(samples, classes);
 	}
 
-	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const 
+	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
-		float minDist = -1.0f;
-		byte minState;
-		
-		
-		for (byte s = 0; s < m_nStates; s++) {				// states
-			int nSamples = m_pSamplesAcc->getNumSamples(s);
-			
-			if (nSamples == 0) {
-				mask.at<byte>(s, 0) = 0;
-				continue;
-			}
-			
-			for (int smp = 0; smp < nSamples; smp++) {		// samples
-				Mat sample = m_pSamplesAcc->getSamplesContainer(s).row(smp).t();
-				float dist = mathop::Euclidian<byte, float>(featureVector, sample);
-				
-				if (minDist < -0.5f) {
-					minDist = dist;
-					minState = s;
-				}
-				else if (minDist > dist) {
-					minDist = dist;
-					minState = s;
-				}
-			} // smp 
-
-			potential.at<float>(s, 0) = 10.0f;
-		} // s
-
-
-		potential.at<float>(minState, 0) = 100;
+		byte val = m_pTree->findNearestNeighbor(featureVector.t())->getValue();
+		potential.setTo(10);
+		potential.at<float>(val, 0) = 100;
 	}
 }

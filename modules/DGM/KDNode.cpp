@@ -15,7 +15,7 @@ namespace DirectGraphicalModels
 		key.copyTo(m_key);
 	}
 
-	void CKDNode::findNearestNeighbor(Mat &key, pair_mat_t &searchBox, float &searchRadius, std::shared_ptr<const CKDNode> &nearestNeighbor) const
+	void CKDNode::findNearestNeighbor(const Mat &key, pair_mat_t &searchBox, float &searchRadius, std::shared_ptr<const CKDNode> &nearestNeighbor) const
 	{
 		if (isLeaf()) {		// --- Leaf node ---
 			float distance = mathop::Euclidian<byte, float>(key, m_key) + 0.5f;
