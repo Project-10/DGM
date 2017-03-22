@@ -1,4 +1,5 @@
 <img align="left" src="doc/DGM logo.jpg">
+
 # Direct Graphical Models C++ library
 
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-green.svg)](License.txt)
