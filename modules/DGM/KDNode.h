@@ -48,13 +48,22 @@ namespace DirectGraphicalModels
 		*/
 		DllExport bool						isLeaf(void) const { return (!m_pLeft && !m_pRight); }
 		/**
-		* @brief Auxiliary recursive method for finding the nearest in terms of the Euclidian distance between the keys \b nearestNeighbor node.
+		* @brief Auxiliary recursive method for finding the nearest (in terms of the Euclidian distance between the keys) \b nearestNeighbor node.
 		* @param[in] key The search key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
 		* @param[in,out] searchBox The bounding box, that is used to find the overlapping branch nodes
 		* @param[in,out] searchRadius The radius of a k-d sphere, within which the node is searched
 		* @param[out] nearestNeighbor The resulting nearest node
 		*/
 		DllExport void						findNearestNeighbor(const Mat &key, pair_mat_t &searchBox, float &searchRadius, std::shared_ptr<const CKDNode> &nearestNeighbor) const;
+		/**
+		* @brief Auxiliary recursive method for finding the ka-nearest (in terms of the Euclidian distance between the keys) \b nearestNeighbors nodes.
+		* @param[in] key The search key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
+		* @param[in] k The number of desired neares neighbors
+		* @param[in,out] searchBox The bounding box, that is used to find the overlapping branch nodes
+		* @param[in,out] searchRadius The radius of a k-d sphere, within which the nodes are searched
+		* @param[out] nearestNeighbors The resulting ka-nearest nodes
+		*/
+		DllExport void						findNearestNeighbors(const Mat &key, size_t k, pair_mat_t &searchBox, float &searchRadius, std::vector<std::shared_ptr<const CKDNode>> &nearestNeighbors) const;
 		/**
 		* @brief Returns the key of the leaf-node (k-d point)
 		* @returns The key of the node: Mat(size: 1 x k; type: CV_8UC1)

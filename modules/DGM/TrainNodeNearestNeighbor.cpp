@@ -52,10 +52,18 @@ namespace DirectGraphicalModels
 		m_pTree->build(samples, classes);
 	}
 
+	/// @todo Use 2 scenes in the demo-train
+	/// @todo Use weighted sum of node values
+	/// @todo Generate a 2D histogram for this methos
+	/// @todo Make k as parameter
 	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
-		byte val = m_pTree->findNearestNeighbor(featureVector.t())->getValue();
-		potential.setTo(10);
-		potential.at<float>(val, 0) = 100;
+		const size_t k = 100;
+		auto nearestNeighbors = m_pTree->FindNearestNeighbors(featureVector.t(), k);
+		potential.setTo(0.1f);
+		for (auto node : nearestNeighbors) {
+			byte s = node->getValue();				
+			potential.at<float>(s, 0)++;
+		}
 	}
 }

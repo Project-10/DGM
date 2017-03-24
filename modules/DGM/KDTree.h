@@ -27,6 +27,8 @@ namespace DirectGraphicalModels
 		DllExport void								build(Mat &keys, Mat &values);
 
 		DllExport std::shared_ptr<const CKDNode>	findNearestNeighbor(const Mat &key) const;
+		DllExport std::vector<std::shared_ptr<const CKDNode>>	
+													FindNearestNeighbors(const Mat &key, size_t k) const;
 		DllExport std::shared_ptr<const CKDNode>	findNearestNode(const Mat &key) const;
 	
 		/**

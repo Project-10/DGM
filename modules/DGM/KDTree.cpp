@@ -87,8 +87,13 @@ namespace DirectGraphicalModels
 
 	std::shared_ptr<const CKDNode> CKDTree::findNearestNeighbor(const Mat &key) const
 	{
+		if (!m_root) {
+			DGM_WARNING("The k-D tree is not built");
+			return nullptr;
+		}
+		
 		std::shared_ptr<const CKDNode> nearestNode = findNearestNode(key);
-		float					 searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey()) + 0.5f;
+		float searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey()) + 0.5f;
 
 		pair_mat_t searchBox;
 		searchBox.first  = key - searchRadius;
@@ -97,6 +102,34 @@ namespace DirectGraphicalModels
 		m_root->findNearestNeighbor(key, searchBox, searchRadius, nearestNode);
 
 		return nearestNode;
+	}
+
+	std::vector<std::shared_ptr<const CKDNode>> CKDTree::FindNearestNeighbors(const Mat &key, size_t k) const
+	{
+		const float searchRadius_extension = 2.0f;
+		
+		std::vector<std::shared_ptr<const CKDNode>> nearestNeighbors;
+		nearestNeighbors.reserve(k);
+
+		if (!m_root) {
+			DGM_WARNING("The k-D tree is not built");
+			return nearestNeighbors;
+		}
+
+		std::shared_ptr<const CKDNode> nearestNode = findNearestNode(key);
+		nearestNeighbors.push_back(nearestNode);
+		float searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey());
+		if (k > 1) searchRadius *= searchRadius_extension;
+		searchRadius += 0.5f;
+		//if (k > 1) searchRadius = 255 * sqrtf(static_cast<float>(key.cols)); // infinity
+
+		pair_mat_t searchBox;
+		searchBox.first  = key - searchRadius;
+		searchBox.second = key + searchRadius;
+
+		m_root->findNearestNeighbors(key, k, searchBox, searchRadius, nearestNeighbors);
+	
+		return nearestNeighbors;
 	}
 
 	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat &key) const
