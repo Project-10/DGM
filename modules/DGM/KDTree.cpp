@@ -61,7 +61,6 @@ namespace DirectGraphicalModels
 	
 
 	}
-
 	 
 	/// @todo Delete dublicated keys before building the tree
 	void CKDTree::build(Mat &keys, Mat &values)
@@ -144,7 +143,6 @@ namespace DirectGraphicalModels
 
 		return std::static_pointer_cast<CKDNode>(node);
 	}
-
 
 	// ----------------------------------------- Private -----------------------------------------
 	// data_i = [key,val]: k + 1 entries 

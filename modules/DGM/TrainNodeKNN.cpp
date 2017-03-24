@@ -1,4 +1,4 @@
-#include "TrainNodeNearestNeighbor.h"
+#include "TrainNodeKNN.h"
 #include "SamplesAccumulator.h"
 #include "KDTree.h"
 #include "mathop.h"
@@ -6,31 +6,31 @@
 namespace DirectGraphicalModels 
 {
 	// Constructor
-	CTrainNodeNearestNeighbor::CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+	CTrainNodeKNN::CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 	{
 		m_pSamplesAcc	= new CSamplesAccumulator(nStates, maxSamples);
 		m_pTree			= new CKDTree();
 	}
 	
 	// Destructor
-	CTrainNodeNearestNeighbor::~CTrainNodeNearestNeighbor(void) 
+	CTrainNodeKNN::~CTrainNodeKNN(void)
 	{
 		delete m_pSamplesAcc;
 		delete m_pTree;
 	}
 
-	void CTrainNodeNearestNeighbor::reset(void) 
+	void CTrainNodeKNN::reset(void)
 	{
 		m_pSamplesAcc->reset();
 		m_pTree->reset();
 	}
 
-	void CTrainNodeNearestNeighbor::addFeatureVec(const Mat &featureVector, byte gt) 
+	void CTrainNodeKNN::addFeatureVec(const Mat &featureVector, byte gt)
 	{
 		m_pSamplesAcc->addSample(featureVector, gt);
 	}
 
-	void CTrainNodeNearestNeighbor::train(bool doClean)
+	void CTrainNodeKNN::train(bool doClean)
 	{
 #ifdef DEBUG_PRINT_INFO
 		printf("\n");
@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
 	/// @todo Use weighted sum of node values
 	/// @todo Generate a 2D histogram for this methos
 	/// @todo Make k as parameter
-	void CTrainNodeNearestNeighbor::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
+	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		const size_t k = 100;
 		auto nearestNeighbors = m_pTree->FindNearestNeighbors(featureVector.t(), k);

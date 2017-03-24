@@ -78,7 +78,7 @@ source_group("Source Files\\Random Model\\Training\\Node\\Gaussian Mixture" FILE
 																					"TrainNodeGMM.cpp"
 																				)
 source_group("Source Files\\Random Model\\Training\\Node\\Naive Bayes" FILES "TrainNodeNaiveBayes.h" "TrainNodeNaiveBayes.cpp")
-source_group("Source Files\\Random Model\\Training\\Node\\Nearest Neighbor" FILES "TrainNodeNearestNeighbor.h" "TrainNodeNearestNeighbor.cpp")
+source_group("Source Files\\Random Model\\Training\\Node\\K-Nearest Neighbors" FILES "TrainNodeKNN.h" "TrainNodeKNN.cpp")
 source_group("Source Files\\Random Model\\Training\\Node\\Random Forest" FILES	"RForest.h" 
 																				"RForest.cpp"
 																				"TrainNodeCvRF.h"

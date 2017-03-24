@@ -19,7 +19,7 @@
 
 #include "DGM/ITrain.h"
 #include "DGM/TrainNode.h"
-#include "DGM/TrainNodeNearestNeighbor.h"
+#include "DGM/TrainNodeKNN.h"
 #include "DGM/TrainNodeNaiveBayes.h"
 #include "DGM/TrainNodeGM.h"
 #include "DGM/TrainNodeGMM.h"

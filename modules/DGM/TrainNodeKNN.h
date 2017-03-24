@@ -17,7 +17,7 @@ namespace DirectGraphicalModels
 	* where the input consists of the k closest training samples in the feature space and the output depends on k-Nearest Neighbors.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainNodeNearestNeighbor : public CTrainNode
+	class CTrainNodeKNN : public CTrainNode
 	{
 	public:
 		/**
@@ -28,8 +28,8 @@ namespace DirectGraphicalModels
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-		DllExport CTrainNodeNearestNeighbor(byte nStates, word nFeatures, size_t maxSamples = 0);
-		DllExport ~CTrainNodeNearestNeighbor(void);
+		DllExport CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples = 0);
+		DllExport ~CTrainNodeKNN(void);
 
 		DllExport virtual void	  reset(void);
 
