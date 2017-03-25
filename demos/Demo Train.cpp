@@ -66,11 +66,7 @@ int main(int argv, char *argc[])
 #ifdef USE_SHERWOOD
 		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		case 7: {
-			TrainNodeKNNParams params = TRAIN_NODE_KNN_PARAMS_DEFAULT;
-			params.maxNeighbors = 1;
-			nodeTrainer = new CTrainNodeKNN(nStates, nFeatures, params);
-			break; }
+		case 7: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break; 
 		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
 	switch(edgeModel) {

@@ -62,6 +62,12 @@ namespace DirectGraphicalModels
 
 	}
 	 
+	/// @todo Implement this function
+	void CKDTree::save(const std::string &fileName) const
+	{
+
+	}
+	
 	/// @todo Delete dublicated keys before building the tree
 	void CKDTree::build(Mat &keys, Mat &values)
 	{
@@ -84,31 +90,12 @@ namespace DirectGraphicalModels
 		m_root = buildTree(keys, boundingBox);
 	}
 
-	std::shared_ptr<const CKDNode> CKDTree::findNearestNeighbor(const Mat &key) const
-	{
-		if (!m_root) {
-			DGM_WARNING("The k-D tree is not built");
-			return nullptr;
-		}
-		
-		std::shared_ptr<const CKDNode> nearestNode = findNearestNode(key);
-		float searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey()) + 0.5f;
-
-		pair_mat_t searchBox;
-		searchBox.first  = key - searchRadius;
-		searchBox.second = key + searchRadius;
-
-		m_root->findNearestNeighbor(key, searchBox, searchRadius, nearestNode);
-
-		return nearestNode;
-	}
-
-	std::vector<std::shared_ptr<const CKDNode>> CKDTree::FindNearestNeighbors(const Mat &key, size_t k) const
+	std::vector<std::shared_ptr<const CKDNode>> CKDTree::findNearestNeighbors(const Mat &key, size_t maxNeighbors) const
 	{
 		const float searchRadius_extension = 2.0f;
 		
 		std::vector<std::shared_ptr<const CKDNode>> nearestNeighbors;
-		nearestNeighbors.reserve(k);
+		nearestNeighbors.reserve(maxNeighbors);
 
 		if (!m_root) {
 			DGM_WARNING("The k-D tree is not built");
@@ -118,7 +105,7 @@ namespace DirectGraphicalModels
 		std::shared_ptr<const CKDNode> nearestNode = findNearestNode(key);
 		nearestNeighbors.push_back(nearestNode);
 		float searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey());
-		if (k > 1) searchRadius *= searchRadius_extension;
+		if (maxNeighbors > 1) searchRadius *= searchRadius_extension;
 		searchRadius += 0.5f;
 		//if (k > 1) searchRadius = 255 * sqrtf(static_cast<float>(key.cols)); // infinity
 
@@ -126,22 +113,9 @@ namespace DirectGraphicalModels
 		searchBox.first  = key - searchRadius;
 		searchBox.second = key + searchRadius;
 
-		m_root->findNearestNeighbors(key, k, searchBox, searchRadius, nearestNeighbors);
+		m_root->findNearestNeighbors(key, maxNeighbors, searchBox, searchRadius, nearestNeighbors);
 	
 		return nearestNeighbors;
-	}
-
-	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat &key) const
-	{
-		std::shared_ptr<CKDNode> node(m_root);
-
-		while (!node->isLeaf()) {
-			std::shared_ptr<CKDNode> n = std::static_pointer_cast<CKDNode>(node);
-			if (key.at<byte>(0, n->getSplitDim()) < n->getSplitVal())	node = n->Left();
-			else														node = n->Right();
-		}
-
-		return std::static_pointer_cast<CKDNode>(node);
 	}
 
 	// ----------------------------------------- Private -----------------------------------------
@@ -194,5 +168,17 @@ namespace DirectGraphicalModels
 		}
 	}
 
+	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat &key) const
+	{
+		std::shared_ptr<CKDNode> node(m_root);
+
+		while (!node->isLeaf()) {
+			std::shared_ptr<CKDNode> n = std::static_pointer_cast<CKDNode>(node);
+			if (key.at<byte>(0, n->getSplitDim()) < n->getSplitVal())	node = n->Left();
+			else														node = n->Right();
+		}
+
+		return std::static_pointer_cast<CKDNode>(node);
+	}
 
 }

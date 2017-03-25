@@ -1,6 +1,6 @@
 #include "TrainNodeKNN.h"
-#include "SamplesAccumulator.h"
 #include "KDTree.h"
+#include "SamplesAccumulator.h"
 #include "mathop.h"
 
 namespace DirectGraphicalModels 
@@ -39,6 +39,19 @@ namespace DirectGraphicalModels
 		m_pTree->reset();
 	}
 
+	void CTrainNodeKNN::save(const std::string &path, const std::string &name, short idx) const
+	{
+		std::string fileName = generateFileName(path, name.empty() ? "TrainNodeKNN" : name, idx);
+		m_pTree->save(fileName.c_str());
+	}
+
+	/// @todo Implement this function
+	void CTrainNodeKNN::load(const std::string &path, const std::string &name, short idx)
+	{
+		std::string fileName = generateFileName(path, name.empty() ? "TrainNodeKNN" : name, idx);
+		//m_pRF = Algorithm::load<CRForest>(fileName.c_str());
+	}
+
 	void CTrainNodeKNN::addFeatureVec(const Mat &featureVector, byte gt)
 	{
 		m_pSamplesAcc->addSample(featureVector, gt);
@@ -71,7 +84,7 @@ namespace DirectGraphicalModels
 	/// @todo Generate a 2D histogram for this methos
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
-		auto nearestNeighbors = m_pTree->FindNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
+		auto nearestNeighbors = m_pTree->findNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
 		potential.setTo(0.1f);
 		for (auto node : nearestNeighbors) {
 			byte s = node->getValue();				

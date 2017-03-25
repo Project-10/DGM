@@ -4,7 +4,6 @@
 #include "DGM/AveragePrecision.h"
 #include "DGM/FeaturesConcatenator.h"
 #include "DGM/NDGauss.h"
-#include "DGM/KDTree.h"
 #include "DGM/random.h"
 #include "DGM/parallel.h"
 
@@ -85,6 +84,7 @@ DGM implements the following training methods:
 - <b>GM:</b> Gaussian Model training @ref DirectGraphicalModels::CTrainNodeGM
 - <b>CvGM:</b> OpenCV Gaussian Model training @ref DirectGraphicalModels::CTrainNodeCvGM
 - <b>GMM:</b> Gaussian Mixture Model training (<a href="http://www.project-10.de/Kosov/files/GCPR_2013.pdf" target="_blank">Sequential GMM Training Algorithm</a>) @ref DirectGraphicalModels::CTrainNodeGMM
+- <b>KNN:</b> k-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeKNN
 - <b>CvGMM:</b> OpenCV Gaussian Mixture Model training @ref DirectGraphicalModels::CTrainNodeCvGMM
 - <b>CvRF:</b> OpenCV Random Forest training @ref DirectGraphicalModels::CTrainNodeCvRF
 - <b>MsRF:</b> Microsoft Research Random Forest training @ref DirectGraphicalModels::CTrainNodeMsRF
