@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvRFParams() {}
-		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
+		TrainNodeCvRFParams(int _max_depth, int _min_sample_count, float _regression_accuracy, bool _use_surrogates, int _max_categories, bool _calc_var_importance, int _nactive_vars,	int _maxCount, double _epsilon, int _term_criteria_type, size_t _maxSamples) : max_depth(_max_depth), min_sample_count(_min_sample_count), regression_accuracy(_regression_accuracy), use_surrogates(_use_surrogates), max_categories(_max_categories), calc_var_importance(_calc_var_importance), nactive_vars(_nactive_vars), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvRFParams;
 
 	const TrainNodeCvRFParams TRAIN_NODE_CV_RF_PARAMS_DEFAULT = TrainNodeCvRFParams(
@@ -85,19 +85,22 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		DllExport void saveFile(FILE *pFile) const { }
-		DllExport void loadFile(FILE *pFile) { }
-		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
+		DllExport void	saveFile(FILE *pFile) const { }
+		DllExport void	loadFile(FILE *pFile) { }
+		DllExport void	calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
 
 	protected:
 		Ptr<CRForest>		  m_pRF;						///< Random Forest
 		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples Accumulator
 
+
 	private:
 		void			init(TrainNodeCvRFParams params);	// This function is called by both constructors
 		
-	
+
+	private:
+		TrainNodeCvRFParams	  m_params;
 	};
 }
 

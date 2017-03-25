@@ -1,4 +1,4 @@
-// Nearest Neighbor training class interface
+// k-Nearest Neighbors training class interface
 // Written by Sergey G. Kosov in 2017 for Project X
 #pragma once
 
@@ -6,10 +6,24 @@
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
 	class CKDTree;
+	class CSamplesAccumulator;
+
+	/// @brief k-Nearest Neighbors parameters
+	typedef struct TrainNodeKNNParams {
+		size_t	maxNeighbors;						///< Max number of neighbors to be used for calculating potentials
+		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
+		
+		TrainNodeKNNParams() {}
+		TrainNodeKNNParams(size_t _maxNeighbors, size_t _maxSamples) : maxNeighbors(_maxNeighbors), maxSamples(_maxSamples) {}
+	} TrainNodeKNNParams;
 	
-	// ====================== Nearest Neighbor Train Class =====================
+	const TrainNodeKNNParams TRAIN_NODE_KNN_PARAMS_DEFAULT =	TrainNodeKNNParams(
+																100,	// Max number of neighbors to be used for calculating potentials
+																0		// Maximum number of samples to be used in training. 0 means using all the samples
+																);
+
+	// ====================== k-Nearest Neighbors Train Class =====================
 	/**
 	* @ingroup moduleTrainNode
 	* @brief Nearest Neighbor training class
@@ -24,11 +38,18 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
+		* @param params k-Nearest Neighbors parameters (Ref. @ref TrainNodeKNNParams)
+		*/
+		DllExport CTrainNodeKNN(byte nStates, word nFeatures, TrainNodeKNNParams params = TRAIN_NODE_KNN_PARAMS_DEFAULT);
+		/**
+		* @brief Constructor
+		* @param nStates Number of states (classes)
+		* @param nFeatures Number of features
 		* @param maxSamples Maximum number of samples to be used in training.
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-		DllExport CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples = 0);
+		DllExport CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples);
 		DllExport ~CTrainNodeKNN(void);
 
 		DllExport virtual void	  reset(void);
@@ -38,7 +59,9 @@ namespace DirectGraphicalModels
 
 
 	protected:
+		/// @todo Implement this function
 		DllExport virtual void	  saveFile(FILE *pFile) const {}
+		/// @todo Implement this function
 		DllExport virtual void	  loadFile(FILE *pFile) {}
 		/**
 		* @brief Calculates the node potential, based on the feature vector.
@@ -58,8 +81,13 @@ namespace DirectGraphicalModels
 	protected:
 		CSamplesAccumulator * m_pSamplesAcc;
 		CKDTree				* m_pTree;
-	
-	private:
 
+
+	private:
+		void					init(TrainNodeKNNParams params);	// This function is called by both constructors
+
+
+	private:
+		TrainNodeKNNParams	  m_params;
 	};
 }

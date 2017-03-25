@@ -6,12 +6,26 @@
 namespace DirectGraphicalModels 
 {
 	// Constructor
+	CTrainNodeKNN::CTrainNodeKNN(byte nStates, word nFeatures, TrainNodeKNNParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+	{
+		init(params);
+	}
+
+	// Constructor
 	CTrainNodeKNN::CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
 	{
-		m_pSamplesAcc	= new CSamplesAccumulator(nStates, maxSamples);
-		m_pTree			= new CKDTree();
+		TrainNodeKNNParams params = TRAIN_NODE_KNN_PARAMS_DEFAULT;
+		params.maxSamples = maxSamples;
+		init(params);
 	}
 	
+	void CTrainNodeKNN::init(TrainNodeKNNParams params)
+	{
+		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+		m_pTree = new CKDTree();
+		m_params = params;
+	}
+
 	// Destructor
 	CTrainNodeKNN::~CTrainNodeKNN(void)
 	{
@@ -55,11 +69,9 @@ namespace DirectGraphicalModels
 	/// @todo Use 2 scenes in the demo-train
 	/// @todo Use weighted sum of node values
 	/// @todo Generate a 2D histogram for this methos
-	/// @todo Make k as parameter
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
-		const size_t k = 100;
-		auto nearestNeighbors = m_pTree->FindNearestNeighbors(featureVector.t(), k);
+		auto nearestNeighbors = m_pTree->FindNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
 		potential.setTo(0.1f);
 		for (auto node : nearestNeighbors) {
 			byte s = node->getValue();				
