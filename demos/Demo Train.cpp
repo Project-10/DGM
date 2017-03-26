@@ -7,17 +7,16 @@ using namespace DirectGraphicalModels::vis;
 
 void print_help(void)
 {
-	printf("Usage: \"Demo Train.exe\" node_training_model edge_training_model original_image features_image groundtruth_image output_image\n");
+	printf("Usage: \"Demo Train.exe\" node_training_model edge_training_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n");
 
 	printf("\nNode training models:\n");
 	printf("0: Naive Bayes\n");
-	printf("1: Gaussian Model\n");
-	printf("2: Gaussian Mixture Model\n");
-	printf("3: OpenCV Gaussian Model\n");
-	printf("4: OpenCV Gaussian Mixture Model\n");
-	printf("5: OpenCV Random Forest\n");
-	printf("6: MicroSoft Random Forest\n");
-	printf("7: Nearest Neighbor\n");
+	printf("1: Gaussian Mixture Model\n");
+	printf("2: OpenCV Gaussian Mixture Model\n");
+	printf("3: Nearest Neighbor\n");
+	printf("4: OpenCV Random Forest\n");
+	printf("5: MicroSoft Random Forest\n");
+
 	
 	printf("\nEdge training models:\n");
 	printf("0: Without Edges\n");
@@ -35,17 +34,19 @@ int main(int argv, char *argc[])
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
 	const unsigned int	nFeatures	= 3;		
 
-	if (argv != 7) {
+	if (argv != 9) {
 		print_help();
 		return 0;
 	}
 
 	// Reading parameters and images
-	int nodeModel	= atoi(argc[1]);															// node training model
-	int edgeModel	= atoi(argc[2]);															// edge training model
-	Mat img			= imread(argc[3], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
-	Mat fv			= imread(argc[4], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
-	Mat gt			= imread(argc[5], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
+	int nodeModel	= atoi(argc[1]);																	// node training model
+	int edgeModel	= atoi(argc[2]);																	// edge training model
+	Mat train_fv	= imread(argc[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt	= imread(argc[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
+	Mat test_fv		= imread(argc[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt		= imread(argc[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat test_img	= imread(argc[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNode		* nodeTrainer	= NULL; 
 	CTrainEdge		* edgeTrainer	= NULL;
@@ -58,15 +59,13 @@ int main(int argv, char *argc[])
 
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGM(nStates, nFeatures);			break;
-		case 2: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;		
-		case 3: nodeTrainer = new CTrainNodeCvGM(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;		
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
+		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
 #ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		case 7: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break; 
 		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
 	switch(edgeModel) {
@@ -93,16 +92,16 @@ int main(int argv, char *argc[])
 	ticks = getTickCount();	
 	
 	// Node Training (compact notation)
-	nodeTrainer->addFeatureVec(fv, gt);					
+	nodeTrainer->addFeatureVec(train_fv, train_gt);					
 
 	// Edge Training (comprehensive notation)
 	Mat featureVector1(nFeatures, 1, CV_8UC1); 
 	Mat featureVector2(nFeatures, 1, CV_8UC1); 	
 	for (int y = 1; y < height; y++) {
-		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = fv.ptr<byte>(y - 1);
-		byte *pGt1 = gt.ptr<byte>(y);
-		byte *pGt2 = gt.ptr<byte>(y - 1);
+		byte *pFv1 = train_fv.ptr<byte>(y);
+		byte *pFv2 = train_fv.ptr<byte>(y - 1);
+		byte *pGt1 = train_gt.ptr<byte>(y);
+		byte *pGt2 = train_gt.ptr<byte>(y - 1);
 		for (int x = 1; x < width; x++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
 
@@ -125,8 +124,8 @@ int main(int argv, char *argc[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	printf("Filling the Graph... ");
 	ticks = getTickCount();
-	graph->fillNodes(nodeTrainer, fv);
-	graph->fillEdges(edgeTrainer, fv, params, params_len);
+	graph->fillNodes(nodeTrainer, test_fv);
+	graph->fillEdges(edgeTrainer, test_fv, params, params_len);
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -139,21 +138,21 @@ int main(int argv, char *argc[])
 
 	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
+	confMat->estimate(test_gt, solution);																				// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
 	printf("%s\n", str);
 
 	// ====================== Visualization =======================
-	marker->markClasses(img, solution);
-	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
-	imwrite(argc[6], img);
+	marker->markClasses(test_img, solution);
+	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	imwrite(argc[8], test_img);
 	
-	imshow("Image", img);
+	imshow("Image", test_img);
 	cvWaitKey(1000);
 
-	getchar();
+	//getchar();
 
 	return 0;
 }

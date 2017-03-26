@@ -79,7 +79,6 @@ namespace DirectGraphicalModels
 		m_pTree->build(samples, classes);
 	}
 
-	/// @todo Use 2 scenes in the demo-train
 	/// @todo Use weighted sum of node values
 	/// @todo Generate a 2D histogram for this methos
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const

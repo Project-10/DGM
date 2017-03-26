@@ -320,32 +320,49 @@ int main(int argv, char *argc[])
 /**
 @page demotrain Demo Train
 In this demo, we consider the case when the training data is aviable. In this example the trainig data is represented in form of 
-manually labelled image. The original image \b Original \b Image.jpg is a color-infrared image, and the grounftruth image \b GroundTruth \b Image.jpg
-has 6 different classes, namely \a road, \a traffic \a island, \a grass, \a agriculture, \a tree and \a car (instances of which are not represented in image). 
+manually labelled images. The original images \b Original \b Image.jpg are color-infrared images, and the grounftruth images \b GroundTruth \b Image.jpg
+have 6 different classes, namely \a road, \a traffic \a island, \a grass, \a agriculture, \a tree and \a car (instances of which are not represented in image). 
 
-In this example DGM uses 3 features extacted from the \b Original \b Image.jpg for training (Please refer to the @ref demofex for details). The same image then is used for the labelling. Finally, 
-we evaluate the results by comparing the lebelled image with the groundtruth.
-
+In this example DGM uses 3 features extacted from the \b Original \b Image.jpg (Please refer to the @ref demofex for details). One image is used for training and 
+another - for testing. Finally, we evaluate the results by comparing the lebelled image with the groundtruth.
 
 <table align="center">
 <tr>
-	<td colspan="3"><center><b>Input</b></center></td>
-	<td></td>
-	<td><center><b>Output</b></center></td>
+	<td colspan="3"><center><b>Input Training Images</b></center></td>
 </tr>
 <tr>
   <td><img src="001_img_small.jpg"></td>
   <td><img src="001_fv_small.jpg"></td>
   <td><img src="001_gt_small.jpg"></td>
-  <td><img src="arrow.png"></td>
-  <td><img src="001_res_small.jpg"></td>
 </tr>
 <tr>
   <td><center><b>Original Image.jpg</b></center></td>
   <td><center><b>Feature Vector.jpg</b></center></td>
-  <td><center><b>GroundTruth Image.jpg</b></center></td>
-  <td></td>
-  <td><center><b>Resulting Class Map</b></center></td>
+  <td><center><b>Ground Truth.jpg</b></center></td>
+</tr>
+</table>
+
+<hr>
+
+<table align="center">
+<tr>
+<td colspan="3"><center><b>Input Testing Images</b></center></td>
+<td></td>
+<td><center><b>Output</b></center></td>
+</tr>
+<tr>
+<td><img src="002_img_small.jpg"></td>
+<td><img src="002_fv_small.jpg"></td>
+<td><img src="002_gt_small.jpg"></td>
+<td><img src="arrow.png"></td>
+<td><img src="002_res_small.jpg"></td>
+</tr>
+<tr>
+<td><center><b>Original Image.jpg</b></center></td>
+<td><center><b>Feature Vector.jpg</b></center></td>
+<td><center><b>Ground Truth.jpg</b> (for evaluation)</center></td>
+<td></td>
+<td><center><b>Resulting Class Map</b></center></td>
 </tr>
 </table>
 
@@ -360,79 +377,77 @@ int main(int argv, char *argc[])
 	const CvSize		imgSize		= cvSize(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;	// {road, traffic island, grass, agriculture, tree, car} 		
-	const unsigned int	nFeatures	= 3;		
+	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car}
+	const unsigned int	nFeatures	= 3;
 
-	if (argv != 7) {
+	if (argv != 9) {
 		print_help();
 		return 0;
 	}
 
 	// Reading parameters and images
-	int nodeModel	= atoi(argc[1]);															// node training model
-	int edgeModel	= atoi(argc[2]);															// edge training model
-	Mat img			= imread(argc[3], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
-	Mat fv			= imread(argc[4], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
-	Mat gt			= imread(argc[5], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
+	int nodeModel	= atoi(argc[1]);																	// node training model
+	int edgeModel	= atoi(argc[2]);																	// edge training model
+	Mat train_fv	= imread(argc[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt	= imread(argc[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
+	Mat test_fv		= imread(argc[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt		= imread(argc[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat test_img	= imread(argc[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-	CTrainNode		* nodeTrainer	= NULL; 
+	CTrainNode		* nodeTrainer	= NULL;
 	CTrainEdge		* edgeTrainer	= NULL;
-	CGraph			* graph			= new CGraph(nStates); 
+	CGraphExt		* graph			= new CGraphExt(nStates);
 	CInfer			* decoder		= new CInferLBP(graph);
 	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat		= new CCMat(nStates);
-	float			  params[]		= {100, 0.01f};						
+	float			  params[]		= {100, 0.01f};
 	size_t			  params_len;
 
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGM(nStates, nFeatures);			break;
-		case 2: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;		
-		case 3: nodeTrainer = new CTrainNodeCvGM(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;		
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
+		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
+#ifdef USE_SHERWOOD
+		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+#endif
+		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
 	switch(edgeModel) {
 		case 0: params[0] = 1;	// Emulate "No edges"
 		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		params_len = 1; break;
 		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
 		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
-		case 4:	
-			CFeaturesConcatenator *pConcatenator = new CDiffFeaturesConcatenator(nFeatures);
-			edgeTrainer = new CTrainEdgeConcat(nStates, nFeatures, pConcatenator);		
+		case 4:
+			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
+		default: printf("Unknown edge_training_model is given\n"); print_help(); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
 	printf("Building the Graph... ");
-	int64 ticks = getTickCount();	
-	for (int y = 0; y < height; y++) 
-		for (int x = 0; x < width; x++) {
-			size_t idx = graph->addNode();
-			if (x > 0) 	 graph->addArc(idx, idx - 1);
-			if (y > 0) 	 graph->addArc(idx, idx - width); 
-		} // x
+	int64 ticks = getTickCount();
+	graph->build(imgSize);
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
 	// ========================= STAGE 2: Training =========================
 	printf("Training... ");
-	ticks = getTickCount();	
-	
-	// Node Training (copact notation)
-	nodeTrainer->addFeatureVec(fv, gt);					
-	nodeTrainer->train();	
+	ticks = getTickCount();
+
+	// Node Training (compact notation)
+	nodeTrainer->addFeatureVec(train_fv, train_gt);
 
 	// Edge Training (comprehensive notation)
-	Mat featureVector1(nFeatures, 1, CV_8UC1); 
-	Mat featureVector2(nFeatures, 1, CV_8UC1); 	
+	Mat featureVector1(nFeatures, 1, CV_8UC1);
+	Mat featureVector2(nFeatures, 1, CV_8UC1);
 	for (int y = 1; y < height; y++) {
-		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = fv.ptr<byte>(y - 1);
-		byte *pGt1 = gt.ptr<byte>(y);
-		byte *pGt2 = gt.ptr<byte>(y - 1);
+		byte *pFv1 = train_fv.ptr<byte>(y);
+		byte *pFv2 = train_fv.ptr<byte>(y - 1);
+		byte *pGt1 = train_gt.ptr<byte>(y);
+		byte *pGt2 = train_gt.ptr<byte>(y - 1);
 		for (int x = 1; x < width; x++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
 
@@ -445,6 +460,8 @@ int main(int argv, char *argc[])
 			edgeTrainer->addFeatureVecs(featureVector2, pGt2[x], featureVector1, pGt1[x]);
 		} // x
 	} // y
+
+	nodeTrainer->train();
 	edgeTrainer->train();
 
 	ticks = getTickCount() - ticks;
@@ -453,49 +470,33 @@ int main(int argv, char *argc[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	printf("Filling the Graph... ");
 	ticks = getTickCount();
-	Mat nodePot, edgePot;
-	for (int y = 0, idx = 0; y < height; y++) {
-		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;
-		for (int x = 0; x < width; x++, idx++) {
-			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
-			nodePot = nodeTrainer->getNodePotentials(featureVector1);												// node potential
-			graph->setNode(idx, nodePot);
-
-			if (x > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - 1, edgePot);
-			} // if x
-			if (y > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - width, edgePot);
-			} // if y
-		} // x
-	} // y
+	graph->fillNodes(nodeTrainer, test_fv);
+	graph->fillEdges(edgeTrainer, test_fv, params, params_len);
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
 	// ========================= STAGE 4: Decoding =========================
 	printf("Decoding... ");
 	ticks = getTickCount();
-	std::vector<byte> optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = decoder->decode(100);
 	ticks =  getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
-	// ====================== Evaluation =======================	
+	// ====================== Evaluation =======================
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
+	confMat->estimate(test_gt, solution);																				// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
 	printf("%s\n", str);
 
 	// ====================== Visualization =======================
-	marker->markClasses(img, solution);
-	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
-	imwrite(argc[6], img);
+	marker->markClasses(test_img, solution);
+	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	imwrite(argc[8], test_img);
+
+	imshow("Image", test_img);
+	cvWaitKey(1000);
 
 	return 0;
 }
