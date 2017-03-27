@@ -79,15 +79,19 @@ namespace DirectGraphicalModels
 		m_pTree->build(samples, classes);
 	}
 
-	/// @todo Use weighted sum of node values
-	/// @todo Generate a 2D histogram for this methos
+
+	/// @todo Generate a 2D histogram for this method
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		auto nearestNeighbors = m_pTree->findNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
-		potential.setTo(0.1f);
+		potential.setTo(m_params.bias);
+		float minr = mathop::Euclidian<byte, float>(featureVector.t(), nearestNeighbors.front()->getKey());
+
 		for (auto node : nearestNeighbors) {
-			byte s = node->getValue();				
-			potential.at<float>(s, 0)++;
+			float r = mathop::Euclidian<byte, float>(featureVector.t(), node->getKey());
+			byte  s = node->getValue();				
+			r = 1 + r - minr;
+			potential.at<float>(s, 0) += 1 / (r * r);
 		}
 	}
 }

@@ -11,14 +11,16 @@ namespace DirectGraphicalModels
 
 	/// @brief k-Nearest Neighbors parameters
 	typedef struct TrainNodeKNNParams {
+		float	bias;								///< Regularization CRF parameter: bias is added to all potential values
 		size_t	maxNeighbors;						///< Max number of neighbors to be used for calculating potentials
 		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
-		
+
 		TrainNodeKNNParams() {}
-		TrainNodeKNNParams(size_t _maxNeighbors, size_t _maxSamples) : maxNeighbors(_maxNeighbors), maxSamples(_maxSamples) {}
+		TrainNodeKNNParams(float _bias, size_t _maxNeighbors, size_t _maxSamples) : bias(_bias), maxNeighbors(_maxNeighbors), maxSamples(_maxSamples) {}
 	} TrainNodeKNNParams;
 	
 	const TrainNodeKNNParams TRAIN_NODE_KNN_PARAMS_DEFAULT =	TrainNodeKNNParams(
+																0.1,	// Regularization CRF parameter: bias is added to all potential values
 																100,	// Max number of neighbors to be used for calculating potentials
 																0		// Maximum number of samples to be used in training. 0 means using all the samples
 																);
