@@ -58,8 +58,6 @@ namespace DirectGraphicalModels
 				if (n == 0) return x;
 			} // x: dimensions
 		}
-	
-
 	}
 	 
 	/// @todo Implement this function
@@ -68,7 +66,6 @@ namespace DirectGraphicalModels
 
 	}
 	
-	/// @todo Delete dublicated keys before building the tree
 	void CKDTree::build(Mat &keys, Mat &values)
 	{
 		if (keys.empty()) {
@@ -82,12 +79,18 @@ namespace DirectGraphicalModels
 		pair_mat_t boundingBox = getBoundingBox<byte>(keys);
 		hconcat(keys, values, keys);							// keys = [keys; data]
 
-		// TODO: delete dublicated entries
-		//std::sort(keys.begin(), keys.end());
-		//std::vector<vec_float_t>::iterator it = std::unique(keys.begin(), keys.end());
-		//Points.resize(std::distance(keys.begin(), it));
+		// Delete dublicated entries
+		parallel::sortRows<byte>(keys);
+		Mat data;
+		int y = keys.rows - 1;
+		for(; y > 0; y--) {
+			if (!mathop::isEqual<byte>(keys.row(y), keys.row(y - 1))) data.push_back(keys.row(y));
+			keys.pop_back();
+		}
+		data.push_back(keys.row(0));
+		keys.pop_back();
 
-		m_root = buildTree(keys, boundingBox);
+		m_root = buildTree(data, boundingBox);
 	}
 
 	std::vector<std::shared_ptr<const CKDNode>> CKDTree::findNearestNeighbors(const Mat &key, size_t maxNeighbors) const

@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 	} TrainNodeKNNParams;
 	
 	const TrainNodeKNNParams TRAIN_NODE_KNN_PARAMS_DEFAULT =	TrainNodeKNNParams(
-																0.1,	// Regularization CRF parameter: bias is added to all potential values
+																0.1f,	// Regularization CRF parameter: bias is added to all potential values
 																100,	// Max number of neighbors to be used for calculating potentials
 																0		// Maximum number of samples to be used in training. 0 means using all the samples
 																);

@@ -4,6 +4,7 @@
 #include "DGM/AveragePrecision.h"
 #include "DGM/FeaturesConcatenator.h"
 #include "DGM/NDGauss.h"
+#include "DGM/KDTree.h"
 #include "DGM/random.h"
 #include "DGM/parallel.h"
 

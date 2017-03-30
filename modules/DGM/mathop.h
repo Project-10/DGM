@@ -15,6 +15,40 @@ namespace DirectGraphicalModels
 	*/
 	namespace mathop {
 		/**
+		* @brief Compares two argument matrices \b a and \b b.
+		* @tparam T Type of elements in matrices \b a and \b b (\a e.g. \a byte, \a float, \a double, \a etc.)
+		* @param a The first matrix
+		* @param b The second matrix
+		* @retval true if \b a == \b b
+		* @retval false otherwise
+		*/
+		template <typename T>
+		inline bool isEqual(const Mat &a, const Mat &b)
+		{
+			// Assertions
+			DGM_ASSERT_MSG(a.size() == b.size(), "Size mismatch");
+			DGM_ASSERT_MSG(a.type() == b.type(), "Type mismatch");
+
+			if (a.cols == 1) {
+				for (register int j = 0; j < a.rows; j++)
+					if (a.at<T>(j, 0) != b.at<T>(j, 0)) return false;
+			}
+			else if (a.rows == 1) {
+				for (register int i = 0; i < a.cols; i++) {
+					if (a.at<T>(0, i) != b.at<T>(0, i)) return false;
+				}
+			}
+			else {
+				for (register int j = 0; j < a.rows; j++) {
+					const T *pa = a.ptr<T>(j);
+					const T *pb = b.ptr<T>(j);
+					for (register int i = 0; i < a.cols; i++)
+						if(pa[i] != pb[i]) return false;
+				}
+			}
+			return true;
+		}
+		/**
 		* @brief Calculates the Euclidian distance between argument matrices \b a and \b b.
 		* @details The Euclidian distance is calculated by the formula : \f$D_E(a, b) = \sqrt{ \sum_{i,j}(a_{ij} - b_{ij})^2 }\f$.
 		* @tparam Targ Type of elements in matrices \b a and \b b (\a e.g. \a byte, \a float, \a double, \a etc.)
