@@ -90,7 +90,7 @@ namespace DirectGraphicalModels { namespace parallel {
 			Mat tmp;
 			for (int i = begin; i <= end; i++) {
 				int j = i;
-				while (j > 0 && m.at<T>(j, x) < m.at<T>(j - 1, x)) {
+				while (j > begin && m.at<T>(j, x) < m.at<T>(j - 1, x)) {
 					Swap(m.row(j), m.row(j - 1), tmp);
 					j--;
 				}
@@ -177,6 +177,46 @@ namespace DirectGraphicalModels { namespace parallel {
 #else 
 		sequential_quick_sort<T>(m, x, 0, m.rows - 1, 200);
 #endif
+	}
+
+	namespace {
+		template <typename T>
+		inline void deepSort(Mat &m, int depth, int begin, int end)
+		{
+			if (depth == m.cols) return;				// we are too deep
+			if (begin == end)    return;				// do not sort one element
+
+#ifdef ENABLE_PPL
+			const int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
+			parallel_quick_sort<T>(m, depth, begin, end, 200, static_cast<int>(log2f(float(nCores))) + 4);
+#else 
+			sequential_quick_sort<T>(m, depth, begin, end, 200);
+#endif
+
+			int ref_pos = begin;
+			T   ref_val = m.at<T>(begin, depth);
+			for (int y = begin + 1; y <= end; y++) {
+				T val = m.at<T>(y, depth);
+				if (val != ref_val) {
+					deepSort<T>(m, depth + 1, ref_pos, y - 1);
+					ref_pos = y;
+					ref_val = val;
+				}
+			} // y
+		}
+	}
+
+	/**
+	* @brief Sorts the rows of the input matrix
+	* @details 
+	* > This function supports PPL.
+	* @tparam T The type of elements in matrix.
+	* @param[in, out] m The input/output data, which rows should be sorted.
+	*/
+	template <typename T>
+	DllExport inline void sortRows(Mat &m)
+	{
+		deepSort<T>(m, 0, 0, m.rows - 1);
 	}
 
 	// ------------------------------------------- SUFFLE ------------------------------------------
