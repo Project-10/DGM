@@ -70,8 +70,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CKDTree				* m_pTree;
-		CSamplesAccumulator * m_pSamplesAcc;
+		CKDTree				* m_pTree;						///< k-D Tree
+		CSamplesAccumulator * m_pSamplesAcc;				///< Samples Accumulator
 
 
 	private:

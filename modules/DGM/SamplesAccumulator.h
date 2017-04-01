@@ -25,7 +25,7 @@ namespace DirectGraphicalModels
 		CSamplesAccumulator(byte nStates, size_t maxSamples)
 			: m_vSamplesAcc(vec_mat_t(nStates))
 			, m_vNumInputSamples(vec_int_t(nStates, 0))
-			, m_maxSamples(maxSamples ? maxSamples : std::numeric_limits<size_t>::max())
+			, m_maxSamples(maxSamples ? static_cast<int>(maxSamples) : std::numeric_limits<int>::max())
 		{ }
 		CSamplesAccumulator(const CSamplesAccumulator&) = delete;
 		~CSamplesAccumulator(void) {}
@@ -74,6 +74,6 @@ namespace DirectGraphicalModels
 	protected:
 		vec_mat_t	m_vSamplesAcc;						// = vec_mat_t(nStates);	// Samples container for all states
 		vec_int_t	m_vNumInputSamples;					// = vec_int_t(nStates, 0);	// Amount of input samples for all states		
-		size_t		m_maxSamples;						// = INFINITY;				// for optimisation purposes
+		int			m_maxSamples;						// = INFINITY;				// for optimisation purposes
 	};
 }

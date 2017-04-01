@@ -52,11 +52,13 @@ namespace DirectGraphicalModels
 			if (nMaxs == 1) return res;
 
 			// Randomly choose one of the maximums
+			int x = 0;
 			int n = random::u<int>(1, nMaxs);
-			for (int x = 0; x < diff.cols; x++) {						// dimensions
+			for (x = 0; x < diff.cols; x++) {						// dimensions
 				if (maxMasc.at<byte>(0, x) == 1) n--;
-				if (n == 0) return x;
+				if (n == 0) break;
 			} // x: dimensions
+			return x;
 		}
 	}
 	 

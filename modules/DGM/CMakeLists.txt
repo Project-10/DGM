@@ -26,7 +26,6 @@ source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcat
 source_group("Source Files\\Common\\Average Precision" FILES "AveragePrecision.h" "AveragePrecision.cpp")
 source_group("Source Files\\Common\\KDGauss" FILES "NDGauss.h" "NDGauss.cpp")
 source_group("Source Files\\Common\\KDTree" FILES "KDTree.h" "KDTree.cpp" "KDNode.h" "KDNode.cpp")
-source_group("Source Files\\Common\\KDTree\\vec" FILES "KDTree_vec.h" "KDTree_vec.cpp" "KDNode_vec.h" "KDNode_vec.cpp")
 source_group("Source Files\\Common\\Samples Accumulator" FILES "SamplesAccumulator.h" "SamplesAccumulator.cpp")
 source_group("Source Files\\Common\\Random" FILES "random.h")
 source_group("Source Files\\Common\\Math Operations" FILES "mathop.h")
