@@ -75,7 +75,7 @@ namespace DirectGraphicalModels
 
 
 	private:
-		void					init(TrainNodeKNNParams params);	// This function is called by both constructors
+		void				  init(TrainNodeKNNParams params);	// This function is called by both constructors
 
 
 	private:

@@ -42,14 +42,13 @@ namespace DirectGraphicalModels
 	void CTrainNodeKNN::save(const std::string &path, const std::string &name, short idx) const
 	{
 		std::string fileName = generateFileName(path, name.empty() ? "TrainNodeKNN" : name, idx);
-		m_pTree->save(fileName.c_str());
+		m_pTree->save(fileName);
 	}
 
-	/// @todo Implement this function
 	void CTrainNodeKNN::load(const std::string &path, const std::string &name, short idx)
 	{
 		std::string fileName = generateFileName(path, name.empty() ? "TrainNodeKNN" : name, idx);
-		//m_pRF = Algorithm::load<CRForest>(fileName.c_str());
+		m_pTree->load(fileName);
 	}
 
 	void CTrainNodeKNN::addFeatureVec(const Mat &featureVector, byte gt)

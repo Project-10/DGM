@@ -15,6 +15,24 @@ namespace DirectGraphicalModels
 		key.copyTo(m_key);
 	}
 
+	void CKDNode::save(FILE *pFile) const
+	{
+		byte _isLeaf = isLeaf();
+		fwrite(&_isLeaf, sizeof(byte), 1, pFile);
+		if (isLeaf()) {		// --- Leaf node ---
+			fwrite(m_key.data, sizeof(byte), m_key.cols, pFile);
+			fwrite(&m_value, sizeof(byte), 1, pFile);
+		} else {			// --- Branch node ---
+			fwrite(m_boundingBox.first.data,  sizeof(byte), m_boundingBox.first.cols,  pFile);
+			fwrite(m_boundingBox.second.data, sizeof(byte), m_boundingBox.second.cols, pFile);
+			fwrite(&m_splitVal, sizeof(byte), 1, pFile);
+			fwrite(&m_splitDim, sizeof(int),  1, pFile);
+
+			m_pLeft->save(pFile);
+			m_pRight->save(pFile);
+		}
+	}
+
 	void CKDNode::findNearestNeighbors(const Mat &key, size_t maxNeighbors, pair_mat_t &searchBox, float &searchRadius, std::vector<std::shared_ptr<const CKDNode>> &nearestNeighbors) const
 	{
 		if (isLeaf()) {		// --- Leaf node ---
