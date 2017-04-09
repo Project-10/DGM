@@ -16,7 +16,12 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 	const dword		nSamples  = X.rows;
 	const int		sampleLen = X.cols;
 
-	DGM_ASSERT_MSG(batch <= nSamples, "The batch number %d exceeds the length of the training data %d", batch, nSamples);
+	// Assertions
+	DGM_ASSERT_MSG((X.depth() == CV_8U) || (X.depth() == CV_16U), "The depth of argument X is not supported");
+	if (batch > nSamples) {
+		DGM_WARNING("The batch number %d exceeds the length of the training data %d", batch, nSamples);
+		batch = nSamples;
+	}
 
 	// 1. Initialize dictionary D randomly
 	if (!m_D.empty()) m_D.release();
@@ -33,8 +38,9 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 #endif
 		// 2.1 Select a random mini-batch of 2000 patches
 		dword rndRow = random::u<dword>(0, nSamples - batch - 1);
+		int normalizer = (X.depth() == CV_8U) ? 255 : 65535;
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
-		_X.convertTo(_X, CV_32FC1, 1.0 / 255);
+		_X.convertTo(_X, CV_32FC1, 1.0 / normalizer);
 		
 		// 2.2 Initialize W
 		parallel::gemm(m_D, _X.t(), 1.0, Mat(), 0.0, _W);					// _W = (D x _X^T);
@@ -110,6 +116,8 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 	const int	blockSize	= getBlockSize();
 	const int	dataWidth	= imgSize.width  - blockSize + 1;
 	const int	dataHeight	= imgSize.height - blockSize + 1;
+	const int	sampleType	= X.type();
+	const int	normalizer	= (X.depth() == CV_8U) ? 255 : 65535;
 
 	const float	lambda		= 5e-5f;		// L1-regularisation parameter (on features)
 	const float	epsilon		= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
@@ -128,7 +136,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample
-			sample.convertTo(sample, CV_32FC1, 1.0 / 255);
+			sample.convertTo(sample, CV_32FC1, 1.0 / normalizer);
 
 			gemm(m_D, sample.t(), 1.0, Mat(), 0.0, _W);						// _W = (D x sample^T)
 			W = _W.t();														// W = (D x sample^T)^T
@@ -149,7 +157,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 	);
 #endif
 	res /= cover;
-	res.convertTo(res, CV_8UC1, 255);
+	res.convertTo(res, sampleType, normalizer);
 	return res;
 }
 #endif				// --- --------- ---
@@ -208,7 +216,7 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	}
 	res /= cover;
 
-	res.convertTo(res, CV_8UC1, 1);
+	res.convertTo(res, X.type(), 1);
 	return res;
 }
 
