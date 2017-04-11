@@ -30,27 +30,51 @@ void CMessagePassing::infer(unsigned int nIt)
 	std::for_each(m_pGraph->m_vNodes.begin(), m_pGraph->m_vNodes.end(), [&,nStates](ptr_node_t &node) {
 #endif
 		size_t nFromEdges = node->from.size();
-		for (size_t e_f = 0; e_f < nFromEdges; e_f++) {				
+		// Don't understand the normalization step, replaced with another version.
+		//for (size_t e_f = 0; e_f < nFromEdges; e_f++) {				
+		//	Edge *edge_from = m_pGraph->m_vEdges[node->from[e_f]].get();	// current incoming edge
+		//	float SUM_pot = 0;
+
+		//	float epsilon = FLT_EPSILON;
+		//	for (byte s = 0; s < nStates; s++) { 		// states
+		//		SUM_pot += node->Pot.at<float>(s, 0);
+		//		// node.Pot.at<float>(s,0) *= edge_from->msg[s];
+		//		node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + edge_from->msg[s]);		// Soft multiplication
+		//	} //s
+		//	
+		//	// Normalization
+		//	float SUM_new_pot = 0;
+		//	for (byte s = 0; s < nStates; s++)			// states
+		//		SUM_new_pot += node->Pot.at<float>(s, 0);
+		//	for (byte s = 0; s < nStates; s++) {		// states
+		//		node->Pot.at<float>(s, 0) *= SUM_pot / SUM_new_pot;
+		//		//node->Pot.at<float>(s, 0) /= SUM_new_pot;
+		//		DGM_ASSERT_MSG(!isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
+				//			SUM_pot = %f\nSUM_new_pot = %f\n", node->id, SUM_pot, SUM_new_pot);
+//	}
+//} // e_f
+
+
+		for (size_t e_f = 0; e_f < nFromEdges; e_f++) {
 			Edge *edge_from = m_pGraph->m_vEdges[node->from[e_f]].get();	// current incoming edge
-			float SUM_pot = 0;
 
 			float epsilon = FLT_EPSILON;
 			for (byte s = 0; s < nStates; s++) { 		// states
-				SUM_pot += node->Pot.at<float>(s, 0);
-				// node.Pot.at<float>(s,0) *= edge_from->msg[s];
+														// node.Pot.at<float>(s,0) *= edge_from->msg[s];
 				node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + edge_from->msg[s]);		// Soft multiplication
 			} //s
-			
-			// Normalization
-			float SUM_new_pot = 0;
-			for (byte s = 0; s < nStates; s++)			// states
-				SUM_new_pot += node->Pot.at<float>(s, 0);
-			for (byte s = 0; s < nStates; s++) {		// states
-				node->Pot.at<float>(s, 0) *= SUM_pot / SUM_new_pot;
-				DGM_ASSERT_MSG(!isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
-					SUM_pot = %f\nSUM_new_pot = %f\n", node->id, SUM_pot, SUM_new_pot);
-			}
+
 		} // e_f
+		  // Normalization
+		float SUM_pot = 0;
+		for (byte s = 0; s < nStates; s++)			// states
+			SUM_pot += node->Pot.at<float>(s, 0);
+		for (byte s = 0; s < nStates; s++) {		// states
+			node->Pot.at<float>(s, 0) /= SUM_pot;
+			//node->Pot.at<float>(s, 0) /= SUM_new_pot;
+			DGM_ASSERT_MSG(!isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
+					SUM_pot = %f\n", node->id, SUM_pot);
+		}
 	});
 
 	deleteMessages();
