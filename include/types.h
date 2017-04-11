@@ -9,7 +9,7 @@
 #define DEBUG_PRINT_INFO	
 #define ENABLE_PPL
 /* #undef ENABLE_AMP */
-/* #undef USE_OPENGL */
+#define USE_OPENGL
 #define USE_SHERWOOD
 
 
