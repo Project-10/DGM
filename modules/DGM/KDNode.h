@@ -42,6 +42,11 @@ namespace DirectGraphicalModels
 		DllExport bool						operator=(const CKDNode)  = delete;
 
 		/**
+		* @brief Saves the state of the node to the file
+		* @param pFile The pointer to the file, opened for writing
+		*/
+		DllExport void						save(FILE *pFile) const;
+		/**
 		* @brief Checks whether the node is either leaf or brach node
 		* @retval true if the node is a leaf-node
 		* @retval false if the node is a branch-node

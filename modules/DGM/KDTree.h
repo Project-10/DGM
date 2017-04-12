@@ -41,7 +41,12 @@ namespace DirectGraphicalModels
 		* @brief Saves the tree into a file
 		* @param fileName The output file name
 		*/
-		 DllExport void											save(const std::string &fileName) const;
+		DllExport void											save(const std::string &fileName) const;
+		/**
+		* @brief Loads a tree from the file
+		* @param fileName The output file name
+		*/
+		DllExport void											load(const std::string &fileName);
 		/**
 		* @brief Builds a k-d tree on \b keys with corresponding \b values
 		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
@@ -69,6 +74,7 @@ namespace DirectGraphicalModels
 
 
 	private:
+		std::shared_ptr<CKDNode>								loadTree(FILE *pFile, int k);
 		std::shared_ptr<CKDNode>								buildTree(Mat &data, pair_mat_t &boundingBox);
 		std::shared_ptr<const CKDNode>							findNearestNode(const Mat &key) const;
 

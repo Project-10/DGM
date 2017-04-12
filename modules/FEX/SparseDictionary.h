@@ -48,7 +48,7 @@ namespace DirectGraphicalModels { namespace fex
 		/**
 		* @brief Trains dictionary \f$D\f$
 		* @details This function creates and trains new dictionary \f$D\f$ on data \f$X\f$
-		* @param X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_8UC1)
+		* @param X Training data \f$X\f$: Mat(size nSamples x sampleLen; type CV_8UC1 or CV_16UC1)
 		* > May be derived from an image with img2data() fucntion
 		* @param nWords Length of the dictionary (number of words)
 		* @param batch The number of randomly chosen samples from \b X to be used in every distinct iteration of training
@@ -130,12 +130,12 @@ namespace DirectGraphicalModels { namespace fex
 		* @details This functions generates a set of data samples (\b blockSize x \b blockSize patches) from a single image.
 		* The extracted pathces are overlapping, thus the maximal number of data samples is: nMaxSamples = (img.width - \b blockSize + 1) x (img.height - \b blockSize + 1)
 		* > It is recommended to suffle the samples with parallel::shuffleRows() function before training dictionary with train()
-		* @param img The input image
+		* @param img The input image (1 or 3 channels, 8 or 16 bit image)
 		* @param blockSize Size of the quadratic patch
 		* > In order to use this calss with fex::CSparseCoding::get() the size of the block should be odd
 		* @param varianceThreshold The extracted samples with variance greater or equal to \b varianceThreshold will be included to \f$X\f$. 
 		* > If \b varianceThreshold = 0 all the samples are included, thus nSamples = nMaxSamples
-		* @returns Data \f$X\f$: Mat(size: nSamples x \b blockSize^2; type: CV_8UC1)
+		* @returns Data \f$X\f$: Mat(size: nSamples x \b blockSize^2; type: CV_8UC1 or CV_16UC1)
 		*/
 		DllExport static Mat img2data(const Mat &img, int blockSize, float varianceThreshold = 0.0f);
 		/**
@@ -146,9 +146,9 @@ namespace DirectGraphicalModels { namespace fex
 		*		Mat res = CSparseDictionary::data2img(X, img.size());
 		* @endcode
 		* gives \a res identical to \a img.
-		* @param X The input data \f$\mathbb{X}\f$
+		* @param X The input data \f$X\f$ (depth: 8 or 16 bit)
 		* @param imgSize The size of the image to return
-		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1)
+		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1 or CV_16UC1)
 		*/
 		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
 

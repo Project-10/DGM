@@ -62,12 +62,31 @@ namespace DirectGraphicalModels
 		}
 	}
 	 
-	/// @todo Implement this function
 	void CKDTree::save(const std::string &fileName) const
 	{
-
+		if (!m_root) {
+			DGM_WARNING("The k-D tree is not built");
+			return;
+		}
+		FILE *pFile = fopen(fileName.c_str(), "wb");
+		
+		// header
+		int k = m_root->getBoundingBox().first.cols;
+		fwrite(&k, sizeof(int), 1, pFile);				// dimensionality
+		m_root->save(pFile);
+		fclose(pFile);
 	}
 	
+	void CKDTree::load(const std::string &fileName)
+	{
+		FILE *pFile = fopen(fileName.c_str(), "rb");
+		// header
+		int k;
+		fread(&k, sizeof(int), 1, pFile);				// dimensionality
+		m_root = loadTree(pFile, k);
+		fclose(pFile);
+	}
+
 	void CKDTree::build(Mat &keys, Mat &values)
 	{
 		if (keys.empty()) {
@@ -124,6 +143,36 @@ namespace DirectGraphicalModels
 	}
 
 	// ----------------------------------------- Private -----------------------------------------
+	std::shared_ptr<CKDNode> CKDTree::loadTree(FILE * pFile, int k) 
+	{
+		byte _isLeaf;
+		fread(&_isLeaf, sizeof(byte), 1, pFile);
+		if (_isLeaf) {		// --- Leaf node ---
+			Mat		key(1, k, CV_8UC1);
+			byte	value;
+
+			fread(key.data, sizeof(byte), k, pFile);
+			fread(&value, sizeof(byte), 1, pFile);
+
+			std::shared_ptr<CKDNode> res(new CKDNode(key, value));
+			return res;
+		} else {			// --- Branch node ---
+			pair_mat_t	boundingBox = std::make_pair(Mat(1, k, CV_8UC1), Mat(1, k, CV_8UC1));
+			byte		splitVal;
+			int			splitDim;
+
+			fread(boundingBox.first.data,  sizeof(byte), k, pFile);
+			fread(boundingBox.second.data, sizeof(byte), k, pFile);
+			fread(&splitVal, sizeof(byte), 1, pFile);
+			fread(&splitDim, sizeof(int),  1, pFile);
+			std::shared_ptr<CKDNode> left  = loadTree(pFile, k);
+			std::shared_ptr<CKDNode> right = loadTree(pFile, k);
+
+			std::shared_ptr<CKDNode> res(new CKDNode(boundingBox, splitVal, splitDim, left, right));
+			return res;
+		}
+	}
+	
 	// data_i = [key,val]: k + 1 entries 
 	// left = [0; splitVal)
 	// right = [splitVal; end]
