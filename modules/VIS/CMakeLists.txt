@@ -34,7 +34,8 @@ add_library(VIS SHARED ${VIS_INCLUDE} ${VIS_SOURCES} ${VIS_HEADERS} ${VIS_SHADER
 add_dependencies(VIS DGM)
  
 # Properties -> Linker -> Input -> Additional Dependencies
-target_link_libraries(VIS ${OpenCV_LIBS} ${DGM_LIB})
+target_link_libraries(VIS PRIVATE ${OpenCV_LIBS} ${DGM_LIB})
+
 if(USE_OPENGL)
 	include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/include
 						${PROJECT_SOURCE_DIR}/3rdparty/glm-0.9.8.0
@@ -48,14 +49,15 @@ if(USE_OPENGL)
 	
 	add_dependencies(VIS glew glfw)
 	
-	target_link_libraries(VIS glew glfw  ${OPENGL_gl_LIBRARY})	
+	target_link_libraries(VIS PRIVATE glew glfw ${OPENGL_gl_LIBRARY})	
 endif()
 
 set_target_properties(VIS PROPERTIES OUTPUT_NAME_RELEASE vis${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
 set_target_properties(VIS PROPERTIES OUTPUT_NAME_DEBUG vis${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH}d)
 
 #install
-install(TARGETS VIS 
+install(TARGETS VIS
+	EXPORT DGMTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
