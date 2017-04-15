@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 					if (m_nLayers >= 2)
 						addArc(idx, idx + 1);
 					for (l = 2; l < m_nLayers; l++)
-						addArc(idx + l - 1, idx + l);
+						addEdge(idx + l - 1, idx + l);
 				} // if LINK
 
 				if (m_gType & GRAPH_EDGES_GRID) {
