@@ -21,7 +21,7 @@ Mat CNDVI::get(const Mat &img, byte midPoint)
 			float vis	= 0.5f * (static_cast<float>(pG[x]) + static_cast<float>(pB[x]));
 			float ndvi = (nir + vis > 0) ? (nir - vis) / (nir + vis) : 0;
 
-			pRes[x] = two_linear_mapper(ndvi, -1.0f, 1.0f, 0.0f, midPoint);
+			pRes[x] = two_linear_mapper<byte>(ndvi, -1.0f, 1.0f, 0.0f, midPoint);
 		}
 	} // y
 

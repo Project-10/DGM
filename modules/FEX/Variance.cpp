@@ -37,7 +37,7 @@ Mat	CVariance::get(const Mat &img, SqNeighbourhood nbhd)
 				} // i
 			} // j
 			float val = sqrtf(Sum / S);
-			pRes[x] = linear_mapper(val, 0, 100);
+			pRes[x] = linear_mapper<byte>(val, 0, 100);
 		} // x
 	} // y
 

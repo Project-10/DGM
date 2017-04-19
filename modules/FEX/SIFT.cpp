@@ -46,7 +46,7 @@ namespace DirectGraphicalModels { namespace fex
 			for (x = 0; x < width; x++) {
 				float *pDescriptors = descriptors.ptr<float>(y * width + x);
 				for (i = 0; i < nFeatures; i++) 
-					pFeatures[i][x] = linear_mapper(pDescriptors[i], 0.0f, 255.0f);			// features[i] (x, y) = descriptors (i, pixel_idx)
+					pFeatures[i][x] = linear_mapper<byte>(pDescriptors[i], 0.0f, 255.0f);			// features[i] (x, y) = descriptors (i, pixel_idx)
 			} // x
 		} // y
 

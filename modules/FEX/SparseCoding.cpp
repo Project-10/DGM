@@ -53,7 +53,7 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 			calculate_W(sample, D, W, SC_LAMBDA, SC_EPSILON, 200, SC_LRATE_W);
 
 			for (word w = 0; w < nWords; w++) 
-				res[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper(W.at<float>(0, w), -1.0f, 1.0f);
+				res[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper<byte>(W.at<float>(0, w), -1.0f, 1.0f);
 		}
 	}
 #ifdef ENABLE_PPL

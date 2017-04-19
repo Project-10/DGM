@@ -25,7 +25,7 @@ Mat CGradient::get(const Mat &img, float mid)
 		float *pIy	= Iy.ptr<float>(y);
 		for(register int x = 0; x < img.cols; x++) {
 			float val = sqrtf(pIx[x]*pIx[x] + pIy[x]*pIy[x]);
-			res.at<byte>(y,x) = two_linear_mapper(val, 0, GRADIENT_MAX_VALUE, mid, 255);
+			res.at<byte>(y,x) = two_linear_mapper<byte>(val, 0, GRADIENT_MAX_VALUE, mid, 255);
 		}
 	} // y	
 
