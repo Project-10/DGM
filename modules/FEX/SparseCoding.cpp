@@ -29,6 +29,7 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 	DGM_ASSERT(blockSize == nbhd.leftGap + nbhd.rightGap + 1);
 
 	Mat X = img2data(img, blockSize);
+	int normalizer = (X.depth() == CV_8U) ? 255 : 65535;
 
 	vec_mat_t res(nWords);
 	for (word w = 0; w < nWords; w++)
@@ -43,7 +44,7 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 		for (int x = 0; x < dataWidth; x += 1) {
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample as a row-vector
-			sample.convertTo(sample, CV_32FC1, 1.0 / 255);
+			sample.convertTo(sample, CV_32FC1, 1.0 / normalizer);
 
 			gemm(D, sample.t(), 1.0, Mat(), 0.0, _W);						// W = D x sample^T
 			W = _W.t();
