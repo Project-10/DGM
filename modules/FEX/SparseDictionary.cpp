@@ -5,11 +5,6 @@
 
 namespace DirectGraphicalModels { namespace fex
 {
-// Constants
-const float	CSparseDictionary::SC_LAMBDA	= 5e-5f;		// L1-regularisation parameter (on features)
-const float	CSparseDictionary::SC_EPSILON	= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
-const float	CSparseDictionary::SC_GAMMA		= 1e-2f;		// L2-regularisation parameter (on basis)
-
 // =================================================================================== public
 void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned int nIt, float lRate, const std::string &fileName)
 {
