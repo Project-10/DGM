@@ -8,7 +8,12 @@ namespace DirectGraphicalModels { namespace fex
 {
 	const float SC_LRATE_W = 5e-2f;		///< Learning rate (speed) for weights \f$W\f$
 	const float	SC_LRATE_D = 1e-2f;		///< Learning rate (speed) for dictionary \f$D\f$
-	
+
+	const float	SC_LAMBDA  = 5e-5f;		///< \f$\lambda\f$:  L1-regularisation parameter (on features)
+	const float	SC_EPSILON = 1e-5f;		///< \f$\epsilon\f$: L1-regularisation epsilon \f$ \left\|x\right\|_1 \approx  \sqrt{x^2 + \epsilon} \f$
+	const float	SC_GAMMA   = 1e-2f;		///< \f$\gamma\f$:   L2-regularisation parameter (on dictionary words)
+
+
 	// ================================ Sparse Dictionary Class ==============================
 	/**
 	* @brief Sparse Dictionary Learning class
@@ -152,12 +157,6 @@ namespace DirectGraphicalModels { namespace fex
 		*/
 		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
 
-	
-	protected:
-		static const float	SC_LAMBDA;		///< \f$\lambda\f$:  L1-regularisation parameter (on features)
-		static const float	SC_EPSILON;		///< \f$\epsilon\f$: L1-regularisation epsilon \f$ \left\|x\right\|_1 \approx  \sqrt{x^2 + \epsilon} \f$
-		static const float	SC_GAMMA;		///< \f$\gamma\f$:   L2-regularisation parameter (on dictionary words)
-
 
 	protected:
 		/**
@@ -172,7 +171,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @param[in] nIt Number of iterations
 		* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 		*/
-		static void calculate_W(const Mat &X, const Mat& D, Mat &W, float lambda, float epsilon, unsigned int nIt = 800, float lRate = SC_LRATE_W);
+		DllExport static void calculate_W(const Mat &X, const Mat& D, Mat &W, float lambda, float epsilon, unsigned int nIt = 800, float lRate = SC_LRATE_W);
 		/**
 		* @brief Evaluates dictionary \f$D\f$
 		* @details Finds the \f$D\f$, that minimizes \f$J(D, W)\f$ for the given \f$W\f$:
@@ -184,7 +183,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @param[in] nIt Number of iterations
 		* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 		*/
-		static void calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt = 800, float lRate = SC_LRATE_D);
+		DllExport static void calculate_D(const Mat &X, Mat &D, const Mat &W, float gamma, unsigned int nIt = 800, float lRate = SC_LRATE_D);
 
 
 	private:
