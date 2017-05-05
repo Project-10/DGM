@@ -9,6 +9,55 @@ namespace DirectGraphicalModels { namespace parallel {
 // ------------------------------------------- GEMM ------------------------------------------
 // --------------------- fast generalized matrix multiplication with PPL ---------------------
 	namespace {
+#ifdef ENABLE_AMP
+		inline void amp_gemm(const Mat &A, const Mat &B, float alpha, Mat &res) 
+		{
+			DGM_ASSERT(A.cols == B.rows);
+			if (res.empty()) res = Mat(A.rows, B.cols, CV_32FC1);
+			DGM_ASSERT(res.rows == A.rows);
+			DGM_ASSERT(res.cols == B.cols);
+
+			const Mat _B = B.t();
+			
+			concurrency::array_view<const float, 2> a(A.rows, A.cols, reinterpret_cast<float * const>(A.data));
+			concurrency::array_view<const float, 2> b(_B.rows, _B.cols, reinterpret_cast<float * const>(_B.data));
+			concurrency::array_view<float, 2>       r(res.rows, res.cols, reinterpret_cast<float *> (res.data));
+			concurrency::parallel_for_each(r.extent, [=](concurrency::index<2> idx) restrict(amp) {
+				int y = idx[0];
+				int x = idx[1];
+				float sum = 0.0f;
+				for (register int k = 0; k < a.extent[1]; k++) 
+					sum += a(y, k) * b(k, x);
+				r[idx] = alpha * sum;
+			});
+			r.synchronize();
+		}
+
+		inline void amp_gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
+		{
+			DGM_ASSERT(A.cols == B.rows);
+			if (res.empty()) res = Mat(A.rows, B.cols, CV_32FC1);
+			DGM_ASSERT(res.rows == A.rows && res.rows == C.rows);
+			DGM_ASSERT(res.cols == B.cols && res.cols == C.cols);
+
+			const Mat _B = B.t();
+
+			concurrency::array_view<const float, 2> a(A.rows, A.cols, reinterpret_cast<float * const>(A.data));
+			concurrency::array_view<const float, 2> b(_B.rows, _B.cols, reinterpret_cast<float * const>(_B.data));
+			concurrency::array_view<const float, 2> c(C.rows, C.cols, reinterpret_cast<float * const>(C.data));
+			concurrency::array_view<float, 2>       r(res.rows, res.cols, reinterpret_cast<float *> (res.data));
+			concurrency::parallel_for_each(r.extent, [=](concurrency::index<2> idx) restrict(amp) {
+				int y = idx[0];
+				int x = idx[1];
+				float sum = 0.0f;
+				for (register int k = 0; k < a.extent[1]; k++)
+					sum += a(y, k) * b(k, x);
+				r[idx] = alpha * sum + beta * c[idx];
+			});
+			r.synchronize();
+
+		}
+#endif
 #ifdef ENABLE_PPL
 		inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, Mat &res)
 		{
@@ -65,11 +114,16 @@ namespace DirectGraphicalModels { namespace parallel {
 	*/
 	DllExport inline void gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
 	{
+#ifdef ENABLE_AMP
+		if (C.empty()) amp_gemm(A, B, alpha, res);
+		else amp_gemm(A, B, alpha, C, beta, res);
+#else 
 #ifdef ENABLE_PPL
 		if (C.empty()) ppl_gemm(A, B, alpha, res);
 		else ppl_gemm(A, B, alpha, C, beta, res);
 #else
 		cv::gemm(A, B, alpha, C, beta, res);
+#endif
 #endif
 	}
 
