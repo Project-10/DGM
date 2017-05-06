@@ -17,10 +17,8 @@ namespace DirectGraphicalModels { namespace parallel {
 			DGM_ASSERT(res.rows == A.rows);
 			DGM_ASSERT(res.cols == B.cols);
 
-			const Mat _B = B.t();
-			
 			concurrency::array_view<const float, 2> a(A.rows, A.cols, reinterpret_cast<float * const>(A.data));
-			concurrency::array_view<const float, 2> b(_B.rows, _B.cols, reinterpret_cast<float * const>(_B.data));
+			concurrency::array_view<const float, 2> b(B.rows, B.cols, reinterpret_cast<float * const>(B.data));
 			concurrency::array_view<float, 2>       r(res.rows, res.cols, reinterpret_cast<float *> (res.data));
 			concurrency::parallel_for_each(r.extent, [=](concurrency::index<2> idx) restrict(amp) {
 				int y = idx[0];
@@ -40,10 +38,8 @@ namespace DirectGraphicalModels { namespace parallel {
 			DGM_ASSERT(res.rows == A.rows && res.rows == C.rows);
 			DGM_ASSERT(res.cols == B.cols && res.cols == C.cols);
 
-			const Mat _B = B.t();
-
 			concurrency::array_view<const float, 2> a(A.rows, A.cols, reinterpret_cast<float * const>(A.data));
-			concurrency::array_view<const float, 2> b(_B.rows, _B.cols, reinterpret_cast<float * const>(_B.data));
+			concurrency::array_view<const float, 2> b(B.rows, B.cols, reinterpret_cast<float * const>(B.data));
 			concurrency::array_view<const float, 2> c(C.rows, C.cols, reinterpret_cast<float * const>(C.data));
 			concurrency::array_view<float, 2>       r(res.rows, res.cols, reinterpret_cast<float *> (res.data));
 			concurrency::parallel_for_each(r.extent, [=](concurrency::index<2> idx) restrict(amp) {
@@ -55,7 +51,6 @@ namespace DirectGraphicalModels { namespace parallel {
 				r[idx] = alpha * sum + beta * c[idx];
 			});
 			r.synchronize();
-
 		}
 #endif
 #ifdef ENABLE_PPL
