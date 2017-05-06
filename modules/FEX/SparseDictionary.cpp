@@ -32,7 +32,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		printf("--- It: %d ---\n", i);
 #endif
 		// 2.1 Select a random mini-batch of 2000 patches
-		dword rndRow = random::u<dword>(0, nSamples - batch - 1);
+		dword rndRow = random::u<dword>(0, MAX(1, nSamples - batch) - 1);
 		int normalizer = (X.depth() == CV_8U) ? 255 : 65535;
 		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
 		_X.convertTo(_X, CV_32FC1, 1.0 / normalizer);
