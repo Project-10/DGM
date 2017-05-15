@@ -56,8 +56,9 @@ source_group("Source Files\\Inference\\Message Passing\\Viterbi" FILES "InferVit
 source_group("Source Files\\Param Estimation" FILES "Powell.h" "Powell.cpp")
 source_group("Source Files\\Random Model" FILES "BaseRandomModel.h" "BaseRandomModel.cpp")
 source_group("Source Files\\Random Model\\PDF" FILES "IPDF.h")
-source_group("Source Files\\Random Model\\PDF\\Gaussian" FILES "PDFGaussian.h" "PDFGaussian.cpp")
-source_group("Source Files\\Random Model\\PDF\\Histogram" FILES "PDFHistogram.h" "PDFHistogram.cpp")
+source_group("Source Files\\Random Model\\PDF\\Gaussian 1D" FILES "PDFGaussian.h" "PDFGaussian.cpp")
+source_group("Source Files\\Random Model\\PDF\\Histogram 1D" FILES "PDFHistogram.h" "PDFHistogram.cpp")
+source_group("Source Files\\Random Model\\PDF\\Histogram 2D" FILES "PDFHistogram2D.h" "PDFHistogram2D.cpp")
 source_group("Source Files\\Random Model\\Prior" FILES "Prior.h" "Prior.cpp")
 source_group("Source Files\\Random Model\\Prior\\Edge" FILES "PriorEdge.h" "PriorEdge.cpp")
 source_group("Source Files\\Random Model\\Prior\\Node" FILES "PriorNode.h" "PriorNode.cpp")
@@ -76,7 +77,7 @@ source_group("Source Files\\Random Model\\Training\\Node\\Gaussian Mixture" FILE
 																					"TrainNodeGMM.h"
 																					"TrainNodeGMM.cpp"
 																				)
-source_group("Source Files\\Random Model\\Training\\Node\\Naive Bayes" FILES "TrainNodeNaiveBayes.h" "TrainNodeNaiveBayes.cpp")
+source_group("Source Files\\Random Model\\Training\\Node\\Bayes" FILES "TrainNodeNaiveBayes.h" "TrainNodeNaiveBayes.cpp")
 source_group("Source Files\\Random Model\\Training\\Node\\K-Nearest Neighbors" FILES "TrainNodeKNN.h" "TrainNodeKNN.cpp")
 source_group("Source Files\\Random Model\\Training\\Node\\Random Forest" FILES	"RForest.h" 
 																				"RForest.cpp"
