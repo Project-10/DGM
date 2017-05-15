@@ -18,17 +18,17 @@ void CPDFHistogram::reset(void)
 	m_nPoints = 0;
 }
 
-void CPDFHistogram::addPoint(float point)
+void CPDFHistogram::addPoint(Scalar point)
 {
-	byte i = static_cast<byte>(MIN(255, MAX(0, point)));
+	byte i = static_cast<byte>(MIN(255, MAX(0, point[0])));
 	m_data[i]++;
 	m_nPoints++;
 }
 
-float CPDFHistogram::getDensity(float point) 
+double CPDFHistogram::getDensity(Scalar point) 
 {
-	byte i = static_cast<byte>(MIN(255, MAX(0, point)));
-	return m_nPoints ? static_cast<float>(m_data[i]) / m_nPoints : 0;
+	byte i = static_cast<byte>(MIN(255, MAX(0, point[0])));
+	return m_nPoints ? static_cast<double>(m_data[i]) / m_nPoints : 0;
 }
 
 void CPDFHistogram::smooth(int nIt)

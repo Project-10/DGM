@@ -21,10 +21,10 @@ namespace DirectGraphicalModels
 
 		DllExport virtual void	reset(void);
 
-		DllExport virtual void	addPoint(float point);
-		DllExport virtual float	getDensity(float point); 
-		DllExport virtual float min(void) const { return 0; }
-		DllExport virtual float max(void) const { return 255; }
+		DllExport virtual void		addPoint(Scalar point);
+		DllExport virtual double	getDensity(Scalar point); 
+		DllExport virtual Scalar	min(void) const { return Scalar(0); }
+		DllExport virtual Scalar	max(void) const { return Scalar(255); }
 
 		/**
 		* @brief Performs the gaussian smoothing on histogram

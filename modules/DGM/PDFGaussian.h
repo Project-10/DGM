@@ -20,10 +20,10 @@ namespace DirectGraphicalModels
 
 		DllExport virtual void	reset(void);
 
-		DllExport virtual void	addPoint(float point);
-		DllExport virtual float	getDensity(float point); 
-		DllExport virtual float min(void) const { return m_mu - 3 * sqrtf(m_sigma2); }
-		DllExport virtual float max(void) const { return m_mu + 3 * sqrtf(m_sigma2); }
+		DllExport virtual void		addPoint(Scalar point);
+		DllExport virtual double	getDensity(Scalar point); 
+		DllExport virtual Scalar	min(void) const { return Scalar(m_mu - 3 * sqrt(m_sigma2)); }
+		DllExport virtual Scalar	max(void) const { return Scalar(m_mu + 3 * sqrt(m_sigma2)); }
 
 
 	protected:
@@ -32,7 +32,7 @@ namespace DirectGraphicalModels
 
 	
 	private:
-		float	m_mu;
-		float	m_sigma2;		// sigma^2
+		double	m_mu;
+		double	m_sigma2;		// sigma^2
 	};
 }
