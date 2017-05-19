@@ -9,15 +9,6 @@ namespace DirectGraphicalModels
 {
 	class IPDF;
 
-
-	#ifdef DEBUG_MODE   // --- Debug ---
-	// ======================= 2D Histogram Byte Structure =========================
-	typedef struct  {
-		long data[256][256];
-		long n;
-	} histogram2D_byte;
-	#endif              // --- ----- ---
-
 	// ====================== Naive Bayes Train Class =====================
 	/** 
 	* @ingroup moduleTrainNode
@@ -49,7 +40,12 @@ namespace DirectGraphicalModels
 		* @return The probability density function 
 		*/
 		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
-		
+		/**
+		* @brief Returns the normalized probability density function for specific state (class) and feature 
+		* @param state The state (class)
+		* @return The probability density function
+		*/
+		DllExport IPDF			* getPDF2D(byte state) const { return m_pPDF2D[state]; }
 		/**
 		* @brief Smothes the underlying Probability Density Functions (PDFs)
 		* @param nIt Number of smooth iterations
@@ -75,17 +71,12 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		IPDF				  *** m_pPDF;				///< The 1D PDF for node potentials	
-	
-	
+		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]
+		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials		
+
+
 	private:
-		Mat						  m_prior;				///< The class prior probability vector
-
-
-	#ifdef DEBUG_MODE	// --- Debuging ---
-	public:
-		histogram2D_byte		* m_H2d;				///< The 2D data histogram for node potentials				
-	#endif				// --- -------- ---
+		Mat			  m_prior;				///< The class prior probability vector
 
 
 	private:

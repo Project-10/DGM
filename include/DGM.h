@@ -10,6 +10,7 @@
 
 #include "DGM/IPDF.h"
 #include "DGM/PDFHistogram.h"
+#include "DGM/PDFHistogram2D.h"
 #include "DGM/PDFGaussian.h"
 
 #include "DGM/Prior.h"
@@ -219,6 +220,7 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
 - @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 - @subpage demofex : An introduction to the feature extraction, needed mainly for supervised learning.
 - @subpage demotrain : An introdiction to the random model learning (training) in case when the training data is available.
+- @subpage demorandommodel : An introdiction to the random model learning (training) in case when the training data is available.
 - @subpage demovis : An example of usage the visualization module of the library for analysis and represention of the intermediate and final results of classification.
 
 */
@@ -501,6 +503,15 @@ int main(int argv, char *argc[])
 
 	return 0;
 }
+@endcode
+*/
+
+/**
+@page demorandommodel Demo Random Model
+
+add description here
+
+@code
 @endcode
 */
 

@@ -37,33 +37,33 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport CMarkerHistogram(CTrainNode *pNodeTrainer, const vec_nColor_t &vPalette, vec_string_t vFeatureNames = vec_string_t()) : CMarker(vPalette), m_pNodeTrainer(pNodeTrainer), m_vFeatureNames(vFeatureNames) {}
 		DllExport virtual ~CMarkerHistogram(void) {}
+
 		/**
-		* @brief Visualizes the feature densitiy distributions with user interaction.
+		* @brief Draws a figure with the visualization of feature densitiy distributions.
+		* @return Figure with visualized histograms of the feature distributions.
+		*/
+		DllExport Mat	drawHistogram(void) const { return drawHistogram(CV_RGB(0, 0, 0)); }
+		/**
+		* @brief Draws a figure with the visualization of 2-dimensional node potentials histogram.
+		* @warning Used for test purposes. Capable to visualize only 2-dimensional feature space.
+		* @return Figure with visualized histogram.
+		*/
+		DllExport Mat	drawHistogram2D(void) const { return drawHistogram2D(CV_RGB(0, 0, 0)); }
+		/**
+		*/
+		DllExport Mat	drawClassificationMap2D(void) const;
+		/**
+		* @brief Visualizes the feature densitiy distributions in a separate window with user interaction.
 		* @details This function creates an OpenCV window with the visualized histograms.
 		* Click on the color box for specific state (class) visualuzation.
 		*/
 		DllExport void	showHistogram(void);
 		/**
-		* @brief Draws the figure with a visualization of feature densitiy distributions.
-		* @return Figure with visualized histograms of the feature distributions.
-		*/
-		DllExport Mat	drawHistogram(void) const { return drawHistogram(CV_RGB(0, 0, 0)); }
-		/**
 		* @brief Closes the histogram window
 		*/
-		DllExport void close(void) const;
+		DllExport void	close(void) const;
 
 
-	#ifdef DEBUG_MODE	// --- Debugging ---
-		/**
-		* @brief Visualises the 2-dimensional node potentials histogram.
-		* @return Figure with visualized histogram. 
-		* @warning Used only for test purposes. Capable to visualize only 2-dimensional feature space.
-		*/
-		DllExport Mat	TEST_drawHistogram(CTrainNode *pTrain) const;
-	#endif				// --- --------- ---
-
-	
 	private:
 		/**
 		* @brief Draws the figure with a visualization of feature densitiy distributions.
@@ -73,6 +73,9 @@ namespace DirectGraphicalModels {
 		* @return Figure with visualized histograms of the feature distributions.
 		*/
 		DllExport Mat	drawHistogram(Scalar color) const;
+		/**
+		*/
+		DllExport Mat	drawHistogram2D(Scalar color) const;
 		/**
 		* @brief Retrieves a chosen by an user state, from the color.
 		* @param color Color of a pixel from the histogram figure. 
@@ -86,6 +89,9 @@ namespace DirectGraphicalModels {
 		* @return Figure with visualized feature histogram: Mat(100, 256, CV_8UC1).
 		*/
 		Mat				drawFeatureHistogram(word f, int activeState = -1) const;
+		/**
+		*/
+		Mat				drawFeatureHistogram2D(word f, int activeState = -1) const;
 		/**
 		* @brief Draws a legend to the main figure.
 		* @param maxHeight The maximal height of the legend figure.

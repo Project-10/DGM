@@ -55,6 +55,20 @@ target_link_libraries(Demo_FEX ${OpenCV_LIBS} ${FEX_LIB})
 #install
 install(TARGETS Demo_FEX RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+# ============================================ DEMO RANDOM MODEL ============================================
+add_executable(Demo_RandomModel "Demo Random Model.cpp")
+add_dependencies(Demo_RandomModel DGM VIS FEX)
+
+set_target_properties(Demo_RandomModel PROPERTIES PROJECT_LABEL "Demo Random Model")	# in Visual Studio
+set_target_properties(Demo_RandomModel PROPERTIES OUTPUT_NAME "Demo Random Model")
+set_target_properties(Demo_RandomModel PROPERTIES FOLDER "Demos")
+
+# Properties->Linker->Input->Additional Dependencies
+target_link_libraries(Demo_RandomModel ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB} ${FEX_LIB})
+
+#install
+install(TARGETS Demo_RandomModel RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
 # =============================================== DEMO TRAIN ================================================
 add_executable(Demo_Train "Demo Train.cpp")
 add_dependencies(Demo_Train DGM VIS)

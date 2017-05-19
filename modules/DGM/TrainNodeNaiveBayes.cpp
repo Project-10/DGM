@@ -1,5 +1,6 @@
 #include "TrainNodeNaiveBayes.h"
 #include "PDFHistogram.h"
+#include "PDFHistogram2D.h"
 #include "PDFGaussian.h"
 #include "macroses.h"
 
@@ -20,15 +21,12 @@ CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures)
 //			m_pPDF[s][f] = new CPDFGaussian();
 	} // s
 
-
-#ifdef DEBUG_MODE	// --- Debug ---
-	word len = static_cast<word>(nStates);
-	m_H2d = new histogram2D_byte[len];
-	for (word i = 0; i < len; i++) {
-		memset(m_H2d[i].data, 0, 256*256*sizeof(long));
-		m_H2d[i].n = 0;
-	}
-#endif				// --- ----- ---
+	if (m_nFeatures == 2) {
+		m_pPDF2D = new IPDF*[m_nStates];
+		for (byte s = 0; s < m_nStates; s++)
+			m_pPDF2D[s] = new CPDFHistogram2D();
+	} else m_pPDF2D = NULL;
+	
 }
 
 // Destructor
@@ -42,9 +40,11 @@ CTrainNodeNaiveBayes::~CTrainNodeNaiveBayes(void)
 	} // s
 	delete m_pPDF;
 	
-#ifdef DEBUG_MODE	// --- Debug ---
-	delete [] m_H2d;
-#endif				// --- ----- ---
+	if (m_pPDF2D) {
+		for (byte s = 0; s < m_nStates; s++)
+			delete[] m_pPDF2D[s];
+		delete m_pPDF2D;
+	}
 }
 
 void CTrainNodeNaiveBayes::reset(void) 
@@ -56,13 +56,9 @@ void CTrainNodeNaiveBayes::reset(void)
 		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->reset();
 	
-#ifdef DEBUG_MODE	// --- Debug ---
-	word len = static_cast<word>(m_nStates);
-	for (word i = 0; i < len; i++) {
-		memset(m_H2d[i].data, 0, 256*256*sizeof(long));
-		m_H2d[i].n = 0;
-	}
-#endif				// --- ----- ---
+	if (m_pPDF2D)
+		for (byte s = 0; s < m_nStates; s++)
+			m_pPDF2D[s]->reset();
 }
 
 void CTrainNodeNaiveBayes::addFeatureVec(const Mat &featureVector, byte gt) 
@@ -79,13 +75,11 @@ void CTrainNodeNaiveBayes::addFeatureVec(const Mat &featureVector, byte gt)
 		m_pPDF[gt][f]->addPoint(feature);
 	}
 	
-#ifdef DEBUG_MODE	// --- Debug ---
-	byte x = featureVector.at<byte>(0, 0);
-	byte y = featureVector.at<byte>(1, 0);
-
-	m_H2d[gt].data[x][y]++;
-	m_H2d[gt].n++;
-#endif				// --- ----- ---
+	if (m_pPDF2D) {
+		byte x = featureVector.at<byte>(0, 0);
+		byte y = featureVector.at<byte>(1, 0);
+		m_pPDF2D[gt]->addPoint(Scalar(x, y));
+	}
 }
 
 void CTrainNodeNaiveBayes::train(bool)
@@ -99,6 +93,10 @@ void CTrainNodeNaiveBayes::smooth(int nIt)
 	for (byte s = 0; s < m_nStates; s++)
 		for (word f = 0; f < m_nFeatures; f++)
 			dynamic_cast<CPDFHistogram *>(m_pPDF[s][f])->smooth(nIt);
+	if (m_pPDF2D)
+		for (byte s = 0; s < m_nStates; s++)
+			dynamic_cast<CPDFHistogram2D *>(m_pPDF2D[s])->smooth(nIt);
+
 }
 
 void CTrainNodeNaiveBayes::saveFile(FILE *pFile) const 
@@ -108,6 +106,9 @@ void CTrainNodeNaiveBayes::saveFile(FILE *pFile) const
 	for (byte s = 0; s < m_nStates; s++)
 		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->saveFile(pFile);
+	if (m_pPDF2D)
+		for (byte s = 0; s < m_nStates; s++)
+			m_pPDF2D[s]->saveFile(pFile);
 
 } 
 
@@ -119,6 +120,9 @@ void CTrainNodeNaiveBayes::loadFile(FILE *pFile)
 	for (byte s = 0; s < m_nStates; s++)
 		for (word f = 0; f < m_nFeatures; f++)
 			m_pPDF[s][f]->loadFile(pFile);
+	if (m_pPDF2D)
+		for (byte s = 0; s < m_nStates; s++)
+			m_pPDF2D[s]->loadFile(pFile);
 } 
 
 void CTrainNodeNaiveBayes::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
@@ -130,7 +134,7 @@ void CTrainNodeNaiveBayes::calculateNodePotentials(const Mat &featureVector, Mat
 		for (word f = 0; f < m_nFeatures; f++) {		// feature
 			byte feature = featureVector.ptr<byte>(f)[0];
 			if (m_pPDF[s][f]->isEstimated()) 
-				pPot[0] *= m_pPDF[s][f]->getDensity(feature);	
+				pPot[0] *= static_cast<float>(m_pPDF[s][f]->getDensity(feature));	
 			else  {
 				pPot[0] = 0; 
 				pMask[0] = 0;
