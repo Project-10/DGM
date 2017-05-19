@@ -1,7 +1,7 @@
 #include "MarkerHistogram.h"
-
 #include "DGM\TrainNodeNaiveBayes.h"
 #include "DGM\IPDF.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels { namespace vis 
 {
@@ -10,6 +10,60 @@ const CvSize		CMarkerHistogram::margin		= cvSize(25, 16);
 const byte			CMarkerHistogram::bkgIntencity	= 50;
 const double		CMarkerHistogram::frgWeight		= 0.75;
 const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
+
+Mat	CMarkerHistogram::drawClassificationMap2D(void) const
+{
+	char			str[256];
+	const byte		nStates		= m_pNodeTrainer->getNumStates();
+	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
+	const float		koeff		= 100.0f; // 1e-32f;
+	const size_t	n			= m_vPalette.size();
+
+	Mat		res(2 * margin.height + 256, 2 * margin.height + 256, CV_8UC3);	
+	res.setTo(bkgIntencity);
+	rectangle(res, Point(margin.height, margin.height), Point(256 + margin.height, 256 + margin.height), CV_RGB(0, 0, 0), -1);
+
+	if (nFeatures == 2) {
+#ifdef ENABLE_PPL
+		concurrency::parallel_for(0, 256, [&](int y) {
+#else
+		for (int y = 0; y < 256; y++) {
+#endif
+			Mat fv(2, 1, CV_8UC1);
+			fv.at<byte>(1, 0) = static_cast<byte>(y);
+			Vec3b *pRes = res.ptr<Vec3b>(margin.height + 255 - y);
+			for (int x = 0; x < 256; x++) {
+				fv.at<byte>(0, 0) = static_cast<byte>(x);
+				Mat pot = m_pNodeTrainer->getNodePotentials(fv);
+
+				for (int s = 0; s < pot.rows; s++) {
+					float val = MIN(100, koeff * pot.at<float>(s, 0));
+					Scalar color = val * m_vPalette[s % n].first / 100;
+					pRes[margin.height + x] += Vec3b((byte)color[0], (byte)color[1], (byte)color[2]);
+				}
+			} // x
+		} // y
+#ifdef ENABLE_PPL
+		);
+#endif
+	}
+	else DGM_WARNING("The number of features (%d) is not 2", nFeatures);
+
+	// Feature Names
+	Mat tmp(margin.height, res.rows, CV_8UC3);
+	tmp.setTo(bkgIntencity);
+	sprintf(str, "                        feature 1                    255");
+	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	flip(tmp.t(), tmp, 0);
+	tmp.copyTo(res(Rect(0, 0, margin.height, tmp.rows)));
+	sprintf(str, "0                       feature 0                    255");
+	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+
+	// Figure box
+	rectangle(res, Point(margin.height - 1, margin.height - 1), Point(256 + margin.height, 256 + margin.height), CV_RGB(255, 255, 255));
+
+	return res;
+}
 
 void CMarkerHistogram::showHistogram(void)
 {
@@ -30,58 +84,6 @@ void CMarkerHistogram::close(void) const
 {
 	destroyWindow(wndName.c_str());
 }
-
-#ifdef DEBUG_MODE	// --- Debugging ---
-Mat	CMarkerHistogram::TEST_drawHistogram(CTrainNode *pTrain) const
-{
-	CvSize	size;					// window size in pixels
-	size.width	= 256 + 20;
-	size.height	= 256 + 20;
-
-	Mat res = Mat(size, CV_8UC3); res.setTo(bkgIntencity);
-	vec_mat_t vChannels;
-	split(res, vChannels);
-	
-	
-	if (typeid(*pTrain) == typeid(CTrainNodeNaiveBayes)) {
-		const float koeff = 100000.0f;
-		for (int x = 0; x < 255; x++)
-			for (int y = 0; y < 255; y++) {
-				double data1 = MIN(255.0, koeff * static_cast<double>(dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[0].data[x][y]) / dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[0].n);
-				vChannels.at(2).at<byte>(256 - y + 10, x + 10) = static_cast<byte>(data1);		// red channel - class1
-
-				double data2 = MIN(255.0, koeff * static_cast<double>(dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[1].data[x][y]) / dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[1].n);
-				vChannels.at(1).at<byte>(256 - y + 10, x + 10) = static_cast<byte>(data2);		// red channel - class1
-
-				double data3 = MIN(255.0, koeff * static_cast<double>(dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[2].data[x][y]) / dynamic_cast<CTrainNodeNaiveBayes *>(pTrain)->m_H2d[2].n);
-				vChannels.at(0).at<byte>(256 - y + 10, x + 10) = static_cast<byte>(data3);		// red channel - class1
-			}
-	} else {
-		const float koeff = 255.0f; //765.0f;
-		for (int x = 0; x < 256; x++)
-			for (int y = 0; y < 256; y++) {
-				Mat fv(2, 1, CV_8UC1);
-				fv.ptr<byte>(0)[0] = static_cast<byte>(x);
-				fv.ptr<byte>(1)[0] = static_cast<byte>(y);
-				Mat pot = pTrain->getNodePotentials(fv);
-
-				for (int s = 0; s < pot.rows; s++) {
-					float data = MIN(255.0f, koeff * pot.at<float>(s,0));
-					vChannels.at(2-s).at<byte>(255 - y + 10, x + 10) = static_cast<byte>(data);		
-				}
-				for (int s = pot.rows; s < 3; s++) {
-					vChannels.at(2-s).at<byte>(255 - y + 10, x + 10) = 0;		
-				}
-			}
-	}
-
-	merge(vChannels, res);
-	vChannels.clear();
-
-	rectangle(res, Point(9, 9), Point(255 + 11, 255 + 11), CV_RGB(200, 200, 200));
-	return res;
-}
-#endif			// --- --------- ---
 
 // ======================================== Private ========================================
 
@@ -104,7 +106,7 @@ Mat CMarkerHistogram::drawHistogram(Scalar color) const
 	Mat legende = drawLegend(resSize.height - margin.height, activeState);
 	resSize.width += legende.cols;
 
-	Mat		res = Mat(resSize, CV_8UC3);				// Resulting Image
+	Mat	res(resSize, CV_8UC3);							// Resulting Image
 	res.setTo(bkgIntencity);
 
 	for (word f = 0; f < nFeatures; f++) {				// freatures
@@ -123,6 +125,12 @@ Mat CMarkerHistogram::drawHistogram(Scalar color) const
 	legende.release();
 
 	return res;
+}
+
+Mat	CMarkerHistogram::drawHistogram2D(Scalar color) const
+{
+	const int activeState = getActiveState(color);
+	return drawFeatureHistogram2D(0, activeState);
 }
 
 int CMarkerHistogram::getActiveState(Scalar color) const
@@ -156,8 +164,9 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	if (typeid(*m_pNodeTrainer) == typeid(CTrainNodeNaiveBayes))
 		for (byte s = 0; s < nStates; s++) {				// states
 				IPDF *pPDF = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF(s, f);
+				DGM_ASSERT(pPDF);
 				for (x = 0; x < 256; x++) {
-					int len	=  static_cast<int>(koeff * pPDF->getDensity(static_cast<float>(x)));
+					int len	=  static_cast<int>(koeff * pPDF->getDensity(x));
 					y = 100 - MIN(99, len);
 				
 					if ((activeState == -1) || (activeState == s % n))
@@ -181,6 +190,56 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 		putText(res, str, Point(margin.width + x - 5, 109), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
 	}
 	
+	return res;
+}
+
+Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
+{
+	char			str[256];
+	const byte		nStates = m_pNodeTrainer->getNumStates();
+	const word		nFeatures = m_pNodeTrainer->getNumFeatures();
+	const int		koeff = 1000000;					// coefficient for histogram value enlargement
+	const size_t	n = m_vPalette.size();
+
+	Mat		res(2 * margin.height + 256, 2 * margin.height + 256, CV_8UC3);	res.setTo(bkgIntencity);
+//	rectangle(res, Point(margin.height, margin.height), Point(256 + margin.height, 256 + margin.height), CV_RGB(0, 0, 0), -1);
+	Mat		tmp(res.size(), res.type());									tmp.setTo(0);
+
+	// histogram
+	if ((typeid(*m_pNodeTrainer) == typeid(CTrainNodeNaiveBayes)) && (nFeatures == 2)) {
+		for (byte s = 0; s < nStates; s++) {				// states
+			IPDF *pPDF2D = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF2D(s);
+			DGM_ASSERT(pPDF2D);
+			for (int y = 0; y < 256; y++) {
+				Vec3b *pTmp = tmp.ptr<Vec3b>(margin.height + 256 - y);
+				for (int x = 0; x < 256; x++) {
+					double val = MIN(255, koeff * pPDF2D->getDensity(Scalar(x, y)));
+					Scalar color = val * m_vPalette[s % n].first / 255;
+					
+					if ((activeState == -1) || (activeState == s % n))
+						pTmp[margin.height + x] = Vec3b((byte)color[0], (byte)color[1], (byte)color[2]);
+				}
+			}
+			addWeighted(res, 1.0, tmp, frgWeight, 0.0, res);
+			tmp.setTo(0);
+		} // s
+		tmp.release();
+	}
+	else DGM_WARNING("The node trainer (%s) is not Bayes or the number of features (%d) is not 2", typeid(*m_pNodeTrainer).name(), nFeatures);
+
+	// Feature Names
+	tmp = Mat(margin.height, res.rows, CV_8UC3);	
+	tmp.setTo(bkgIntencity);
+	sprintf(str, "                        feature 1                    255");
+	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	flip(tmp.t(), tmp, 0);
+	tmp.copyTo(res(Rect(0, 0, margin.height, tmp.rows)));
+	sprintf(str, "0                       feature 0                    255");
+	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+
+	// Figure box
+	rectangle(res, Point(margin.height - 1, margin.height - 1), Point(256 + margin.height, 256 + margin.height), CV_RGB(255, 255, 255));
+
 	return res;
 }
 

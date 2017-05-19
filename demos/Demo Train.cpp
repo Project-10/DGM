@@ -152,7 +152,7 @@ int main(int argv, char *argc[])
 	imshow("Image", test_img);
 	cvWaitKey(1000);
 
-	//getchar();
+	getchar();
 
 	return 0;
 }

@@ -8,7 +8,7 @@ namespace DirectGraphicalModels
 {
 	// ================================ Histogram PDF Class ==============================
 	/**
-	* @brief Histogram-based PDF class
+	* @brief Histogram-based PDF class (1D)
 	* @details This class makes use of distribution histograms in order to estimate the PDF. The length of the histogram is 255, 
 	* thus arguments \b point of the addPoint() and getDensity() functions should be 8-bit long.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de

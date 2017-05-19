@@ -43,8 +43,8 @@ Mat CTrainNode::getNodePotentials(const Mat &featureVector, float weight) const
 	float Sum = static_cast<float>(sum(res).val[0]);
 	if (Sum < FLT_EPSILON)
 		res.setTo(FLT_EPSILON, m_mask);		// Case of too small potentials (make all the cases equaly small probable)
-	else
-		res *= 100 / Sum;
+	//else
+	//	res *= 100 / Sum;
 
 	return res;
 }
