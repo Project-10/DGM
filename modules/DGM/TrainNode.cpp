@@ -26,7 +26,7 @@ void CTrainNode::addFeatureVec(const vec_mat_t &featureVectors, const Mat &gt)
 	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
 }
 
-Mat CTrainNode::getNodePotentials(const Mat &featureVector, float weight) const
+Mat CTrainNode::getNodePotentials(const Mat &featureVector, float weight, float Z) const
 {
 	// Assertions
 	DGM_ASSERT_MSG(featureVector.type() == CV_8UC1, 
@@ -41,10 +41,14 @@ Mat CTrainNode::getNodePotentials(const Mat &featureVector, float weight) const
 
 	// Normalization
 	float Sum = static_cast<float>(sum(res).val[0]);
-	if (Sum < FLT_EPSILON)
+	if (Sum < FLT_EPSILON) {
 		res.setTo(FLT_EPSILON, m_mask);		// Case of too small potentials (make all the cases equaly small probable)
-	//else
-	//	res *= 100 / Sum;
+	} else {
+		if (Z > FLT_EPSILON)
+			res *= 100.0 / Z;
+		else 
+			res *= 100.0 / Sum;
+	}
 
 	return res;
 }
