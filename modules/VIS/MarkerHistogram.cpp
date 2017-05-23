@@ -11,12 +11,11 @@ const byte			CMarkerHistogram::bkgIntencity	= 50;
 const double		CMarkerHistogram::frgWeight		= 0.75;
 const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
 
-Mat	CMarkerHistogram::drawClassificationMap2D(void) const
+Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 {
 	char			str[256];
 	const byte		nStates		= m_pNodeTrainer->getNumStates();
 	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
-	const float		koeff		= 100.0f; // 1e-32f;
 	const size_t	n			= m_vPalette.size();
 
 	Mat		res(2 * margin.height + 256, 2 * margin.height + 256, CV_8UC3);	
@@ -34,10 +33,10 @@ Mat	CMarkerHistogram::drawClassificationMap2D(void) const
 			Vec3b *pRes = res.ptr<Vec3b>(margin.height + 255 - y);
 			for (int x = 0; x < 256; x++) {
 				fv.at<byte>(0, 0) = static_cast<byte>(x);
-				Mat pot = m_pNodeTrainer->getNodePotentials(fv);
+				Mat pot = m_pNodeTrainer->getNodePotentials(fv, 1.0f, Z);
 
 				for (int s = 0; s < pot.rows; s++) {
-					float val = MIN(100, koeff * pot.at<float>(s, 0));
+					float val = MIN(100, pot.at<float>(s, 0));
 					Scalar color = val * m_vPalette[s % n].first / 100;
 					pRes[margin.height + x] += Vec3b((byte)color[0], (byte)color[1], (byte)color[2]);
 				}

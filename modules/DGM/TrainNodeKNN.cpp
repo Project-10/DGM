@@ -86,11 +86,13 @@ namespace DirectGraphicalModels
 		potential.setTo(m_params.bias);
 		float minr = mathop::Euclidian<byte, float>(featureVector.t(), nearestNeighbors.front()->getKey());
 
+		size_t n = nearestNeighbors.size();
 		for (auto node : nearestNeighbors) {
 			float r = mathop::Euclidian<byte, float>(featureVector.t(), node->getKey());
 			byte  s = node->getValue();				
 			r = 1 + r - minr;
-			potential.at<float>(s, 0) += 1 / (r * r);
+			potential.at<float>(s, 0) += 1.0f / (r * r);
+			//potential.at<float>(s, 0) += 1.0f / n;
 		}
 	}
 }

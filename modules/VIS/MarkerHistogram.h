@@ -51,7 +51,7 @@ namespace DirectGraphicalModels {
 		DllExport Mat	drawHistogram2D(void) const { return drawHistogram2D(CV_RGB(0, 0, 0)); }
 		/**
 		*/
-		DllExport Mat	drawClassificationMap2D(void) const;
+		DllExport Mat	drawClassificationMap2D(float Z) const;
 		/**
 		* @brief Visualizes the feature densitiy distributions in a separate window with user interaction.
 		* @details This function creates an OpenCV window with the visualized histograms.

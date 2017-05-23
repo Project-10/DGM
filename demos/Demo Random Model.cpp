@@ -57,7 +57,7 @@ Mat shrinkStateImage(Mat &img, byte nStates)
 
 int main(int argv, char *argc[])
 {
-	const CvSize		imgSize = cvSize(1000, 1000);
+	const CvSize		imgSize = cvSize(100, 100);
 	const int			width = imgSize.width;
 	const int			height = imgSize.height;
 	const unsigned int	nStates = 3;	 		
@@ -69,21 +69,22 @@ int main(int argv, char *argc[])
 	}
 	
 	// Reading parameters and images
-	int nodeModel = 1; // atoi(argc[1]);
+	int nodeModel = 3; // atoi(argc[1]);
 	Mat train_img = imread(argc[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
 	Mat train_gt  = imread(argc[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
 	train_gt = shrinkStateImage(train_gt, nStates);
 
 
+	float Z;
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;		
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
+		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 5e34f; break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f;break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
+		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
 #ifdef USE_SHERWOOD
-		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
 #endif
 		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
 	}
@@ -112,7 +113,7 @@ int main(int argv, char *argc[])
 	
 	Mat hist1D = marker.drawHistogram();
 	Mat hist2D = marker.drawHistogram2D();
-	Mat clMap = marker.drawClassificationMap2D();
+	Mat clMap = marker.drawClassificationMap2D(Z);
 	
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
