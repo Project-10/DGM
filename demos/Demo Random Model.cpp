@@ -57,7 +57,7 @@ Mat shrinkStateImage(Mat &img, byte nStates)
 
 int main(int argv, char *argc[])
 {
-	const CvSize		imgSize = cvSize(100, 100);
+	const CvSize		imgSize = cvSize(1000, 1000);
 	const int			width = imgSize.width;
 	const int			height = imgSize.height;
 	const unsigned int	nStates = 3;	 		
@@ -69,9 +69,9 @@ int main(int argv, char *argc[])
 	}
 	
 	// Reading parameters and images
-	int nodeModel = 3; // atoi(argc[1]);
-	Mat train_img = imread(argc[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt  = imread(argc[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
+	int nodeModel = 0; // atoi(argc[1]);
+	Mat train_img = imread(argc[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
+	Mat train_gt  = imread(argc[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
 	train_gt = shrinkStateImage(train_gt, nStates);
 
 
@@ -79,7 +79,7 @@ int main(int argv, char *argc[])
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 5e34f; break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f;break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
 		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
@@ -90,6 +90,7 @@ int main(int argv, char *argc[])
 	}
 	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
 
+	//	---------- Features Extraction ----------
 	vec_mat_t train_fv;
 	fex::CCommonFeatureExtractor fExtractor(train_img);
 	train_fv.push_back(fExtractor.getNDVI(0).autoContrast().get());

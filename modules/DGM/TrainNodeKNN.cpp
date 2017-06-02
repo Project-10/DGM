@@ -78,8 +78,6 @@ namespace DirectGraphicalModels
 		m_pTree->build(samples, classes);
 	}
 
-
-	/// @todo Generate a 2D histogram for this method
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		auto nearestNeighbors = m_pTree->findNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
@@ -90,9 +88,12 @@ namespace DirectGraphicalModels
 		for (auto node : nearestNeighbors) {
 			float r = mathop::Euclidian<byte, float>(featureVector.t(), node->getKey());
 			byte  s = node->getValue();				
+			
+			
 			r = 1 + r - minr;
-			potential.at<float>(s, 0) += 1.0f / (r * r);
-			//potential.at<float>(s, 0) += 1.0f / n;
+			potential.at<float>(s, 0) += 0.1f / (r * r);
+			//potential.at<float>(s, 0) += 1.0f;
 		}
+		//if (n) potential /= n;
 	}
 }

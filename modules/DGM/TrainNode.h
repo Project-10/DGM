@@ -68,7 +68,8 @@ namespace DirectGraphicalModels
 		* @param featureVector Multi-dimensinal point \f$\textbf{f}\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1)
 		* @param weight The weighting parameter
 		* @param Z The value of <a href="https://en.wikipedia.org/wiki/Partition_function_(statistical_mechanics)">partition function</a>.
-		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$. If \f$Z\leq0\f$, the resulting potentials are normalized to 1. 
+		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$. 
+		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for every function call. 
 		* @return Normalized %node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); 
 		*/		
 		DllExport  Mat	getNodePotentials(const Mat &featureVector, float weight = 1.0f, float Z = 0.0f) const;

@@ -10,7 +10,7 @@ namespace DirectGraphicalModels
 	/**
 	* @brief Histogram-based PDF class (1D)
 	* @details This class makes use of distribution histograms in order to estimate the PDF. The length of the histogram is 255, 
-	* thus arguments \b point of the addPoint() and getDensity() functions should be 8-bit long.
+	* thus arguments \b point of the addPoint() and getDensity() functions should be also in range [0; 255].
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
 	class CPDFHistogram : public IPDF
@@ -19,7 +19,7 @@ namespace DirectGraphicalModels
 		DllExport CPDFHistogram(void);
 		DllExport virtual ~CPDFHistogram(void);
 
-		DllExport virtual void	reset(void);
+		DllExport virtual void		reset(void);
 
 		DllExport virtual void		addPoint(Scalar point);
 		DllExport virtual double	getDensity(Scalar point); 
@@ -27,7 +27,7 @@ namespace DirectGraphicalModels
 		DllExport virtual Scalar	max(void) const { return Scalar(255); }
 
 		/**
-		* @brief Performs the gaussian smoothing on histogram
+		* @brief Performs the gaussian smoothing on the histogram
 		* @details Performs \b nIt iterations of gaussian smothing of the histograms in order to overcome the "over-fitting" problem
 		* @param nIt Number of iterations
 		*/
