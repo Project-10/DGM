@@ -7,12 +7,12 @@ using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 using namespace DirectGraphicalModels::fex;
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo Random Model.exe\" node_training_model edge_training_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n");
+	printf("Usage: %s node_training_model training_image groundtruth_image output_image\n", argv0);
 
 	printf("\nNode training models:\n");
-	printf("0: Naive Bayes\n");
+	printf("0: Bayes\n");
 	printf("1: Gaussian Mixture Model\n");
 	printf("2: OpenCV Gaussian Mixture Model\n");
 	printf("3: Nearest Neighbor\n");
@@ -55,7 +55,7 @@ Mat shrinkStateImage(Mat &img, byte nStates)
 	return res;
 }
 
-int main(int argv, char *argc[])
+int main(int argc, char *argv[])
 {
 	const CvSize		imgSize = cvSize(1000, 1000);
 	const int			width = imgSize.width;
@@ -63,15 +63,15 @@ int main(int argv, char *argc[])
 	const unsigned int	nStates = 3;	 		
 	const unsigned int	nFeatures = 2;
 
-	if (argv != 4) {
-		print_help();
+	if (argc != 5) {
+		print_help(argv[0]);
 		return 0;
 	}
 	
 	// Reading parameters and images
-	int nodeModel = 0; // atoi(argc[1]);
-	Mat train_img = imread(argc[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
-	Mat train_gt  = imread(argc[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
+	int nodeModel = atoi(argv[1]);
+	Mat train_img = imread(argv[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
+	Mat train_gt  = imread(argv[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
 	train_gt = shrinkStateImage(train_gt, nStates);
 
 
@@ -86,7 +86,7 @@ int main(int argv, char *argc[])
 #ifdef USE_SHERWOOD
 		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
 #endif
-		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
+		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
 

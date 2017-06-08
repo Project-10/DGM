@@ -3,19 +3,19 @@
 #include "chain.h"
 #include "tree.h"
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo 1D.exe\" <app>\n");
+	printf("Usage: %s <app>\n", argv0);
 	printf("where <app> is on of the following:\n");
-	printf("  exact - for \n");
-	printf("  chain - for \n");
-	printf("  tree  - for \n");
+	printf("  exact - for exact decoding example\n");
+	printf("  chain - for exact inference in chain-graphs example\n");
+	printf("  tree  - for exact inference in tree-graphs example\n");
 }
 
 int main(int argc, char *argv[])
 {
 	if (argc != 2) {
-		print_help();
+		print_help(argv[0]);
 		return 0;
 	}
 	std::string arg = argv[1];
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	if (arg == "chain") demo = new CChain();
 	if (arg == "tree")  demo = new CTree();
 	if (!demo) {
-		print_help();
+		print_help(argv[0]);
 		return 0;
 	}
 

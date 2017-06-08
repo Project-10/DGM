@@ -3,15 +3,15 @@
 
 using namespace DirectGraphicalModels;
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo Stereo.exe\" left_image right_image min_disparity max_disparity\n");
+	printf("Usage: %s left_image right_image min_disparity max_disparity\n", argv0);
 }
 
 int main(int argc, char *argv[])
 {
 	if (argc != 5) {
-		print_help();
+		print_help(argv[0]);
 		return 0;
 	}
 
