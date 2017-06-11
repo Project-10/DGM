@@ -103,6 +103,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
+	/// @todo delete pFv
 	void CGraphLayered::fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVectors, float weightBase, float weightOccl)
 	{
 		const word	nFeatures	= static_cast<word>(featureVectors.size());

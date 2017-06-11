@@ -91,6 +91,7 @@ namespace DirectGraphicalModels
 		* \f[ edgePot[nStates][nStates] = nodePot[nStates^2] = f(concat(\textbf{f}_1[nFeatures],\textbf{f}_2[nFeatures])). \f]
 		* The resulting edge potential matrix is normalized such that its largest element is equal to paramter \f$\theta\f$, and then regularized as follows:
 		* \f[ edgePot_{s,s} = \left\{\begin{array}{ll} 1 &\mbox{ if $edgePot_{s,s}<1$} \\ edgePot_{s,s} &\mbox{ otherwise}\end{array} \right.\;\;\;\forall s\in\mathbb{S}.\f]
+		* @todo: Incorporate the node potential weight into the model parameters
 		* @param featureVector1 Multi-dimensinal point \f$\textbf{f}_1\f$: Mat(size: nFeatures x 1; type: CV_8UC1), corresponding to the first node of the edge
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_8UC1), corresponding to the second node of the edge
 		* @param params Array of control parameters \f$\vec{\theta}\f$, which must consist from \a one parameter, specifying the largest value in the resulting edge potential.
@@ -99,8 +100,9 @@ namespace DirectGraphicalModels
 		*/
 		virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const 
 		{
+			const float nodePotWeight = 1.0f;
 			m_pConcatenator->concatenate(featureVector1, featureVector2, const_cast<Mat &>(m_featureVector));
-			Mat pot = m_pTrainer->getNodePotentials(m_featureVector);
+			Mat pot = m_pTrainer->getNodePotentials(m_featureVector, nodePotWeight);
 			Mat prior = m_pPrior->getPrior(100);
 
 			Mat res(m_nStates, m_nStates, CV_32FC1);

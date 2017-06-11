@@ -52,6 +52,7 @@ namespace DirectGraphicalModels {
 	//template<typename T>
 	//inline T SIGN(T a) {return (a >= 0) ? 1 : -1;}
 
+	// For: CPriorNode::addNodeGroundtruth
 	template<typename T, void (T::*SomeMethod)(byte b)>
 	inline void DGM_ELEMENTWISE1(T &self, const Mat &m)
 	{
@@ -65,6 +66,7 @@ namespace DirectGraphicalModels {
 		}
 	}
 
+	// For: CCmat::estimate()
 	template<typename T, void (T::*SomeMethod)(byte b1, byte b2)>
 	inline void DGM_ELEMENTWISE2(T &self, const Mat &m1, const Mat &m2)
 	{
@@ -98,6 +100,7 @@ namespace DirectGraphicalModels {
 		}
 	}
 
+	// For: CTrainNode::addFeatureVec()
 	template<typename T, void (T::*SomeMethod)(const Mat &vec, byte b)>
 	inline void DGM_VECTORWISE1(T &self, const Mat &m1, const Mat &m2)
 	{
@@ -138,7 +141,7 @@ namespace DirectGraphicalModels {
 		} // y
 	}
 
-
+	// For: CTrinLink::addFeatureVec()
 	template<typename T, void (T::*SomeMethod)(const Mat &vec, byte b1, byte b2)>
 	inline void DGM_VECTORWISE2(T &self, const Mat &m1, const Mat &m2, const Mat &m3)
 	{

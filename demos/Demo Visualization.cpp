@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
 		for (int x = 0; x < width; x++, idx++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
-			nodePot = nodeTrainer->getNodePotentials(featureVector1);												// node potential
+			nodePot = nodeTrainer->getNodePotentials(featureVector1, 1.0f);											// node potential
 			graph->setNode(idx, nodePot);
 
 			if (x > 0) {
