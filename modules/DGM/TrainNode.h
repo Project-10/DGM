@@ -42,7 +42,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gt for training
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC(nFeatures))
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/			
 		DllExport void			addFeatureVec(const Mat &featureVectors, const Mat &gt);
@@ -62,17 +62,35 @@ namespace DirectGraphicalModels
 		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gt) = 0;	
 		DllExport virtual void	train(bool doClean = false) {}
 		/**
+		* @brief Returns a block of node potentials, based on the block of feature vector
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC(nFeatures))
+		* @param weights The block of weighting parameters Mat(type: CV_32FC1). If empty, values 1 are used.
+		* @param Z The value of <a href="https://en.wikipedia.org/wiki/Partition_function_(statistical_mechanics)">partition function</a>.
+		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$.
+		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for each potential.
+		*/
+		DllExport Mat			getNodePotentials(const Mat &featureVectors, const Mat &weights = Mat(), float Z = 0.0f) const;
+		/**
+		* @brief Returns a block of node potentials, based on the block of feature vector
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param weights The block of weighting parameter Mat(type: CV_32FC1)
+		* @param Z The value of <a href="https://en.wikipedia.org/wiki/Partition_function_(statistical_mechanics)">partition function</a>.
+		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$.
+		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for each potential.
+		*/
+		DllExport Mat			getNodePotentials(const vec_mat_t &featureVectors, const Mat &weights = Mat(), float Z = 0.0f) const;
+		/**
 		* @brief Returns the node potential, based on the feature vector
 		* @details This function calls calculateNodePotentials() function, which should be implemented in derived classes. After that,
 		* the resulting node potential is powered by parameter \b weight.
 		* @param featureVector Multi-dimensinal point \f$\textbf{f}\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1)
-		* @param weight The weighting parameter
+		* @param weight The weighting parameter (default value is 1)
 		* @param Z The value of <a href="https://en.wikipedia.org/wiki/Partition_function_(statistical_mechanics)">partition function</a>.
 		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$. 
 		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for every function call. 
 		* @return Normalized %node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); 
 		*/		
-		DllExport  Mat	getNodePotentials(const Mat &featureVector, float weight = 1.0f, float Z = 0.0f) const;
+		DllExport Mat			getNodePotentials(const Mat &featureVector, float weight, float Z = 0.0f) const;
 
 
 	protected:

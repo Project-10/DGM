@@ -28,6 +28,31 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphExt(void) {}
 
 		/**
+		* @todo Rework this function
+		*/
+		DllExport void setNodes(const Mat &potentials)
+		{
+			//CGraphLayered::setNode(pot, Mat());
+
+#ifdef ENABLE_PPL
+			concurrency::parallel_for(0, potentials.rows, [&](int y) {  
+				Mat pot(m_nStates, 1, CV_32FC1);
+#else
+			Mat pot(m_nStates, 1, CV_32FC1);
+			for (int y = 0; y < potentials.rows; y++) {
+#endif
+				size_t idx = y * potentials.cols + 0;
+				const float *pPot = potentials.ptr<float>(y);
+				for (int x = 0; x < potentials.cols; x++) {
+					for (byte s = 0; s < m_nStates; s++) pot.at<float>(s, 0) = pPot[m_nStates * x + s];
+					setNode(idx++, pot);
+				} // x
+			} // y
+#ifdef ENABLE_PPL
+			);
+#endif
+		}
+		/**
 		* @brief Fills the graph nodes with potentials
 		* @details This function uses \b nodeTrainer class in order to achieve none potentials from feature vectors, stored in \b featureVectors
 		* and fills with them the graph nodes
