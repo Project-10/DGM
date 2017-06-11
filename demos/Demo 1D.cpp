@@ -7,9 +7,9 @@ void print_help(void)
 {
 	printf("Usage: \"Demo 1D.exe\" <app>\n");
 	printf("where <app> is on of the following:\n");
-	printf("  exact - for \n");
-	printf("  chain - for \n");
-	printf("  tree  - for \n");
+	printf("  exact - for exact inference and decoding\n");
+	printf("  chain - for chain-structured graphical model\n");
+	printf("  tree  - for tree-structured graphical model\n");
 }
 
 int main(int argc, char *argv[])
