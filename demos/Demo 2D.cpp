@@ -3,15 +3,15 @@
 #include "DGM.h"
 using namespace DirectGraphicalModels;
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo 2D.exe\" original_image noised_image\n");
+	printf("Usage: %s original_image noised_image\n", argv0);
 }
 
 int main(int argc, char *argv[]) 
 {
 	if (argc != 3) {
-		print_help();
+		print_help(argv[0]);
 		return 0;
 	}
 

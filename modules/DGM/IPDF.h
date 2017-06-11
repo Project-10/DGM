@@ -6,10 +6,10 @@
 
 namespace DirectGraphicalModels 
 {
-// ================================ PDF Class ==============================
+	// ================================ PDF Class ==============================
 	/**
 	* @brief Interface class for Probability Density Function (PDF)
-	* @details This class define the interface for estimation of 1D probability density functions for 
+	* @details This class defines the interface for estimation of probability density functions for 
 	* random read-valued variables
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	

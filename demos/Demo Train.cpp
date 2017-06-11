@@ -5,12 +5,12 @@
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo Train.exe\" node_training_model edge_training_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n");
+	printf("Usage: %s node_training_model edge_training_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n", argv0);
 
 	printf("\nNode training models:\n");
-	printf("0: Naive Bayes\n");
+	printf("0: Bayes\n");
 	printf("1: Gaussian Mixture Model\n");
 	printf("2: OpenCV Gaussian Mixture Model\n");
 	printf("3: Nearest Neighbor\n");
@@ -26,7 +26,7 @@ void print_help(void)
 	printf("4: Concatenated Model\n");
 }
 
-int main(int argv, char *argc[])
+int main(int argc, char *argv[])
 {
 	const CvSize		imgSize		= cvSize(400, 400);
 	const int			width		= imgSize.width;
@@ -34,19 +34,19 @@ int main(int argv, char *argc[])
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
 	const unsigned int	nFeatures	= 3;		
 
-	if (argv != 9) {
-		print_help();
+	if (argc != 9) {
+		print_help(argv[0]);
 		return 0;
 	}
 
 	// Reading parameters and images
-	int nodeModel	= atoi(argc[1]);																	// node training model
-	int edgeModel	= atoi(argc[2]);																	// edge training model
-	Mat train_fv	= imread(argc[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt	= imread(argc[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
-	Mat test_fv		= imread(argc[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
-	Mat test_gt		= imread(argc[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
-	Mat test_img	= imread(argc[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+	int nodeModel	= atoi(argv[1]);																	// node training model
+	int edgeModel	= atoi(argv[2]);																	// edge training model
+	Mat train_fv	= imread(argv[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt	= imread(argv[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
+	Mat test_fv		= imread(argv[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNode		* nodeTrainer	= NULL; 
 	CTrainEdge		* edgeTrainer	= NULL;
@@ -66,7 +66,7 @@ int main(int argv, char *argc[])
 #ifdef USE_SHERWOOD
 		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
+		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {
 		case 0: params[0] = 1;	// Emulate "No edges"
@@ -77,7 +77,7 @@ int main(int argv, char *argc[])
 			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(); return 0;
+		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -147,7 +147,7 @@ int main(int argv, char *argc[])
 	marker->markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
 	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
-	imwrite(argc[8], test_img);
+	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
 	cvWaitKey(1000);

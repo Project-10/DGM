@@ -1,4 +1,4 @@
-// Naive Bayes training class interface
+// Bayes training class interface
 // Written by Sergey G. Kosov in 2012 - 2015 for Project X
 #pragma once
 
@@ -9,10 +9,10 @@ namespace DirectGraphicalModels
 {
 	class IPDF;
 
-	// ====================== Naive Bayes Train Class =====================
+	// ====================== Bayes Train Class =====================
 	/** 
 	* @ingroup moduleTrainNode
-	* @brief Naive Bayes training class 
+	* @brief Bayes training class 
 	* @details This class implements the <a href="http://en.wikipedia.org/wiki/Naive_Bayes_classifier" target="blank">naive Bayes classifier</a>,
 	* which is based on strong (naive) independence assumptions between the features.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -34,16 +34,17 @@ namespace DirectGraphicalModels
 		DllExport virtual void	  train(bool doClean = false);
 
 		/**
-		* @brief Returns the normalized probability density function for specific state (class) and feature 
+		* @brief Returns the normalized probability density function (PDF) for specific state (class) and feature 
 		* @param state The state (class)
 		* @param feature The feature
 		* @return The probability density function 
 		*/
 		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
 		/**
-		* @brief Returns the normalized probability density function for specific state (class) and feature 
+		* @brief Returns the 2D normalized probability density function (PDF) for specific state (class) 
+		* @note Used for test purposes. Use this function when only 2 features are in use. 
 		* @param state The state (class)
-		* @return The probability density function
+		* @return The probability density function for 2 features
 		*/
 		DllExport IPDF			* getPDF2D(byte state) const { return m_pPDF2D[state]; }
 		/**
@@ -72,7 +73,7 @@ namespace DirectGraphicalModels
 	
 	protected:
 		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]
-		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials		
+		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials and 2 features[state]
 
 
 	private:

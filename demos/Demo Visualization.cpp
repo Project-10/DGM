@@ -37,9 +37,9 @@ void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param
 	}
 }
 
-void print_help(void)
+void print_help(char *argv0)
 {
-	printf("Usage: \"Demo Visualization.exe\" original_image features_image groundtruth_image\n");
+	printf("Usage: %s original_image features_image groundtruth_image\n", argv0);
 }
 
 int main(int argc, char *argv[])
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	const unsigned int	nFeatures	= 3;		
 
 	if (argc != 4) {
-		print_help();
+		print_help(argv[0]);
 		return 0;
 	}
 

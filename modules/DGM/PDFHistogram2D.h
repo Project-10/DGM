@@ -10,7 +10,8 @@ namespace DirectGraphicalModels
 	/**
 	* @brief Histogram-based PDF class (2D)
 	* @details This class makes use of distribution histograms in order to estimate the PDF. The length of the histogram is 255 x 255,
-	* thus arguments \b point of the addPoint() and getDensity() functions should be 8-bit long.
+	* thus arguments \b point of the addPoint() and getDensity() functions should be Scalar(a, b) , where a and b are 8-bit long values.
+	* > This class is curently used for test purposes. It works with 2-dimensional feature spaces only.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CPDFHistogram2D : public IPDF

@@ -360,7 +360,7 @@ namespace DirectGraphicalModels { namespace vis
 		//glDepthFunc(GL_LESS);												// Specify the value used for depth buffer comparisons
 		glEnable(GL_PROGRAM_POINT_SIZE);
 		glEnable(GL_BLEND);													// Enable blending
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		glFrontFace(GL_CW);													// Define front- and back-facing polygons
 		glEnable(GL_CULL_FACE);
 		//glCullFace(GL_BACK);

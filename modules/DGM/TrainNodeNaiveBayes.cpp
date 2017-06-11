@@ -26,7 +26,6 @@ CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures)
 		for (byte s = 0; s < m_nStates; s++)
 			m_pPDF2D[s] = new CPDFHistogram2D();
 	} else m_pPDF2D = NULL;
-	
 }
 
 // Destructor
@@ -128,7 +127,7 @@ void CTrainNodeNaiveBayes::loadFile(FILE *pFile)
 void CTrainNodeNaiveBayes::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 {
 	m_prior.copyTo(potential);
-	for (byte s = 0; s < m_nStates; s++) {			// state
+	for (byte s = 0; s < m_nStates; s++) {				// state
 		float	* pPot	= potential.ptr<float>(s);
 		byte	* pMask	= mask.ptr<byte>(s);
 		for (word f = 0; f < m_nFeatures; f++) {		// feature

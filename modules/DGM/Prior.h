@@ -6,12 +6,12 @@
 
 namespace DirectGraphicalModels
 {
-// ================================ Prior Class ================================
-/**
-@brief Base abstract class for prior probability estimation.
-@details This class implements serialization interface and defines basic interface for calculation prior probabilities.
-@author Sergey G. Kosov, sergey.kosov@project-10.de
-*/	
+	// ================================ Prior Class ================================
+	/**
+	* @brief Base abstract class for prior probability estimation.
+	* @details This class implements serialization interface and defines basic interface for calculation prior probabilities.
+	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/	
 	class CPrior : public virtual CBaseRandomModel
 	{
 	public:	
