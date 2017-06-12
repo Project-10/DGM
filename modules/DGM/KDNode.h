@@ -6,10 +6,12 @@
 
 namespace DirectGraphicalModels
 {
-	// ================================ Base Random Model Class ================================
+	// ================================ k-D Node Class ================================
 	/**
-	* @brief K-D %Node class for K-D Trees
-	* @details This class is used for an implementation of a non-uniform <a href="https://en.wikipedia.org/wiki/K-d_tree">k-d tree</a>.
+	* @brief k-D %Node class for the k-D Tree data structure
+	* @details This class is used for an implementation of a non-uniform <a href="https://en.wikipedia.org/wiki/K-d_tree">k-D Tree</a> data structure.
+	* The are 3 types of the nodes: \a root, \a leaf and \a branch nodes. Branch nodes have upto two child nodes, and leaf nodes have no children.
+	* If the root node is the only one node in the tree it is also the leaf node.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CKDNode : public std::enable_shared_from_this<CKDNode>
@@ -53,7 +55,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport bool						isLeaf(void) const { return (!m_pLeft && !m_pRight); }
 		/**
-		* @brief Auxiliary recursive method for finding the ka-nearest (in terms of the Euclidian distance between the keys) \b nearestNeighbors nodes.
+		* @brief Auxiliary recursive method for finding the k-nearest (in terms of the Euclidian distance between the keys) \b nearestNeighbors nodes.
 		* @param[in] key The search key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
 		* @param[in] maxNeighbors The number of desired neares neighbors
 		* @param[in,out] searchBox The bounding box, that is used to find the overlapping branch nodes

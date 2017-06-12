@@ -21,18 +21,21 @@ void print_help(char *argv0)
 }
 
 // merges some classes in one
-Mat shrinkStateImage(Mat &img, byte nStates)
+Mat shrinkStateImage(const Mat &gt, byte nStates)
 {
 	// assertions
-	if (img.channels() != 1) return Mat();
+	if (gt.type() != CV_8UC1) return Mat();
 
 	Mat res;
-	img.copyTo(res);
+	gt.copyTo(res);
 
-	for (register int y = 0; y < img.rows; y++) {
+	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
+		*it = *it % nStates;
+
+/*	for (int y = 0; y < res.rows; y++) {
 		byte *pImg = img.ptr<byte>(y);
 		byte *pRes = res.ptr<byte>(y);
-		for (register int x = 0; x < img.cols; x++) {
+		for (int x = 0; x < img.cols; x++) {
 			switch (pImg[x]) {
 				case 0: pRes[x] = 0; break;
 				case 1: pRes[x] = 0; break;
@@ -41,27 +44,17 @@ Mat shrinkStateImage(Mat &img, byte nStates)
 				case 4: pRes[x] = 2; break;
 				case 5: pRes[x] = 2; break;
 			}
-			
-			
-			//if (pImg[x] <= 2) pRes[x] = 0;
-			//else if (pImg[x] <= 3) pRes[x] = 1;
-			//else pRes[x] = 2;
-			//if (pImg[x] < nStates / 3) pRes[x] = 0;
-			//else if (pImg[x] < 2 * nStates / 3) pRes[x] = 1;
-			//else pRes[x] = 2;
 		} // x
 	} // y
-
+*/
 	return res;
 }
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize = cvSize(1000, 1000);
-	const int			width = imgSize.width;
-	const int			height = imgSize.height;
+	const CvSize		imgSize = cvSize(400, 400);
 	const unsigned int	nStates = 3;	 		
-	const unsigned int	nFeatures = 2;
+	const unsigned int	nFeatures = 2;		// {ndvi, saturation}
 
 	if (argc != 5) {
 		print_help(argv[0]);
@@ -70,15 +63,14 @@ int main(int argc, char *argv[])
 	
 	// Reading parameters and images
 	int nodeModel = atoi(argv[1]);
-	Mat train_img = imread(argv[2], 1); resize(train_img, train_img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
-	Mat train_gt  = imread(argv[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
-	train_gt = shrinkStateImage(train_gt, nStates);
-
+	Mat img = imread(argv[2], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
+	Mat gt  = imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
+	gt = shrinkStateImage(gt, nStates);												// reduce the number of classes in gt to nStates
 
 	float Z;
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 5e34f; break;
+		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 2e34f; break;
 		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
@@ -91,42 +83,34 @@ int main(int argc, char *argv[])
 	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
 
 	//	---------- Features Extraction ----------
-	vec_mat_t train_fv;
-	fex::CCommonFeatureExtractor fExtractor(train_img);
-	train_fv.push_back(fExtractor.getNDVI(0).autoContrast().get());
-	train_fv.push_back(fExtractor.getSaturation().invert().get());
+	vec_mat_t featureVector;
+	fex::CCommonFeatureExtractor fExtractor(img);
+	featureVector.push_back(fExtractor.getNDVI(0).autoContrast().get());
+	featureVector.push_back(fExtractor.getSaturation().invert().get());
 
 	//	---------- Training ----------
 	printf("Training... ");
 	int64 ticks = getTickCount();
-	
-	nodeTrainer->addFeatureVec(train_fv, train_gt);
+	nodeTrainer->addFeatureVec(featureVector, gt);
 	nodeTrainer->train();
-//	dynamic_cast<CTrainNodeNaiveBayes *>(nodeTrainer)->smooth(10);
-
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
-
 
 	//	---------- Visualization ----------
 	printf("Preparing Histogram...");
 	ticks = getTickCount();
-	
-	Mat hist1D = marker.drawHistogram();
-	Mat hist2D = marker.drawHistogram2D();
-	Mat clMap = marker.drawClassificationMap2D(Z);
-	
+	Mat classMap = marker.drawClassificationMap2D(Z);
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	imwrite(argv[4], classMap);
 
-	imshow("histogram 1d", hist1D);
-	imshow("histogram 2d", hist2D);
-	imshow("class map 2d", clMap);
-//	imwrite("D:\\output.jpg", hist2D);
+	if (nodeModel == 0) {
+		imshow("histogram 1d", marker.drawHistogram());
+		imshow("histogram 2d", marker.drawHistogram2D());
+	}
 
-	cvWaitKey();
-
-
+	imshow("class map 2d", classMap);
+	cvWaitKey(1000);
 
 	return 0;
 }

@@ -81,19 +81,19 @@ namespace DirectGraphicalModels
 	void CTrainNodeKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		auto nearestNeighbors = m_pTree->findNearestNeighbors(featureVector.t(), m_params.maxNeighbors);
-		potential.setTo(m_params.bias);
-		float minr = mathop::Euclidian<byte, float>(featureVector.t(), nearestNeighbors.front()->getKey());
+		//float minr = mathop::Euclidian<byte, float>(featureVector.t(), nearestNeighbors.front()->getKey());
 
 		size_t n = nearestNeighbors.size();
 		for (auto node : nearestNeighbors) {
-			float r = mathop::Euclidian<byte, float>(featureVector.t(), node->getKey());
 			byte  s = node->getValue();				
 			
+			//float r = mathop::Euclidian<byte, float>(featureVector.t(), node->getKey());			
+			//r = 1 + r - minr;
+			//potential.at<float>(s, 0) += 0.1f / (r * r);
 			
-			r = 1 + r - minr;
-			potential.at<float>(s, 0) += 0.1f / (r * r);
-			//potential.at<float>(s, 0) += 1.0f;
+			potential.at<float>(s, 0) += 1.0f;
 		}
-		//if (n) potential /= n;
+		if (n) potential /= n;
+		potential += m_params.bias;
 	}
 }

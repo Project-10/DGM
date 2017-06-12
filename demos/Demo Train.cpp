@@ -150,9 +150,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	cvWaitKey(1000);
-
-	getchar();
+	cvWaitKey(0 * 1000);
 
 	return 0;
 }

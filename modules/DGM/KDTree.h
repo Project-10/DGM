@@ -4,15 +4,14 @@
 #pragma once
 
 #include "types.h"
-
 #include "KDNode.h"
 
 namespace DirectGraphicalModels
 {
-	// ================================ Base Random Model Class ================================
+	// ================================ k-D Tree Class ================================
 	/**
-	* @brief K-D Tree class
-	* @details This class implementats a non-uniform <a href="https://en.wikipedia.org/wiki/K-d_tree">k-d tree</a> data structure.
+	* @brief Class implementing k-D Tree data structure
+	* @details This class implementats a non-uniform <a href="https://en.wikipedia.org/wiki/K-d_tree" target="blank">k-D Tree</a> data structure.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CKDTree
@@ -34,7 +33,7 @@ namespace DirectGraphicalModels
 		DllExport bool											operator=(const CKDTree)  = delete;
 
 		/**
-		* @brief Resets the tree.
+		* @brief Resets the tree
 		*/
 		DllExport void											reset(void) { m_root.reset(); }
 		/**
@@ -50,6 +49,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Builds a k-d tree on \b keys with corresponding \b values
 		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
+		* > The \b keys matrix is modified by this function
 		* @param values The values for every key: Mat(size: nKeys x 1; type: CV_8UC1)
 		*/
 		DllExport void											build(Mat &keys, Mat &values);
