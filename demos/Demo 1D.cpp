@@ -7,9 +7,9 @@ void print_help(char *argv0)
 {
 	printf("Usage: %s <app>\n", argv0);
 	printf("where <app> is on of the following:\n");
-	printf("  exact - for exact decoding example\n");
-	printf("  chain - for exact inference in chain-graphs example\n");
-	printf("  tree  - for exact inference in tree-graphs example\n");
+	printf("  exact - for exact inference and decoding\n");
+	printf("  chain - for chain-structured graphical model\n");
+	printf("  tree  - for tree-structured graphical model\n");
 }
 
 int main(int argc, char *argv[])
