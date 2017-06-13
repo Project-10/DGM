@@ -48,28 +48,11 @@ namespace DirectGraphicalModels
 		DllExport virtual void build(CvSize graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
-		* @details This function uses \b nodeTrainerBase and \b nodeTrainerOccl classes in order to achieve none potentials from feature vectors, stored 
-		* in \b featureVectors and fills with them the graph nodes
 		* > This function supports PPL
-		* @param nodeTrainerBase A pointer to the node trainer
-		* @param nodeTrainerOccl A pointer to the node trainer
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		* @param weightBase The weighting parameter for base layer
-		* @param weightOccl The weighting parameter for occlusion layer
+		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
+		* @param potOccl A block of potentials for the occlusion layer: Mat(type: CV_32FC(nStatesOccl))
 		*/
-		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const Mat &featureVectors, float weightBase = 1.0f, float weightOccl = 1.0f);
-		/**
-		* @brief Fills the graph nodes with potentials
-		* @details This function uses \b nodeTrainerBase and \b nodeTrainerOccl classes in order to achieve none potentials from feature vectors, stored
-		* in \b featureVectors and fills with them the graph nodes
-		* > This function supports PPL
-		* @param nodeTrainerBase A pointer to the node trainer
-		* @param nodeTrainerOccl A pointer to the node trainer
-		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
-		* @param weightBase The weighting parameter for base layer
-		* @param weightOccl The weighting parameter for occlusion layer
-		*/
-		DllExport virtual void fillNodes(const CTrainNode *nodeTrainerBase, const CTrainNode *nodeTrainerOccl, const vec_mat_t &featureVectors, float weightBase = 1.0f, float weightOccl = 1.0f);
+		DllExport virtual void setNodes(const Mat &potBase, const Mat &potOccl);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors

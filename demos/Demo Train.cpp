@@ -124,9 +124,8 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	printf("Filling the Graph... ");
 	ticks = getTickCount();
-	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graph->setNodes(nodePotentials);
-	//graph->fillNodes(nodeTrainer, test_fv);
 	graph->fillEdges(edgeTrainer, test_fv, params, params_len);
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());

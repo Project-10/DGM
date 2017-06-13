@@ -28,55 +28,13 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphExt(void) {}
 
 		/**
-		* @todo Rework this function
-		*/
-		DllExport void setNodes(const Mat &potentials)
-		{
-			//CGraphLayered::setNode(pot, Mat());
-
-#ifdef ENABLE_PPL
-			concurrency::parallel_for(0, potentials.rows, [&](int y) {  
-				Mat pot(m_nStates, 1, CV_32FC1);
-#else
-			Mat pot(m_nStates, 1, CV_32FC1);
-			for (int y = 0; y < potentials.rows; y++) {
-#endif
-				size_t idx = y * potentials.cols + 0;
-				const float *pPot = potentials.ptr<float>(y);
-				for (int x = 0; x < potentials.cols; x++) {
-					for (byte s = 0; s < m_nStates; s++) pot.at<float>(s, 0) = pPot[m_nStates * x + s];
-					setNode(idx++, pot);
-				} // x
-			} // y
-#ifdef ENABLE_PPL
-			);
-#endif
-		}
-		/**
 		* @brief Fills the graph nodes with potentials
-		* @details This function uses \b nodeTrainer class in order to achieve none potentials from feature vectors, stored in \b featureVectors
-		* and fills with them the graph nodes
 		* > This function supports PPL
-		* @param nodeTrainer A pointer to the node trainer
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		* @param weight The weighting parameter
+		* @param pots A block of potentials: Mat(type: CV_32FC(nStates))
 		*/
-		DllExport void fillNodes(const CTrainNode *nodeTrainer, const Mat &featureVectors, float weight = 1.0f) 
+		DllExport void setNodes(const Mat &pots)
 		{
-			CGraphLayered::fillNodes(nodeTrainer, NULL, featureVectors, weight);
-		}
-		/**
-		* @brief Fills the graph nodes with potentials
-		* @details This function uses \b nodeTrainer class in order to achieve none potentials from feature vectors, stored in \b featureVectors
-		* and fills with them the graph nodes
-		* > This function supports PPL
-		* @param nodeTrainer A pointer to the node trainer
-		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
-		* @param weight The weighting parameter
-		*/
-		DllExport void fillNodes(const CTrainNode *nodeTrainer, const vec_mat_t &featureVectors, float weight = 1.0f)
-		{
-			CGraphLayered::fillNodes(nodeTrainer, NULL, featureVectors, weight);
+			CGraphLayered::setNodes(pots, Mat());
 		}
 		/**
 		* @brief Fills the graph edges with potentials
