@@ -29,6 +29,7 @@ namespace DirectGraphicalModels
 
 		/**
 		* @brief Fills the graph nodes with potentials
+		* @details
 		* > This function supports PPL
 		* @param pots A block of potentials: Mat(type: CV_32FC(nStates))
 		*/

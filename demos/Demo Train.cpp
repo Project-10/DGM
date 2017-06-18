@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	const CvSize		imgSize		= cvSize(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
+	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 	
 	const unsigned int	nFeatures	= 3;		
 
 	if (argc != 9) {
@@ -124,9 +124,9 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	printf("Filling the Graph... ");
 	ticks = getTickCount();
-	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graph->setNodes(nodePotentials);
-	graph->fillEdges(edgeTrainer, test_fv, params, params_len);
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	graph->setNodes(nodePotentials);									// Filling-in the graph nodes
+	graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
 	ticks = getTickCount() - ticks;
 	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
 
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 
 	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(test_gt, solution);																				// compare solution with the groundtruth
+	confMat->estimate(test_gt, solution);								// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
 	printf("%s\n", str);

@@ -48,6 +48,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void build(CvSize graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
+		* @details
 		* > This function supports PPL
 		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
 		* @param potOccl A block of potentials for the occlusion layer: Mat(type: CV_32FC(nStatesOccl))

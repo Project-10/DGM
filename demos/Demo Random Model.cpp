@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
 	}
 	
 	// Reading parameters and images
-	int nodeModel = atoi(argv[1]);
-	Mat img = imread(argv[2], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
-	Mat gt  = imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
+	int nodeModel	= atoi(argv[1]);
+	Mat img			= imread(argv[2], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
+	Mat gt			= imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
 	gt = shrinkStateImage(gt, nStates);												// reduce the number of classes in gt to nStates
 
 	float Z;
