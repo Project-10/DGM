@@ -1,6 +1,8 @@
 // Example "GraphCuts" 2D-case with LBP decoding
 // (http://www.cs.ubc.ca/~schmidtm/Software/UGM/graphCuts.html)
 #include "DGM.h"
+#include "DGM/timer.h"
+
 using namespace DirectGraphicalModels;
 
 void print_help(char *argv0)
@@ -50,11 +52,9 @@ int main(int argc, char *argv[])
 		} // x
 
 	// =============================== Decoding ===============================
-	printf("Decoding... ");
-	int64 ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(100);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	
 	// ====================== Evaluation / Visualization ======================

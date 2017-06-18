@@ -1,6 +1,8 @@
 // Example "Visualization" 2D-case 
 #include "DGM.h"
 #include "VIS.h"
+#include "DGM\timer.h"
+
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
@@ -80,28 +82,23 @@ int main(int argc, char *argv[])
 	CCMat				* confMat		= new CCMat(nStates);
 
 	// ==================== STAGE 1: Building the graph ====================
-	printf("Building the Graph... ");
-	int64 ticks = getTickCount();	
+	Timer::start("Building the Graph... ");
 	for (int y = 0; y < height; y++) 
 		for (int x = 0; x < width; x++) {
 			size_t idx = graph->addNode();
 			if (x > 0) 	 graph->addArc(idx, idx - 1);
 			if (y > 0) 	 graph->addArc(idx, idx - width); 
 		} // x
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
-	printf("Training... ");
-	ticks = getTickCount();	
+	Timer::start("Training... ");
 	nodeTrainer->addFeatureVec(fv, gt);										// Only Node Training 		
 	nodeTrainer->train();													// Contrast-Sensitive Edge Model requires no training
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
-	printf("Filling the Graph... ");
-	ticks = getTickCount();
+	Timer::start("Filling the Graph... ");
 	Mat featureVector1(nFeatures, 1, CV_8UC1); 
 	Mat featureVector2(nFeatures, 1, CV_8UC1); 
 	Mat nodePot, edgePot;
@@ -125,15 +122,12 @@ int main(int argc, char *argv[])
 			} // if y
 		} // x
 	} // y
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
-	printf("Decoding... ");
-	ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(10);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());

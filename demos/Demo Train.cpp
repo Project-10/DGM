@@ -1,6 +1,7 @@
 // Example "Training" 2D-case with model training
 #include "DGM.h"
 #include "VIS.h"
+#include "DGM\timer.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -81,16 +82,12 @@ int main(int argc, char *argv[])
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
-	printf("Building the Graph... ");
-	int64 ticks = getTickCount();	
+	Timer::start("Building the Graph... ");
 	graph->build(imgSize);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
-	printf("Training... ");
-	ticks = getTickCount();	
-	
+	Timer::start("Training... ");
 	// Node Training (compact notation)
 	nodeTrainer->addFeatureVec(train_fv, train_gt);					
 
@@ -117,25 +114,19 @@ int main(int argc, char *argv[])
 
 	nodeTrainer->train(); 
 	edgeTrainer->train(); 
-
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
-	printf("Filling the Graph... ");
-	ticks = getTickCount();
+	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graph->setNodes(nodePotentials);									// Filling-in the graph nodes
 	graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
-	printf("Decoding... ");
-	ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(100);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());

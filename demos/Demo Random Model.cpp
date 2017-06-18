@@ -2,6 +2,7 @@
 #include "DGM.h"
 #include "VIS.h"
 #include "FEX.h"
+#include "DGM\timer.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -89,19 +90,15 @@ int main(int argc, char *argv[])
 	featureVector.push_back(fExtractor.getSaturation().invert().get());
 
 	//	---------- Training ----------
-	printf("Training... ");
-	int64 ticks = getTickCount();
+	Timer::start("Training... ");
 	nodeTrainer->addFeatureVec(featureVector, gt);
 	nodeTrainer->train();
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	//	---------- Visualization ----------
-	printf("Preparing Histogram...");
-	ticks = getTickCount();
+	Timer::start("Preparing Histogram...");
 	Mat classMap = marker.drawClassificationMap2D(Z);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 	imwrite(argv[4], classMap);
 
 	if (nodeModel == 0) {

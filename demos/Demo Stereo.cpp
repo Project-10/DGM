@@ -1,5 +1,6 @@
 // Example Disparity estimation with CRFs
 #include "DGM.h"
+#include "DGM\timer.h"
 
 using namespace DirectGraphicalModels;
 
@@ -57,11 +58,9 @@ int main(int argc, char *argv[])
 	} // y
 
 	// =============================== Decoding ===============================
-	printf("Decoding... ");
-	int64 ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(100);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 	
 	// ============================ Visualization =============================
 	Mat disparity(imgL.size(), CV_8UC1, optimalDecoding.data());
