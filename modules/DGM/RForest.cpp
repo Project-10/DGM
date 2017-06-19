@@ -24,7 +24,9 @@ namespace DirectGraphicalModels
 		//res.setTo(0.01f);
 		//int st = (int)CRTrees::predict(featureVector);
 		//res.at<float>(st, 0) = 0.99f;
-		
+
+		if (ntrees) res /= ntrees;
+
 		return res;
 	}
 
