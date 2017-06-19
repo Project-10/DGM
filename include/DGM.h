@@ -256,13 +256,18 @@ This example copies the idea from the <a href="http://www.cs.ubc.ca/~schmidtm/So
 #include "DGM.h"
 using namespace DirectGraphicalModels;
 
-int main(int argv, char *argc[]) 
+int main(int argc, char *argv[]) 
 {
-	const unsigned int	nStates	= 2;						// {true; false}
-	
+	if (argc != 3) {
+		print_help(argv[0]);
+		return 0;
+	}
+
+	const unsigned int	nStates = 2;			// {true; false}
+
 	// Reading parameters and images
-	Mat		  img		= imread("Smile.png", 0);			// original image
-	Mat		  noise		= imread("Smile_noise.png", 0);		// noised image
+	Mat		  img		= imread(argv[1], 0);
+	Mat		  noise		= imread(argv[2], 0);
 	int		  width		= img.cols;
 	int		  height	= img.rows;
 	
@@ -288,16 +293,14 @@ int main(int argv, char *argc[])
 			size_t idx = graph->addNode(nodePot);
 			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
 			if (y > 0) graph->addArc(idx, idx - width, edgePot);
-			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);
-			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);									
+			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);	
+			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);											
 		} // x
 
 	// =============================== Decoding ===============================
-	printf("Decoding... ");
-	int64 ticks = getTickCount();
-	std::vector<byte> optimalDecoding = decoder->decode(100);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::start("Decoding... ");
+	vec_byte_t optimalDecoding = decoder->decode(100);
+	Timer::stop();
 
 	
 	// ====================== Evaluation / Visualization ======================
@@ -311,7 +314,7 @@ int main(int argv, char *argc[])
 
 	printf("Accuracy  = %.2f%%\n", 100 - 100 * error / (width * height));
 	
-	imshow("Image", noise);	
+	imshow("image", noise);	
 
 	cvWaitKey();
 
@@ -372,10 +375,11 @@ another - for testing. Finally, we evaluate the results by comparing the lebelle
 @code
 #include "DGM.h"
 #include "VIS.h"
+#include "DGM\timer.h"
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-int main(int argv, char *argc[])
+int main(int argc, char *argv[])
 {
 	const CvSize		imgSize		= cvSize(400, 400);
 	const int			width		= imgSize.width;
@@ -383,19 +387,19 @@ int main(int argv, char *argc[])
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car}
 	const unsigned int	nFeatures	= 3;
 
-	if (argv != 9) {
-		print_help();
+	if (argc != 9) {
+		print_help(argv[0]);
 		return 0;
 	}
 
 	// Reading parameters and images
-	int nodeModel	= atoi(argc[1]);																	// node training model
-	int edgeModel	= atoi(argc[2]);																	// edge training model
-	Mat train_fv	= imread(argc[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt	= imread(argc[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
-	Mat test_fv		= imread(argc[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
-	Mat test_gt		= imread(argc[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
-	Mat test_img	= imread(argc[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+	int nodeModel	= atoi(argv[1]);																	// node training model
+	int edgeModel	= atoi(argv[2]);																	// edge training model
+	Mat train_fv	= imread(argv[3], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt	= imread(argv[4], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
+	Mat test_fv		= imread(argv[5], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNode		* nodeTrainer	= NULL;
 	CTrainEdge		* edgeTrainer	= NULL;
@@ -415,7 +419,7 @@ int main(int argv, char *argc[])
 #ifdef USE_SHERWOOD
 		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		default: printf("Unknown node_training_model is given\n"); print_help(); return 0;
+		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {
 		case 0: params[0] = 1;	// Emulate "No edges"
@@ -426,20 +430,16 @@ int main(int argv, char *argc[])
 			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(); return 0;
+		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
-	printf("Building the Graph... ");
-	int64 ticks = getTickCount();
+	Timer::start("Building the Graph... ");
 	graph->build(imgSize);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
-	printf("Training... ");
-	ticks = getTickCount();
-
+	Timer::start("Training... ");
 	// Node Training (compact notation)
 	nodeTrainer->addFeatureVec(train_fv, train_gt);
 
@@ -466,28 +466,23 @@ int main(int argv, char *argc[])
 
 	nodeTrainer->train();
 	edgeTrainer->train();
-
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
-	printf("Filling the Graph... ");
-	ticks = getTickCount();
-	graph->fillNodes(nodeTrainer, test_fv);
-	graph->fillEdges(edgeTrainer, test_fv, params, params_len);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::start("Filling the Graph... ");
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	graph->setNodes(nodePotentials);									// Filling-in the graph nodes
+	graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
+	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
-	printf("Decoding... ");
-	ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(100);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
 	// ====================== Evaluation =======================
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(test_gt, solution);																				// compare solution with the groundtruth
+	confMat->estimate(test_gt, solution);								// compare solution with the groundtruth
 	char str[255];
 	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
 	printf("%s\n", str);
@@ -496,14 +491,18 @@ int main(int argv, char *argc[])
 	marker->markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
 	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
-	imwrite(argc[8], test_img);
+	imwrite(argv[8], test_img);
 
 	imshow("Image", test_img);
-	cvWaitKey(1000);
+	cvWaitKey(0 * 1000);
 
 	return 0;
 }
 @endcode
+
+Please note, that in this tutorial we used the Extended Graph class: @ref DirectGraphicalModels::CGraphExt, which is built upon the regular Graph class and 
+adds wrappers for common DGM operations on rectangular images. Among other wrappers it has one wrapper for graph building (used in the Stage 1) and other 
+wrappers for nodes / edges classification (used in Stage 3).
 */
 
 /**
@@ -512,6 +511,104 @@ int main(int argv, char *argc[])
 add description here
 
 @code
+#include "DGM.h"
+#include "VIS.h"
+#include "FEX.h"
+#include "DGM\timer.h"
+using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::vis;
+using namespace DirectGraphicalModels::fex;
+
+// merges some classes in one
+Mat shrinkStateImage(const Mat &gt, byte nStates)
+{
+	// assertions
+	if (gt.type() != CV_8UC1) return Mat();
+
+	Mat res;
+	gt.copyTo(res);
+
+	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
+		*it = *it % nStates;
+
+	for (int y = 0; y < res.rows; y++) {
+		byte *pImg = img.ptr<byte>(y);
+		byte *pRes = res.ptr<byte>(y);
+		for (int x = 0; x < img.cols; x++) {
+			switch (pImg[x]) {
+				case 0: pRes[x] = 0; break;
+				case 1: pRes[x] = 0; break;
+				case 2: pRes[x] = 0; break;
+				case 3: pRes[x] = 1; break;
+				case 4: pRes[x] = 2; break;
+				case 5: pRes[x] = 2; break;
+			}
+		} // x
+	} // y
+
+	return res;
+}
+
+int main(int argc, char *argv[])
+{
+	const CvSize		imgSize = cvSize(400, 400);
+	const unsigned int	nStates = 3;	 		
+	const unsigned int	nFeatures = 2;		// {ndvi, saturation}
+
+	if (argc != 5) {
+		print_help(argv[0]);
+		return 0;
+	}
+	
+	// Reading parameters and images
+	int nodeModel	= atoi(argv[1]);
+	Mat img			= imread(argv[2], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
+	Mat gt			= imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
+	gt = shrinkStateImage(gt, nStates);												// reduce the number of classes in gt to nStates
+
+	float Z;
+	CTrainNode	* nodeTrainer = NULL;
+	switch(nodeModel) {
+		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 2e34f; break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
+		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
+#ifdef USE_SHERWOOD
+		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
+#endif
+		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
+	}
+	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
+
+	//	---------- Features Extraction ----------
+	vec_mat_t featureVector;
+	fex::CCommonFeatureExtractor fExtractor(img);
+	featureVector.push_back(fExtractor.getNDVI(0).autoContrast().get());
+	featureVector.push_back(fExtractor.getSaturation().invert().get());
+
+	//	---------- Training ----------
+	Timer::start("Training... ");
+	nodeTrainer->addFeatureVec(featureVector, gt);
+	nodeTrainer->train();
+	Timer::stop();
+
+	//	---------- Visualization ----------
+	if (nodeModel == 0) {
+		imshow("histogram 1d", marker.drawHistogram());
+		imshow("histogram 2d", marker.drawHistogram2D());
+	}
+
+	Timer::start("Classifying...");
+	Mat classMap = marker.drawClassificationMap2D(Z);
+	Timer::stop();
+	imwrite(argv[4], classMap);
+
+	imshow("class map 2d", classMap);
+	cvWaitKey(1000);
+
+	return 0;
+}
 @endcode
 */
 
@@ -546,21 +643,25 @@ using namespace DirectGraphicalModels;
 
 int main(int argc, char *argv[])
 {
+	if (argc != 5) {
+		print_help(argv[0]);
+		return 0;
+	}
+
 	// Reading parameters and images
-	Mat		  imgL			= imread("tsukuba_left.jpg", 0);
-	Mat		  imgR			= imread("tsukuba_right.jpg", 0);
-	int		  minDisparity	= 5;
-	int		  maxDisparity	= 16;
+	Mat		  imgL			= imread(argv[1], 0);
+	Mat		  imgR			= imread(argv[2], 0);
+	int		  minDisparity	= atoi(argv[3]);
+	int		  maxDisparity	= atoi(argv[4]);
 	int		  width			= imgL.cols;
 	int		  height		= imgL.rows;
-	
-	const unsigned int nStates = maxDisparity - minDisparity;
+	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraph	* graph			= new CGraph(nStates);
-	CInfer	* decoder		= new CInferTRW(graph);
+	CGraph	* graph		= new CGraph(nStates);
+	CInfer	* decoder	= new CInferTRW(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
-	Mat edgePot(nStates, nStates, CV_32FC1);								// edge Potential
+	Mat edgePot(nStates, nStates, CV_32FC1);								// edge Potential	
 
 	// No training
 	// Defynig the edge potential
@@ -575,12 +676,12 @@ int main(int argc, char *argv[])
 		byte * pImgR	= imgR.ptr<byte>(y);
 		for (int x = 0; x < width; x++) {
 			float imgL_value = static_cast<float>(pImgL[x]);
-			for (unsigned int s = 0; s < nStates; s++) {					// states
+			for (unsigned int s = 0; s < nStates; s++) {						// state
 				int disparity = minDisparity + s;
 				float imgR_value = (x + disparity < width) ? static_cast<float>(pImgR[x + disparity]) : imgL_value;
 				float p = 1.0f - fabs(imgL_value - imgR_value) / 255.0f;
 				nodePot.at<float>(s, 0) = p * p;
-			} // s
+			}
 
 			size_t idx = graph->addNode(nodePot);
 			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
@@ -589,12 +690,10 @@ int main(int argc, char *argv[])
 	} // y
 
 	// =============================== Decoding ===============================
-	printf("Decoding... ");
-	int64 ticks = getTickCount();
+	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(100);
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
-
+	Timer::stop();
+	
 	// ============================ Visualization =============================
 	Mat disparity(imgL.size(), CV_8UC1, optimalDecoding.data());
 	disparity = (disparity + minDisparity) * (256 / maxDisparity);

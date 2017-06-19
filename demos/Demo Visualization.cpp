@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	vec_byte_t optimalDecoding = decoder->decode(10);
 	Timer::stop();
 
-	// ====================== Evaluation =======================	
+	// ======================== Evaluation ========================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
 	char str[255];

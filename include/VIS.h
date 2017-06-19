@@ -58,29 +58,29 @@ typedef struct {
 	int					  imgWidth;
 } USER_DATA;
 
-int main(int argv, char *argc[])
+int main(int argc, char *argv[])
 {
 	const CvSize		imgSize		= cvSize(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;		// { road, traffic island, grass, agriculture, tree, car }
-	const unsigned int	nFeatures	= 3;
+	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
+	const unsigned int	nFeatures	= 3;		
 
-	if (argv != 4) {
-		print_help();
+	if (argc != 4) {
+		print_help(argv[0]);
 		return 0;
 	}
 
 	// Reading parameters and images
-	Mat img			= imread(argc[1], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
-	Mat fv			= imread(argc[2], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
-	Mat gt			= imread(argc[3], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
+	Mat img			= imread(argv[1], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
+	Mat fv			= imread(argv[2], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
+	Mat gt			= imread(argv[3], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
 
-	CTrainNode			* nodeTrainer	 = new CTrainNodeNaiveBayes(nStates, nFeatures);
+	CTrainNode			* nodeTrainer	 = new CTrainNodeNaiveBayes(nStates, nFeatures); 
 	CTrainEdge			* edgeTrainer	 = new CTrainEdgePottsCS(nStates, nFeatures);
-	float				  params[]		 = { 400, 0.001f };
+	float				  params[]		 = {400, 0.001f};						
 	size_t				  params_len	 = 2;
-	CGraph				* graph			 = new CGraph(nStates);
+	CGraph				* graph			 = new CGraph(nStates); 
 	CInfer				* decoder		 = new CInferLBP(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
 	vec_nColor_t		  palette;
@@ -91,67 +91,49 @@ int main(int argv, char *argc[])
 	palette.push_back(std::make_pair(CV_RGB(64,  128,   0), "tree"));
 	palette.push_back(std::make_pair(CV_RGB(255,   0,   0), "car"));
 	// Define feature names for visualization
-	vec_string_t		  featureNames	= {"NDVI", "Var. Int.", "Saturation"};
+	vec_string_t		  featureNames	= {"NDVI", "Var. Int.", "Saturation"};	
 	CMarkerHistogram	* marker		= new CMarkerHistogram(nodeTrainer, palette, featureNames);
 	CCMat				* confMat		= new CCMat(nStates);
 
-	// ==================== STAGE 1: Building the graph ====================
-	printf("Building the Graph... ");
-	int64 ticks = getTickCount();
-	for (int y = 0; y < height; y++)
-		for (int x = 0; x < width; x++) {
-			size_t idx = graph->addNode();
-			if (x > 0) 	 graph->addArc(idx, idx - 1);
-			if (y > 0) 	 graph->addArc(idx, idx - width);
-		} // x
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
-
-	// ========================= STAGE 2: Training =========================
-	printf("Training... ");
-	ticks = getTickCount();
-	nodeTrainer->addFeatureVec(fv, gt);										// Only Node Training
+	// =============================== Training ================================
+	Timer::start("Training... ");
+	nodeTrainer->addFeatureVec(fv, gt);										// Only Node Training 		
 	nodeTrainer->train();													// Contrast-Sensitive Edge Model requires no training
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
-	// ==================== STAGE 3: Filling the Graph =====================
-	printf("Filling the Graph... ");
-	ticks = getTickCount();
-	Mat featureVector1(nFeatures, 1, CV_8UC1);
-	Mat featureVector2(nFeatures, 1, CV_8UC1);
+	// ==================== Building and filling the graph =====================
+	Timer::start("Filling the Graph... ");
+	Mat featureVector1(nFeatures, 1, CV_8UC1); 
+	Mat featureVector2(nFeatures, 1, CV_8UC1); 
 	Mat nodePot, edgePot;
-	for (int y = 0, idx = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
 		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;
-		for (int x = 0; x < width; x++, idx++) {
+		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
+		for (int x = 0; x < width; x++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
-			nodePot = nodeTrainer->getNodePotentials(featureVector1);												// node potential
-			graph->setNode(idx, nodePot);
+			nodePot = nodeTrainer->getNodePotentials(featureVector1, 1.0f);											// node potential
+			size_t idx = graph->addNode(nodePot);
 
 			if (x > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - 1, edgePot);
+				graph->addArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - width, edgePot);
+				graph->addArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
 	} // y
-	ticks = getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	Timer::stop();
 
-	// ========================= STAGE 4: Decoding =========================
-	printf("Decoding... ");
-	ticks = getTickCount();
-	std::vector<byte> optimalDecoding = decoder->decode(10);
-	ticks =  getTickCount() - ticks;
-	printf("Done! (%fms)\n", ticks * 1000 / getTickFrequency());
+	// ========================= Decoding =========================
+	Timer::start("Decoding... ");
+	vec_byte_t optimalDecoding = decoder->decode(10);
+	Timer::stop();
 
-	// ====================== Evaluation =======================
+	// ======================== Evaluation ========================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
 	char str[255];
@@ -163,7 +145,7 @@ int main(int argv, char *argc[])
 	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
 	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
 	imshow("Solution", img);
-
+	
 	// Feature distribution histograms
 	marker->showHistogram();
 

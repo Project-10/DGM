@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 	{
 		/**
 		* @brief Saves matrix \b m into the file \b fileName
-		* @param filename The full path to the destination file
+		* @param fileName The full path to the destination file
 		* @param m Matrix to be saved
 		*/
 		void to(const std::string &fileName, const Mat &m)
@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 
 		/**
 		* @brief Loads the matrix from file \b filename
-		* @param filename The full path to the source file
+		* @param fileName The full path to the source file
 		*/
 		Mat from(const std::string &fileName)
 		{
