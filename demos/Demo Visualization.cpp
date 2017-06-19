@@ -81,50 +81,40 @@ int main(int argc, char *argv[])
 	CMarkerHistogram	* marker		= new CMarkerHistogram(nodeTrainer, palette, featureNames);
 	CCMat				* confMat		= new CCMat(nStates);
 
-	// ==================== STAGE 1: Building the graph ====================
-	Timer::start("Building the Graph... ");
-	for (int y = 0; y < height; y++) 
-		for (int x = 0; x < width; x++) {
-			size_t idx = graph->addNode();
-			if (x > 0) 	 graph->addArc(idx, idx - 1);
-			if (y > 0) 	 graph->addArc(idx, idx - width); 
-		} // x
-	Timer::stop();
-
-	// ========================= STAGE 2: Training =========================
+	// =============================== Training ================================
 	Timer::start("Training... ");
 	nodeTrainer->addFeatureVec(fv, gt);										// Only Node Training 		
 	nodeTrainer->train();													// Contrast-Sensitive Edge Model requires no training
 	Timer::stop();
 
-	// ==================== STAGE 3: Filling the Graph =====================
+	// ==================== Building and filling the graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat featureVector1(nFeatures, 1, CV_8UC1); 
 	Mat featureVector2(nFeatures, 1, CV_8UC1); 
 	Mat nodePot, edgePot;
-	for (int y = 0, idx = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
 		byte *pFv1 = fv.ptr<byte>(y);
 		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
-		for (int x = 0; x < width; x++, idx++) {
+		for (int x = 0; x < width; x++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
 			nodePot = nodeTrainer->getNodePotentials(featureVector1, 1.0f);											// node potential
-			graph->setNode(idx, nodePot);
+			size_t idx = graph->addNode(nodePot);
 
 			if (x > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - 1, edgePot);
+				graph->addArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->setArc(idx, idx - width, edgePot);
+				graph->addArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
 	} // y
 	Timer::stop();
 
-	// ========================= STAGE 4: Decoding =========================
+	// ========================= Decoding =========================
 	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = decoder->decode(10);
 	Timer::stop();

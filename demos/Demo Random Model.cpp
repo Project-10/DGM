@@ -96,15 +96,15 @@ int main(int argc, char *argv[])
 	Timer::stop();
 
 	//	---------- Visualization ----------
-	Timer::start("Preparing Histogram...");
-	Mat classMap = marker.drawClassificationMap2D(Z);
-	Timer::stop();
-	imwrite(argv[4], classMap);
-
 	if (nodeModel == 0) {
 		imshow("histogram 1d", marker.drawHistogram());
 		imshow("histogram 2d", marker.drawHistogram2D());
 	}
+
+	Timer::start("Classifying...");
+	Mat classMap = marker.drawClassificationMap2D(Z);
+	Timer::stop();
+	imwrite(argv[4], classMap);
 
 	imshow("class map 2d", classMap);
 	cvWaitKey(1000);
