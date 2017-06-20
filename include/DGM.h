@@ -207,9 +207,10 @@ In order to build the DGM library, the OpenCV library should be built and instal
 
 /**
 @page demo Tutorials
-<h2>How to use the code</h2>
+## How to use the code
 The documentation for DGM consists of a series of demos, showing how to use DGM to perform various tasks. These demos also contain some tutorial material on graphical models.
 
+### Bacis Tutorials
 - @subpage demo1d : An introduction to graphical models and to the tasks of inference and decoding on a set of simple examples:
   - @ref demo1d_exact : An introduction to graphical models and the tasks of decoding and inference on a small graphical model where we can do everything by hand. 
   - @ref demo1d_chain : An introduction to Markov independence properties on an example of a chain-structured graphical model, and to efficient dynamic programming 
@@ -220,9 +221,10 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
 - @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 - @subpage demofex : An introduction to the feature extraction, needed mainly for supervised learning.
 - @subpage demotrain : An introdiction to the random model learning (training) in case when the training data is available.
-- @subpage demorandommodel : An introdiction to the random model learning (training) in case when the training data is available.
 - @subpage demovis : An example of usage the visualization module of the library for analysis and represention of the intermediate and final results of classification.
 
+### Advanced Tutorials
+- @subpage demorandommodel : An advanced tutorial to the unary potentials training.
 */
 
 /**
@@ -508,7 +510,12 @@ wrappers for nodes / edges classification (used in Stage 3).
 /**
 @page demorandommodel Demo Random Model
 
-add description here
+This is an advanced tutorial. Be sure to get through @ref demotrain, @ref demofex and read the <a href="http://project-10.de/forum/viewtopic.php?f=31&t=954" target="blank"> Training of a random model</a> article before proceeding with this tutorial. 
+
+In this tutorial we use only 2 features, in order to be able to visualize the distribution of the training samples at 2-diensional canvas. For sake of simplicity we also limit the number of states (classes) till 3 and show them with pure red, green and blue colors. The real sample distribution, known from the training image, is than approximated with generative and discriminative methods. In order to reconstruct these approximations, we classify a square of 256 x 256 pixels, using one of the unary (node) trainers. Thus the resulting potential map shows us how concrete classifier sees the feature distribution.
+
+Please note, that we use the values of the partition functions, stored in variable Z. Thus, the generative classifiers try to reconstruct the training samples distribution. They do that with the number of inner parameters, which is much less than the number of training samples. The discriminative methods do not aim to reconstruct the training distribution itself, but provide high and normalized potentials for every pixel of the classification area.
+
 
 @code
 #include "DGM.h"
@@ -519,41 +526,11 @@ using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 using namespace DirectGraphicalModels::fex;
 
-// merges some classes in one
-Mat shrinkStateImage(const Mat &gt, byte nStates)
-{
-	// assertions
-	if (gt.type() != CV_8UC1) return Mat();
-
-	Mat res;
-	gt.copyTo(res);
-
-	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
-		*it = *it % nStates;
-
-	for (int y = 0; y < res.rows; y++) {
-		byte *pImg = img.ptr<byte>(y);
-		byte *pRes = res.ptr<byte>(y);
-		for (int x = 0; x < img.cols; x++) {
-			switch (pImg[x]) {
-				case 0: pRes[x] = 0; break;
-				case 1: pRes[x] = 0; break;
-				case 2: pRes[x] = 0; break;
-				case 3: pRes[x] = 1; break;
-				case 4: pRes[x] = 2; break;
-				case 5: pRes[x] = 2; break;
-			}
-		} // x
-	} // y
-
-	return res;
-}
-
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize = cvSize(400, 400);
-	const unsigned int	nStates = 3;	 		
-	const unsigned int	nFeatures = 2;		// {ndvi, saturation}
+	const CvSize		imgSize		= cvSize(400, 400);
+	const unsigned int	nStates		= 3;	 		
+	const unsigned int	nFeatures	= 2;		// {ndvi, saturation}
 
 	if (argc != 5) {
 		print_help(argv[0]);
@@ -564,9 +541,9 @@ int main(int argc, char *argv[])
 	int nodeModel	= atoi(argv[1]);
 	Mat img			= imread(argv[2], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);	// training image 
 	Mat gt			= imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
-	gt = shrinkStateImage(gt, nStates);												// reduce the number of classes in gt to nStates
+	gt				= shrinkStateImage(gt, nStates);										// reduce the number of classes in gt to nStates
 
-	float Z;
+	float Z;																				// the value of partition function
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 2e34f; break;
@@ -610,6 +587,39 @@ int main(int argc, char *argv[])
 	return 0;
 }
 @endcode
+
+The function, which reduces the amount of classes in the training data by merging some classes into one.
+@code
+Mat shrinkStateImage(const Mat &gt, byte nStates)
+{
+	// assertions
+	if (gt.type() != CV_8UC1) return Mat();
+
+	Mat res;
+	gt.copyTo(res);
+
+	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
+		*it = *it % nStates;
+
+	for (int y = 0; y < res.rows; y++) {
+		byte *pImg = img.ptr<byte>(y);
+		byte *pRes = res.ptr<byte>(y);
+		for (int x = 0; x < img.cols; x++) {
+			switch (pImg[x]) {
+				case 0: pRes[x] = 0; break;
+				case 1: pRes[x] = 0; break;
+				case 2: pRes[x] = 0; break;
+				case 3: pRes[x] = 1; break;
+				case 4: pRes[x] = 2; break;
+				case 5: pRes[x] = 2; break;
+			}
+		} // x
+	} // y
+
+	return res;
+}
+@endcode
+
 */
 
 /**
