@@ -592,29 +592,13 @@ The function, which reduces the amount of classes in the training data by mergin
 @code
 Mat shrinkStateImage(const Mat &gt, byte nStates)
 {
-	// assertions
-	if (gt.type() != CV_8UC1) return Mat();
-
 	Mat res;
 	gt.copyTo(res);
 
 	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
-		*it = *it % nStates;
-
-	for (int y = 0; y < res.rows; y++) {
-		byte *pImg = img.ptr<byte>(y);
-		byte *pRes = res.ptr<byte>(y);
-		for (int x = 0; x < img.cols; x++) {
-			switch (pImg[x]) {
-				case 0: pRes[x] = 0; break;
-				case 1: pRes[x] = 0; break;
-				case 2: pRes[x] = 0; break;
-				case 3: pRes[x] = 1; break;
-				case 4: pRes[x] = 2; break;
-				case 5: pRes[x] = 2; break;
-			}
-		} // x
-	} // y
+		if (*it < 3) *it = 0;
+		else if (*it < 4) *it = 1;
+		else *it = 2;
 
 	return res;
 }

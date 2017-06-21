@@ -31,23 +31,11 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 	gt.copyTo(res);
 
 	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
-		*it = *it % nStates;
+		if (*it < 3) *it = 0;
+		else if (*it < 4) *it = 1;
+		else *it = 2;
+//		*it = (*it + 1) % nStates;
 
-/*	for (int y = 0; y < res.rows; y++) {
-		byte *pImg = img.ptr<byte>(y);
-		byte *pRes = res.ptr<byte>(y);
-		for (int x = 0; x < img.cols; x++) {
-			switch (pImg[x]) {
-				case 0: pRes[x] = 0; break;
-				case 1: pRes[x] = 0; break;
-				case 2: pRes[x] = 0; break;
-				case 3: pRes[x] = 1; break;
-				case 4: pRes[x] = 2; break;
-				case 5: pRes[x] = 2; break;
-			}
-		} // x
-	} // y
-*/
 	return res;
 }
 
@@ -107,7 +95,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[4], classMap);
 
 	imshow("class map 2d", classMap);
-	cvWaitKey(1000);
+	cvWaitKey(0*1000);
 
 	return 0;
 }
