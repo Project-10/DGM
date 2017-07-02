@@ -116,6 +116,10 @@ int main(int argc, char *argv[])
 	edgeTrainer->train(); 
 	Timer::stop();
 
+	nodeTrainer->save("D:\\");
+	nodeTrainer->reset();
+	nodeTrainer->load("D:\\");
+
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
