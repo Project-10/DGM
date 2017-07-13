@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 		std::sort(container.begin(), container.end(), [](auto const &left, auto const &right) { return std::get<1>(left) > std::get<1>(right); });
 	
 		float	res				= 0.0f;
-		int		nRelevants		= 0;					// number of elevant elements
+		int		nRelevants		= 0;					// number of relevant elements
 		int		nCoincidences	= 0;					// number of correct predictions
 		int		i				= 0;
 		for (auto &c : container) {
