@@ -50,7 +50,9 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
-		* @param maxSamples Maximum number of samples to be used in training 
+		* @param maxSamples Maximum number of samples to be used in training
+		* > Default value \b 0 means using all the samples.<br>
+		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		* @param nGausses The number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
 		DllExport CTrainNodeCvGMM(byte nStates, word nFeatures, size_t maxSamples, byte nGausses = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT.numGausses);

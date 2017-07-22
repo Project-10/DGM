@@ -80,7 +80,11 @@ source_group("Source Files\\Random Model\\Training\\Node\\Gaussian Mixture" FILE
 																					"TrainNodeGMM.cpp"
 																				)
 source_group("Source Files\\Random Model\\Training\\Node\\Bayes" FILES "TrainNodeNaiveBayes.h" "TrainNodeNaiveBayes.cpp")
-source_group("Source Files\\Random Model\\Training\\Node\\K-Nearest Neighbors" FILES "TrainNodeKNN.h" "TrainNodeKNN.cpp")
+source_group("Source Files\\Random Model\\Training\\Node\\K-Nearest Neighbors" FILES 	"TrainNodeCvKNN.h"
+																						"TrainNodeCvKNN.cpp"
+																						"TrainNodeKNN.h"
+																						"TrainNodeKNN.cpp"
+																					)
 source_group("Source Files\\Random Model\\Training\\Node\\Random Forest" FILES	"RForest.h" 
 																				"RForest.cpp"
 																				"TrainNodeCvRF.h"
@@ -88,6 +92,7 @@ source_group("Source Files\\Random Model\\Training\\Node\\Random Forest" FILES	"
 																				"TrainNodeMsRF.h"
 																				"TrainNodeMsRF.cpp"
 																			)
+	source_group("Source Files\\Random Model\\Training\\Node\\Support Vector Machine" FILES "TrainNodeCvSVM.h" "TrainNodeCvSVM.cpp")																		
 source_group("Source Files\\Random Model\\Training\\Triplet" FILES "TrainTriplet.h" "TrainTriplet.cpp") 
  
  
