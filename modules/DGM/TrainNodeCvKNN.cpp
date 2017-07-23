@@ -57,9 +57,54 @@ namespace DirectGraphicalModels
 	
 	void	CTrainNodeCvKNN::train(bool doClean)
 	{
+#ifdef DEBUG_PRINT_INFO
+		printf("\n");
+#endif
+
+		// Filling the <samples> and <classes>
+		Mat samples, classes;
+		for (byte s = 0; s < m_nStates; s++) {						// states
+			int nSamples = m_pSamplesAcc->getNumSamples(s);
+#ifdef DEBUG_PRINT_INFO		
+			printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
+#endif
+			samples.push_back(m_pSamplesAcc->getSamplesContainer(s));
+			classes.push_back(Mat(nSamples, 1, CV_32FC1, Scalar(s)));
+			if (doClean) m_pSamplesAcc->release(s);				// free memory
+		} // s
+		samples.convertTo(samples, CV_32FC1);
+
+		// Filling <var_type>
+		Mat var_type(m_nFeatures + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
+		var_type.at<byte>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
+
+		// Training
+		try {
+			m_pKNN->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+		}
+		catch (std::exception &e) {
+			printf("EXCEPTION: %s\n", e.what());
+			printf("Try to reduce the maximal depth of the forest or switch to x64.\n");
+			getchar();
+			exit(-1);
+		}
 	}
 	
 	void	CTrainNodeCvKNN::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
+		Mat fv;
+		featureVector.convertTo(fv, CV_32FC1);
+		Mat result, neighborResponses;
+		m_pKNN->findNearest(fv.t(), 100, result, neighborResponses);
+		
+		float *pResponse = neighborResponses.ptr<float>(0);
+		int n = neighborResponses.cols;
+		for (int i = 0; i < n; i++) {
+			byte s = static_cast<byte>(pResponse[i]);
+			potential.at<float>(s, 0) += 1.0f;
+		}
+		if (n) potential /= n;
+
+
 	}
 }

@@ -60,12 +60,13 @@ int main(int argc, char *argv[])
 
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;		
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;		
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;		
+		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
 #ifdef USE_SHERWOOD
-		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	cvWaitKey(1000);
+	cvWaitKey(0 * 1000);
 
 	return 0;
 }

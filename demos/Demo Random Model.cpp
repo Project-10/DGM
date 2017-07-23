@@ -63,9 +63,10 @@ int main(int argc, char *argv[])
 		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
-		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
+		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		Z = 1.0f; break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
 #ifdef USE_SHERWOOD
-		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
 #endif
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
