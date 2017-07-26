@@ -92,7 +92,8 @@ source_group("Source Files\\Random Model\\Training\\Node\\Random Forest" FILES	"
 																				"TrainNodeMsRF.h"
 																				"TrainNodeMsRF.cpp"
 																			)
-	source_group("Source Files\\Random Model\\Training\\Node\\Support Vector Machine" FILES "TrainNodeCvSVM.h" "TrainNodeCvSVM.cpp")																		
+source_group("Source Files\\Random Model\\Training\\Node\\Support Vector Machine" FILES "TrainNodeCvSVM.h" "TrainNodeCvSVM.cpp")																	
+source_group("Source Files\\Random Model\\Training\\Node\\Neural Network" FILES "TrainNodeCvANN.h" "TrainNodeCvANN.cpp")																	
 source_group("Source Files\\Random Model\\Training\\Triplet" FILES "TrainTriplet.h" "TrainTriplet.cpp") 
  
  

@@ -30,6 +30,7 @@
 #include "DGM/TrainNodeCvSVM.h"
 #include "DGM/TrainNodeCvRF.h"
 #include "DGM/TrainNodeMsRF.h"
+#include "DGM/TrainNodeCvANN.h"
 #include "DGM/TrainEdge.h"
 #include "DGM/TrainEdgePotts.h"
 #include "DGM/TrainEdgePottsCS.h"

@@ -21,6 +21,7 @@ void print_help(char *argv0)
 	printf("5: Support Vector Machines\n");
 	printf("6: OpenCV Random Forest\n");
 	printf("7: MicroSoft Random Forest\n");
+	printf("8: OpenCV Artificial Neural Network\n");
 }
 
 // merges some classes in one
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
 #ifdef USE_SHERWOOD
 		case 7: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
 #endif
+		case 8: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		Z = 1.0f; break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
