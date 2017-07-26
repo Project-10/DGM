@@ -19,11 +19,9 @@ namespace DirectGraphicalModels
 
 	void CTrainNodeCvKNN::init(TrainNodeCvKNNParams params)
 	{
-		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
-
-		m_pKNN = ml::KNearest::create();
-		// TODO: set other params
-		//m_pKNN->set...
+		m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
+		m_pKNN			= ml::KNearest::create();
+		m_params		= params;
 	}
 
 	// Destructor
@@ -84,7 +82,6 @@ namespace DirectGraphicalModels
 		}
 		catch (std::exception &e) {
 			printf("EXCEPTION: %s\n", e.what());
-			printf("Try to reduce the maximal depth of the forest or switch to x64.\n");
 			getchar();
 			exit(-1);
 		}
@@ -95,7 +92,7 @@ namespace DirectGraphicalModels
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
 		Mat result, neighborResponses;
-		m_pKNN->findNearest(fv.t(), 100, result, neighborResponses);
+		m_pKNN->findNearest(fv.t(), m_params.maxNeighbors, result, neighborResponses);
 		
 		float *pResponse = neighborResponses.ptr<float>(0);
 		int n = neighborResponses.cols;
@@ -104,7 +101,6 @@ namespace DirectGraphicalModels
 			potential.at<float>(s, 0) += 1.0f;
 		}
 		if (n) potential /= n;
-
-
+		potential += m_params.bias;
 	}
 }

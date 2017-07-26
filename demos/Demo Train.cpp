@@ -15,8 +15,10 @@ void print_help(char *argv0)
 	printf("1: Gaussian Mixture Model\n");
 	printf("2: OpenCV Gaussian Mixture Model\n");
 	printf("3: Nearest Neighbor\n");
-	printf("4: OpenCV Random Forest\n");
-	printf("5: MicroSoft Random Forest\n");
+	printf("4: OpenCV Nearest Neighbor\n");
+	printf("5: OpenCV Support Vector Machines\n");
+	printf("6: OpenCV Random Forest\n");
+	printf("7: MicroSoft Random Forest\n");
 
 	
 	printf("\nEdge training models:\n");
@@ -64,9 +66,10 @@ int main(int argc, char *argv[])
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
 		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		break;
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
+		case 5: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		break;
+		case 6: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
 #ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 7: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
@@ -117,9 +120,9 @@ int main(int argc, char *argv[])
 	edgeTrainer->train(); 
 	Timer::stop();
 
-	nodeTrainer->save("D:\\");
-	nodeTrainer->reset();
-	nodeTrainer->load("D:\\");
+//	nodeTrainer->save("D:\\");
+//	nodeTrainer->reset();
+//	nodeTrainer->load("D:\\");
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");

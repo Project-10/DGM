@@ -21,9 +21,9 @@ namespace DirectGraphicalModels
 	
 	void CTrainNodeKNN::init(TrainNodeKNNParams params)
 	{
-		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
-		m_pTree = new CKDTree();
-		m_params = params;
+		m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
+		m_pTree			= new CKDTree();
+		m_params		= params;
 	}
 
 	// Destructor

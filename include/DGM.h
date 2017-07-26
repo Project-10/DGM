@@ -85,11 +85,10 @@ DGM implements the following training methods:
 
 @subsubsection sec_main_train_nodes Nodes | Unary Potentials
 - <b>NaiveBayes:</b> Naive Bayes training @ref DirectGraphicalModels::CTrainNodeNaiveBayes
-- <b>GM:</b> Gaussian Model training @ref DirectGraphicalModels::CTrainNodeGM
-- <b>CvGM:</b> OpenCV Gaussian Model training @ref DirectGraphicalModels::CTrainNodeCvGM
 - <b>GMM:</b> Gaussian Mixture Model training (<a href="http://www.project-10.de/Kosov/files/GCPR_2013.pdf" target="_blank">Sequential GMM Training Algorithm</a>) @ref DirectGraphicalModels::CTrainNodeGMM
-- <b>KNN:</b> k-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeKNN
 - <b>CvGMM:</b> OpenCV Gaussian Mixture Model training @ref DirectGraphicalModels::CTrainNodeCvGMM
+- <b>KNN:</b> k-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeKNN
+- <b>CvKNN</b> OpenCV k-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeCvKNN
 - <b>CvRF:</b> OpenCV Random Forest training @ref DirectGraphicalModels::CTrainNodeCvRF
 - <b>MsRF:</b> Microsoft Research Random Forest training @ref DirectGraphicalModels::CTrainNodeMsRF
 
