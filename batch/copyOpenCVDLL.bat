@@ -1,6 +1,6 @@
 @echo off
-SET version=320
-SET OpenCV_src=%OPENCVDIR%\build\x64\vc14\bin
+SET version=330
+SET OpenCV_src=%OPENCVDIR%\build\x64\vc15\bin
 
 @echo on
 copy %OpenCV_src%\opencv_core%version%.dll .\

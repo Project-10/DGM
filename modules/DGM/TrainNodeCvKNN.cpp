@@ -21,6 +21,7 @@ namespace DirectGraphicalModels
 	{
 		m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
 		m_pKNN			= ml::KNearest::create();
+		// TODO: add all the parameters as for the RTrees
 		m_params		= params;
 	}
 
