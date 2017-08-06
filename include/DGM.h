@@ -177,11 +177,11 @@ Please refer to the @ref moduleVIS documentation
 
 /**
 @page s3 Installation
-Curently the DGM library may be installed only on Windows machines. It is also based on OpenCV library v.3.2.0.<br> 
+Curently the DGM library may be installed only on Windows machines. It is also based on OpenCV library v.3.3.0.<br> 
 In order to build the DGM library, the OpenCV library should be built and installed first.
 
 @section sec_install_cv Installing OpenCV
--# Download the OpenCV library from <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.2.0/" target="_blank">sourcefourge</a>
+-# Download the OpenCV library from <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.3.0/" target="_blank">sourcefourge</a>
 -# Install the OpenCV library. You may follow the <a href="http://www.project-10.de/forum/viewtopic.php?f=23&t=198#p237" target="_blank">short installation guide</a> or a deteiled
    <a href="http://docs.opencv.org/2.4/doc/tutorials/introduction/windows_install/windows_install.html#installation-by-making-your-own-libraries-from-the-source-files" target="_blank">installation in Windows guide</a>
 

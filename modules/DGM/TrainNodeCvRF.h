@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CRForest;
+	class ml::RTrees;
 	class CSamplesAccumulator;
 
 	/// @brief OpenCV Random Forest parameters
@@ -91,7 +91,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		Ptr<ml::RTrees>		  m_pRF;						///< Random Forest
+		Ptr<ml::RTrees>			  m_pRF;						///< Random Forest
 		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples Accumulator
 
 

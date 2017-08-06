@@ -225,14 +225,16 @@ Mat CMarker::drawMatrix(const Mat &potential, byte flag) const
 	drawSquare(res, 0, 0, frgColor, "");
 
 	for (byte x = 1; x < nStates + 1; x++) {
-		if (m_vPalette.at((x - 1) % n).second.empty()) sprintf(str, "c%d", x - 1);
+		if (m_vPalette.at((x - 1) % n).second.empty()) sprintf(str, "W%d", x - 1);
 		else sprintf(str, "%s",m_vPalette.at((x - 1) % n).second.c_str()); 
+		if (x == 1) sprintf(str, "Bkgrd.");
 		drawSquare(res, x, 0, frgColor, str, 0.45, TP_BOTTOM);
 	} // x
 		
 	for (byte y = 1; y < nStates + 1; y++) {
-		if (m_vPalette.at((y - 1) % n).second.empty()) sprintf(str, "c%d", y - 1);
+		if (m_vPalette.at((y - 1) % n).second.empty()) sprintf(str, "W%d", y - 1);
 		else sprintf(str, "%s", m_vPalette.at((y - 1) % n).second.c_str()); 
+		if (y == 1) sprintf(str, "Bkgrd.");
 		drawSquare(res, 0, y, frgColor, str, 0.45, TP_RIGHT);
 
 		const float *pPot = potential.ptr<float>(y - 1);
@@ -278,8 +280,8 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 	if (procent) {
 		if (isnan(val))								sprintf(str, "N A N");	
 		else if (val == 0)							sprintf(str, "O");	
-		else if (val < 0.01f)						sprintf(str, "0.00 %%");
-		else										sprintf(str, "%3.2f %%", val);	
+		else if (val < 0.01f)						sprintf(str, "0.00");
+		else										sprintf(str, "%3.2f", val);	
 	} else {
 		if (isnan(val))								sprintf(str, "N A N");	
 		else if (val == 0)							sprintf(str, "O");	
@@ -287,7 +289,7 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 		else										sprintf(str, "%4.2f", val);
 	}
 
-	drawRectangle(img, pt1, pt2, color, str, fontScale, textProp);
+	drawRectangle(img, pt1, pt2, color, str, 0.65, textProp);
 
 	if (isnan(val)) {
 		line(img, pt1,  pt2, CV_RGB(127, 127, 127), 1, CV_AA);

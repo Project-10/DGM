@@ -1,9 +1,6 @@
 #include "TrainNodeCvRF.h"
-#include "RForest.h"
 #include "SamplesAccumulator.h"
-#include "random.h"
 #include "macroses.h"
-#include <limits>
 
 namespace DirectGraphicalModels
 {
@@ -25,7 +22,7 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 {
 	m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
 
-	m_pRF				= CRForest::create();
+	m_pRF = ml::RTrees::create();
 	m_pRF->setMaxDepth(params.max_depth);
 	m_pRF->setMinSampleCount(params.min_sample_count);
 	m_pRF->setRegressionAccuracy(params.regression_accuracy);
@@ -34,8 +31,6 @@ void CTrainNodeCvRF::init(TrainNodeCvRFParams params)
 	m_pRF->setCalculateVarImportance(params.calc_var_importance);
 	m_pRF->setActiveVarCount(params.nactive_vars);
 	m_pRF->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
-
-	m_pRF->setNumStates(m_nStates);
 }
 
 // Destructor
@@ -59,7 +54,7 @@ void CTrainNodeCvRF::save(const std::string &path, const std::string &name, shor
 void CTrainNodeCvRF::load(const std::string &path, const std::string &name, short idx)
 {
 	std::string fileName = generateFileName(path, name.empty() ? "TrainNodeCvRF" : name, idx);
-	m_pRF = Algorithm::load<CRForest>(fileName.c_str());
+	m_pRF = Algorithm::load<ml::RTrees>(fileName.c_str());
 }
 
 void CTrainNodeCvRF::addFeatureVec(const Mat &featureVector, byte gt)
@@ -110,8 +105,23 @@ void CTrainNodeCvRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 {
 	Mat fv;
 	featureVector.convertTo(fv, CV_32FC1);
-//	m_pRF->getVotes(fv, );
-	potential = m_pRF->predict(fv.t());
+	
+	Mat votes;
+	m_pRF->getVotes(fv.t(), votes, ml::RTrees::Flags::PREDICT_MAX_VOTE);
+	
+	int sum = 0;
+	for (int x = 0; x < votes.cols; x++) {
+		byte s = static_cast<byte>(votes.at<int>(0, x));
+		int	nVotes = votes.at<int>(1, x);
+		potential.at<float>(s, 0) = static_cast<float>(nVotes);
+		sum += nVotes;
+	} // s
+
+	if (sum) potential /= sum;
+
+//	byte s = static_cast<byte>(m_pRF->predict(fv.t());
+//	potential.at<float>(s, 0) = 1.0f;
+//	potential += 0.1f;
 }
 
 }
