@@ -110,6 +110,7 @@ void CTrainNodeCvRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 {
 	Mat fv;
 	featureVector.convertTo(fv, CV_32FC1);
+//	m_pRF->getVotes(fv, );
 	potential = m_pRF->predict(fv.t());
 }
 

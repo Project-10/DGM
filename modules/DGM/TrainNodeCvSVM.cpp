@@ -23,7 +23,12 @@ namespace DirectGraphicalModels
 		m_pSVM = ml::SVM::create();
 		// TODO: Set other parameters
 		m_pSVM->setType(ml::SVM::C_SVC);
-		m_pSVM->setKernel(ml::SVM::RBF);
+		m_pSVM->setC(0.4);
+		m_pSVM->setNu(0.4);
+		m_pSVM->setKernel(ml::SVM::INTER);
+	//	m_pSVM->setGamma(0.3);
+	//	m_pSVM->setDegree(4);
+	//	m_pSVM->setNu(0.5);
 	}
 
 	// Destructor
@@ -69,7 +74,7 @@ namespace DirectGraphicalModels
 			printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
 			samples.push_back(m_pSamplesAcc->getSamplesContainer(s));
-			classes.push_back(Mat(nSamples, 1, CV_32FC1, Scalar(s)));
+			classes.push_back(Mat(nSamples, 1, CV_32SC1, Scalar(s)));
 			if (doClean) m_pSamplesAcc->release(s);				// free memory
 		} // s
 		samples.convertTo(samples, CV_32FC1);
@@ -81,6 +86,7 @@ namespace DirectGraphicalModels
 		// Training
 		try {
 			m_pSVM->trainAuto(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+//			m_pSVM->train(samples, ml::ROW_SAMPLE, classes);
 		}
 		catch (std::exception &e) {
 			printf("EXCEPTION: %s\n", e.what());
@@ -89,11 +95,14 @@ namespace DirectGraphicalModels
 		}
 	}
 
-	void	CTrainNodeCvSVM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
+	void CTrainNodeCvSVM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
-		byte s = static_cast<byte>(m_pSVM->predict(fv.t()));
+		float res = m_pSVM->predict(fv.t());
+		// printf("res = %f\n", res);
+		byte s = static_cast<byte>(res);
+		//	if (s > 2) s = s - 3;
 		potential.at<float>(s, 0) = 1.0f;
 		potential += 0.1f;
 	}

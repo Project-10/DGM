@@ -91,7 +91,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		Ptr<CRForest>		  m_pRF;						///< Random Forest
+		Ptr<ml::RTrees>		  m_pRF;						///< Random Forest
 		CSamplesAccumulator	* m_pSamplesAcc;				///< Samples Accumulator
 
 
