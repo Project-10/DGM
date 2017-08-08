@@ -21,7 +21,10 @@ namespace DirectGraphicalModels
 	{
 		m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
 		m_pKNN			= ml::KNearest::create();
-		// TODO: add all the parameters as for the RTrees
+		// using ml::KNearest::KDTREE causes an OpenCV exception
+		// this is committed as bug #8917
+		// https://github.com/opencv/opencv/issues/8917
+		m_pKNN->setAlgorithmType(ml::KNearest::BRUTE_FORCE);
 		m_params		= params;
 	}
 

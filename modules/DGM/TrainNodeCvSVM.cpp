@@ -24,11 +24,10 @@ namespace DirectGraphicalModels
 		// TODO: Set other parameters
 		m_pSVM->setType(ml::SVM::C_SVC);
 		m_pSVM->setC(0.4);
-		m_pSVM->setNu(0.4);
+	//	m_pSVM->setNu(0.4);
 		m_pSVM->setKernel(ml::SVM::INTER);
 	//	m_pSVM->setGamma(0.3);
 	//	m_pSVM->setDegree(4);
-	//	m_pSVM->setNu(0.5);
 	}
 
 	// Destructor
@@ -85,7 +84,7 @@ namespace DirectGraphicalModels
 
 		// Training
 		try {
-			m_pSVM->trainAuto(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+			m_pSVM->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
 //			m_pSVM->train(samples, ml::ROW_SAMPLE, classes);
 		}
 		catch (std::exception &e) {
