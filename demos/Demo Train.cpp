@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 #ifdef USE_SHERWOOD
 		case 7: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
+		case 8: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {

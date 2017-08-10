@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 #ifdef USE_SHERWOOD
 		case 7: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
 #endif
-		case 8: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		Z = 1.0f; break;
+		case 8: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		Z = 2.0f; break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);

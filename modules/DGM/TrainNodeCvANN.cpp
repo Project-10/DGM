@@ -22,8 +22,10 @@ namespace DirectGraphicalModels
 		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
 		m_pANN = ml::ANN_MLP::create();
 		// TODO: Set other parameters
-		m_pANN->setLayerSizes(2);
-		//m_pANN->setKernel(ml::SVM::RBF);
+		m_pANN->setLayerSizes(std::vector<int>({ m_nFeatures, 16 * m_nStates, 8 * m_nStates, 4 * m_nStates, m_nStates}));
+		m_pANN->setActivationFunction(ml::ANN_MLP::SIGMOID_SYM, 0.0, 0.0);
+		m_pANN->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
+		m_pANN->setTrainMethod(ml::ANN_MLP::BACKPROP, 0.0001);
 	}
 
 	// Destructor
@@ -60,7 +62,6 @@ namespace DirectGraphicalModels
 #ifdef DEBUG_PRINT_INFO
 		printf("\n");
 #endif
-
 		// Filling the <samples> and <classes>
 		Mat samples, classes;
 		for (byte s = 0; s < m_nStates; s++) {						// states
@@ -69,18 +70,16 @@ namespace DirectGraphicalModels
 			printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
 			samples.push_back(m_pSamplesAcc->getSamplesContainer(s));
-			classes.push_back(Mat(nSamples, 1, CV_32FC1, Scalar(s)));
+			Mat classes_s(nSamples, m_nStates, CV_32FC1, Scalar(0.0f));
+			classes_s.col(s).setTo(1.0f);
+			classes.push_back(classes_s);
 			if (doClean) m_pSamplesAcc->release(s);				// free memory
 		} // s
 		samples.convertTo(samples, CV_32FC1);
 
-		// Filling <var_type>
-		Mat var_type(m_nFeatures + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
-		var_type.at<byte>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
-
 		// Training
 		try {
-			m_pANN->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
+			m_pANN->train(samples, ml::ROW_SAMPLE, classes);
 		}
 		catch (std::exception &e) {
 			printf("EXCEPTION: %s\n", e.what());
@@ -93,8 +92,17 @@ namespace DirectGraphicalModels
 	{
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
-		byte s = static_cast<byte>(m_pANN->predict(fv.t()));
-		potential.at<float>(s, 0) = 1.0f;
-		potential += 0.1f;
+		Mat test;
+		byte s = static_cast<byte>(m_pANN->predict(fv.t(), test));
+		//printf("test: %d x %d\n", test.cols, test.rows);
+		//for (int i = 0; i < test.cols; i++) printf("%.3f ", test.at<float>(0, i));
+		//printf("\n");
+
+		test += 1;
+		test = test.t();
+		test.copyTo(potential);
+
+		//potential.at<float>(s, 0) = 1.0f;
+		//potential += 0.1f;
 	}
 }

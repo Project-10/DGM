@@ -10,13 +10,21 @@ namespace DirectGraphicalModels
 
 	///@brief OpenCV SVM parameters
 	typedef struct TrainNodeCvANNParams {
-		size_t 	maxSamples;					///< Maximum number of samples to be used in training. 0 means using all the samples
+		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
+		double	epsilon;							///< Accuracy
+		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)	
+		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvANNParams() {}
-		TrainNodeCvANNParams(int _maxSamples) : maxSamples(_maxSamples) {}
+		TrainNodeCvANNParams(int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvANNParams;
 
-	const TrainNodeCvANNParams TRAIN_NODE_CV_ANN_PARAMS_DEFAULT = TrainNodeCvANNParams(0);
+	const TrainNodeCvANNParams TRAIN_NODE_CV_ANN_PARAMS_DEFAULT = TrainNodeCvANNParams(
+																							100,	// Max number of trees in the forest (time / accuracy)
+																							0.01,	// Forest accuracy
+																							TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)
+																							0		// Maximum number of samples to be used in training. 0 means using all the samples
+																						);
 
 	// ====================== OpenCV Support Vector Machines Train Class =====================
 	/**
