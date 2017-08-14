@@ -10,16 +10,22 @@ namespace DirectGraphicalModels
 
 	///@brief OpenCV SVM parameters
 	typedef struct TrainNodeCvANNParams {
+		word	numLayers;							///< Number of layers of neurons
+		double	weightScale;						///<
+		double	momentumScale;						///<
 		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
 		double	epsilon;							///< Accuracy
 		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)	
 		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
 		TrainNodeCvANNParams() {}
-		TrainNodeCvANNParams(int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
+		TrainNodeCvANNParams(word _numLayers, double _weightScale, double _momentumScale, int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : numLayers(_numLayers), weightScale(_weightScale), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvANNParams;
 
 	const TrainNodeCvANNParams TRAIN_NODE_CV_ANN_PARAMS_DEFAULT = TrainNodeCvANNParams(
+																							5,		// Num layers
+																							0.0001,	// Backpropagation Weight Scale
+																							0.0,	// Backpropagation Momentum Scale
 																							100,	// Max number of trees in the forest (time / accuracy)
 																							0.01,	// Forest accuracy
 																							TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)

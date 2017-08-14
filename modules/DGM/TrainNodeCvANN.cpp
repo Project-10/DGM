@@ -20,12 +20,19 @@ namespace DirectGraphicalModels
 	void CTrainNodeCvANN::init(TrainNodeCvANNParams params)
 	{
 		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
+	
+		if (params.numLayers < 2) params.numLayers = 2;
+		std::vector<int> vLayers(params.numLayers);
+		vLayers[0] = m_nFeatures;
+		for (int i = 1; i < params.numLayers - 1; i++)
+			vLayers[i] = m_nStates * 1 << (params.numLayers - i);
+		vLayers[params.numLayers - 1] = m_nStates;
+
 		m_pANN = ml::ANN_MLP::create();
-		// TODO: Set other parameters
-		m_pANN->setLayerSizes(std::vector<int>({ m_nFeatures, 16 * m_nStates, 8 * m_nStates, 4 * m_nStates, m_nStates}));
+		m_pANN->setLayerSizes(vLayers);
 		m_pANN->setActivationFunction(ml::ANN_MLP::SIGMOID_SYM, 0.0, 0.0);
 		m_pANN->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
-		m_pANN->setTrainMethod(ml::ANN_MLP::BACKPROP, 0.0001);
+		m_pANN->setTrainMethod(ml::ANN_MLP::BACKPROP, params.weightScale, params.momentumScale);
 	}
 
 	// Destructor
@@ -92,17 +99,10 @@ namespace DirectGraphicalModels
 	{
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
-		Mat test;
-		byte s = static_cast<byte>(m_pANN->predict(fv.t(), test));
-		//printf("test: %d x %d\n", test.cols, test.rows);
-		//for (int i = 0; i < test.cols; i++) printf("%.3f ", test.at<float>(0, i));
-		//printf("\n");
-
-		test += 1;
-		test = test.t();
-		test.copyTo(potential);
-
-		//potential.at<float>(s, 0) = 1.0f;
-		//potential += 0.1f;
+		m_pANN->predict(fv.t(), potential);
+		for (float &pot : static_cast<Mat_<float>>(potential))
+			if (pot < 0) pot = 0;
+		
+		potential = potential.t();
 	}
 }
