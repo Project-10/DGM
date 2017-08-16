@@ -42,11 +42,11 @@ namespace DirectGraphicalModels
 				else nearestNeighbors.back() = shared_from_this();
 
 				// Sort the nodes
+				float distTo_i = mathop::Euclidian<byte, float>(key, nearestNeighbors.back()->getKey());
 				for (size_t i = nearestNeighbors.size() - 1; i > 0; i--) {
-					if (mathop::Euclidian<byte, float>(key, nearestNeighbors[i - 1]->getKey()) > mathop::Euclidian<byte, float>(key, nearestNeighbors[i]->getKey()))
-						std::swap(nearestNeighbors[i - 1], nearestNeighbors[i]);
-					else
-						break;
+					float distTo_p = mathop::Euclidian<byte, float>(key, nearestNeighbors[i - 1]->getKey());
+					if (distTo_p <= distTo_i) break;
+					std::swap(nearestNeighbors[i - 1], nearestNeighbors[i]);
 				}
 
 				if (nearestNeighbors.size() == maxNeighbors) {
