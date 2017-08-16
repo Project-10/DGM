@@ -42,23 +42,25 @@ namespace DirectGraphicalModels
 				else nearestNeighbors.back() = shared_from_this();
 
 				// Sort the nodes
-				float distTo_i = mathop::Euclidian<byte, float>(key, nearestNeighbors.back()->getKey());
+				float distTo_i = mathop::Euclidian<byte, float>(key, nearestNeighbors.back()->m_key);
 				for (size_t i = nearestNeighbors.size() - 1; i > 0; i--) {
-					float distTo_p = mathop::Euclidian<byte, float>(key, nearestNeighbors[i - 1]->getKey());
+					float distTo_p = mathop::Euclidian<byte, float>(key, nearestNeighbors[i - 1]->m_key);
 					if (distTo_p <= distTo_i) break;
 					std::swap(nearestNeighbors[i - 1], nearestNeighbors[i]);
 				}
 
 				if (nearestNeighbors.size() == maxNeighbors) {
-					searchRadius = (maxNeighbors == 1) ? distance : mathop::Euclidian<byte, float>(key, nearestNeighbors.back()->getKey()) + 0.5f;
+					searchRadius = (maxNeighbors == 1) ? distance : mathop::Euclidian<byte, float>(key, nearestNeighbors.back()->m_key) + 0.5f;
 					searchBox.first = key - searchRadius;
 					searchBox.second = key + searchRadius;
 				}
 			} // if distance
 		} else {			// --- Branch node ---
-			if (mathop::ifOverlap<byte>(m_pLeft->getBoundingBox(), searchBox))
+			// if (mathop::ifOverlap<byte>(m_pLeft->getBoundingBox(), searchBox))
+			if (mathop::ifOverlap<byte>(m_pLeft->m_boundingBox, searchBox))
 				m_pLeft->findNearestNeighbors(key, maxNeighbors, searchBox, searchRadius, nearestNeighbors);
-			if (mathop::ifOverlap<byte>(m_pRight->getBoundingBox(), searchBox))
+			// if (mathop::ifOverlap<byte>(m_pRight->getBoundingBox(), searchBox))
+			if (mathop::ifOverlap<byte>(m_pRight->m_boundingBox, searchBox))
 				m_pRight->findNearestNeighbors(key, maxNeighbors, searchBox, searchRadius, nearestNeighbors);
 		}
 	}
