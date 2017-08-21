@@ -16,9 +16,10 @@ void print_help(char *argv0)
 	printf("2: OpenCV Gaussian Mixture Model\n");
 	printf("3: Nearest Neighbor\n");
 	printf("4: OpenCV Nearest Neighbor\n");
-	printf("5: OpenCV Support Vector Machines\n");
-	printf("6: OpenCV Random Forest\n");
-	printf("7: MicroSoft Random Forest\n");
+	printf("5: OpenCV Random Forest\n");
+	printf("6: MicroSoft Random Forest\n");
+	printf("7: OpenCV Artificial Neural Network\n");
+	printf("8: OpenCV Support Vector Machines\n");
 
 	
 	printf("\nEdge training models:\n");
@@ -66,12 +67,12 @@ int main(int argc, char *argv[])
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
 		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		break;
-		case 5: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		break;
-		case 6: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
 #ifdef USE_SHERWOOD
-		case 7: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
 #endif
-		case 8: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		break;
+		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		break;
+		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {
@@ -121,10 +122,6 @@ int main(int argc, char *argv[])
 	edgeTrainer->train(); 
 	Timer::stop();
 
-//	nodeTrainer->save("D:\\");
-//	nodeTrainer->reset();
-//	nodeTrainer->load("D:\\");
-
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
@@ -151,7 +148,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	cvWaitKey(0 * 1000);
+	cvWaitKey(1000);
 
 	return 0;
 }

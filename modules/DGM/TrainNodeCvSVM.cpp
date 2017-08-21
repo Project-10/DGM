@@ -21,13 +21,10 @@ namespace DirectGraphicalModels
 	{
 		m_pSamplesAcc = new CSamplesAccumulator(m_nStates, params.maxSamples);
 		m_pSVM = ml::SVM::create();
-		// TODO: Set other parameters
-		m_pSVM->setType(ml::SVM::C_SVC);
-		m_pSVM->setC(0.4);
-	//	m_pSVM->setNu(0.4);
+		m_pSVM->setType(ml::SVM::C_SVC); 
+		m_pSVM->setC(params.C);
 		m_pSVM->setKernel(ml::SVM::INTER);
-	//	m_pSVM->setGamma(0.3);
-	//	m_pSVM->setDegree(4);
+		m_pSVM->setTermCriteria(TermCriteria(params.term_criteria_type, params.maxCount, params.epsilon));
 	}
 
 	// Destructor
@@ -64,7 +61,6 @@ namespace DirectGraphicalModels
 #ifdef DEBUG_PRINT_INFO
 		printf("\n");
 #endif
-
 		// Filling the <samples> and <classes>
 		Mat samples, classes;
 		for (byte s = 0; s < m_nStates; s++) {						// states
@@ -78,20 +74,7 @@ namespace DirectGraphicalModels
 		} // s
 		samples.convertTo(samples, CV_32FC1);
 
-		// Filling <var_type>
-		Mat var_type(m_nFeatures + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
-		var_type.at<byte>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
-
-		// Training
-		try {
-			m_pSVM->train(ml::TrainData::create(samples, ml::ROW_SAMPLE, classes, noArray(), noArray(), noArray(), var_type));
-//			m_pSVM->train(samples, ml::ROW_SAMPLE, classes);
-		}
-		catch (std::exception &e) {
-			printf("EXCEPTION: %s\n", e.what());
-			getchar();
-			exit(-1);
-		}
+		m_pSVM->train(samples, ml::ROW_SAMPLE, classes);
 	}
 
 	void CTrainNodeCvSVM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
@@ -99,9 +82,7 @@ namespace DirectGraphicalModels
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
 		float res = m_pSVM->predict(fv.t());
-		// printf("res = %f\n", res);
 		byte s = static_cast<byte>(res);
-		//	if (s > 2) s = s - 3;
 		potential.at<float>(s, 0) = 1.0f;
 		potential += 0.1f;
 	}

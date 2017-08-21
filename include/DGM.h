@@ -92,6 +92,8 @@ DGM implements the following training methods:
 - <b>CvKNN</b> OpenCV k-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeCvKNN
 - <b>CvRF:</b> OpenCV Random Forest training @ref DirectGraphicalModels::CTrainNodeCvRF
 - <b>MsRF:</b> Microsoft Research Random Forest training @ref DirectGraphicalModels::CTrainNodeMsRF
+- <b>CvANN:</b> OpenCV Artificial Neural Network training @ref DirectGraphicalModels::CTrainNodeCvANN
+- <b>CvSVM:</b> OpenCV Support Vector Machine training @ref DirectGraphicalModels::CTrainNodeCvSVM
 
 The corresponding classes are @b CTrainNode* (where @b * is the name of the method above). The difference between these methods is described at forum:
 <a href="http://www.project-10.de/forum/viewtopic.php?f=22&t=954">Training of a Random Model</a>.
