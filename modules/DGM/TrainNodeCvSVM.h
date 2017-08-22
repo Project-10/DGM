@@ -8,11 +8,11 @@ namespace DirectGraphicalModels
 {
 	class CSamplesAccumulator;
 
-	///@brief OpenCV SVM parameters
+	///@brief OpenCV Support Vector machine parameters
 	typedef struct TrainNodeCvSVMParams {
 		double  C;							///< Parameter C of a SVM optimization problem
-		int		maxCount;					///< Max number of trees in the forest (time / accuracy)
-		double	epsilon;					///< Forest accuracy
+		int		maxCount;					///< The maximum number of iterations (time / accuracy)
+		double	epsilon;					///< The desired accuracy or change in parameters at which the iterative algorithm stops 
 		int		term_criteria_type;			///< Termination cirteria type (according the the two previous parameters)
 		size_t 	maxSamples;					///< Maximum number of samples to be used in training. 0 means using all the samples
 
@@ -22,8 +22,8 @@ namespace DirectGraphicalModels
 
 	const TrainNodeCvSVMParams TRAIN_NODE_CV_SVM_PARAMS_DEFAULT =	TrainNodeCvSVMParams(
 																	0.4,	// Parameter C of a SVM optimization problem
-																	10000,	// Max number of trees in the forest (time / accuracy)
-																	0.01,	// Forest accuracy
+																	10000,	// The maximum number of iterations (time / accuracy)
+																	0.01,	// The desired accuracy or change in parameters at which the iterative algorithm stops 
 																	TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)
 																	0		// Maximum number of samples to be used in training. 0 means using all the samples
 																	);
@@ -32,6 +32,8 @@ namespace DirectGraphicalModels
 	/**
 	* @ingroup moduleTrainNode
 	* @brief OpenCV Support Vector Machines training class
+	* @details This class implements the <a href="https://en.wikipedia.org/wiki/Support_vector_machine" target="blank">Support vector machine classifier (SVM)</a>.
+	* @note This trainer was not well-tested.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeCvSVM : public CTrainNode {

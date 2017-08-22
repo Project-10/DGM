@@ -29,8 +29,9 @@ namespace DirectGraphicalModels
 	/**
 	* @ingroup moduleTrainNode
 	* @brief Nearest Neighbor training class
-	* @details This class implements the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm" target="blank">k-nearest neighbors classifier (k-NN)</a>,
-	* where the input consists of the k closest training samples in the feature space and the output depends on k-Nearest Neighbors.
+	* @details This class implements the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm" target="blank"><i>k</i>-nearest neighbors classifier (<i>k</i>-NN)</a>,
+	* where the input consists of the k closest training samples in the feature space and the output depends on k-Nearest Neighbors. The implementation is based on 
+	* the <a href="https://en.wikipedia.org/wiki/K-d_tree" target="blank"><i>k</i>-d tree</a> data structure: @ref CKDTree.
 	* > This trainer is especially effective for low-dimentional feature spaces.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/

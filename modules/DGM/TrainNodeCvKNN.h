@@ -8,7 +8,7 @@ namespace DirectGraphicalModels
 {
 	class CSamplesAccumulator;
 
-	///@brief OpenCV KNN parameters
+	///@brief OpenCV k-Nearest Neighbors parameters
 	typedef struct TrainNodeCvKNNParams {
 		float	bias;								///< Regularization CRF parameter: bias is added to all potential values
 		size_t	maxNeighbors;						///< Max number of neighbors to be used for calculating potentials
@@ -18,16 +18,19 @@ namespace DirectGraphicalModels
 		TrainNodeCvKNNParams(float _bias, size_t _maxNeighbors, size_t _maxSamples) : bias(_bias), maxNeighbors(_maxNeighbors), maxSamples(_maxSamples) {}
 	} TrainNodeCvKNNParams;
 
-	const TrainNodeCvKNNParams TRAIN_NODE_CV_KNN_PARAMS_DEFAULT = TrainNodeCvKNNParams(
-																					0.1f,	// Regularization CRF parameter: bias is added to all potential values
-																					100,	// Max number of neighbors to be used for calculating potentials
-																					0		// Maximum number of samples to be used in training. 0 means using all the samples
-																				);
+	const TrainNodeCvKNNParams TRAIN_NODE_CV_KNN_PARAMS_DEFAULT =	TrainNodeCvKNNParams(
+																	0.1f,	// Regularization CRF parameter: bias is added to all potential values
+																	100,	// Max number of neighbors to be used for calculating potentials
+																	0		// Maximum number of samples to be used in training. 0 means using all the samples
+																	);
 
 	// ====================== OpenCV k-Nearest Neighbors Train Class =====================
 	/**
 	* @ingroup moduleTrainNode
 	* @brief OpenCV Nearest Neighbor training class
+	* @details This class implements the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm" target="blank"><i>k</i>-nearest neighbors classifier (<i>k</i>-NN)</a>,
+	* where the input consists of the k closest training samples in the feature space and the output depends on k-Nearest Neighbors.
+	* > This trainer is especially effective for low-dimentional feature spaces.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeCvKNN : public CTrainNode {
@@ -66,7 +69,7 @@ namespace DirectGraphicalModels
 
 	
 	protected:
-		Ptr<ml::KNearest>		  m_pKNN;					///< k-NearestNeighbors
+		Ptr<ml::KNearest>		  m_pKNN;					///< k-Nearest Neighbors
 		CSamplesAccumulator		* m_pSamplesAcc;			///< Samples Accumulator
 	
 

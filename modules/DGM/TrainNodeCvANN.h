@@ -8,13 +8,13 @@ namespace DirectGraphicalModels
 {
 	class CSamplesAccumulator;
 
-	///@brief OpenCV SVM parameters
+	///@brief OpenCV  Artificial neural network parameters
 	typedef struct TrainNodeCvANNParams {
 		word	numLayers;							///< Number of layers of neurons
-		double	weightScale;						///<
-		double	momentumScale;						///<
-		int		maxCount;							///< Max number of trees in the forest (time / accuracy)
-		double	epsilon;							///< Accuracy
+		double	weightScale;						///< Strength of the weight gradient term. The recommended value is about 0.1. Default value is 0.1.
+		double	momentumScale;						///< Strength of the momentum term (the difference between weights on the 2 previous iterations). This parameter provides some inertia to smooth the random fluctuations of the weights. It can vary from 0 (the feature is disabled) to 1 and beyond. The value 0.1 or so is good enough. Default value is 0.1.
+		int		maxCount;							///< The maximum number of iterations (time / accuracy)
+		double	epsilon;							///< The desired accuracy or change in parameters at which the iterative algorithm stops 
 		int		term_criteria_type;					///< Termination cirteria type (according the the two previous parameters)	
 		size_t 	maxSamples;							///< Maximum number of samples to be used in training. 0 means using all the samples
 
@@ -22,20 +22,21 @@ namespace DirectGraphicalModels
 		TrainNodeCvANNParams(word _numLayers, double _weightScale, double _momentumScale, int _maxCount, double _epsilon, int _term_criteria_type, int _maxSamples) : numLayers(_numLayers), weightScale(_weightScale), maxCount(_maxCount), epsilon(_epsilon), term_criteria_type(_term_criteria_type), maxSamples(_maxSamples) {}
 	} TrainNodeCvANNParams;
 
-	const TrainNodeCvANNParams TRAIN_NODE_CV_ANN_PARAMS_DEFAULT = TrainNodeCvANNParams(
-																							5,		// Num layers
-																							0.0001,	// Backpropagation Weight Scale
-																							0.0,	// Backpropagation Momentum Scale
-																							100,	// Max number of trees in the forest (time / accuracy)
-																							0.01,	// Forest accuracy
-																							TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)
-																							0		// Maximum number of samples to be used in training. 0 means using all the samples
-																						);
+	const TrainNodeCvANNParams TRAIN_NODE_CV_ANN_PARAMS_DEFAULT =	TrainNodeCvANNParams(
+																	5,		// Num layers
+																	0.0001,	// Backpropagation Weight Scale
+																	0.1,	// Backpropagation Momentum Scale
+																	100,	// The maximum number of iterations (time / accuracy)
+																	0.01,	// The desired accuracy or change in parameters at which the iterative algorithm stops 
+																	TermCriteria::MAX_ITER | TermCriteria::EPS, // Termination cirteria (according the the two previous parameters)
+																	0		// Maximum number of samples to be used in training. 0 means using all the samples
+																	);
 
-	// ====================== OpenCV Support Vector Machines Train Class =====================
+	// ====================== OpenCV Artificial Neural Network Train Class =====================
 	/**
 	* @ingroup moduleTrainNode
-	* @brief OpenCV Support Vector Machines training class
+	* @brief OpenCV Artificial neural network training class
+	* @details This class implements the <a href="https://en.wikipedia.org/wiki/Artificial_neural_network" target="blank">artificial neural network classifier (ANN)</a>.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainNodeCvANN : public CTrainNode {
@@ -44,7 +45,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
-		* @param params SVM parameters (Ref. @ref TrainNodeCvSVMParams)
+		* @param params ANN parameters (Ref. @ref TrainNodeCvANNParams)
 		*/
 		DllExport CTrainNodeCvANN(byte nStates, word nFeatures, TrainNodeCvANNParams params = TRAIN_NODE_CV_ANN_PARAMS_DEFAULT);
 		/**
@@ -78,7 +79,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		Ptr<ml::ANN_MLP>			  m_pANN;					///< Support Vector Machine
+		Ptr<ml::ANN_MLP>			  m_pANN;					///< Artificial Neural Network 
 		CSamplesAccumulator			* m_pSamplesAcc;			///< Samples Accumulator
 
 	};
