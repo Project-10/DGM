@@ -33,11 +33,11 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 	Mat res;
 	gt.copyTo(res);
 
-	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
-		if (*it < 3) *it = 0;
-		else if (*it < 4) *it = 1;
-		else *it = 2;
-//		*it = (*it + 1) % nStates;
+	for (byte &val : static_cast<Mat_<byte>>(res)) 
+		if (val < 3)		val = 0;
+		else if (val < 4)	val = 1;
+		else				val = 2;
+	//	val = (val + 1) % nStates;
 
 	return res;
 }
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		Z = 1.0f; break;
 		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
 #ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 0.0f; break;
 #endif
 		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		Z = 0.0f; break;
 		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		Z = 1.0f; break;
@@ -82,6 +82,14 @@ int main(int argc, char *argv[])
 	fex::CCommonFeatureExtractor fExtractor(img);
 	featureVector.push_back(fExtractor.getNDVI(0).autoContrast().get());
 	featureVector.push_back(fExtractor.getSaturation().invert().get());
+
+	for (int y = 0; y < gt.rows; y++)
+		for (int x = 0; x < gt.cols; x++)
+			if (gt.at<byte>(y, x) == 1) {
+				float val = (float) featureVector[0].at<byte>(y, x);
+				val = val - 10;
+				featureVector[0].at<byte>(y, x) = (byte) MAX(0.0f, val + 0.5f);
+			}
 
 	//	---------- Training ----------
 	Timer::start("Training... ");
@@ -100,8 +108,9 @@ int main(int argc, char *argv[])
 	Timer::stop();
 	imwrite(argv[4], classMap);
 
+	imwrite("D:\\hist2d_MsRF.jpg", classMap);
 	imshow("class map 2d", classMap);
-	cvWaitKey(1000);
+	cvWaitKey(0*1000);
 
 	return 0;
 }

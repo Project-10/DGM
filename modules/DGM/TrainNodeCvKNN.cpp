@@ -95,9 +95,14 @@ namespace DirectGraphicalModels
 	{
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
+		//float res = m_pKNN->predict(fv.t());
+		//byte s = static_cast<byte>(res);
+		//potential.at<float>(s, 0) = 1.0f;
+		//potential += 0.1f;
+
 		Mat result, neighborResponses;
 		m_pKNN->findNearest(fv.t(), m_params.maxNeighbors, result, neighborResponses);
-		
+
 		float *pResponse = neighborResponses.ptr<float>(0);
 		int n = neighborResponses.cols;
 		for (int i = 0; i < n; i++) {

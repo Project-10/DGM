@@ -99,10 +99,14 @@ namespace DirectGraphicalModels
 	{
 		Mat fv;
 		featureVector.convertTo(fv, CV_32FC1);
+		//float res = m_pANN->predict(fv.t());
+		//byte s = static_cast<byte>(res);
+		//potential.at<float>(s, 0) = 1.0f;
+		//potential += 0.1f;		
+		
 		m_pANN->predict(fv.t(), potential);
 		for (float &pot : static_cast<Mat_<float>>(potential))
 			if (pot < 0) pot = 0;
-		
 		potential = potential.t();
 	}
 }
