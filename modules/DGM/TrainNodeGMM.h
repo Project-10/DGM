@@ -1,26 +1,34 @@
 // Gaussian Mixture Model training class interface
-// Written by Sergey G. Kosov in 2012 - 2014 for Project X
+// Written by Sergey G. Kosov in 2012 - 2014, 2017 for Project X
 #pragma once
 
 #include "TrainNode.h"
 #include "KDGauss.h"
 
 namespace DirectGraphicalModels {
+	///@brief Gaussian Mixture Model parameters
+	struct TrainNodeGMMParams {
+		word	maxGausses = 1;				///< The maximal number of Gauss functions for approximation
+	};
+	
+
 	class CTrainNodeGMM : public CTrainNode {
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
+		* @param params Gaussian Mixture Model parameters (Ref. @ref TrainNodeGMMParams)
 		*/
-		DllExport CTrainNodeGMM(byte nStates, word nFeatures);
+		DllExport CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params = TrainNodeGMMParams());
 		/**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		* @param maxGausses The maximal number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
-		DllExport CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses);
+		DllExport CTrainNodeGMM(byte nStates, word nFeatures, word maxGausses);
+
 		DllExport virtual ~CTrainNodeGMM(void) {}
 
 		DllExport virtual void	reset(void) override;	
@@ -38,15 +46,15 @@ namespace DirectGraphicalModels {
 		using GaussianMixture = std::vector<CKDGauss>;
 
 		std::vector<GaussianMixture>	m_vGaussianMixtures;
+
+
+	private: 
+		TrainNodeGMMParams					m_params;
 	};
 }
 
-//
-//namespace DirectGraphicalModels
-//{
-//	///@brief Gaussian Mixture Model parameters
-//	typedef struct TrainNodeGMMParams {
-//		word	maxGausses;					///< The maximal number of Gauss functions for approximation
+
+
 //		size_t	min_samples;				///< Minimum number of sapmles to approximate a Gauss function
 //		double	dist_Etreshold;				///< Minimum Euclidean distance between Gauss functions
 //		double	dist_Mtreshold;				///< Minimum Mahalanobis distance between Gauss functions. If this parameter is negative, the Euclidean distance is used
@@ -76,14 +84,6 @@ namespace DirectGraphicalModels {
 //	class CTrainNodeGMM : public CTrainNode
 //	{
 //	public:
-//		/**
-//		* @brief Constructor
-//		* @param nStates Number of states (classes)
-//		* @param nFeatures Number of features
-//		* @param params Gaussian Mixture Model parameters (Ref. @ref TrainNodeGMMParams)
-//		*/
-//		DllExport CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params = TRAIN_NODE_GMM_PARAMS_DEFAULT);
-//
 //	///@cond
 //	#ifdef DEBUG_PRINT_INFO	
 //		DllExport void showStatus(void);

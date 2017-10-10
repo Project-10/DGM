@@ -4,19 +4,25 @@
 namespace DirectGraphicalModels
 {
 	// Constructor
-	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures) 
+	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params)
 		: CTrainNode(nStates, nFeatures)
 		, CBaseRandomModel(nStates)
+		, m_params(params)
 	{
 		m_vGaussianMixtures.resize(nStates);
+		for (auto &gaussianMixture : m_vGaussianMixtures)
+			gaussianMixture.reserve(m_params.maxGausses);
 	}
-
+	
 	// Constructor
-	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses) 
+	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, word maxGausses) 
 		: CTrainNode(nStates, nFeatures) 
 		, CBaseRandomModel(nStates)
 	{
+		m_params.maxGausses = maxGausses;
 		m_vGaussianMixtures.resize(nStates);
+		for (auto &gaussianMixture : m_vGaussianMixtures)
+			gaussianMixture.reserve(m_params.maxGausses);
 	}
 
 	void CTrainNodeGMM::reset(void) {
@@ -24,17 +30,45 @@ namespace DirectGraphicalModels
 	}
 	
 	void CTrainNodeGMM::addFeatureVec(const Mat &featureVector, byte gt) {
-		
 		Mat point;
 		featureVector.convertTo(point, CV_64FC1);
 
-		if (m_vGaussianMixtures[gt].empty()) m_vGaussianMixtures[gt].emplace_back(point);
-		else {
+		GaussianMixture &gaussianMixture = m_vGaussianMixtures[gt];
 
+		if (gaussianMixture.empty()) gaussianMixture.emplace_back(point);
+		else {
+			std::vector<double> vDistances;
+			for (const CKDGauss &gauss : gaussianMixture)
+				vDistances.push_back(gauss.getEuclidianDistance(point));
+			auto min_it  = std::min_element(vDistances.begin(), vDistances.end());
+			size_t min_k = std::distance(vDistances.begin(), min_it);
+			if (gaussianMixture.size() < m_params.maxGausses && *min_it > 2.0) {
+				gaussianMixture.emplace_back(point);
+			}
+			else {
+				//gaussianMixture[min_k].addPoint(point);
+				gaussianMixture[min_k] += point;
+			}
 		}
 	}
 
-	void CTrainNodeGMM::train(bool doClean) {}
+	template<typename T>
+	void printMat(const std::string &name, const Mat &m) {
+		printf("%s:\n", name.c_str());
+		for (int y = 0; y < m.rows; y++) {
+			for(int x = 0; x < m.cols; x++)
+				printf("%.1f\t", m.at<T>(y,x));
+			printf("\n");
+		}
+	}
+
+	void CTrainNodeGMM::train(bool doClean) {
+		Mat mu = m_vGaussianMixtures[0][0].getMu();
+		printMat<double>("mu", mu);
+		mu.at<double>(0, 0) = 777.77;
+		Mat sigma = m_vGaussianMixtures[0][0].getSigma();
+		printMat<double>("sigma", sigma);
+	}
 
 	void CTrainNodeGMM::saveFile(FILE *pFile) const {}
 	

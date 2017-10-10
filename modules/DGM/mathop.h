@@ -51,6 +51,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Calculates the Euclidian distance between argument matrices \b a and \b b.
 		* @details The Euclidian distance is calculated by the formula : \f$D_E(a, b) = \sqrt{ \sum_{i,j}(a_{ij} - b_{ij})^2 }\f$.
+		* > This function is about 10 times faster then cv::norm(a, b, NORM_L2);
 		* @tparam Targ Type of elements in matrices \b a and \b b (\a e.g. \a byte, \a float, \a double, \a etc.)
 		* @tparam Tres Type of the resulting distance (\a float or \a double)
 		* @param a The first matrix

@@ -1,4 +1,5 @@
 #include "KDGauss.h"
+#include "mathop.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels {
@@ -6,14 +7,14 @@ namespace DirectGraphicalModels {
 	CKDGauss::CKDGauss(dword k) 
 		: m_nPoints(0)
 		, m_mu(Mat::zeros(k, 1, CV_64FC1))
-		, m_sigma(Mat::eye(k, k, CV_64FC1))
+		, m_sigma(Mat::zeros(k, k, CV_64FC1))
 	{ }
 
 	// Constructor
 	CKDGauss::CKDGauss(const Mat &mu) : m_nPoints(1) {
 		int k = mu.rows;
 		mu.convertTo(m_mu, CV_64FC1);
-		m_sigma = Mat::eye(k, k, CV_64FC1);
+		m_sigma = Mat::zeros(k, k, CV_64FC1);
 	}
 	
 	// Copy Constructor
@@ -34,18 +35,29 @@ namespace DirectGraphicalModels {
 	}
 
 	CKDGauss & CKDGauss::operator+= (const CKDGauss & rhs) {
-		long double a = static_cast<long double>(this->m_nPoints) / (this->m_nPoints + rhs.m_nPoints);
-		this->m_nPoints += rhs.m_nPoints;
-		Mat mu;
-		addWeighted(this->m_mu, a, rhs.m_mu, (1.0 - a), 0.0, mu);
-		
-		Mat t1, t2;
-		gemm(this->m_mu, this->m_mu, 1.0, this->m_sigma, 1.0, t1, GEMM_2_T);		// t1 = sigma1 + mu1*mu1^T
-		gemm(rhs.m_mu, rhs.m_mu, 1.0, rhs.m_sigma, 1.0, t2, GEMM_2_T);				// t2 = sigma2 + mu2*mu2^T
-		addWeighted(t1, a, t2, (1.0 - a), 0.0, this->m_sigma);						// sigma^ = a * t1 + (1-a) * t2;
-		this->m_sigma -= mu * mu.t();												// sigma^ = a * [sigma1 + mu1*mu1^T] + (1-a) * [sigma2 + mu2*mu2^T] - mu^ * mu^^T;
+		if (rhs.m_nPoints == 1) this->addPoint(rhs.m_mu);
+		else {
+			long double a = static_cast<long double>(this->m_nPoints) / (this->m_nPoints + rhs.m_nPoints);
+			this->m_nPoints += rhs.m_nPoints;
 
-		this->m_mu = mu;
+			// fast matrix multiplation (faster than OpenCV gemm())
+			// sigma^ = a * (sigma1 + mu1 * mu1^t) + (1 - a) * (sigma2 + mu2 * mu2^t)
+			for (int y = 0; y < this->m_sigma.rows; y++) {
+				double		 *pThisSigma = this->m_sigma.ptr<double>(y);
+				const double *pRhsSigma = rhs.m_sigma.ptr<double>(y);
+				for (int x = 0; x < this->m_sigma.cols; x++)
+					pThisSigma[x] = static_cast<double>(a * (pThisSigma[x] + this->m_mu.at<double>(x, 0) * this->m_mu.at<double>(y, 0)) +
+					(1.0 - a) * (pRhsSigma[x] + rhs.m_mu.at<double>(x, 0) * rhs.m_mu.at<double>(y, 0)));
+			} // y
+			addWeighted(this->m_mu, a, rhs.m_mu, 1.0 - a, 0.0, this->m_mu);			// mu^ = a * mu1 + (1- a) * mu2
+			this->m_sigma -= this->m_mu * this->m_mu.t();							// sigma^ = a * (sigma1 + mu1 * mu1^t) + (1 - a) * (sigma2 + mu2 * mu2^t) - mu^ * mu^^T 
+		}
+		return *this;
+	}
+
+	CKDGauss & CKDGauss::operator+= (const Mat &point) { 
+		// return this->operator+=(CKDGauss(point)); 
+		addPoint(point);
 		return *this;
 	}
 
@@ -70,7 +82,7 @@ namespace DirectGraphicalModels {
 		return exp(value);
 	}
 
-	void CKDGauss::addPoint(const Mat &point) {
+	void CKDGauss::addPoint(const Mat &point, bool approximate) {
 		// Assertions
 		DGM_ASSERT_MSG(point.size() == m_mu.size(), "Wrong input point size");
 		DGM_ASSERT_MSG(point.type() == m_mu.type(), "Wrong input point type");
@@ -78,18 +90,43 @@ namespace DirectGraphicalModels {
 		if (m_nPoints == 0) point.copyTo(m_mu);
 		else {
 			long double a = static_cast<long double>(m_nPoints) / (m_nPoints + 1);
-			addWeighted(m_mu, a, point, 1.0 - a, 0.0, m_mu);			// mu = a * mu + (1-a) * point
 
-			for (int y = 0; y < m_sigma.rows; y++) {
-				double *pSigma = m_sigma.ptr<double>(y);
-				for (int x = 0; x < m_sigma.cols; x++) {
-					double cr = (point.at<double>(x, 0) - m_mu.at<double>(x, 0)) * (point.at<double>(y, 0) - m_mu.at<double>(y, 0));
-					pSigma[x] = cr + static_cast<double>(a * (pSigma[x] - cr));
-				} // x
-			} // y
+			if (approximate) { // ---------------- approximate calculation of sigma ----------------
+				addWeighted(m_mu, a, point, 1.0 - a, 0.0, m_mu);		// mu = a * mu + (1-a) * point
 
+				// fast matrix multiplation (faster than OpenCV gemm())
+				// sigma^ = a * sigma1 + (1 - a) * (point * point^t - mu1 * mu1^T) 
+				for (int y = 0; y < m_sigma.rows; y++) {
+					double *pSigma = m_sigma.ptr<double>(y);
+					for (int x = 0; x < m_sigma.cols; x++) {
+						double cr = (point.at<double>(x, 0) - m_mu.at<double>(x, 0)) * (point.at<double>(y, 0) - m_mu.at<double>(y, 0));
+						pSigma[x] = cr + static_cast<double>(a * (pSigma[x] - cr));
+					} // x
+				} // y
+			} 
+			else { // ---------------- general exact calculation of sigma ----------------
+				Mat mu;
+				addWeighted(this->m_mu, a, point, 1.0 - a, 0.0, mu);	// mu^ = a * mu1 + (1- a) * point
+
+				// fast matrix multiplation (faster than OpenCV gemm())
+				// sigma^ = a * (sigma1 + mu1 * mu1^t) + (1 - a) * point * point^t - mu^ * mu^^T 
+				for (int y = 0; y < m_sigma.rows; y++) {
+					double *pSigma = m_sigma.ptr<double>(y);
+					for (int x = 0; x < m_sigma.cols; x++) {
+						pSigma[x] = static_cast<double>(a * (pSigma[x] + m_mu.at<double>(x, 0) * m_mu.at<double>(y, 0)) +
+							(1.0 - a) *  point.at<double>(x, 0) * point.at<double>(y, 0) -
+							mu.at<double>(x, 0) * mu.at<double>(y, 0));
+					} // x
+				} // y
+				this->m_mu = mu;
+			}
 		}
 		m_nPoints++;
+	}
+
+	double CKDGauss::getEuclidianDistance(const Mat &x) const
+	{
+		return mathop::Euclidian<double, double>(m_mu, x);
 	}
 
 }
