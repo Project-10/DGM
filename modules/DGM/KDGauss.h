@@ -6,42 +6,142 @@
 
 namespace DirectGraphicalModels
 {
+	// ================================ NDGauss Class ==============================
+	/**
+	* @brief Multivariate Gaussian distribution class
+	* @details This class allows to approximate the distribution of random variables (samples) \f$ \textbf{x} \f$, represented as \a k - dinemstional
+	* points \f$ [x_1,x_2,\dots,x_k] \f$. Under the assumption, that the random variables \f$ \textbf{x} \f$ are normally distributed, the approximation 
+	* is done with <a href="http://en.wikipedia.org/wiki/Multivariate_normal_distribution"> multivariate normal distribution</a>:
+	* \f[ \mathcal{N}_k(\mu,\Sigma)= \alpha\cdot\exp\big( -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)\big), \f] 
+	* whith coefficient \f$ \alpha = \frac{1}{(2\pi)^{k/2}|\Sigma|^{1/2}} \f$. The parameters \f$ \mu\f$ and \f$\Sigma \f$ of the Gaussian function
+	* \f$ \mathcal{N}(\mu,\Sigma) \f$ may be estimated sequentially with function addPoint() or operator operator+=(const Mat &); also they may be set directly with 
+	* functions setMu() and setSigma().
+	* 
+	* The value of the Gaussian function \f$ \mathcal{N}(\mu,\Sigma) \f$ in point \f$ \textbf{x} \f$ is achieved with the functions getAlpha() and getValue():
+	* @code
+	* double value = CKDGauss::getAlpha() * CKDGauss::getValue(x);
+	* @endcode
+	*
+	* In order to generate a random sample from the distribution, given by Gaussian function \f$ \mathcal{N}(\mu,\Sigma) \f$, one uses function getSample().
+	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/
 	class CKDGauss {
 	public:
-		CKDGauss(dword k);
-		CKDGauss(const Mat &mu);
-		CKDGauss(const CKDGauss &rhs);
-		~CKDGauss(void) {}
+		/**
+		* @brief Constructor
+		* @param k Dimensions
+		*/
+		DllExport CKDGauss(dword k);
+		/**
+		* @brief Constuctor
+		* @details The dimension of the Gauss function will be derived from the dimension \a k of the argument \f$\mu\f$
+		* @param mu The mean vector \f$\mu\f$ : Mat(size: k x 1; type: CV_XXC1)
+		*/
+		DllExport CKDGauss(const Mat &mu);
+		/**
+		* @brief Copy constructor
+		*/
+		DllExport CKDGauss(const CKDGauss &rhs);
 
-		CKDGauss & operator=  (const CKDGauss & rhs);
-		CKDGauss & operator+= (const CKDGauss & rhs);
-		CKDGauss & operator+= (const Mat &point); 
+		/**
+		* @brief Copy operator
+		*/
+		DllExport CKDGauss & operator=  (const CKDGauss & rhs);
+		/**
+		* @brief Merge operator
+		* @details This operator merges two Gaussian distributions together:
+		* \f[ \begin{aligned}
+		* \hat{\mu}    &= \frac{n_1\mu_1 + n_2\mu_2}{n1 + n2} \\
+		* \hat{\Sigma} &= \frac{n_1(\Sigma_1 + \mu_1\mu^{\top}_{1}) + n2(\Sigma_2 + \mu_2\mu^{\top}_{2})}{n_1 + n_2} - \hat{\mu}\hat{\mu}^\top \\ 
+		* \end{aligned} \f]
+		*/
+		DllExport CKDGauss & operator+= (const CKDGauss & rhs);
+		/**
+		* @brief Merge operator
+		* @details This operator is equavalent to 
+		* @code operator+=(CKDGauss( point )) @endcode
+		* and might be used for sequentian estimation of the Gaussian distribution
+		*/
+		DllExport CKDGauss & operator+= (const Mat &point); 
 
-		void		clear(void);
-		bool		empty(void) const			 { return (m_nPoints == 0); }
+		/**
+		* @brief Clears class variables
+		* @details Allows to re-use the class
+		*/
+		DllExport void			clear(void);
+		/**
+		* @brief Checks weather the Gaussian function is approximated
+		* @retval true if the Gaussian had at least 1 point for approximation, or
+		* @retval false otherwise
+		*/
+		DllExport bool			empty(void) const			 { return (m_nPoints == 0); }
 
-		// Accessors
-		void		setNumPoints(size_t nPoints) { m_nPoints = nPoints; }
-		size_t		getNumPoints(void) const	 { return m_nPoints; }
-		void		setMu(const Mat &mu);
-		Mat			getMu(void) const			 { return m_mu.clone(); }				
-		void		setSigma(const Mat &sigma);
-		Mat			getSigma(void) const		 { return m_sigma.clone(); }
+		///@{ 
+		/// @name Accessors
+		/**
+		* @brief Sets the number of approximation points \f$n\f$.
+		* @param nPoints The number of sample points, used for the approximation.
+		*/
+		DllExport void			setNumPoints(size_t nPoints) { m_nPoints = nPoints; }
+		/**
+		* @brief Returns the number of approximation points \f$n\f$.
+		* @return The number of sample points, used for the approximation.
+		*/
+		DllExport size_t		getNumPoints(void) const { return m_nPoints; }
+		/**
+		* @brief Sets \f$\mu\f$.
+		* @param mu The mean vector \f$\mu\f$ : Mat(size: k x 1; type: CV_64FC1)
+		*/
+		DllExport void			setMu(const Mat &mu);
+		/**
+		* @brief Returns \f$\mu\f$.
+		* @return The mean vector \f$\mu\f$: Mat(size: k x 1; type: CV_64FC1)
+		*/
+		DllExport Mat			getMu(void) const { return m_mu.clone(); }				
+		/**
+		* @brief Sets \f$\Sigma\f$.
+		* @param sigma The covariance matrix \f$\Sigma\f$: Diagonal Mat(size: k x k; type: CV_64FC1)
+		*/
+		DllExport void			setSigma(const Mat &sigma);
+		/**
+		* @brief Returns \f$\Sigma\f$.
+		* @return The covariance matrix \f$\Sigma\f$: Mat(size: k x k; type: CV_64FC1)
+		*/
+		DllExport Mat			getSigma(void) const { return m_sigma.clone(); }
+		///@}
 
-		// Main functionality
-		void		addPoint(const Mat &point, bool approximate = false);
-		Mat			getSigmaInv(void) const;
-		long double	getAlpha(void) const;
-		double		getValue(const Mat &x) const;
-		Mat			getSample(void) const;
+		///@{
+		/// @name Main functionality
+		/**
+		* @brief Adds new k-dimensional point (sample) for Gaussian distribution approximation
+		* @details This function is an analog to the merging operator (Ref. operator+=()) and updates the Gaussian 
+		* distribution in respect to one new observed point, using the following update rooles:\n
+		* \f[ \begin{aligned} 
+		* \hat{\mu}    &= \frac{n\mu + p}{n + 1} \\
+		* \hat{\Sigma} &= \frac{n(\Sigma + \mu\mu^\top) + point point^\top}{n + 1} - \hat{\mu}\hat{\mu}^\top \\
+		* \end{aligned} \f]
+		* @code
+		* while(point) estGaussian.addPoint(point);			// estimated Gauss function is updated
+		* @endcode
+		* @param point k-dimensional point: Mat(size: k x 1; type: CV_64FC1)
+		* @param approximate Flag indicating whether a faster approximation of the update rool for \f$\Sigma\f$ should be used:
+		* \f$ \hat{\Sigma} = \frac{n\Sigma + (p-\hat{\mu})(p-\hat{\mu})^\top}{n + 1} \f$.
+		* For large \f$n\f$ this approximation is equevalent to the original update rool.
+		*/
+		DllExport void			addPoint(const Mat &point, bool approximate = false);
+		DllExport Mat			getSigmaInv(void) const;
+		DllExport long double	getAlpha(void) const;
+		DllExport double		getValue(const Mat &x) const;
+		DllExport Mat			getSample(void) const;
+		///@}
 
-		double		getEuclidianDistance(const Mat &x) const;
-		double		getMahalanobisDistance(const Mat &x) const;
+		DllExport double		getEuclidianDistance(const Mat &x) const;
+		DllExport double		getMahalanobisDistance(const Mat &x) const;
 
 
-	private:
-		size_t	m_nPoints;		// number of samples
-		Mat		m_mu;			// the mathematical expectation (size: k x 1; type: CV_64FC1)
-		Mat		m_sigma;		// the covariance matrix (size: k x k; type: CV_64FC1)
+	protected:
+		size_t	m_nPoints;		///< Number of samples
+		Mat		m_mu;			///< The mathematical expectation \f$mu\f$: (size: k x 1; type: CV_64FC1)
+		Mat		m_sigma;		///< The covariance matrix \f$\Sigma\f$: (size: k x k; type: CV_64FC1)
 	};
 }
