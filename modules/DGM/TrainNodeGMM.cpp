@@ -33,21 +33,68 @@ namespace DirectGraphicalModels
 		Mat point;
 		featureVector.convertTo(point, CV_64FC1);
 
-		GaussianMixture &gaussianMixture = m_vGaussianMixtures[gt];
+		GaussianMixture &gaussianMixture = m_vGaussianMixtures[gt];						// GMM of current state		
 
-		if (gaussianMixture.empty()) gaussianMixture.emplace_back(point);
+		if (gaussianMixture.empty()) gaussianMixture.emplace_back(point);				// NEW GAUSS
 		else {
+			// Find the nearest gaussian distribution 
+			// Calculate distances between all existing Gaussians in the mixture to the point
 			std::vector<double> vDistances;
-			for (const CKDGauss &gauss : gaussianMixture)
-				vDistances.push_back(gauss.getEuclidianDistance(point));
-			auto min_it  = std::min_element(vDistances.begin(), vDistances.end());
-			size_t min_k = std::distance(vDistances.begin(), min_it);
-			if (gaussianMixture.size() < m_params.maxGausses && *min_it > 2.0) {
-				gaussianMixture.emplace_back(point);
-			}
+			for (const CKDGauss &gauss : gaussianMixture) {
+				double distance;
+				if (m_params.dist_Mtreshold < 0) 
+					distance = gauss.getEuclidianDistance(point);
+				else { // Mahalanobis distance
+					if (gauss.getNumPoints() >= m_params.min_samples)					// if a Gaussian is full
+						distance = gauss.getMahalanobisDistance(point);
+					else {
+						double k = m_params.dist_Mtreshold / m_params.dist_Etreshold;
+						distance = k * gauss.getEuclidianDistance(point);
+					}
+				}
+				vDistances.push_back(distance);
+			} // gauss
+
+			// Find the smallest distance
+			auto it = std::min_element(vDistances.begin(), vDistances.end());
+			double minDist = *it;
+			
+			double dist_treshold = (m_params.dist_Mtreshold < 0) ? m_params.dist_Etreshold : m_params.dist_Mtreshold;
+
+			// Add to existing Gaussian or crete a new one
+			if (gaussianMixture.size() < m_params.maxGausses && minDist > dist_treshold) 
+				gaussianMixture.emplace_back(point);									// NEW GAUSS
 			else {
-				//gaussianMixture[min_k].addPoint(point);
-				gaussianMixture[min_k] += point;
+				// Add to existing Gaussian
+				size_t updIdx = std::distance(vDistances.begin(), it);
+				CKDGauss &updGauss = gaussianMixture[updIdx];							// the nearest Gaussian
+				updGauss.addPoint(point);												// update the nearest Gauss
+
+				// Check if the updated Gauss function became too close to another Gauss function
+				if (m_params.div_KLtreshold > 0 && updGauss.getNumPoints() >= m_params.min_samples) {
+					// Calculate divergences between updGauss and all other gausses
+					std::vector<double> vDivergences;
+					for (const CKDGauss &gauss : gaussianMixture) {
+						double divergence;
+						if (gauss.getNumPoints() >= m_params.min_samples)	
+							divergence = gauss.getKullbackLeiberDivergence(updGauss);
+						else												
+							divergence = DBL_MAX;
+						vDivergences.push_back(divergence);
+					} // gauss
+					vDivergences[updIdx] = DBL_MAX;										// divergence to itself
+
+					// Find the smallest divergence
+					auto it = std::min_element(vDivergences.begin(), vDivergences.end());
+					double minDivg = *it;
+					size_t idx = std::distance(vDivergences.begin(), it);
+
+					// Merge together if they are too close
+					if (minDivg < m_params.div_KLtreshold) {
+						gaussianMixture[idx] += updGauss;
+						gaussianMixture.erase(gaussianMixture.begin() + updIdx);
+					}
+				}
 			}
 		}
 	}

@@ -118,7 +118,7 @@ namespace DirectGraphicalModels
 		* distribution in respect to one new observed point, using the following update rooles:\n
 		* \f[ \begin{aligned} 
 		* \hat{\mu}    &= \frac{n\mu + p}{n + 1} \\
-		* \hat{\Sigma} &= \frac{n(\Sigma + \mu\mu^\top) + point point^\top}{n + 1} - \hat{\mu}\hat{\mu}^\top \\
+		* \hat{\Sigma} &= \frac{n(\Sigma + \mu\mu^\top) + p~p^\top}{n + 1} - \hat{\mu}\hat{\mu}^\top \\
 		* \end{aligned} \f]
 		* @code
 		* while(point) estGaussian.addPoint(point);			// estimated Gauss function is updated
@@ -129,19 +129,46 @@ namespace DirectGraphicalModels
 		* For large \f$n\f$ this approximation is equevalent to the original update rool.
 		*/
 		DllExport void			addPoint(const Mat &point, bool approximate = false);
-		DllExport Mat			getSigmaInv(void) const;
 		DllExport long double	getAlpha(void) const;
 		DllExport double		getValue(const Mat &x) const;
 		DllExport Mat			getSample(void) const;
 		///@}
 
+		/**
+		* @brief Returns the Euclidian distance between argument point \b x and the center of multivariate normal distribution \f$\mu\f$.
+		* @details The Euclidian distance is calculated by the formula: \f$D_E(\mathcal{N};x)=\sqrt{ (x-\mu)^\top(x-\mu) }\f$.
+		* @param x A k-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
+		* @return The Euclidian distance: \f$D_E(x)\f$
+		*/
 		DllExport double		getEuclidianDistance(const Mat &x) const;
+		/**
+		* @brief Returns the Mahalanobis distance between argument point \b x and the center of multivariate normal distribution \f$\mathcal{N}(\mu,\Sigma)\f$.
+		* @details The Mahalanobis distance is calculated by the formula: \f$D_M(\mathcal{N};x)=\sqrt{ (x-\mu)^\top\Sigma^{-1}(x-\mu) }\f$
+		* @param x n-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
+		* @return the Mahalanobis distance: \f$D_M(x)\f$
+		*/
 		DllExport double		getMahalanobisDistance(const Mat &x) const;
+		/**
+		* @brief Returns the Kullback-Leiber divergence from the multivariate normal distribution \f$\mathcal{N}(\mu,\Sigma)\f$ to argument multivariate normal distribution \f$\mathcal{N}_x(\mu_x,\Sigma_x)\f$.
+		* @details The Kullback-Leiber divergence (or relative entropy) is calculated by the formula: \f$D_{KL}(\mathcal{N};\mathcal{N}_x)=\frac{1}{2}\Big( tr(\Sigma^{-1}_{x}\Sigma) +
+		* D^{2}_{M}(\mathcal{N}_x;\mu) - k - \ln\big(\frac{\left|\Sigma\right|}{\left|\Sigma_x\right|}\big) \Big)\f$ and expressed in <a href="http://en.wikipedia.org/wiki/Nat_(information)">nats</a>.
+		* Here \f$D_M(\mathcal{N}_x;\mu)\f$ is the \a Mahalanobis \a distance beween the centers of multivariate normal distributions \f$\mu_x\f$ and \f$\mu\f$ with respect to \f$\mathcal{N}_x\f$
+		* (see getMahalanobisDistance() for more details). Please note, that it is not a symmetrical quantity, that is to say \f$ D_{KL}(\mathcal{N};\mathcal{N}_x) \neq D_{KL}(\mathcal{N}_x;\mathcal{N})\f$
+		* and so could be hardly used as a "distance".
+		* @param x multivariate normal distribution \f$\mathcal{N}_x(\mu_x,\Sigma_x)\f$ of the dimension \a k.
+		* @return the Kullback-Leiber divergence: \f$D_{KL}(\mathcal{N}_x)\f$
+		*/
+		DllExport double		getKullbackLeiberDivergence(const CKDGauss &x) const;
 
 
 	protected:
 		size_t	m_nPoints;		///< Number of samples
 		Mat		m_mu;			///< The mathematical expectation \f$mu\f$: (size: k x 1; type: CV_64FC1)
 		Mat		m_sigma;		///< The covariance matrix \f$\Sigma\f$: (size: k x k; type: CV_64FC1)
+
+
+	private:
+		Mat		getSigmaInv(void) const;
+
 	};
 }

@@ -129,4 +129,38 @@ namespace DirectGraphicalModels {
 		return mathop::Euclidian<double, double>(m_mu, x);
 	}
 
+	double CKDGauss::getMahalanobisDistance(const Mat &x) const
+	{
+		return Mahalanobis(m_mu, x, getSigmaInv());
+	}
+
+	double CKDGauss::getKullbackLeiberDivergence(const CKDGauss &x) const
+	{
+		// Assertions
+		DGM_ASSERT_MSG(x.getMu().size() == m_mu.size(), "Wrong x.mu size");
+		DGM_ASSERT_MSG(x.getMu().type() == m_mu.type(), "Wrong x.mu type");
+
+		Mat p;
+		gemm(x.getSigmaInv(), m_sigma, 1.0, Mat(), 0.0, p, 0);		// p = \Sigma^{-1}_{x} * \Sigma
+		Scalar tr = trace(p);
+		p.release();
+
+		double dst = x.getMahalanobisDistance(m_mu);
+
+		int k = m_mu.rows;
+
+		double ln = log(determinant(m_sigma) / determinant(x.getSigma()));
+
+		double res = static_cast<double>(tr.val[0] + dst*dst - k - ln) / 2;
+
+		return res;
+	}
+
+	// =============================== Private ===============================
+	Mat	CKDGauss::getSigmaInv(void) const
+	{
+		Mat sigmaInv;
+		invert(m_sigma, sigmaInv, DECOMP_SVD);	// sigmaInv = sigma^-1
+		return sigmaInv;
+	}
 }

@@ -8,7 +8,11 @@
 namespace DirectGraphicalModels {
 	///@brief Gaussian Mixture Model parameters
 	struct TrainNodeGMMParams {
-		word	maxGausses = 1;				///< The maximal number of Gauss functions for approximation
+		word	maxGausses		= 64;				///< The maximal number of Gauss functions for approximation
+		size_t	min_samples		= 64;				///< Minimum number of sapmles to approximate a Gauss function		
+		double	dist_Etreshold	= 64;				///< Minimum Euclidean distance between Gauss functions
+		double	dist_Mtreshold	= -16;				///< Minimum Mahalanobis distance between Gauss functions. If this parameter is negative, the Euclidean distance is used
+		double	div_KLtreshold	= -16;				///< Minimum Kullback-Leiber divergence between Gauss functions. If this parameter is negative, the merging of Gaussians in addFeatureVec() function will be disabled
 	};
 	
 
