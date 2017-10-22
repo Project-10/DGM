@@ -129,6 +129,7 @@ namespace DirectGraphicalModels
 		* For large \f$n\f$ this approximation is equevalent to the original update rool.
 		*/
 		DllExport void			addPoint(const Mat &point, bool approximate = false);
+		
 		DllExport long double	getAlpha(void) const;
 		DllExport double		getValue(const Mat &x) const;
 		DllExport Mat			getSample(void) const;
@@ -171,4 +172,6 @@ namespace DirectGraphicalModels
 		Mat		getSigmaInv(void) const;
 
 	};
+
+	using GaussianMixture = std::vector<CKDGauss>;
 }

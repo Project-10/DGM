@@ -124,6 +124,14 @@ namespace DirectGraphicalModels {
 		m_nPoints++;
 	}
 
+	long double CKDGauss::getAlpha(void) const {
+		int k = m_sigma.cols;
+		long double det = MAX(DBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
+		long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
+		long double alpha = 1 / (det * sPi);
+		return alpha;
+	}
+
 	double CKDGauss::getEuclidianDistance(const Mat &x) const
 	{
 		return mathop::Euclidian<double, double>(m_mu, x);

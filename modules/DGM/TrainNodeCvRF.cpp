@@ -105,23 +105,21 @@ void CTrainNodeCvRF::calculateNodePotentials(const Mat &featureVector, Mat &pote
 {
 	Mat fv;
 	featureVector.convertTo(fv, CV_32FC1);
-	
-	Mat votes;
-	m_pRF->getVotes(fv.t(), votes, ml::RTrees::Flags::PREDICT_MAX_VOTE);
-	
-	int sum = 0;
-	for (int x = 0; x < votes.cols; x++) {
-		byte s = static_cast<byte>(votes.at<int>(0, x));
-		int	nVotes = votes.at<int>(1, x);
-		potential.at<float>(s, 0) = static_cast<float>(nVotes);
-		sum += nVotes;
-	} // s
+	float res = m_pRF->predict(fv.t());
+	byte s = static_cast<byte>(res);
+	potential.at<float>(s, 0) = 1.0f;
+	potential += 0.1f;
 
-	if (sum) potential /= sum;
-
-//	byte s = static_cast<byte>(m_pRF->predict(fv.t());
-//	potential.at<float>(s, 0) = 1.0f;
-//	potential += 0.1f;
+	//Mat votes;
+	//m_pRF->getVotes(fv.t(), votes, ml::RTrees::Flags::PREDICT_MAX_VOTE);
+	//int sum = 0;
+	//for (int x = 0; x < votes.cols; x++) {
+	//	byte s = static_cast<byte>(votes.at<int>(0, x));
+	//	int	nVotes = votes.at<int>(1, x);
+	//	potential.at<float>(s, 0) = static_cast<float>(nVotes);
+	//	sum += nVotes;
+	//} // s
+	//if (sum) potential /= sum;
 }
 
 }
