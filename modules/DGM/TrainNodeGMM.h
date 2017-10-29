@@ -83,17 +83,17 @@ namespace DirectGraphicalModels
 
 
 	private:
-		static const size_t			MIN_SAMPLES;
-		static const long double	MAX_COEFFICIENT;
+		static const size_t				MIN_SAMPLES;
+		static const long double		MAX_COEFFICIENT;
 
 
 	private:
-		TrainNodeGMMParams	  m_params;
-		GaussianMixture		* m_pvGausses;								// block of n-dimensional Gauss function	
-		long double			  m_minCoefficient;							// = 1;	// auxilary coefficient for scaling gaussian coefficients
+		TrainNodeGMMParams				m_params;
+		std::vector<GaussianMixture>	m_vGaussianMixtures;						// block of n-dimensional Gauss function	
+		long double						m_minCoefficient;							// = 1;	// auxilary coefficient for scaling gaussian coefficients
 
-		inline Mat			  getDistance(byte s, const Mat &x) const;	// Calculates distances between the point <x> to all existing Gaussians
-		inline Mat			  getDivergence(byte s, CKDGauss *x) const;	// Calculates devergence between the Gaussian <x> to all existing Gaussians
+		inline Mat						getDistance(byte s, const Mat &x) const;	// Calculates distances between the point <x> to all existing Gaussians
+		inline Mat						getDivergence(byte s, CKDGauss *x) const;	// Calculates devergence between the Gaussian <x> to all existing Gaussians
 	};
 }
 

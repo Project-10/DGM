@@ -213,7 +213,7 @@ namespace DirectGraphicalModels
 		return static_cast<double>(Mahalanobis(x, m_mu, getSigmaInv()));
 	}
 
-	double CKDGauss::getKullbackLeiberDivergence(CKDGauss &x) const
+	double CKDGauss::getKullbackLeiberDivergence(const CKDGauss &x) const
 	{
 		// Assertions
 		DGM_ASSERT_MSG(x.getMu().size() == m_mu.size(), "Wrong x.mu size");

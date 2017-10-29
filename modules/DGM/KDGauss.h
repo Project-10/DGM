@@ -177,7 +177,7 @@ namespace DirectGraphicalModels
 		* @param x multivariate normal distribution \f$\mathcal{N}_x(\mu_x,\Sigma_x)\f$ of the dimension \a k.
 		* @return the Kullback-Leiber divergence: \f$D_{KL}(\mathcal{N}_x)\f$
 		*/
-		DllExport double		getKullbackLeiberDivergence(CKDGauss &x) const;
+		DllExport double		getKullbackLeiberDivergence(const CKDGauss &x) const;
 
 		/**
 		* @brief Returns a random vector (sample) from multivariate normal distribution

@@ -10,9 +10,9 @@ namespace DirectGraphicalModels
 	// Constructor
 	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(params)
 	{
-		m_pvGausses = new GaussianMixture[nStates];
+		m_vGaussianMixtures.resize(nStates);
 		for (int s = 0; s < nStates; s++)
-			m_pvGausses[s].reserve(m_params.maxGausses);
+			m_vGaussianMixtures[s].reserve(m_params.maxGausses);
 		if (m_params.min_samples < MIN_SAMPLES) m_params.min_samples = MIN_SAMPLES;
 	}
 
@@ -20,21 +20,19 @@ namespace DirectGraphicalModels
 	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1), m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
 	{
 		m_params.maxGausses = maxGausses;
-		m_pvGausses = new GaussianMixture[nStates];
+		m_vGaussianMixtures.resize(nStates);
 		for (int s = 0; s < nStates; s++)
-			m_pvGausses[s].reserve(m_params.maxGausses);
+			m_vGaussianMixtures[s].reserve(m_params.maxGausses);
 	}
 
 	// Destructor
 	CTrainNodeGMM::~CTrainNodeGMM(void)
-	{
-		delete[] m_pvGausses;
-	}
+	{ }
 
 	void CTrainNodeGMM::reset(void)
 	{
 		for (byte s = 0; s < m_nStates; s++)
-			m_pvGausses[s].clear();
+			m_vGaussianMixtures[s].clear();
 		m_minCoefficient = 1;
 	}
 
@@ -48,7 +46,7 @@ namespace DirectGraphicalModels
 		Mat point(m_nFeatures, 1, CV_64FC1);
 		featureVector.convertTo(point, point.type());
 
-		if (m_pvGausses[gt].empty()) m_pvGausses[gt].emplace_back(point);	// NEW GAUSS
+		if (m_vGaussianMixtures[gt].empty()) m_vGaussianMixtures[gt].emplace_back(point);	// NEW GAUSS
 		else {
 			Mat dist = getDistance(gt, point);								// Calculate distances all existing Gaussians in the mixture to the point
 
@@ -63,9 +61,9 @@ namespace DirectGraphicalModels
 			else								dist_treshold = m_params.dist_Mtreshold;
 
 			// Add to existing Gaussian or crete a new one
-			if ((minDist > dist_treshold) && (m_pvGausses[gt].size() < m_params.maxGausses)) m_pvGausses[gt].emplace_back(point);		// NEW GAUSS
+			if ((minDist > dist_treshold) && (m_vGaussianMixtures[gt].size() < m_params.maxGausses)) m_vGaussianMixtures[gt].emplace_back(point);		// NEW GAUSS
 			else {
-				CKDGauss *pGauss = &m_pvGausses[gt].at(gaussIdx);			// the nearest Gaussian
+				CKDGauss *pGauss = &m_vGaussianMixtures[gt].at(gaussIdx);			// the nearest Gaussian
 				if (false)	// TODO: check it
 					pGauss->addPoint(point);								// update the nearest Gauss
 				else
@@ -84,8 +82,8 @@ namespace DirectGraphicalModels
 
 					// Merge together if they are too close
 					if ((minGaussIdx >= 0) && (minDiv < m_params.div_KLtreshold)) {
-						m_pvGausses[gt].at(minGaussIdx) += *pGauss;
-						m_pvGausses[gt].erase(m_pvGausses[gt].begin() + gaussIdx);
+						m_vGaussianMixtures[gt].at(minGaussIdx) += *pGauss;
+						m_vGaussianMixtures[gt].erase(m_vGaussianMixtures[gt].begin() + gaussIdx);
 					}
 				}
 			}
@@ -100,11 +98,11 @@ namespace DirectGraphicalModels
 
 		// merge gausses with too small number of samples 
 		for (s = 0; s < m_nStates; s++) {							// state
-			for (auto it = m_pvGausses[s].begin(); it != m_pvGausses[s].end(); it++) {
+			for (auto it = m_vGaussianMixtures[s].begin(); it != m_vGaussianMixtures[s].end(); it++) {
 				it->freeze();
 				size_t nPoints = it->getNumPoints();
 				if (nPoints < m_params.min_samples) {				// if Gaussian is not full
-					word g = static_cast<word>(it - m_pvGausses[s].begin());
+					word g = static_cast<word>(it - m_vGaussianMixtures[s].begin());
 					if (nPoints >= MIN_SAMPLES) {
 						Mat div = getDivergence(s, &(*it));
 						div.at<double>(g, 0) = DBL_MAX;				// distance to itself (redundant here)
@@ -115,9 +113,9 @@ namespace DirectGraphicalModels
 						minMaxLoc(div, &minDiv, NULL, &minPoint, NULL);
 						int gaussIdx = minPoint.y;
 						div.release();
-						if (gaussIdx >= 0) m_pvGausses[s].at(gaussIdx) += (*it);
+						if (gaussIdx >= 0) m_vGaussianMixtures[s].at(gaussIdx) += (*it);
 					} // if Gaussian has less then MIN_SAMPLES points, consider it as a noise and delete
-					m_pvGausses[s].erase(it);
+					m_vGaussianMixtures[s].erase(it);
 					it--;
 				} // if Gaussian Full
 			} // gausses
@@ -125,11 +123,11 @@ namespace DirectGraphicalModels
 
 		  // getting the coefficients
 		for (s = 0; s < m_nStates; s++) {				// state
-			for (auto itGauss = m_pvGausses[s].begin(); itGauss != m_pvGausses[s].end(); itGauss++) {
+			for (auto itGauss = m_vGaussianMixtures[s].begin(); itGauss != m_vGaussianMixtures[s].end(); itGauss++) {
 				itGauss->freeze();
 				long double Coefficient = itGauss->getAlpha();
 				if (Coefficient > MAX_COEFFICIENT) {			// i.e. if (Coefficient = \infinitiy) delete Gaussian
-					m_pvGausses[s].erase(itGauss);
+					m_vGaussianMixtures[s].erase(itGauss);
 					itGauss--;
 					continue;
 				}
@@ -154,9 +152,9 @@ namespace DirectGraphicalModels
 
 		// m_pvpGausses;							
 		for (byte s = 0; s < m_nStates; s++) {				// state
-			word nGausses = static_cast<word>(m_pvGausses[s].size());
+			word nGausses = static_cast<word>(m_vGaussianMixtures[s].size());
 			fwrite(&nGausses, sizeof(word), 1, pFile);
-			for (CKDGauss &gauss : m_pvGausses[s]) {
+			for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {
 				size_t	nPoints = gauss.getNumPoints();
 				Mat		mu = gauss.getMu();
 				Mat		sigma = gauss.getSigma();
@@ -188,8 +186,8 @@ namespace DirectGraphicalModels
 		for (byte s = 0; s < m_nStates; s++) {				// state
 			word nGausses;
 			fread(&nGausses, sizeof(word), 1, pFile);
-			m_pvGausses[s].assign(nGausses, CKDGauss(m_nFeatures));
-			for (CKDGauss &gauss : m_pvGausses[s]) {
+			m_vGaussianMixtures[s].assign(nGausses, CKDGauss(m_nFeatures));
+			for (CKDGauss &gauss : m_vGaussianMixtures[s]) {
 				long nPoints;
 				Mat mu(m_nFeatures, 1, CV_64FC1);
 				Mat sigma(m_nFeatures, m_nFeatures, CV_64FC1);
@@ -225,17 +223,17 @@ namespace DirectGraphicalModels
 			float	* pPot = potential.ptr<float>(s);
 			byte	* pMask = mask.ptr<byte>(s);
 
-			if (m_pvGausses[s].empty()) {
+			if (m_vGaussianMixtures[s].empty()) {
 				// pPot[s] = 0;
 				pMask[s] = 0;
 				continue;
 			}
 
 			size_t nAllPoints = 0;									// number of points were used for approximating the density for current state
-			for (CKDGauss &gauss : m_pvGausses[s])
+			for (const CKDGauss &gauss : m_vGaussianMixtures[s])
 				nAllPoints += gauss.getNumPoints();
 
-			for (CKDGauss &gauss : m_pvGausses[s]) {
+			for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {
 				double		k = static_cast<double>(gauss.getNumPoints()) / nAllPoints;
 				double		value = gauss.getValue(fv, aux1, aux2, aux3);
 				long double	aK = gauss.getAlpha() / m_minCoefficient;					// scaled Gaussian coefficient
@@ -261,9 +259,9 @@ namespace DirectGraphicalModels
 		printf("---------------------------\n");
 		printf("( minCoefficient = %e )\n", m_minCoefficient);
 		for (byte s = 0; s < m_nStates; s++) {		// states
-			printf("Class %d (%zu gausses):\n", s, m_pvGausses[s].size());
+			printf("Class %d (%zu gausses):\n", s, m_vGaussianMixtures[s].size());
 			word g = 0;
-			for (CKDGauss &gauss : m_pvGausses[s]) {
+			for (CKDGauss &gauss : m_vGaussianMixtures[s]) {
 				printf("\tG[%u]: %zupts; ", g++, gauss.getNumPoints());
 				printf("alpha: %e;\n", gauss.getAlpha());
 				//printf("aK: %e;\n", gauss.getAlpha() / m_minCoefficient);
@@ -286,10 +284,10 @@ namespace DirectGraphicalModels
 	// If when using Mahalanobis distance, a Gaussian is not full, the scaled Euclidian for this Gaussian is returned
 	inline Mat CTrainNodeGMM::getDistance(byte s, const Mat &x) const
 	{
-		word	nGausses = static_cast<word>(m_pvGausses[s].size());
+		word	nGausses = static_cast<word>(m_vGaussianMixtures[s].size());
 		Mat		res(nGausses, 1, CV_64FC1);
 		word g = 0;
-		for (CKDGauss &gauss : m_pvGausses[s]) {						// gausses
+		for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {						// gausses
 
 			if (m_params.dist_Mtreshold < 0) res.at<double>(g++, 0) = gauss.getEuclidianDistance(x);
 			else {
@@ -309,10 +307,10 @@ namespace DirectGraphicalModels
 	// The caller should care about argument <x>
 	inline Mat CTrainNodeGMM::getDivergence(byte s, CKDGauss *x) const
 	{
-		dword	nGausses = static_cast<dword>(m_pvGausses[s].size());
+		dword	nGausses = static_cast<dword>(m_vGaussianMixtures[s].size());
 		Mat		res(nGausses, 1, CV_64FC1, Scalar(DBL_MAX));
 		word g = 0;
-		for (CKDGauss &gauss : m_pvGausses[s]) {
+		for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {
 			if (gauss.getNumPoints() >= m_params.min_samples)	// if the Gaussian is full
 				res.at<double>(g++, 0) = x->getKullbackLeiberDivergence(gauss);
 		} // gausses
