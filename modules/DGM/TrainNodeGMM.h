@@ -60,12 +60,6 @@ namespace DirectGraphicalModels
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);
 		DllExport void	train(bool doClean = false);
 
-		///@cond
-#ifdef DEBUG_PRINT_INFO	
-		DllExport void showStatus(void);
-#endif // DEBUG_PRINT_INFO	
-		///@endcond	
-
 
 	protected:
 		DllExport void	saveFile(FILE *pFile) const;
@@ -91,63 +85,60 @@ namespace DirectGraphicalModels
 		TrainNodeGMMParams				m_params;
 		std::vector<GaussianMixture>	m_vGaussianMixtures;						// block of n-dimensional Gauss function	
 		long double						m_minCoefficient;							// = 1;	// auxilary coefficient for scaling gaussian coefficients
-
-		inline Mat						getDistance(byte s, const Mat &x) const;	// Calculates distances between the point <x> to all existing Gaussians
-		inline Mat						getDivergence(byte s, CKDGauss *x) const;	// Calculates devergence between the Gaussian <x> to all existing Gaussians
 	};
 }
 
-namespace DirectGraphicalModels_Aux {
-	using namespace DirectGraphicalModels;
-	///@brief Gaussian Mixture Model parameters
-	struct TrainNodeGMMParams {
-		word	maxGausses		= 64;				///< The maximal number of Gauss functions for approximation
-		size_t	min_samples		= 64;				///< Minimum number of sapmles to approximate a Gauss function		
-		double	dist_Etreshold	= 64;				///< Minimum Euclidean distance between Gauss functions
-		double	dist_Mtreshold	= -16;				///< Minimum Mahalanobis distance between Gauss functions. If this parameter is negative, the Euclidean distance is used
-		double	div_KLtreshold	= -16;				///< Minimum Kullback-Leiber divergence between Gauss functions. If this parameter is negative, the merging of Gaussians in addFeatureVec() function will be disabled
-	};
-	
 
-	class CTrainNodeGMM : public CTrainNode {
-	public:
-		/**
-		* @brief Constructor
-		* @param nStates Number of states (classes)
-		* @param nFeatures Number of features
-		* @param params Gaussian Mixture Model parameters (Ref. @ref TrainNodeGMMParams)
-		*/
-		DllExport CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params = TrainNodeGMMParams());
-		/**
-		* @brief Constructor
-		* @param nStates Number of states (classes)
-		* @param nFeatures Number of features
-		* @param maxGausses The maximal number of mixture components in the Gaussian Mixture Model per state (class)
-		*/
-		DllExport CTrainNodeGMM(byte nStates, word nFeatures, word maxGausses);
+	//using namespace DirectGraphicalModels;
+	/////@brief Gaussian Mixture Model parameters
+	//struct TrainNodeGMMParams {
+	//	word	maxGausses		= 64;				///< The maximal number of Gauss functions for approximation
+	//	size_t	min_samples		= 64;				///< Minimum number of sapmles to approximate a Gauss function		
+	//	double	dist_Etreshold	= 64;				///< Minimum Euclidean distance between Gauss functions
+	//	double	dist_Mtreshold	= -16;				///< Minimum Mahalanobis distance between Gauss functions. If this parameter is negative, the Euclidean distance is used
+	//	double	div_KLtreshold	= -16;				///< Minimum Kullback-Leiber divergence between Gauss functions. If this parameter is negative, the merging of Gaussians in addFeatureVec() function will be disabled
+	//};
+	//
 
-		DllExport virtual ~CTrainNodeGMM(void) {}
+	//class CTrainNodeGMM : public CTrainNode {
+	//public:
+	//	/**
+	//	* @brief Constructor
+	//	* @param nStates Number of states (classes)
+	//	* @param nFeatures Number of features
+	//	* @param params Gaussian Mixture Model parameters (Ref. @ref TrainNodeGMMParams)
+	//	*/
+	//	DllExport CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params = TrainNodeGMMParams());
+	//	/**
+	//	* @brief Constructor
+	//	* @param nStates Number of states (classes)
+	//	* @param nFeatures Number of features
+	//	* @param maxGausses The maximal number of mixture components in the Gaussian Mixture Model per state (class)
+	//	*/
+	//	DllExport CTrainNodeGMM(byte nStates, word nFeatures, word maxGausses);
 
-		DllExport virtual void	reset(void) override;	
-		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gt) override;
-		DllExport virtual void	train(bool doClean = false) override;
-	
+	//	DllExport virtual ~CTrainNodeGMM(void) {}
 
-	protected:
-		DllExport virtual void	saveFile(FILE *pFile) const override; 
-		DllExport virtual void	loadFile(FILE *pFile) override; 
-		DllExport virtual void	calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const override;
+	//	DllExport virtual void	reset(void) override;	
+	//	DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gt) override;
+	//	DllExport virtual void	train(bool doClean = false) override;
+	//
 
-
-	protected:
-		std::vector<GaussianMixture>	m_vGaussianMixtures;
+	//protected:
+	//	DllExport virtual void	saveFile(FILE *pFile) const override; 
+	//	DllExport virtual void	loadFile(FILE *pFile) override; 
+	//	DllExport virtual void	calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const override;
 
 
-	private:
-		static const size_t				MIN_SAMPLES;
+	//protected:
+	//	std::vector<GaussianMixture>	m_vGaussianMixtures;
 
 
-	private: 
-		TrainNodeGMMParams				m_params;
-	};
-}
+	//private:
+	//	static const size_t				MIN_SAMPLES;
+
+
+	//private: 
+	//	TrainNodeGMMParams				m_params;
+	//};
+
