@@ -60,12 +60,6 @@ namespace DirectGraphicalModels
 		DllExport void	addFeatureVec(const Mat &featureVector, byte gt);
 		DllExport void	train(bool doClean = false);
 
-		///@cond
-#ifdef DEBUG_PRINT_INFO	
-		DllExport void showStatus(void);
-#endif // DEBUG_PRINT_INFO	
-		///@endcond	
-
 
 	protected:
 		DllExport void	saveFile(FILE *pFile) const;
@@ -91,9 +85,6 @@ namespace DirectGraphicalModels
 		TrainNodeGMMParams				m_params;
 		std::vector<GaussianMixture>	m_vGaussianMixtures;						// block of n-dimensional Gauss function	
 		long double						m_minCoefficient;							// = 1;	// auxilary coefficient for scaling gaussian coefficients
-
-		inline Mat						getDistance(byte s, const Mat &x) const;	// Calculates distances between the point <x> to all existing Gaussians
-		inline Mat						getDivergence(byte s, CKDGauss *x) const;	// Calculates devergence between the Gaussian <x> to all existing Gaussians
 	};
 }
 
