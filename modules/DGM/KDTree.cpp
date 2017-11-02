@@ -131,7 +131,7 @@ namespace DirectGraphicalModels
 		float searchRadius = mathop::Euclidian<byte, float>(key, nearestNode->getKey());
 		if (maxNeighbors > 1) searchRadius *= searchRadius_extension;
 		searchRadius += 0.5f;
-		//if (k > 1) searchRadius = 255 * sqrtf(static_cast<float>(key.cols)); // infinity
+//		searchRadius = 255 * sqrtf(static_cast<float>(key.cols)); // infinity
 
 		pair_mat_t searchBox;
 		searchBox.first  = key - searchRadius;

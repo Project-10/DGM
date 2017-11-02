@@ -201,7 +201,6 @@ namespace DirectGraphicalModels
 #endif	
 	}
 
-	// --> Stopped here
 	void CTrainNodeGMM::saveFile(FILE *pFile) const
 	{
 		// m_params
@@ -212,13 +211,13 @@ namespace DirectGraphicalModels
 		fwrite(&m_params.div_KLtreshold, sizeof(double), 1, pFile);
 
 		// m_pvpGausses;							
-		for (byte s = 0; s < m_nStates; s++) {				// state
-			word nGausses = static_cast<word>(m_vGaussianMixtures[s].size());
+		for (const GaussianMixture &gaussianMixture : m_vGaussianMixtures) {	// state
+			word nGausses = static_cast<word>(gaussianMixture.size());
 			fwrite(&nGausses, sizeof(word), 1, pFile);
-			for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {
+			for (const CKDGauss &gauss : gaussianMixture) {
 				size_t	nPoints = gauss.getNumPoints();
-				Mat		mu = gauss.getMu();
-				Mat		sigma = gauss.getSigma();
+				Mat		mu		= gauss.getMu();
+				Mat		sigma	= gauss.getSigma();
 
 				fwrite(&nPoints, sizeof(long), 1, pFile);
 				for (word y = 0; y < m_nFeatures; y++)
@@ -229,7 +228,7 @@ namespace DirectGraphicalModels
 				mu.release();
 				sigma.release();
 			} // gauss
-		} // s
+		} // gaussianMixture
 
 		fwrite(&m_minCoefficient, sizeof(long double), 1, pFile);
 	}
@@ -244,11 +243,11 @@ namespace DirectGraphicalModels
 		fread(&m_params.div_KLtreshold, sizeof(double), 1, pFile);
 
 		// m_pvpGausses;
-		for (byte s = 0; s < m_nStates; s++) {				// state
+		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {				// state
 			word nGausses;
 			fread(&nGausses, sizeof(word), 1, pFile);
-			m_vGaussianMixtures[s].assign(nGausses, CKDGauss(m_nFeatures));
-			for (CKDGauss &gauss : m_vGaussianMixtures[s]) {
+			gaussianMixture.assign(nGausses, CKDGauss(m_nFeatures));
+			for (CKDGauss &gauss : gaussianMixture) {
 				long nPoints;
 				Mat mu(m_nFeatures, 1, CV_64FC1);
 				Mat sigma(m_nFeatures, m_nFeatures, CV_64FC1);
@@ -268,11 +267,12 @@ namespace DirectGraphicalModels
 				mu.release();
 				sigma.release();
 			} // gausses
-		} // s
+		} // gaussianMixture
 
 		fread(&m_minCoefficient, sizeof(long double), 1, pFile);
 	}
 
+	// --> Stopped here
 	void CTrainNodeGMM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		Mat fv;
@@ -281,12 +281,10 @@ namespace DirectGraphicalModels
 		featureVector.convertTo(fv, CV_64FC1);
 
 		for (byte s = 0; s < m_nStates; s++) {							// state
-			float	* pPot = potential.ptr<float>(s);
-			byte	* pMask = mask.ptr<byte>(s);
 
 			if (m_vGaussianMixtures[s].empty()) {
-				// pPot[s] = 0;
-				pMask[s] = 0;
+				// potential.at<float>(s, 0)
+				mask.at<byte>(s, 0) = 0;
 				continue;
 			}
 
@@ -298,9 +296,8 @@ namespace DirectGraphicalModels
 				double		k = static_cast<double>(gauss.getNumPoints()) / nAllPoints;
 				double		value = gauss.getValue(fv, aux1, aux2, aux3);
 				long double	aK = gauss.getAlpha() / m_minCoefficient;					// scaled Gaussian coefficient
-				pPot[0] += static_cast<float>(k * aK * value);
+				potential.at<float>(s, 0) += static_cast<float>(k * aK * value);
 			} // gausses
-
 		} // s
 	}
 }
