@@ -6,7 +6,6 @@ version: 1.5.3:{build}
 branches:
   only:
   - master
-  - OpenGL
 
 # Operating system (build VM template)
 os: Visual Studio 2015
