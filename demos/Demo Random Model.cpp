@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
 				val = val - 10;
 				featureVector[0].at<byte>(y, x) = (byte) MAX(0.0f, val + 0.5f);
 			}
+			else if (gt.at<byte>(y, x) == 2) {
+				float val = (float) featureVector[1].at<byte>(y, x);
+				val = val + 0;
+				featureVector[1].at<byte>(y, x) = (byte)MAX(0.0f, val + 0.5f);
+			}
 
 	//	---------- Training ----------
 	Timer::start("Training... ");
@@ -108,7 +113,7 @@ int main(int argc, char *argv[])
 	Timer::stop();
 	imwrite(argv[4], classMap);
 
-	imwrite("D:\\hist2d_MsRF.jpg", classMap);
+	imwrite("D:\\hist2d_CvRF_pred.jpg", classMap);
 	imshow("class map 2d", classMap);
 	cvWaitKey(0*1000);
 

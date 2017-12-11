@@ -18,23 +18,23 @@ namespace DirectGraphicalModels
 	class CTrainNodeGM : public CTrainNodeGMM
 	{
 	public:
-/**
-@brief Constructor
-@param nStates Number of states (classes)
-@param nFeatures Number of features
-*/
+		/**
+		* @brief Constructor
+		* @param nStates Number of states (classes)
+		* @param nFeatures Number of features
+		*/
 		DllExport CTrainNodeGM(byte nStates, word nFeatures) : CTrainNodeGMM(nStates, nFeatures, 1), CBaseRandomModel(nStates) {}
 		DllExport ~CTrainNodeGM(void) {}
 
-/**
-@brief Returns the node potential, based on the feature vector
-@details This function calculates the potentials of the node, described with the sample \a featureVector (\f$ \textbf{f} \f$):
-\f$ nodePot_s = \mathcal{N}_s(\textbf{f}), \forall s \in \mathbb{S} \f$, where \f$\mathbb{S}\f$ is the set of all states (classes). 
-In other words, the indexes: \f$ s \in [0; nStates) \f$. Here \f$ \mathcal{N} \f$ is a Gaussian function kernel, described in class @ref CNDGauss
-@param featureVector Multi-dimensinal point \f$\textbf{f}\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1)
-@param weight The weighting parameter
-@return %Node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); empty Mat() otherwise
-*/		
+		/**
+		* @brief Returns the node potential, based on the feature vector
+		* @details This function calculates the potentials of the node, described with the sample \a featureVector (\f$ \textbf{f} \f$):
+		* \f$ nodePot_s = \mathcal{N}_s(\textbf{f}), \forall s \in \mathbb{S} \f$, where \f$\mathbb{S}\f$ is the set of all states (classes). 
+		* In other words, the indexes: \f$ s \in [0; nStates) \f$. Here \f$ \mathcal{N} \f$ is a Gaussian function kernel, described in class @ref CKDGauss
+		* @param featureVector Multi-dimensinal point \f$\textbf{f}\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1)
+		* @param weight The weighting parameter
+		* @return %Node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); empty Mat() otherwise
+		*/		
 		DllExport Mat getNodePotentials(const Mat &featureVector, float weight = 1.0f) {return CTrainNodeGMM::getNodePotentials(featureVector, weight);}	// This is done for doxygen comment
 	};
 }

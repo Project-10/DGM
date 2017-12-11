@@ -96,10 +96,7 @@ namespace DirectGraphicalModels
 			else {
 				size_t updIdx = std::distance(dist.begin(), it);
 				CKDGauss &updGauss = gaussianMixture[updIdx];				// the nearest Gaussian
-				if (false)	// TODO: check it
-					updGauss.addPoint(point);								// update the nearest Gauss
-				else
-					updGauss += CKDGauss(point);							// update the nearest Gauss
+				updGauss += point;											// update the nearest Gauss
 
 				// Chech the updated Gauss function if after update it became too close to another Gauss function
 				if ((m_params.div_KLtreshold > 0) && (updGauss.getNumPoints() >= m_params.min_samples)) {
@@ -158,7 +155,7 @@ namespace DirectGraphicalModels
 	void CTrainNodeGMM::train(bool)
 	{
 		// merge gausses with too small number of samples 
-		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {						// state
+		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto it = gaussianMixture.begin(); it != gaussianMixture.end(); it++) {
 				it->freeze();
 				size_t nPoints = it->getNumPoints();
@@ -181,7 +178,7 @@ namespace DirectGraphicalModels
 			} // gausses
 		} // gaussianMixture
 
-		  // getting the coefficients
+		// getting the coefficients
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto itGauss = gaussianMixture.begin(); itGauss != gaussianMixture.end(); itGauss++) {
 				itGauss->freeze();
@@ -272,7 +269,7 @@ namespace DirectGraphicalModels
 		fread(&m_minCoefficient, sizeof(long double), 1, pFile);
 	}
 
-	// --> Stopped here
+	// TODO: Check for small values
 	void CTrainNodeGMM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		Mat fv;
@@ -280,24 +277,22 @@ namespace DirectGraphicalModels
 
 		featureVector.convertTo(fv, CV_64FC1);
 
-		for (byte s = 0; s < m_nStates; s++) {							// state
+		for (byte s = 0; s < m_nStates; s++) {						// state
+			const GaussianMixture &gaussianMixture = m_vGaussianMixtures[s];
 
-			if (m_vGaussianMixtures[s].empty()) {
-				// potential.at<float>(s, 0)
-				mask.at<byte>(s, 0) = 0;
-				continue;
+			if (gaussianMixture.empty())	mask.at<byte>(s, 0) = 0;
+			else {
+				size_t nAllPoints = 0;									// number of points were used for approximating the density for current state
+				for (const CKDGauss &gauss : gaussianMixture)
+					nAllPoints += gauss.getNumPoints();
+
+				for (const CKDGauss &gauss : gaussianMixture) {
+					double		k = static_cast<double>(gauss.getNumPoints()) / nAllPoints;
+					double		value = gauss.getValue(fv, aux1, aux2, aux3);
+					long double	aK = gauss.getAlpha() / m_minCoefficient;		// scaled Gaussian coefficient
+					potential.at<float>(s, 0) += static_cast<float>(k * aK * value);
+				} // gausses
 			}
-
-			size_t nAllPoints = 0;									// number of points were used for approximating the density for current state
-			for (const CKDGauss &gauss : m_vGaussianMixtures[s])
-				nAllPoints += gauss.getNumPoints();
-
-			for (const CKDGauss &gauss : m_vGaussianMixtures[s]) {
-				double		k = static_cast<double>(gauss.getNumPoints()) / nAllPoints;
-				double		value = gauss.getValue(fv, aux1, aux2, aux3);
-				long double	aK = gauss.getAlpha() / m_minCoefficient;					// scaled Gaussian coefficient
-				potential.at<float>(s, 0) += static_cast<float>(k * aK * value);
-			} // gausses
 		} // s
 	}
 }

@@ -132,7 +132,7 @@ DGM implements the following parameter estimation method:
 
 @subsection sec_main_sampling Sampling
 DGM implements the following sampling method:
-- <b>Gauss:</b> Sampling from the multivariate gaussian distribution @ref DirectGraphicalModels::CNDGauss::getSample()
+- <b>Gauss:</b> Sampling from the multivariate gaussian distribution @ref DirectGraphicalModels::CKDGauss::getSample()
 
 @subsection sec_main_fex Feature Extraction
 Please refer to the @ref moduleFEX documentation
