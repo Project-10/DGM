@@ -1,5 +1,6 @@
 // Gaussian Mixture Model training class interface
-// Written by Sergey G. Kosov in 2012 - 2014, 2017 for Project X
+// Written by Sergey G. Kosov in 2012 - 2014 for Project X
+// Refactored by Sergey G. Kosov in 2017 for Project X
 #pragma once
 
 #include "TrainNode.h"
@@ -31,7 +32,7 @@ namespace DirectGraphicalModels
 	/**
 	* @ingroup moduleTrainNode
 	* @brief Gaussian Mixture Model training class
-	* @details This class realizes the generative training mechanism, based on the idea of approximating the density of multi-dimensional random variables
+	* @details This class implements the generative training mechanism, based on the idea of approximating the density of multi-dimensional random variables
 	* with an additive super-position of multivariate Gaussian distributions. The underlying algorithm is described in the paper
 	* <a href="http://www.project-10.de/Kosov/files/GCPR_2013.pdf" target="_blank">Sequential Gaussian Mixture Models for Two-Level Conditional Random Fields</a>
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -84,7 +85,7 @@ namespace DirectGraphicalModels
 	private:
 		TrainNodeGMMParams				m_params;
 		std::vector<GaussianMixture>	m_vGaussianMixtures;						// block of n-dimensional Gauss function	
-		long double						m_minCoefficient;							// = 1;	// auxilary coefficient for scaling gaussian coefficients
+		long double						m_minAlpha = 1;								// auxilary coefficient for scaling gaussian coefficients
 	};
 }
 

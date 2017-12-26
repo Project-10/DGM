@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 			else if (gt.at<byte>(y, x) == 2) {
 				float val = (float) featureVector[1].at<byte>(y, x);
 				val = val + 0;
-				featureVector[1].at<byte>(y, x) = (byte)MAX(0.0f, val + 0.5f);
+				featureVector[1].at<byte>(y, x) = (byte) MAX(0.0f, val + 0.5f);
 			}
 
 	//	---------- Training ----------
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
 	imwrite("D:\\hist2d_CvRF_pred.jpg", classMap);
 	imshow("class map 2d", classMap);
-	cvWaitKey(0*1000);
+	cvWaitKey(1000);
 
 	return 0;
 }

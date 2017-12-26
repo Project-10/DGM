@@ -11,7 +11,6 @@ namespace DirectGraphicalModels
 	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params) 
 		: CTrainNode(nStates, nFeatures)
 		, CBaseRandomModel(nStates)
-		, m_minCoefficient(1)
 		, m_params(params)
 	{
 		m_vGaussianMixtures.resize(nStates);
@@ -24,7 +23,6 @@ namespace DirectGraphicalModels
 	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses) 
 		: CTrainNode(nStates, nFeatures)
 		, CBaseRandomModel(nStates)
-		, m_minCoefficient(1)
 		, m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
 	{
 		m_params.maxGausses = maxGausses;
@@ -40,7 +38,7 @@ namespace DirectGraphicalModels
 	void CTrainNodeGMM::reset(void)
 	{
 		m_vGaussianMixtures.clear();
-		m_minCoefficient = 1;
+		m_minAlpha = 1;
 	}
 
 	namespace {
@@ -182,19 +180,19 @@ namespace DirectGraphicalModels
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto itGauss = gaussianMixture.begin(); itGauss != gaussianMixture.end(); itGauss++) {
 				itGauss->freeze();
-				long double Coefficient = itGauss->getAlpha();
-				if (Coefficient > MAX_COEFFICIENT) {			// i.e. if (Coefficient = \infinitiy) delete Gaussian
+				long double alpha = itGauss->getAlpha();
+				if (alpha > MAX_COEFFICIENT) {			// i.e. if (Coefficient = \infinitiy) delete Gaussian
 					gaussianMixture.erase(itGauss);
 					itGauss--;
 					continue;
 				}
-				if (Coefficient < m_minCoefficient)
-					m_minCoefficient = Coefficient;
+				if (m_minAlpha > alpha)
+					m_minAlpha = alpha;
 			} // gausses
 		} // gaussianMixture
 
 #ifdef DEBUG_PRINT_INFO
-		printStatus(m_vGaussianMixtures, m_minCoefficient);
+		printStatus(m_vGaussianMixtures, m_minAlpha);
 #endif	
 	}
 
@@ -227,7 +225,7 @@ namespace DirectGraphicalModels
 			} // gauss
 		} // gaussianMixture
 
-		fwrite(&m_minCoefficient, sizeof(long double), 1, pFile);
+		fwrite(&m_minAlpha, sizeof(long double), 1, pFile);
 	}
 
 	void CTrainNodeGMM::loadFile(FILE *pFile)
@@ -267,10 +265,9 @@ namespace DirectGraphicalModels
 			} // gausses
 		} // gaussianMixture
 
-		fread(&m_minCoefficient, sizeof(long double), 1, pFile);
+		fread(&m_minAlpha, sizeof(long double), 1, pFile);
 	}
 
-	// TODO: Check for small values
 	void CTrainNodeGMM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		Mat fv;
@@ -290,7 +287,7 @@ namespace DirectGraphicalModels
 				for (const CKDGauss &gauss : gaussianMixture) {
 					double		k = static_cast<double>(gauss.getNumPoints()) / nAllPoints;
 					double		value = gauss.getValue(fv, aux1, aux2, aux3);
-					long double	aK = gauss.getAlpha() / m_minCoefficient;		// scaled Gaussian coefficient
+					long double	aK = gauss.getAlpha() / m_minAlpha;		// scaled Gaussian coefficient
 					potential.at<float>(s, 0) += static_cast<float>(k * aK * value);
 				} // gausses
 			}
