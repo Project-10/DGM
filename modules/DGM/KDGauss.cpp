@@ -7,7 +7,7 @@ namespace DirectGraphicalModels
 {
 	// Constants
 	const bool CKDGauss::USE_SAFE_SIGMA = false;
-	const bool CKDGauss::SHOW_OPTIMIZATION_HINTS = false;
+	const bool CKDGauss::SHOW_OPTIMIZATION_HINTS = true;
 
 	// Constructor
 	CKDGauss::CKDGauss(dword k) {
@@ -67,6 +67,7 @@ namespace DirectGraphicalModels
 
 			addWeighted(this->m_mu, a, rhs.m_mu, 1.0 - a, 0.0, this->m_mu);				// mu^	  = a * mu1 + (1 - a) * mu2
 			this->m_sigma -= this->m_mu * this->m_mu.t();								// sigma^ = a * (sigma1 + mu1 * mu1^t) + (1 - a) * (sigma2 + mu2 * mu2^t) - mu^ * mu^^T 
+			reset_SigmaInv_Q_Alpha();
 		}
 		return *this;
 	}
@@ -87,23 +88,19 @@ namespace DirectGraphicalModels
 		reset_SigmaInv_Q_Alpha();
 	}
 
-	// TODO: why checking if the valueas are empty ?
 	void CKDGauss::freeze(void)
 	{
 		// m_sigmaInv
-		if (m_sigmaInv.empty())
-			invert(m_sigma, m_sigmaInv, DECOMP_SVD);
+		invert(m_sigma, m_sigmaInv, DECOMP_SVD);
 
 		// m_Q
-		if (m_Q.empty()) m_Q = calculateQ();
+		m_Q = calculateQ();
 
 		// m_alpha
-		if (m_alpha < 0) {
-			int k = m_sigma.cols;
-			long double det = MAX(LDBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
-			long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
-			m_alpha = 1 / (det * sPi);
-		}
+		int k = m_sigma.cols;
+		long double det = MAX(LDBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
+		long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
+		m_alpha = 1 / (det * sPi);
 	}
 
 	void CKDGauss::addPoint(const Mat &point, bool approximate)
@@ -196,7 +193,6 @@ namespace DirectGraphicalModels
 		else return m_alpha;
 	}
 
-	// TODO: try with static
 	double CKDGauss::getValue(Mat &x, Mat &X, Mat &p1, Mat &p2) const
 	{
 		// Assertions

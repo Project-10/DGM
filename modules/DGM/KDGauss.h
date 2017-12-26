@@ -57,11 +57,7 @@ namespace DirectGraphicalModels
 		* \end{aligned} \f]
 		* For the sequential Gauss function estimation one also may use this operator (see the code below) or addPoint() function:
 		* @code
-		* CNDGauss newGaussian(point.rows);		// auxilary Gauss function
-		* while(point) {						// set of all sample points
-		* newGaussian.setMu(point);				// mu is set to be equal to the sample
-		* estGaussian += newGaussian;			// estimated Gauss function is updated
-		* }
+		* while(point) estGaussian += CNDGauss(point);   // estimated Gauss function is updated
 		* @endcode
 		* In this case \f$n_2 = 1\f$ and \f$\Sigma_2 = 0\f$.
 		*/
@@ -69,8 +65,11 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Compound merge operator
 		* @details This operator is equivalent to
-		* @code operator+=(CKDGauss( point )) @endcode
+		* @code operator+=(CKDGauss(point)) @endcode
 		* and might be used for sequential estimation of the Gaussian distribution
+		* @code
+		* while(point) estGaussian += point;   // estimated Gauss function is updated
+		* @endcode
 		*/
 		DllExport CKDGauss & operator+= (const Mat &point);
 
@@ -102,7 +101,7 @@ namespace DirectGraphicalModels
 		DllExport void			setNumPoints(long nPoints) { m_nPoints = nPoints; }
 		/**
 		* @brief Returns the number of approximation points.
-		* @return the number of sample points, used for the approximation.
+		* @return The number of sample points, used for the approximation.
 		*/
 		DllExport size_t		getNumPoints(void) const { return m_nPoints; }
 		/**
@@ -175,7 +174,7 @@ namespace DirectGraphicalModels
 		DllExport double		getValue(Mat &x, Mat &aux1 = Mat(), Mat &aux2 = Mat(), Mat &aux3 = Mat()) const;
 		/**
 		* @brief Returns a random vector (sample) from multivariate normal distribution
-		* @details The implementation is based on the paper <a href="ftp://ftp.dca.fee.unicamp.br/pub/docs/vonzuben/ia013_2s09/material_de_apoio/gen_rand_multivar.pdf">Generating Random Vectors from the Multivariate Normal Distribution</a>
+		* @details The implementation is based on the paper <a target=blank href="ftp://ftp.dca.fee.unicamp.br/pub/docs/vonzuben/ia013_2s09/material_de_apoio/gen_rand_multivar.pdf">Generating Random Vectors from the Multivariate Normal Distribution</a>
 		* @return n-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
 		*/
 		DllExport Mat			getSample(void) const;
@@ -228,6 +227,7 @@ namespace DirectGraphicalModels
 	private:		
 		/**
 		* @brief Returns \f$\Sigma^{-1}\f$.
+		* @note All non-constant methods \b must end with calling this function.
 		* @return The inversed covariance matrix \f$\Sigma^{-1}\f$: Mat(size: k x k; type: CV_64FC1)
 		*/
 		Mat				getSigmaInv(void) const;

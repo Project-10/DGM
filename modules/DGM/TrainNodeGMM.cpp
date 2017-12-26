@@ -240,6 +240,7 @@ namespace DirectGraphicalModels
 		fread(&m_params.div_KLtreshold, sizeof(double), 1, pFile);
 
 		// m_pvpGausses;
+		m_vGaussianMixtures.resize(m_nStates);
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {				// state
 			word nGausses;
 			fread(&nGausses, sizeof(word), 1, pFile);
