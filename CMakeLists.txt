@@ -70,6 +70,7 @@ endif()
 add_subdirectory(modules/DGM)
 add_subdirectory(modules/FEX)
 add_subdirectory(modules/VIS)
+add_subdirectory(tests)
 add_subdirectory(demos)
 
 # ===============================

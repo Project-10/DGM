@@ -8,7 +8,8 @@
 namespace DirectGraphicalModels { namespace parallel {
 // ------------------------------------------- GEMM ------------------------------------------
 // --------------------- fast generalized matrix multiplication with PPL ---------------------
-	namespace {
+	/// @cond
+	namespace impl {
 #ifdef ENABLE_AMP
 		inline void amp_gemm(const Mat &A, const Mat &B, float alpha, Mat &res) 
 		{
@@ -98,6 +99,7 @@ namespace DirectGraphicalModels { namespace parallel {
 		}
 #endif 
 	}
+	///@endcond
 	/**
 	* @brief Fast generalized matrix multiplication.
 	* @param A first multiplied input matrix that should have CV_32FC1, CV_64FC1, CV_32FC2, or CV_64FC2 type.
@@ -110,12 +112,12 @@ namespace DirectGraphicalModels { namespace parallel {
 	DllExport inline void gemm(const Mat &A, const Mat &B, float alpha, const Mat &C, float beta, Mat &res)
 	{
 #ifdef ENABLE_AMP
-		if (C.empty()) amp_gemm(A, B, alpha, res);
-		else amp_gemm(A, B, alpha, C, beta, res);
+		if (C.empty()) impl::amp_gemm(A, B, alpha, res);
+		else impl::amp_gemm(A, B, alpha, C, beta, res);
 #else 
 #ifdef ENABLE_PPL
-		if (C.empty()) ppl_gemm(A, B, alpha, res);
-		else ppl_gemm(A, B, alpha, C, beta, res);
+		if (C.empty()) impl::ppl_gemm(A, B, alpha, res);
+		else impl::ppl_gemm(A, B, alpha, C, beta, res);
 #else
 		cv::gemm(A, B, alpha, C, beta, res);
 #endif

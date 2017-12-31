@@ -17,7 +17,7 @@ source_group("Source Files\\Chain" FILES "chain.h" "chain.cpp")
 source_group("Source Files\\Exact" FILES "exact.h" "exact.cpp")
 source_group("Source Files\\Tree" FILES "tree.h" "tree.cpp")
 
-set_target_properties(Demo_1D PROPERTIES PROJECT_LABEL "Demo 1D")			# in Visual Studio
+set_target_properties(Demo_1D PROPERTIES PROJECT_LABEL "Demo 1D")						# in Visual Studio
 set_target_properties(Demo_1D PROPERTIES OUTPUT_NAME "Demo 1D")
 set_target_properties(Demo_1D PROPERTIES FOLDER "Demos")
 
