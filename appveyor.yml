@@ -1,4 +1,4 @@
-#---------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #  Configuration for continuous integration service at appveyor.com
 #-----------------------------------------------------------------------------
 version: 1.5.3:{build}
@@ -36,5 +36,5 @@ test_script:
       .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
 
 on_finish:
-  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\tests.xml))
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path c:\projects\dgm\build\bin\Release\tests.xml))
 
