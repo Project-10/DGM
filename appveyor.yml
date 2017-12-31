@@ -1,4 +1,4 @@
-#-----------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 #  Configuration for continuous integration service at appveyor.com
 #-----------------------------------------------------------------------------
 version: 1.5.3:{build}
@@ -30,8 +30,7 @@ build_script:
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
   
 test_script:
-  - dir
   - cd .\bin\Release
+  - cmd: copy C:\tools\opencv\build\x64\vc14\bin\opencv_world331.dll ".\"
   - dir
-  - cmd: copy C:\tools\opencv\build\x64\vc14\bin\opencv_world331.dll "..\..\build\bin"
   - cmd: Tests.exe --gtest_output=xml:tests.xml > tests.txt
