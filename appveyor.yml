@@ -36,7 +36,7 @@ test_script:
       .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
 
 on_finish:
-  - cd c:\projects\dgm\build\bin\Release
+  - cd c:\projects\dgm\build\
   - cmd: dir
-  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path c:\projects\dgm\build\bin\Release\tests.xml))
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path c:\projects\dgm\build\tests.xml))
 
