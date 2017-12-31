@@ -1,17 +1,17 @@
-file(GLOB TESTS_INCLUDE	${PROJECT_SOURCE_DIR}/include/gtest/gtest.h)
-file(GLOB TESTS_SOURCES	"*.cpp")
+file(GLOB GTEST_SOURCES "${PROJECT_SOURCE_DIR}/3rdparty/gtest/*.cpp")
+file(GLOB TESTS_SOURCES	"*.cpp" )
 file(GLOB TESTS_HEADERS	"*.h")
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
-source_group("Include" FILES ${TESTS_INCLUDE})
-source_group("" FILES ${TESTS_SOURCES} ${TESTS_HEADERS}) 
-source_group("Source Files" FILES "main.cpp" "gtest-all.cpp")
+source_group("" FILES  ${TESTS_SOURCES} ${TESTS_HEADERS}) 
+source_group("Source Files" FILES "main.cpp" ${GTEST_SOURCES})
 source_group("Source Files\\Tests" FILES "Tests.h" "Tests.cpp")
 
 
 # Properties -> C/C++ -> General -> Additional Include Directories
-include_directories(${PROJECT_SOURCE_DIR}/include
+include_directories(${PROJECT_SOURCE_DIR}/3rdparty/
+					${PROJECT_SOURCE_DIR}/include
 					${PROJECT_SOURCE_DIR}/modules
 					${OpenCV_INCLUDE_DIRS} 
 				)
@@ -19,7 +19,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 # Properties -> Linker -> General -> Additional Library Directories
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
  
-add_executable(Tests ${TESTS_INCLUDE} ${TESTS_SOURCES} ${TESTS_HEADERS})
+add_executable(Tests ${TESTS_SOURCES} ${TESTS_HEADERS} ${GTEST_SOURCES})
 add_dependencies(Tests DGM)
 
 # Properties->Linker->Input->Additional Dependencies
