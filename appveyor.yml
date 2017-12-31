@@ -30,5 +30,11 @@ build_script:
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
   
 test_script:
-  - cmd: copy C:\tools\opencv\build\x64\vc14\bin\opencv_world*.dll ".\bin\Release"
-  - cmd: .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
+  - cmd: >-
+      copy C:\tools\opencv\build\x64\vc14\bin\opencv_world???.dll  ".\bin\Release"
+      copy C:\tools\opencv\build\x64\vc14\bin\opencv_world???d.dll ".\bin\Debug"
+      .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
+
+on_finish:
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\tests.xml))
+
