@@ -30,7 +30,5 @@ build_script:
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
   
 test_script:
-  - cd .\bin\Release
-  - cmd: copy C:\tools\opencv\build\x64\vc14\bin\opencv_world331.dll ".\"
-  - dir
-  - cmd: Tests.exe --gtest_output=xml:tests.xml > tests.txt
+  - cmd: copy C:\tools\opencv\build\x64\vc14\bin\opencv_world*.dll ".\bin\Release"
+  - cmd: .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
