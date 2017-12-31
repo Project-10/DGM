@@ -29,6 +29,6 @@ build_script:
   - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 15 Win64" -DUSE_OPENGL=ON ..
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
   
- test_script:
+test_script:
   - cd bin\Release
   - cmd: tests.exe --gtest_output=xml:tests.xml > tests.txt
