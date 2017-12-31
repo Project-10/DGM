@@ -30,5 +30,7 @@ build_script:
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
   
 test_script:
+  - dir
   - cd .\bin\Release
+  - dir
   - cmd: tests.exe --gtest_output=xml:tests.xml > tests.txt
