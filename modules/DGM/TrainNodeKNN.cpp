@@ -93,7 +93,7 @@ namespace DirectGraphicalModels
 			
 			potential.at<float>(s, 0) += 1.0f;
 		}
-		if (n) potential /= n;
+		if (n) potential /= static_cast<double>(n);
 		potential += m_params.bias;
 	}
 }

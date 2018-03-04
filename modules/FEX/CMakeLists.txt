@@ -42,8 +42,7 @@ add_library(FEX SHARED ${FEX_INCLUDE} ${FEX_SOURCES} ${FEX_HEADERS})
 # Properties -> Linker -> Input -> Additional Dependencies
 target_link_libraries(FEX ${OpenCV_LIBS})
  
-set_target_properties(FEX PROPERTIES OUTPUT_NAME_RELEASE fex${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
-set_target_properties(FEX PROPERTIES OUTPUT_NAME_DEBUG fex${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH}d)
+set_target_properties(FEX PROPERTIES OUTPUT_NAME fex${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
 
 #install
 install(TARGETS FEX 

@@ -103,10 +103,7 @@ add_library(DGM SHARED ${DGM_INCLUDE} ${DGM_SOURCES} ${DGM_HEADERS})
 # Properties -> Linker -> Input -> Additional Dependencies
 target_link_libraries(DGM ${OpenCV_LIBS})
 
-set_target_properties(DGM PROPERTIES OUTPUT_NAME_RELEASE dgm${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
-set_target_properties(DGM PROPERTIES OUTPUT_NAME_DEBUG dgm${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH}d)
-
-
+set_target_properties(DGM PROPERTIES OUTPUT_NAME dgm${DGM_VERSION_MAJOR}${DGM_VERSION_MINOR}${DGM_VERSION_PATCH})
 
 #install
 install(TARGETS DGM 
