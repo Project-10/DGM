@@ -23,14 +23,21 @@
 #ifdef ENABLE_AMP
 #include <amp.h>
 #endif
-#include "opencv2\opencv.hpp"
+#include "opencv2/opencv.hpp"
 
 using namespace cv;
 
-using byte	= unsigned __int8;
-using word	= unsigned __int16;
-using dword	= unsigned __int32;
-using qword	= unsigned __int64;
+#ifdef _WIN32
+	using byte	= unsigned __int8;
+	using word	= unsigned __int16;
+	using dword	= unsigned __int32;
+	using qword	= unsigned __int64;
+#else
+	using byte	= uint8_t;
+	using word	= uint16_t;
+	using dword	= uint32_t;
+	using qword	= uint64_t;
+#endif
 
 using vec_mat_t			= std::vector<Mat>;
 using vec_bool_t		= std::vector<bool>;
@@ -51,7 +58,11 @@ const float		Pif	= 3.1415926f;			///< Pi number
 
 #define isnan		_isnan
 #define isinf		std::isinf
-#define DllExport	__declspec(dllexport)
+#ifdef _WIN32
+	#define DllExport	__declspec(dllexport)
+#else
+	#define DllExport	__declspec(dllexport)
+#endif
 
 // DGM lib
 namespace DirectGraphicalModels
