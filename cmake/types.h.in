@@ -61,12 +61,12 @@ const float		Pif	= 3.1415926f;			///< Pi number
 #ifdef _WIN32
 	#define DllExport	__declspec(dllexport)
 #else
-	#define DllExport	__declspec(dllexport)
+	#define DllExport
 #endif
 
 // DGM lib
 namespace DirectGraphicalModels
 {
-	using   vec_nColor_t	= std::vector<std::pair<Scalar, std::string>>;
+	using   vec_nColor_t	= std::vector<std::pair<Scalar, std::string> >;
 	const	size_t	STR_LEN	= 256; 
 }

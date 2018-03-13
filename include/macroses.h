@@ -1,6 +1,10 @@
 #pragma once
 
 namespace DirectGraphicalModels {
+#ifndef _CRT_STRINGIZE
+    #define __CRT_STRINGIZE(_Value) #_Value
+    #define _CRT_STRINGIZE(_Value) __CRT_STRINGIZE(_Value)
+#endif
 #define __ATTRIBUTES__ " in \"" __FILE__ "\", line " _CRT_STRINGIZE(__LINE__) ""
 #define DGM_ASSERT(_condition_) \
 	do { \

@@ -45,6 +45,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/batch/ DESTINATION ${CMAKE_INSTALL_PREFI
 #definitions
 add_definitions(-D_CRT_SECURE_NO_WARNINGS 
 				-D_SCL_SECURE_NO_WARNINGS
+				-std=c++14
 				)
 
 # Options
