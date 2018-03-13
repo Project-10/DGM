@@ -63,9 +63,9 @@ namespace DirectGraphicalModels {
 		// Assertions
 		DGM_ASSERT(m.type() == CV_8UC1);
 
-		for (register int y = 0; y < m.rows; y++) {
+		for (int y = 0; y < m.rows; y++) {
 			const byte *pM = m.ptr<byte>(y);
-			for (register int x = 0; x < m.cols; x++)
+			for (int x = 0; x < m.cols; x++)
 				(self.*SomeMethod)(pM[x]);
 		}
 	}
@@ -79,10 +79,10 @@ namespace DirectGraphicalModels {
 		DGM_ASSERT(m1.type() == m2.type());
 		DGM_ASSERT(m1.type() == CV_8UC1);
 
-		for (register int y = 0; y < m1.rows; y++) {
+		for (int y = 0; y < m1.rows; y++) {
 			const byte *pM1 = m1.ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
-			for (register int x = 0; x < m1.cols; x++)
+			for (int x = 0; x < m1.cols; x++)
 				(self.*SomeMethod)(pM1[x], pM2[x]);
 		}
 	}
@@ -95,11 +95,11 @@ namespace DirectGraphicalModels {
 		DGM_ASSERT((m1.type() == m2.type()) && mask.type() == CV_8UC1);
 		DGM_ASSERT(m1.type() == CV_8UC1);
 
-		for (register int y = 0; y < m1.rows; y++) {
+		for (int y = 0; y < m1.rows; y++) {
 			const byte *pM1 = m1.ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
 			const byte *pMask = mask.ptr<byte>(y);
-			for (register int x = 0; x < m1.cols; x++)
+			for (int x = 0; x < m1.cols; x++)
 				if (pMask[x]) (self.*SomeMethod)(pM1[x], pM2[x]);
 		}
 	}
@@ -114,11 +114,11 @@ namespace DirectGraphicalModels {
 		DGM_ASSERT(m2.type() == CV_8UC1);
 
 		Mat vec(m1.channels(), 1, CV_8UC1);
-		for (register int y = 0; y < m2.rows; y++) {
+		for (int y = 0; y < m2.rows; y++) {
 			const byte *pM1 = m1.ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
-			for (register int x = 0; x < m2.cols; x++) {
-				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = pM1[vec.rows * x + f];
+			for (int x = 0; x < m2.cols; x++) {
+				for (int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = pM1[vec.rows * x + f];
 				(self.*SomeMethod)(vec, pM2[x]);
 			} // x
 		} // y
@@ -135,11 +135,11 @@ namespace DirectGraphicalModels {
 		const word nFeatures = static_cast<word>(m1.size());
 		Mat vec(nFeatures, 1, CV_8UC1);
 		std::vector<const byte *> vM1(nFeatures);
-		for (register int y = 0; y < m2.rows; y++) {
-			for (register int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
+		for (int y = 0; y < m2.rows; y++) {
+			for (int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
-			for (register int x = 0; x < m2.cols; x++) {
-				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
+			for (int x = 0; x < m2.cols; x++) {
+				for (int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
 				(self.*SomeMethod)(vec, pM2[x]);
 			} // x
 		} // y
@@ -157,12 +157,12 @@ namespace DirectGraphicalModels {
 		DGM_ASSERT(m3.type() == CV_8UC1);
 
 		Mat vec(m1.channels(), 1, CV_8UC1);
-		for (register int y = 0; y < m2.rows; y++) {
+		for (int y = 0; y < m2.rows; y++) {
 			const byte *pM1 = m1.ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
 			const byte *pM3 = m3.ptr<byte>(y);
-			for (register int x = 0; x < m2.cols; x++) {
-				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = pM1[vec.rows * x + f];
+			for (int x = 0; x < m2.cols; x++) {
+				for (int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = pM1[vec.rows * x + f];
 				(self.*SomeMethod)(vec, pM2[x], pM3[x]);
 			} // x
 		} // y
@@ -181,12 +181,12 @@ namespace DirectGraphicalModels {
 		const word nFeatures = static_cast<word>(m1.size());
 		Mat vec(nFeatures, 1, CV_8UC1);
 		std::vector<const byte *> vM1(nFeatures);
-		for (register int y = 0; y < m2.rows; y++) {
-			for (register int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
+		for (int y = 0; y < m2.rows; y++) {
+			for (int f = 0; f < vec.rows; f++) vM1[f] = m1[f].ptr<byte>(y);
 			const byte *pM2 = m2.ptr<byte>(y);
 			const byte *pM3 = m3.ptr<byte>(y);
-			for (register int x = 0; x < m2.cols; x++) {
-				for (register int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
+			for (int x = 0; x < m2.cols; x++) {
+				for (int f = 0; f < vec.rows; f++) vec.at<byte>(f, 0) = vM1[f][x];
 				(self.*SomeMethod)(vec, pM2[x], pM3[x]);
 			} // x
 		} // y

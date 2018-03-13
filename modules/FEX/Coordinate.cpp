@@ -10,9 +10,9 @@ Mat CCoordinate::get(const Mat &img, coordinateType type)
 	int height	= img.rows;
 	float max	= -1.0f;
 
-	for (register int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
 		byte *pRes = res.ptr<byte>(y);
-		for (register int x = 0; x < width; x++) {
+		for (int x = 0; x < width; x++) {
 			switch (type) {
 				case COORDINATE_ORDINATE:	pRes[x] = linear_mapper<byte>(static_cast<float>(y), 0, static_cast<float>(height - 1)); break;
 				case COORDINATE_ABSCISS:	pRes[x] = linear_mapper<byte>(static_cast<float>(x), 0, static_cast<float>(width  - 1)); break;

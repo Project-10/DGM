@@ -65,7 +65,7 @@ namespace DirectGraphicalModels
 			DGM_ASSERT(featureVector1.type() == featureVector2.type());
 			// DGM_ASSERT ( dst )
 
-			for (register word f = 0; f < m_nFeatures; f++) {
+			for (word f = 0; f < m_nFeatures; f++) {
 				dst.at<byte>(2 * f    , 0) = featureVector1.at<byte>(f, 0);
 				dst.at<byte>(2 * f + 1, 0) = featureVector2.at<byte>(f, 0);
 			}			
@@ -96,7 +96,7 @@ namespace DirectGraphicalModels
 			DGM_ASSERT(featureVector1.type() == featureVector2.type());
 			// DGM_ASSERT ( dst )
 
-			for (register word f = 0; f < m_nFeatures; f++) {
+			for (word f = 0; f < m_nFeatures; f++) {
 				dst.at<byte>(1 * f, 0) = static_cast<byte>(MIN(255, MAX(0, 127.5 + 1.0 * featureVector1.at<byte>(f, 0) - 1.0 * featureVector2.at<byte>(f, 0))));
 			}			
 		}

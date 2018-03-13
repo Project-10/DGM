@@ -107,9 +107,9 @@ namespace DirectGraphicalModels
 
 			Mat res(m_nStates, m_nStates, CV_32FC1);
 			
-			for (register byte gt1 = 0; gt1 < m_nStates; gt1++) {
+			for (byte gt1 = 0; gt1 < m_nStates; gt1++) {
 				float * pRes = res.ptr<float>(gt1);
-				for (register byte gt2 = 0; gt2 < m_nStates; gt2++) {
+				for (byte gt2 = 0; gt2 < m_nStates; gt2++) {
 					byte gt = gt2 * m_nStates + gt1;
 					
 					float epsilon = prior.at<float>(gt) > 0 ? FLT_EPSILON : 0.0f;

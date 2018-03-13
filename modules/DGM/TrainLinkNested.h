@@ -107,9 +107,9 @@ namespace DirectGraphicalModels
 
 			Mat res(m_nStatesBase + m_nStatesOccl, m_nStatesBase + m_nStatesOccl, CV_32FC1, Scalar(0));
 
-			for (register byte gto = 0; gto < m_nStatesOccl; gto++) {
+			for (byte gto = 0; gto < m_nStatesOccl; gto++) {
 				float * pRes = res.ptr<float>(m_nStatesBase + gto);
-				for (register byte gtb = 0; gtb < m_nStatesBase; gtb++) {
+				for (byte gtb = 0; gtb < m_nStatesBase; gtb++) {
 					byte gt = gtb + m_nStatesBase * gto;
 					pRes[gtb] = pot.at<float>(gt, 0);
 				}

@@ -12,7 +12,7 @@ void CPriorEdge::addEdgeGroundTruth(byte gt1, byte gt2)
 
 Mat CPriorEdge::calculatePrior(void) const
 {
-	register byte x;
+	byte x;
 	Mat H;
 	Mat res(m_nStates, m_nStates, CV_32FC1);
 
@@ -37,7 +37,7 @@ Mat CPriorEdge::calculatePrior(void) const
 			break;
 		}
 		case eP_APP_NORM_ASYMMETRIC: {	// assymetric approach
-			for (register byte y = 0; y < m_nStates; y++) {
+			for (byte y = 0; y < m_nStates; y++) {
 				const float	*pH		= H.ptr<float>(y);
 				float		*pRes	= res.ptr<float>(y);
 				float		 max	= 1.0f;

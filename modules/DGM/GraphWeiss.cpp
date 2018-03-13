@@ -106,7 +106,7 @@ void CGraphWeiss::addEdge(size_t srcNode, size_t dstNode, const Mat &pot)
 	DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
 
 	// Check if the edge exists
-	for (register size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
+	for (size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
 		Edge *edge_to = m_vpNodes.at(srcNode)->to.at(e_t);
 		DGM_ASSERT(edge_to->node2->id != m_vpNodes.at(dstNode)->id);
 	} // e_t
@@ -128,7 +128,7 @@ void CGraphWeiss::setEdge(size_t srcNode, size_t dstNode, const Mat &pot)
 	DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
 
 	bool res = false;
-	for(register size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
+	for(size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
 		Edge *edge_to = m_vpNodes.at(srcNode)->to.at(e_t);
 		if (edge_to->node2->id == dstNode) {
 			if (!edge_to->Pot.empty()) edge_to->Pot.release();
@@ -149,7 +149,7 @@ void CGraphWeiss::getEdge(size_t srcNode, size_t dstNode, Mat &pot) const
 	DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
 
 	bool res = false;
-	for(register size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
+	for(size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
 		Edge *edge_to = m_vpNodes.at(srcNode)->to.at(e_t);
 		if (edge_to->node2->id == dstNode) {
 			if (edge_to->Pot.empty()) break;
@@ -176,9 +176,9 @@ void CGraphWeiss::addArk(size_t Node1, size_t Node2, const Mat &pot)
 	pot.copyTo(Pot);
 
 	// For model consistency
-	for (register int y = 0; y < Pot.rows; y++) {
+	for (int y = 0; y < Pot.rows; y++) {
 		float *pPot = Pot.ptr<float>(y);
-		for (register int x = 0; x < Pot.cols; x++)
+		for (int x = 0; x < Pot.cols; x++)
 			pPot[x] = sqrt(pPot[x]);
 	} // y
 
@@ -194,9 +194,9 @@ void CGraphWeiss::setArk(size_t Node1, size_t Node2, const Mat &pot)
 	pot.copyTo(Pot);
 
 	// For model consistency
-	for (register int y = 0; y < Pot.rows; y++) {
+	for (int y = 0; y < Pot.rows; y++) {
 		float *pPot = Pot.ptr<float>(y);
-		for (register int x = 0; x < Pot.cols; x++)
+		for (int x = 0; x < Pot.cols; x++)
 			pPot[x] = sqrt(pPot[x]);
 	} // y
 

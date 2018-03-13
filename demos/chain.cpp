@@ -31,7 +31,7 @@ Mat CChain::getEdgePot(void)
 
 void CChain::Main(void)
 {
-	register size_t i;
+	size_t i;
 
 	CGraph	*graph = new CGraph(nStates);
 	CInfer  *inferer = new CInferChain(graph);
