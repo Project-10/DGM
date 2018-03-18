@@ -1,6 +1,6 @@
 #include "MarkerHistogram.h"
-#include "DGM\TrainNodeNaiveBayes.h"
-#include "DGM\IPDF.h"
+#include "DGM/TrainNodeNaiveBayes.h"
+#include "DGM/IPDF.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace vis 

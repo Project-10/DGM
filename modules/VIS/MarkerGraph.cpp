@@ -1,13 +1,13 @@
 #include "MarkerGraph.h"
-#include "DGM\IGraph.h"
+#include "DGM/IGraph.h"
 #include "ColorSpaces.h"
 #include "macroses.h"
 
 #ifdef USE_OPENGL
-#include "GL\glew.h"
-#include "GLFW\glfw3.h"
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "CameraControl.h"
 #endif

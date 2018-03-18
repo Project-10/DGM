@@ -50,16 +50,17 @@ using vec_scalar_t		= std::vector<CvScalar>;
 
 using pair_mat_t		= std::pair<Mat, Mat>;
 
-using ptr_float_t	= std::unique_ptr<float[]>;
+using ptr_float_t		= std::unique_ptr<float[]>;
 
-const double	Pi	= 3.1415926;			///< Pi number
-const float		Pif	= 3.1415926f;			///< Pi number
+static const double	Pi	= 3.1415926;			///< Pi number
+static const float	Pif	= 3.1415926f;			///< Pi number
 
-#define isnan		_isnan
-#define isinf		std::isinf
+template <class T>  T& lvalue_cast(T&& t) { return t; }
 #ifdef _WIN32
+	#define EmptyMat	Mat()	
 	#define DllExport	__declspec(dllexport)
 #else
+	#define EmptyMat	lvalue_cast(Mat())	
 	#define DllExport
 #endif
 

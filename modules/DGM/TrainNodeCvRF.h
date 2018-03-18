@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class ml::RTrees;
+    class RTrees;
 	class CSamplesAccumulator;
 
 	/// @brief OpenCV Random Forest parameters

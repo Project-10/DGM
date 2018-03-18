@@ -1,5 +1,5 @@
 #include "SIFT.h"
-#include "opencv\SIFT.h"
+#include "opencv/SIFT.h"
 #include "LinearMapper.h"
 #include "macroses.h"
 

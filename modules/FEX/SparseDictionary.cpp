@@ -1,7 +1,7 @@
 #include "SparseDictionary.h"
 #include "macroses.h"
-#include "DGM\parallel.h"
-#include "DGM\random.h"
+#include "DGM/parallel.h"
+#include "DGM/random.h"
 
 namespace DirectGraphicalModels { namespace fex
 {

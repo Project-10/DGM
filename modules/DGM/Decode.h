@@ -36,7 +36,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = Mat()) const { return decode(m_pGraph, lossMatrix); }
+		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) const { return decode(m_pGraph, lossMatrix); }
 		/**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = Mat());
+		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = EmptyMat);
 		/**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)

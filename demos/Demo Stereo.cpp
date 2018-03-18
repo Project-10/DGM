@@ -1,6 +1,6 @@
 // Example Disparity estimation with CRFs
 #include "DGM.h"
-#include "DGM\timer.h"
+#include "DGM/timer.h"
 
 using namespace DirectGraphicalModels;
 

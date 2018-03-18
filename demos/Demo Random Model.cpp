@@ -2,7 +2,7 @@
 #include "DGM.h"
 #include "VIS.h"
 #include "FEX.h"
-#include "DGM\timer.h"
+#include "DGM/timer.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
