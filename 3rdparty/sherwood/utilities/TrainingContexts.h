@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\Sherwood.h"
+#include "../Sherwood.h"
 
 #include "FeatureResponseFunctions.h"
 #include "StatisticsAggregators.h"

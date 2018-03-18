@@ -165,9 +165,9 @@ float * CPowell::getParams(float kappa)
 	} // infinite loop
 }
 
-bool CPowell::isConverged(void)
+bool CPowell::isConverged(void) const
 {
-	for (auto &converged : m_vConverged) if (!converged) return false;
+	for (const auto &converged : m_vConverged) if (!converged) return false;
 	return true;
 }
 

@@ -1,6 +1,7 @@
 #include "FeatureResponseFunctions.h"
 #include "DataPointCollection.h"
-#include "..\Random.h"
+#include "../Random.h"
+#include <math.h>
 
 namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 {
@@ -47,7 +48,7 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 			pDx[f] = static_cast<float>(2.0 * random.NextDouble() - 1.0);
 			R += pDx[f] * pDx[f];
 		} // f
-		R = sqrt(R);
+        R = sqrtf(R);
 		for (unsigned short f = 0; f < nFeatures; f++) 
 			pDx[f] /= R;
 		

@@ -3,16 +3,16 @@
 
 #ifdef USE_SHERWOOD
 
-#include "sherwood\Sherwood.h"
+#include "sherwood/Sherwood.h"
 
 #ifdef ENABLE_PPL
-#include "sherwood\ParallelForestTrainer.h"				// for parallle computing
+#include "sherwood/ParallelForestTrainer.h"				// for parallle computing
 #endif
 
-#include "sherwood\utilities\FeatureResponseFunctions.h"
-#include "sherwood\utilities\StatisticsAggregators.h"
-#include "sherwood\utilities\DataPointCollection.h"
-#include "sherwood\utilities\TrainingContexts.h"
+#include "sherwood/utilities/FeatureResponseFunctions.h"
+#include "sherwood/utilities/StatisticsAggregators.h"
+#include "sherwood/utilities/DataPointCollection.h"
+#include "sherwood/utilities/TrainingContexts.h"
 
 namespace DirectGraphicalModels
 {

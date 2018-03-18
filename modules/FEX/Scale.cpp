@@ -16,13 +16,13 @@ Mat CScale::get(const Mat &img, SqNeighbourhood nbhd)
 	for (byte c = 0; c < nChannels; c++) {		
 		integral(vChannels[c], integralImg);
 
-		for (register int y = 0; y < height; y++) {
+		for (int y = 0; y < height; y++) {
 			int		 y0 = MAX(0, y - nbhd.upperGap);
 			int	 	 y1 = MIN(y + nbhd.lowerGap, height - 1);
 			byte	*pRes = res.ptr<byte>(y);
 			int *pI0 = integralImg.ptr<int>(y0);
 			int *pI1 = integralImg.ptr<int>(y1 + 1);
-			for (register int x = 0; x < width; x++) {
+			for (int x = 0; x < width; x++) {
 				int		x0 = MAX(0, x - nbhd.leftGap);
 				int		x1 = MIN(x + nbhd.rightGap, width - 1);
 				int		S = (x1 - x0 + 1) * (y1 - y0 + 1);

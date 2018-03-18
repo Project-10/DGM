@@ -1,5 +1,5 @@
 #include "SIFT.h"
-#include "opencv\SIFT.h"
+#include "opencv/SIFT.h"
 #include "LinearMapper.h"
 #include "macroses.h"
 
@@ -7,10 +7,10 @@ namespace DirectGraphicalModels { namespace fex
 {
 	Mat	CSIFT::get(const Mat &img)
 	{
-		register int	i;						// feature index
-		register int	x, y;
-		int				width	= img.cols;
-		int				height	= img.rows;
+		int	i;						// feature index
+		int	x, y;
+		int	width	= img.cols;
+		int	height	= img.rows;
 		
 		// Converting to one channel image
 		Mat	I;

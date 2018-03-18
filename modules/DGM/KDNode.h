@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 		* @param value The node value
 		*/
 		DllExport CKDNode(Mat &key, byte value) 
-			: CKDNode(key, value, std::make_pair(Mat(), Mat()), 0, 0, nullptr, nullptr) {}
+			: CKDNode(key, value, lvalue_cast(std::make_pair(Mat(), Mat())), 0, 0, nullptr, nullptr) {}
 		/**
 		* @brief Branch node constructor
 		* @details All the points with \b key[\b splitDim] < \b splitVal must be assigned to the \b left sub-tree,
@@ -35,7 +35,7 @@ namespace DirectGraphicalModels
 		* @param right The pointer to the root of the \a right sub-tree.
 		*/
 		DllExport CKDNode(pair_mat_t &boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right)
-			: CKDNode(Mat(), 0, boundingBox, splitVal, splitDim, left, right) {}
+			: CKDNode(EmptyMat, 0, boundingBox, splitVal, splitDim, left, right) {}
 		// Copy constructor
 		DllExport CKDNode(const CKDNode &) = delete;
 		// Destructor

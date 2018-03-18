@@ -5,7 +5,7 @@
 #include <limits>
 #include <vector>
 
-#include "..\Sherwood.h"
+#include "../Sherwood.h"
 
 #include "DataPointCollection.h"
 

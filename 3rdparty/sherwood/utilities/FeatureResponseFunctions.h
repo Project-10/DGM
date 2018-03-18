@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "..\Sherwood.h"
+#include "../Sherwood.h"
 
 namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 {

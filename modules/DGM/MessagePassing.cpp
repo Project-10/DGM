@@ -83,10 +83,10 @@ void CMessagePassing::infer(unsigned int nIt)
 // dst: usually edge_to->msg or edge_to->msg_temp
 void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
 {
-	register byte	  s;													// state indexes
-	Node			* node = m_pGraph->m_vNodes[edge_to->node1].get();		// source node
-	size_t			  nFromEdges = node->from.size();						// number of incoming eges
-	const byte		  nStates = m_pGraph->m_nStates;						// number of states
+	byte		  s;													// state indexes
+	Node		* node = m_pGraph->m_vNodes[edge_to->node1].get();		// source node
+	size_t		  nFromEdges = node->from.size();						// number of incoming eges
+	const byte	  nStates = m_pGraph->m_nStates;						// number of states
 
 	// Compute temp = product of all incoming msgs except e_t
 	for (s = 0; s < nStates; s++) temp[s] = node->Pot.at<float>(s, 0);		// temp = node.Pot
@@ -160,9 +160,9 @@ float CMessagePassing::MatMul(const Mat &M, const float *v, float *&dst, bool ma
 {
 	float res = 0;
 	if (!dst) dst = new float[M.cols];
-	for (register int x = 0; x < M.cols; x++) {
+	for (int x = 0; x < M.cols; x++) {
 		float sum = 0;
-		for (register int y = 0; y < M.rows; y++) {
+		for (int y = 0; y < M.rows; y++) {
 			float m = M.at<float>(y, x);
 			float prod = v[y] * m * m;
 			if (maxSum) { if (prod > sum) sum = prod; }

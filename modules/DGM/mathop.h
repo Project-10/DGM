@@ -30,19 +30,19 @@ namespace DirectGraphicalModels
 			DGM_ASSERT_MSG(a.type() == b.type(), "Type mismatch");
 
 			if (a.cols == 1) {
-				for (register int j = 0; j < a.rows; j++)
+				for (int j = 0; j < a.rows; j++)
 					if (a.at<T>(j, 0) != b.at<T>(j, 0)) return false;
 			}
 			else if (a.rows == 1) {
-				for (register int i = 0; i < a.cols; i++) {
+				for (int i = 0; i < a.cols; i++) {
 					if (a.at<T>(0, i) != b.at<T>(0, i)) return false;
 				}
 			}
 			else {
-				for (register int j = 0; j < a.rows; j++) {
+				for (int j = 0; j < a.rows; j++) {
 					const T *pa = a.ptr<T>(j);
 					const T *pb = b.ptr<T>(j);
-					for (register int i = 0; i < a.cols; i++)
+					for (int i = 0; i < a.cols; i++)
 						if(pa[i] != pb[i]) return false;
 				}
 			}
@@ -67,19 +67,19 @@ namespace DirectGraphicalModels
 
 			Tres res = 0;
 			if (a.cols == 1) {
-				for (register int j = 0; j < a.rows; j++)
+				for (int j = 0; j < a.rows; j++)
 					res += (static_cast<Tres>(a.at<Targ>(j, 0)) - static_cast<Tres>(b.at<Targ>(j, 0))) * (static_cast<Tres>(a.at<Targ>(j, 0)) - static_cast<Tres>(b.at<Targ>(j, 0)));
 			}
 			else if (a.rows == 1) {
-				for (register int i = 0; i < a.cols; i++) {
+				for (int i = 0; i < a.cols; i++) {
 					res += (static_cast<Tres>(a.at<Targ>(0, i)) - static_cast<Tres>(b.at<Targ>(0, i))) * (static_cast<Tres>(a.at<Targ>(0, i)) - static_cast<Tres>(b.at<Targ>(0, i)));
 				}
 			}
 			else {
-				for (register int j = 0; j < a.rows; j++) {
+				for (int j = 0; j < a.rows; j++) {
 					const Targ *pa = a.ptr<Targ>(j);
 					const Targ *pb = b.ptr<Targ>(j);
-					for (register int i = 0; i < a.cols; i++)
+					for (int i = 0; i < a.cols; i++)
 						res += (static_cast<Tres>(pa[i]) - static_cast<Tres>(pb[i])) * (static_cast<Tres>(pa[i]) - static_cast<Tres>(pb[i]));
 				}
 			}

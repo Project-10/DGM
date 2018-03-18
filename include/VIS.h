@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VIS\Marker.h"
-#include "VIS\MarkerGraph.h"
-#include "VIS\MarkerHistogram.h"
+#include "VIS/Marker.h"
+#include "VIS/MarkerGraph.h"
+#include "VIS/MarkerHistogram.h"
 
 /**
 @defgroup moduleVIS VIS Module

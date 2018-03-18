@@ -171,7 +171,7 @@ namespace DirectGraphicalModels
 		* @param aux3 Auxilary variable
 		* @return unscaled value of the Gaussian function
 		*/
-		DllExport double		getValue(Mat &x, Mat &aux1 = Mat(), Mat &aux2 = Mat(), Mat &aux3 = Mat()) const;
+		DllExport double		getValue(Mat &x, Mat &aux1 = EmptyMat, Mat &aux2 = EmptyMat, Mat &aux3 = EmptyMat) const;
 		/**
 		* @brief Returns a random vector (sample) from multivariate normal distribution
 		* @details The implementation is based on the paper <a target=blank href="ftp://ftp.dca.fee.unicamp.br/pub/docs/vonzuben/ia013_2s09/material_de_apoio/gen_rand_multivar.pdf">Generating Random Vectors from the Multivariate Normal Distribution</a>

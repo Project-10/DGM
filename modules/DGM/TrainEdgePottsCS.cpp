@@ -16,7 +16,7 @@ float calculateContrast(const Mat &featureVector1, const Mat &featureVector2)
 	// distance between feature vectors
 	subtract(fv1, fv2, dfv);				// dfv = fv1 - fv2;
 	multiply(dfv, dfv, dfv);				// sqr(dfv);
-	for (register int i = 0; i < nFeatures; i++) 
+	for (int i = 0; i < nFeatures; i++) 
 		res += dfv.at<float>(i, 0);
 	res = sqrtf(res / nFeatures);
 

@@ -1,6 +1,6 @@
 #include "Tests.h"
-#include "DGM\parallel.h"
-#include "DGM\Random.h"
+#include "DGM/parallel.h"
+#include "DGM/Random.h"
 
 using namespace DirectGraphicalModels;
 

@@ -8,10 +8,10 @@ Mat CHOG::get(const Mat &img, int nBins, SqNeighbourhood nbhd)
 {
 	DGM_ASSERT_MSG(nBins < CV_CN_MAX, "Number of bins (%d) exceeds the maximum allowed number (%d)", nBins, CV_CN_MAX);
 	
-	register int	i;						// bins index
-	register int	x, y;
-	int				width	= img.cols;
-	int				height	= img.rows;
+	int	i;						// bins index
+	int	x, y;
+	int	width	= img.cols;
+	int	height	= img.rows;
 
 	// Converting to one channel image
 	Mat	I;

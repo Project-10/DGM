@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "macroses.h"
-#include "Random.h"
+#include "random.h"
 
 namespace DirectGraphicalModels { namespace parallel {
 // ------------------------------------------- GEMM ------------------------------------------
@@ -25,7 +25,7 @@ namespace DirectGraphicalModels { namespace parallel {
 				int y = idx[0];
 				int x = idx[1];
 				float sum = 0.0f;
-				for (register int k = 0; k < a.extent[1]; k++) 
+				for (int k = 0; k < a.extent[1]; k++) 
 					sum += a(y, k) * b(k, x);
 				r[idx] = alpha * sum;
 			});
@@ -47,7 +47,7 @@ namespace DirectGraphicalModels { namespace parallel {
 				int y = idx[0];
 				int x = idx[1];
 				float sum = 0.0f;
-				for (register int k = 0; k < a.extent[1]; k++)
+				for (int k = 0; k < a.extent[1]; k++)
 					sum += a(y, k) * b(k, x);
 				r[idx] = alpha * sum + beta * c[idx];
 			});
@@ -66,10 +66,10 @@ namespace DirectGraphicalModels { namespace parallel {
 			concurrency::parallel_for(0, res.rows, [&](int y) {
 				float * pRes = res.ptr<float>(y);
 				const float * pA = A.ptr<float>(y);
-				for (register int x = 0; x < res.cols; x++) {
+				for (int x = 0; x < res.cols; x++) {
 					const float * pB = _B.ptr<float>(x);
 					float sum = 0.0f;
-					for (register int k = 0; k < A.cols; k++)
+					for (int k = 0; k < A.cols; k++)
 						sum += pA[k] * pB[k];
 					pRes[x] = alpha * sum;
 				}
@@ -88,10 +88,10 @@ namespace DirectGraphicalModels { namespace parallel {
 				float * pRes = res.ptr<float>(y);
 				const float * pA = A.ptr<float>(y);
 				const float * pC = C.ptr<float>(y);
-				for (register int x = 0; x < res.cols; x++) {
+				for (int x = 0; x < res.cols; x++) {
 					const float * pB = _B.ptr<float>(x);
 					float sum = 0.0f;
-					for (register int k = 0; k < A.cols; k++)
+					for (int k = 0; k < A.cols; k++)
 						sum += pA[k] * pB[k];
 					pRes[x] = alpha * sum + beta * pC[x];
 				}
@@ -128,9 +128,9 @@ namespace DirectGraphicalModels { namespace parallel {
 	// -------------------------------------------- SORT -------------------------------------------
 	// --------------------------- fast sorting of Mat elements with PPL  --------------------------
 	namespace {
-		inline void Swap(Mat &a, Mat &b, Mat &tmp = Mat())
+        inline void Swap(Mat &a, Mat &b, Mat &tmp = EmptyMat)
 		{
-			a.copyTo(tmp);
+            a.copyTo(tmp);
 			b.copyTo(a);
 			tmp.copyTo(b);
 		}
@@ -142,7 +142,7 @@ namespace DirectGraphicalModels { namespace parallel {
 			for (int i = begin; i <= end; i++) {
 				int j = i;
 				while (j > begin && m.at<T>(j, x) < m.at<T>(j - 1, x)) {
-					Swap(m.row(j), m.row(j - 1), tmp);
+					Swap(lvalue_cast(m.row(j)), lvalue_cast(m.row(j - 1)), tmp);
 					j--;
 				}
 			}
@@ -162,7 +162,7 @@ namespace DirectGraphicalModels { namespace parallel {
 					while (m.at<T>(_begin, x) < pivot) _begin++;
 					while (m.at<T>(_end,   x) > pivot) _end--;
 					if (_begin <= _end) {
-						Swap(m.row(_begin), m.row(_end));
+						Swap(lvalue_cast(m.row(_begin)), lvalue_cast(m.row(_end)));
 						_begin++;
 						_end--;
 					}
@@ -297,7 +297,7 @@ namespace DirectGraphicalModels { namespace parallel {
 		Mat tmp;
 		for (int s = m.rows - 1; s > 0; s--) {			// s = [n-1; 1]
 			int r = random::u<int>(0, s);				// r = [0; s] = [0; 1] -> [0; n-1]
-			if (r != s)	Swap(m.row(s), m.row(r), tmp);
+			if (r != s)	Swap(lvalue_cast(m.row(s)), lvalue_cast(m.row(r)), tmp);
 		}
 #endif
 	}

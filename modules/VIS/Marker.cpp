@@ -60,10 +60,10 @@ void CMarker::markClasses(Mat &base, const Mat &classes, byte flag) const
 	DGM_ASSERT_MSG(base.channels() == 3, "Base image has %d channel(s), but must have 3.", base.channels());
 	DGM_ASSERT_MSG(classes.channels() == 1, "Class Map has %d channel(s), but must have 1.", classes.channels()); 
 
-	for (register int y = 0; y < base.rows; y++) {
+	for (int y = 0; y < base.rows; y++) {
 		byte	   * pBase  = base.ptr<byte>(y);
 		const byte * pClass = classes.ptr<byte>(y);
-		for (register int x = 0; x < base.cols; x++) {
+		for (int x = 0; x < base.cols; x++) {
 			if (((flag & MARK_NO_ZERO) == MARK_NO_ZERO) && (pClass[x] == 11)) continue;
 			//if (((flag & MARK_GRID) == MARK_GRID) && ((x+y) % 2 == 0)) continue;
 			for (int c = 0; c < 3; c++)
@@ -187,8 +187,8 @@ Mat CMarker::drawVector(const Mat &potential, byte flag) const
 	for (byte s = 0; s < nStates; s++) {
 		float	potVal	= potential.at<float>(s, 0);
 
-		double	sat = (isnan(potVal)) ? 1.0 : potVal / max;
-		Scalar	color_Tgt = (isnan(potVal) || bw) ? CV_RGB(0, 0, 0) : m_vPalette.at(s % n).first;
+        double	sat = (std::isnan(potVal)) ? 1.0 : potVal / max;
+        Scalar	color_Tgt = (std::isnan(potVal) || bw) ? Scalar(0) : m_vPalette.at(s % n).first;
 		Scalar	color_Cur;
 		double	intensity = 0;
 		for (int i = 0; i < 3; i++) {
@@ -241,8 +241,8 @@ Mat CMarker::drawMatrix(const Mat &potential, byte flag) const
 		for (byte x = 1; x < nStates + 1; x++) {
 			float potVal = pPot[x - 1];
 			
-			double	sat = (isnan(potVal)) ? 1.0 : potVal / max;
-			Scalar	color_Tgt = (isnan(potVal) || bw) ? CV_RGB(0, 0, 0) : m_vPalette.at(MAX(0/*x - 1*/, y - 1) % n).first;
+            double	sat = (std::isnan(potVal)) ? 1.0 : potVal / max;
+            Scalar	color_Tgt = (std::isnan(potVal) || bw) ? Scalar(0) : m_vPalette.at(MAX(0/*x - 1*/, y - 1) % n).first;
 			Scalar	color_Cur;
 			double	intensity = 0;
 			for (int i = 0; i < 3; i++) {
