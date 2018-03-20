@@ -17,13 +17,13 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+    CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, TrainNodeMsRFParams params) : CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+    CTrainNodeMsRF::CTrainNodeMsRF(byte nStates, word nFeatures, size_t maxSamples) : CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures)
 {
 	TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;

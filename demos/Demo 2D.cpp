@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 
 	// Reading parameters and images
 	Mat		  img		= imread(argv[1], 0);
+    if (img.empty()) printf("Can' open %s\n", argv[1]);
 	Mat		  noise		= imread(argv[2], 0);
 	int		  width		= img.cols;
 	int		  height	= img.rows;

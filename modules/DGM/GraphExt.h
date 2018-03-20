@@ -63,7 +63,7 @@ namespace DirectGraphicalModels
 		* @param params_len The length of the \b params parameter
 		* @param weight The weighting parameter
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float weight = 1.0f)
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float weight = 1.0f) 
 		{
 			CGraphLayered::fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
 		}

@@ -43,7 +43,7 @@ namespace DirectGraphicalModels
 @param nStates Number of states (classes)
 @param normApp Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
 */
-		DllExport CPriorEdge(byte nStates, ePotNormApproach normApp = eP_APP_NORM_SYMMETRIC) : CPrior(nStates, RM_PAIRWISE), CBaseRandomModel(nStates), m_normApp(normApp) {}
+		DllExport CPriorEdge(byte nStates, ePotNormApproach normApp = eP_APP_NORM_SYMMETRIC) : CBaseRandomModel(nStates), CPrior(nStates, RM_PAIRWISE), m_normApp(normApp) {}
 		DllExport ~CPriorEdge(void) {}
 
 /**

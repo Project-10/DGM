@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 	class CTrainTriplet : public ITrain, private CPriorTriplet
 	{
 	public:
-		DllExport CTrainTriplet(byte nStates, byte nFeatures) : ITrain(nStates, nFeatures), CPriorTriplet(nStates), CBaseRandomModel(nStates) {}
+		DllExport CTrainTriplet(byte nStates, byte nFeatures) : CBaseRandomModel(nStates), ITrain(nStates, nFeatures), CPriorTriplet(nStates) {}
 		DllExport ~CTrainTriplet(void) {}
 
 		DllExport void	reset(void) {CPriorTriplet::reset(); }
