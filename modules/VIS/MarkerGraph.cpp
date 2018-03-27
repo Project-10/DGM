@@ -37,7 +37,7 @@ namespace DirectGraphicalModels { namespace vis
 		// Draws filled triangle
 		void drawTriangle(Mat &img, Point pt1, Point pt2, Point pt3, Scalar color, int lineType = LINE_8, int shift = 0)
 		{
-			Point triangle[1][3] = { pt1, pt2, pt3 };
+            Point triangle[1][3] = {{ pt1, pt2, pt3 }};
 			const Point * pts[1] = { triangle[0] };
 			int npts = 3;
 			fillPoly(img, pts, &npts, 1, color, lineType, shift);

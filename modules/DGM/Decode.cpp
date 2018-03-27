@@ -59,7 +59,7 @@ vec_float_t CDecode::calculatePotentials(void) const
 	vec_byte_t	state(nNodes);
 
 	vec_float_t		  res;
-	DGM_ASSERT_MSG(nConfigurations < res.max_size(), "The number of configurations %d^%Zu exceeds the maximal possible size of container.", m_pGraph->m_nStates, nNodes);
+	DGM_ASSERT_MSG(nConfigurations < res.max_size(), "The number of configurations %d^%zu exceeds the maximal possible size of container.", m_pGraph->m_nStates, nNodes);
 	res.resize(nConfigurations, 1.0f);
 
 	setState(state, 0);

@@ -6,9 +6,9 @@ namespace DirectGraphicalModels
 // Constructor
 CTrainEdgePrior::CTrainEdgePrior(byte nStates, word nFeatures, ePotPenalApproach penApproach, ePotNormApproach normApproach) 
 	: CTrainEdgePottsCS(nStates, nFeatures, penApproach)
-	, CPriorEdge(nStates, normApproach)
 	, CBaseRandomModel(nStates)
-	, m_prior(Mat())
+    , CPriorEdge(nStates, normApproach)
+    , m_prior(Mat())
 {}
 
 // Destructor

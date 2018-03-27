@@ -4,13 +4,13 @@
 namespace DirectGraphicalModels
 {
 	// Constructor
-	CTrainNodeCvSVM::CTrainNodeCvSVM(byte nStates, word nFeatures, TrainNodeCvSVMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+	CTrainNodeCvSVM::CTrainNodeCvSVM(byte nStates, word nFeatures, TrainNodeCvSVMParams params) : CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures) 
 	{
 		init(params);
 	}
 
 	// Constructor
-	CTrainNodeCvSVM::CTrainNodeCvSVM(byte nStates, word nFeatures, size_t maxSamples) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates)
+	CTrainNodeCvSVM::CTrainNodeCvSVM(byte nStates, word nFeatures, size_t maxSamples) : CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures)
 	{
 		TrainNodeCvSVMParams params = TRAIN_NODE_CV_SVM_PARAMS_DEFAULT;
 		params.maxSamples = maxSamples;

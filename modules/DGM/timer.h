@@ -50,10 +50,10 @@ namespace DirectGraphicalModels
 			}
 
 			printf("Done! (");
-			if (hrs) printf("%I64d:", hrs);
-			if (min) printf("%I64d:", min);
-			if (sec) printf("%I64d'", sec);
-			printf("%03I64d ms)\n", ms);
+			if (hrs) printf("%lld:", hrs);
+			if (min) printf("%lld:", min);
+			if (sec) printf("%lld'", sec);
+			printf("%03lld ms)\n", ms);
 		}
 	}
 }
