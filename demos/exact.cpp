@@ -30,10 +30,10 @@ void CExact::fillGraph(CGraph *graph)
 		graph->setArc(i, i + 1, edgePot);
 }
 
-void CExact::printMarginals(CGraph *graph, char * str)
+void CExact::printMarginals(const CGraph *graph, const std::string &str)
 {
 	Mat		 nodePot;
-	printf("%s:\t", str);
+	printf("%s:\t", str.c_str());
 	for (int i = 0; i < nNodes; i++) {
 		graph->getNode(i, nodePot);
 		printf((i < nNodes - 1) ? " %.2f\t%.2f\t|" : " %.2f\t%.2f\n", nodePot.at<float>(0, 0), nodePot.at<float>(1, 0));

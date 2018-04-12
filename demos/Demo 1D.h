@@ -8,6 +8,7 @@ using namespace DirectGraphicalModels;
 class CDemo1D
 {
 public:
+    virtual ~CDemo1D(void) {}
 	virtual void Main(void) = 0;
 };
 /// @endcond

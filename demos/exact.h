@@ -13,7 +13,7 @@ public:
 
 private:
 	void fillGraph(CGraph *graph);
-	void printMarginals(CGraph *graph, char * str);
+    void printMarginals(const CGraph *graph, const std::string &str);
 };
 /// @endcond
 

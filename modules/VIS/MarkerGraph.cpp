@@ -60,11 +60,11 @@ namespace DirectGraphicalModels { namespace vis
 			drawTriangle(img, pt2, pt2 + static_cast<Point>(left), pt2 + static_cast<Point>(right), color, lineType, shift);
 		}
 
-		void drawArrowedLine(Mat &img, Point pt1, Point pt2, Scalar color, int thikness = 1, int lineType = LINE_8, int shift = 0, double tipLength = 15)
-		{
-			line(img, pt1, pt2, color, thikness, lineType, shift);
-			drawArrow(img, pt1, pt2, color, lineType, shift, tipLength);
-		}
+//		void drawArrowedLine(Mat &img, Point pt1, Point pt2, Scalar color, int thikness = 1, int lineType = LINE_8, int shift = 0, double tipLength = 15)
+//		{
+//			line(img, pt1, pt2, color, thikness, lineType, shift);
+//			drawArrow(img, pt1, pt2, color, lineType, shift, tipLength);
+//		}
 
 		void drawArrowedLine(Mat &img, Point pt1, Point pt2, Scalar color1, Scalar color2, int thikness = 1, int lineType = LINE_8, int shift = 0, double tipLength = 15)
 		{

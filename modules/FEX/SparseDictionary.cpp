@@ -170,7 +170,7 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 	else img.copyTo(I);
 
 	const int	dataHeight = img.rows - blockSize + 1;
-	const int	dataWidth = img.cols - blockSize + 1;
+	const int	dataWidth  = img.cols - blockSize + 1;
 
 	Mat res;
 	Mat sample;
@@ -195,9 +195,9 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 	Mat res(imgSize, CV_32FC1, cvScalar(0));
 	Mat cover(imgSize, CV_32FC1, cvScalar(0));
 
-	const int	blockSize = static_cast<int>(sqrt(X.cols));
-	const int	dataWidth = res.cols - blockSize + 1;
-	const int	dataHeight = res.rows - blockSize + 1;
+	const int	blockSize  = static_cast<int>(sqrt(X.cols));
+	const int	dataWidth  = res.cols - blockSize + 1;
+//	const int	dataHeight = res.rows - blockSize + 1;
 
 	for (int s = 0; s < X.rows; s++) {
 		Mat sample = X.row(s);															// smple as a row-vector
