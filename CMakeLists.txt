@@ -56,11 +56,12 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS
 		)
 
 # Options
+include(CMakeDependentOption)
 option(DEBUG_PRINT_INFO "Output debug information" OFF)
 option(DEBUG_MODE "Debugging mode" OFF)
-option(ENABLE_PPL "Use Parallel Pattern Library for parallel CPU computing" ON) 
-option(ENABLE_AMP "Use AMP Algorithms Library for parallel GPU computing" OFF) 
-option(USE_OPENGL "Use OpenGL library" OFF) 
+cmake_dependent_option(ENABLE_PPL "Use Parallel Pattern Library for parallel CPU computing" ON "MSVC" OFF) 
+cmake_dependent_option(ENABLE_AMP "Use AMP Algorithms Library for parallel GPU computing" ON "MSVC" OFF) 
+option(USE_OPENGL "Use OpenGL library for Graph visualization" OFF) 
 option(USE_SHERWOOD "Use Microsoft Sherwood Library for CTrainNodeMsRF class" ON)
 
 if (USE_OPENGL)  
