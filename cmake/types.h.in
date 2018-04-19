@@ -61,7 +61,7 @@ template <class T>  T& lvalue_cast(T&& t) { return t; }
 	#define DllExport	__declspec(dllexport)
 #else
 	#define EmptyMat	lvalue_cast(Mat())	
-	#define DllExport
+	#define DllExport	__attribute__((visibility("default")))
 #endif
 
 // DGM lib

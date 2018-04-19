@@ -1,0 +1,143 @@
+/Users/creator/Projects/DGM/build/install/data/001_img_small.jpg
+/Users/creator/Projects/DGM/build/install/data/tsukuba_resdisp.jpg
+/Users/creator/Projects/DGM/build/install/data/tsukuba_left.jpg
+/Users/creator/Projects/DGM/build/install/data/002_img_small.jpg
+/Users/creator/Projects/DGM/build/install/data/002_fv.jpg
+/Users/creator/Projects/DGM/build/install/data/tsukuba_right.jpg
+/Users/creator/Projects/DGM/build/install/data/001_gt_small.jpg
+/Users/creator/Projects/DGM/build/install/data/001_gt.bmp
+/Users/creator/Projects/DGM/build/install/data/smile_noise.png
+/Users/creator/Projects/DGM/build/install/data/001_fv_small.jpg
+/Users/creator/Projects/DGM/build/install/data/002_img.jpg
+/Users/creator/Projects/DGM/build/install/data/002_gt_small.jpg
+/Users/creator/Projects/DGM/build/install/data/smile_denoised.png
+/Users/creator/Projects/DGM/build/install/data/002_fv_small.jpg
+/Users/creator/Projects/DGM/build/install/data/002_gt.bmp
+/Users/creator/Projects/DGM/build/install/data/002_res_small.jpg
+/Users/creator/Projects/DGM/build/install/data/001_img.jpg
+/Users/creator/Projects/DGM/build/install/data/001_fv.jpg
+/Users/creator/Projects/DGM/build/install/data/tsukuba_truedisp.bmp
+/Users/creator/Projects/DGM/build/install/data/smile.png
+/Users/creator/Projects/DGM/build/install/etc/scdictionaries/dictionary_256_15.dic
+/Users/creator/Projects/DGM/build/install/etc/scdictionaries/dictionary_1024_7.dic
+/Users/creator/Projects/DGM/build/install/etc/scdictionaries/dictionary_256_7.dic
+/Users/creator/Projects/DGM/build/install/etc/scdictionaries/dictionary_64_7.dic
+/Users/creator/Projects/DGM/build/install/etc/scdictionaries/dictionary_256_25.dic
+/Users/creator/Projects/DGM/build/install/License.txt
+/Users/creator/Projects/DGM/build/install/bin/Demo Train.bat
+/Users/creator/Projects/DGM/build/install/bin/Demo Visualization.bat
+/Users/creator/Projects/DGM/build/install/bin/Demo Random Model.bat
+/Users/creator/Projects/DGM/build/install/bin/Demo 2D.bat
+/Users/creator/Projects/DGM/build/install/bin/Demo Stereo.bat
+/Users/creator/Projects/DGM/build/install/bin/Demo Feature Extraction.bat
+/Users/creator/Projects/DGM/build/install/bin/copyOpenCVDLL.bat
+/Users/creator/Projects/DGM/build/install/DGMConfig.cmake
+/Users/creator/Projects/DGM/build/install/DGMConfigVersion.cmake
+/Users/creator/Projects/DGM/build/install/lib/DGMTargets.cmake
+/Users/creator/Projects/DGM/build/install/lib/DGMTargets-release.cmake
+/Users/creator/Projects/DGM/build/install/lib/libdgm160.1.6.0.dylib
+/Users/creator/Projects/DGM/build/install/lib/libdgm160.dylib
+/Users/creator/Projects/DGM/build/install/include/DGM.h
+/Users/creator/Projects/DGM/build/install/include/types.h
+/Users/creator/Projects/DGM/build/install/include/macroses.h
+/Users/creator/Projects/DGM/build/install/include/DGM/AveragePrecision.h
+/Users/creator/Projects/DGM/build/install/include/DGM/BaseRandomModel.h
+/Users/creator/Projects/DGM/build/install/include/DGM/CMat.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Decode.h
+/Users/creator/Projects/DGM/build/install/include/DGM/DecodeExact.h
+/Users/creator/Projects/DGM/build/install/include/DGM/FeaturesConcatenator.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Graph.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Graph3.h
+/Users/creator/Projects/DGM/build/install/include/DGM/GraphBoost.h
+/Users/creator/Projects/DGM/build/install/include/DGM/GraphExt.h
+/Users/creator/Projects/DGM/build/install/include/DGM/GraphLayered.h
+/Users/creator/Projects/DGM/build/install/include/DGM/GraphWeiss.h
+/Users/creator/Projects/DGM/build/install/include/DGM/IGraph.h
+/Users/creator/Projects/DGM/build/install/include/DGM/IPDF.h
+/Users/creator/Projects/DGM/build/install/include/DGM/ITrain.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Infer.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferChain.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferExact.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferLBP.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferTRW.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferTree.h
+/Users/creator/Projects/DGM/build/install/include/DGM/InferViterbi.h
+/Users/creator/Projects/DGM/build/install/include/DGM/KDGauss.h
+/Users/creator/Projects/DGM/build/install/include/DGM/KDNode.h
+/Users/creator/Projects/DGM/build/install/include/DGM/KDTree.h
+/Users/creator/Projects/DGM/build/install/include/DGM/MessagePassing.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PDFGaussian.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PDFHistogram.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PDFHistogram2D.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Powell.h
+/Users/creator/Projects/DGM/build/install/include/DGM/Prior.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PriorEdge.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PriorNode.h
+/Users/creator/Projects/DGM/build/install/include/DGM/PriorTriplet.h
+/Users/creator/Projects/DGM/build/install/include/DGM/SamplesAccumulator.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainEdge.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainEdgeConcat.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainEdgePotts.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainEdgePottsCS.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainEdgePrior.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainLink.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainLinkNested.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNode.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvANN.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvGM.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvGMM.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvKNN.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvRF.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeCvSVM.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeGM.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeGMM.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeKNN.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeMsRF.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainNodeNaiveBayes.h
+/Users/creator/Projects/DGM/build/install/include/DGM/TrainTriplet.h
+/Users/creator/Projects/DGM/build/install/include/DGM/mathop.h
+/Users/creator/Projects/DGM/build/install/include/DGM/parallel.h
+/Users/creator/Projects/DGM/build/install/include/DGM/random.h
+/Users/creator/Projects/DGM/build/install/include/DGM/serialize.h
+/Users/creator/Projects/DGM/build/install/include/DGM/timer.h
+/Users/creator/Projects/DGM/build/install/lib/libfex160.1.6.0.dylib
+/Users/creator/Projects/DGM/build/install/lib/libfex160.1.6.dylib
+/Users/creator/Projects/DGM/build/install/lib/libfex160.dylib
+/Users/creator/Projects/DGM/build/install/include/FEX.h
+/Users/creator/Projects/DGM/build/install/include/FEX/CommonFeatureExtractor.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Coordinate.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Distance.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Global.h
+/Users/creator/Projects/DGM/build/install/include/FEX/GlobalFeatureExtractor.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Gradient.h
+/Users/creator/Projects/DGM/build/install/include/FEX/HOG.h
+/Users/creator/Projects/DGM/build/install/include/FEX/HSV.h
+/Users/creator/Projects/DGM/build/install/include/FEX/IFeatureExtractor.h
+/Users/creator/Projects/DGM/build/install/include/FEX/ILocalFeatureExtractor.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Intensity.h
+/Users/creator/Projects/DGM/build/install/include/FEX/LinearMapper.h
+/Users/creator/Projects/DGM/build/install/include/FEX/NDVI.h
+/Users/creator/Projects/DGM/build/install/include/FEX/SIFT.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Scale.h
+/Users/creator/Projects/DGM/build/install/include/FEX/SparseCoding.h
+/Users/creator/Projects/DGM/build/install/include/FEX/SparseDictionary.h
+/Users/creator/Projects/DGM/build/install/include/FEX/SquareNeighborhood.h
+/Users/creator/Projects/DGM/build/install/include/FEX/Variance.h
+/Users/creator/Projects/DGM/build/install/lib/libvis160.1.6.0.dylib
+/Users/creator/Projects/DGM/build/install/lib/libvis160.1.6.dylib
+/Users/creator/Projects/DGM/build/install/lib/libvis160.dylib
+/Users/creator/Projects/DGM/build/install/include/VIS.h
+/Users/creator/Projects/DGM/build/install/include/VIS/ColorSpaces.h
+/Users/creator/Projects/DGM/build/install/include/VIS/Marker.h
+/Users/creator/Projects/DGM/build/install/include/VIS/MarkerGraph.h
+/Users/creator/Projects/DGM/build/install/include/VIS/MarkerHistogram.h
+/Users/creator/Projects/DGM/build/install/include/VIS/CameraControl.h
+/Users/creator/Projects/DGM/build/install/include/VIS/TrackballCamera.h
+/Users/creator/Projects/DGM/build/install/bin/Tests
+/Users/creator/Projects/DGM/build/install/bin/Demo 1D
+/Users/creator/Projects/DGM/build/install/bin/Demo 2D
+/Users/creator/Projects/DGM/build/install/bin/Demo Feature Extraction
+/Users/creator/Projects/DGM/build/install/bin/Demo Random Model
+/Users/creator/Projects/DGM/build/install/bin/Demo Train
+/Users/creator/Projects/DGM/build/install/bin/Demo Visualization
+/Users/creator/Projects/DGM/build/install/bin/Demo Stereo
