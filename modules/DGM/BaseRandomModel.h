@@ -80,7 +80,7 @@ namespace DirectGraphicalModels
 		* @param idx Index of the data file. If idx is negative, index will not be added to the file name.		
 		* @returns File name.
 		*/
-		inline std::string generateFileName(const std::string &path, const std::string &name, short idx) const;
+		std::string generateFileName(const std::string &path, const std::string &name, short idx) const;
 
 
 	protected:

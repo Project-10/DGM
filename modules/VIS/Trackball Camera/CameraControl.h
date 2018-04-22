@@ -3,7 +3,7 @@
 #pragma once
 
 #include "TrackballCamera.h"
-#include "GLFW\glfw3.h"
+#include "GLFW/glfw3.h"
 
 namespace DirectGraphicalModels { namespace vis 
 {

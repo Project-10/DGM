@@ -6,7 +6,6 @@ namespace DirectGraphicalModels
 {
 void CMessagePassing::infer(unsigned int nIt)
 {
-	const size_t nNodes  = m_pGraph->getNumNodes();						// number of nodes
 	const byte   nStates = m_pGraph->m_nStates;
 
 	// ====================================== Initialization ======================================			

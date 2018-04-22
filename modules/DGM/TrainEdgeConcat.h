@@ -31,8 +31,8 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		CTrainEdgeConcat(byte nStates, word nFeatures) 
-			: CTrainEdge(nStates, nFeatures)
-			, CBaseRandomModel(nStates)
+			: CBaseRandomModel(nStates)
+            , CTrainEdge(nStates, nFeatures)
 		{
 			DGM_ASSERT(nStates < 16);
 			m_pPrior		= new CPriorNode(nStates * nStates);

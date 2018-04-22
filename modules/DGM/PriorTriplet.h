@@ -18,7 +18,7 @@ namespace DirectGraphicalModels
 @brief Constructor
 @param nStates Number of states (classes).
 */
-		DllExport CPriorTriplet(byte nStates) : CPrior(nStates, RM_TRIPLET), CBaseRandomModel(nStates) {}
+		DllExport CPriorTriplet(byte nStates) : CBaseRandomModel(nStates), CPrior(nStates, RM_TRIPLET) {}
 		DllExport ~CPriorTriplet(void) {}
 
 /**

@@ -9,8 +9,8 @@ namespace DirectGraphicalModels
 
 	// Constructor
 	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, TrainNodeGMMParams params) 
-		: CTrainNode(nStates, nFeatures)
-		, CBaseRandomModel(nStates)
+        : CBaseRandomModel(nStates)
+        , CTrainNode(nStates, nFeatures)
 		, m_params(params)
 	{
 		m_vGaussianMixtures.resize(nStates);
@@ -20,10 +20,10 @@ namespace DirectGraphicalModels
 	}
 
 	// Constructor
-	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses) 
-		: CTrainNode(nStates, nFeatures)
-		, CBaseRandomModel(nStates)
-		, m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
+	CTrainNodeGMM::CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses)
+        : CBaseRandomModel(nStates)
+        , CTrainNode(nStates, nFeatures)
+        , m_params(TRAIN_NODE_GMM_PARAMS_DEFAULT)
 	{
 		m_params.maxGausses = maxGausses;
 		m_vGaussianMixtures.resize(nStates);
@@ -130,7 +130,7 @@ namespace DirectGraphicalModels
 		void printStatus(std::vector<GaussianMixture> &vGaussianMixtures, long double minCoefficient) {
 			printf("\nCTrainNodeGMM::Status\n");
 			printf("---------------------------\n");
-			printf("( minCoefficient = %e )\n", minCoefficient);
+			printf("( minCoefficient = %Le )\n", minCoefficient);
 
 			for (size_t s = 0; s < vGaussianMixtures.size(); s++) {		// states
 				printf("Class %zu (%zu gausses):\n", s, vGaussianMixtures[s].size());
@@ -138,7 +138,7 @@ namespace DirectGraphicalModels
 				word g = 0;
 				for (const CKDGauss &gauss : vGaussianMixtures[s]) {
 					printf("\tG[%u]: %zupts; ", g++, gauss.getNumPoints());
-					printf("alpha: %e;\n", gauss.getAlpha());
+					printf("alpha: %Le;\n", gauss.getAlpha());
 					//printf("aK: %e;\n", gauss.getAlpha() / m_minCoefficient);
 
 					//printMat<double>("MU:", gauss.getMu());

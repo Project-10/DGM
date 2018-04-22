@@ -7,10 +7,10 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures) 
-	: CTrainNode(nStates, nFeatures)
-	, CPriorNode(nStates)
-	, CBaseRandomModel(nStates)
+CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures)
+    : CBaseRandomModel(nStates)
+    , CTrainNode(nStates, nFeatures)
+    , CPriorNode(nStates)
 	, m_prior(Mat())
 {
 	m_pPDF = new IPDF**[m_nStates];

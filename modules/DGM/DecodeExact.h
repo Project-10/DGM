@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2012 for Project X
 #pragma once
 
-#include "decode.h"
+#include "Decode.h"
 
 namespace DirectGraphicalModels
 {

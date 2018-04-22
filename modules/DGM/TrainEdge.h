@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainEdge(byte nStates, word nFeatures) : ITrain(nStates, nFeatures), CBaseRandomModel(nStates) {}
+		DllExport CTrainEdge(byte nStates, word nFeatures) : CBaseRandomModel(nStates), ITrain(nStates, nFeatures) {}
 		DllExport virtual ~CTrainEdge(void) {}
 
 		/**

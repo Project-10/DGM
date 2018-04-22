@@ -34,6 +34,9 @@ if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
 set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS} /DEBUG /INCREMENTAL:NO /OPT:REF /OPT:ICF")					
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} /DEBUG /INCREMENTAL:NO /OPT:REF /OPT:ICF")
+else()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual")
 endif(MSVC)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
@@ -49,16 +52,16 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/batch/ DESTINATION ${CMAKE_INSTALL_PREFI
 
 #definitions
 add_definitions(-D_CRT_SECURE_NO_WARNINGS 
-				-D_SCL_SECURE_NO_WARNINGS
-				-std=c++14
-				)
+		-D_SCL_SECURE_NO_WARNINGS
+		)
 
 # Options
+include(CMakeDependentOption)
 option(DEBUG_PRINT_INFO "Output debug information" OFF)
 option(DEBUG_MODE "Debugging mode" OFF)
-option(ENABLE_PPL "Use Parallel Pattern Library for parallel CPU computing" ON) 
-option(ENABLE_AMP "Use AMP Algorithms Library for parallel GPU computing" OFF) 
-option(USE_OPENGL "Use OpenGL library" OFF) 
+cmake_dependent_option(ENABLE_PPL "Use Parallel Pattern Library for parallel CPU computing" ON "MSVC" OFF) 
+cmake_dependent_option(ENABLE_AMP "Use AMP Algorithms Library for parallel GPU computing" ON "MSVC" OFF) 
+option(USE_OPENGL "Use OpenGL library for Graph visualization" OFF) 
 option(USE_SHERWOOD "Use Microsoft Sherwood Library for CTrainNodeMsRF class" ON)
 
 if (USE_OPENGL)  

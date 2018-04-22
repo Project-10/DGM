@@ -22,8 +22,8 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainLink(byte nStatesBase, byte nStatesOccl, word nFeatures) 
-			: ITrain(nStatesBase * nStatesOccl, nFeatures)
-			, CBaseRandomModel(nStatesBase * nStatesOccl)
+            : CBaseRandomModel(nStatesBase * nStatesOccl)
+            , ITrain(nStatesBase * nStatesOccl, nFeatures)
 			, m_nStatesBase(nStatesBase)
 			, m_nStatesOccl(nStatesOccl)
 		{}

@@ -65,7 +65,9 @@ namespace DirectGraphicalModels { namespace fex
 	{
 		SqNeighbourhood nbhd = sqNeighbourhoodAll(R);
 		switch (location) {
-			case BP_LEFT:
+            case BP_CENTER:
+                break;
+            case BP_LEFT:
 				nbhd.leftGap	= 0;
 				nbhd.rightGap	= 2 * R;
 				break;

@@ -9,13 +9,13 @@ namespace DirectGraphicalModels
 const double CTrainNodeCvGMM::MIN_COEFFICIENT_BASE = 32.0;
 	
 // Constructor
-CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, TrainNodeCvGMMParams params) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
+CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, TrainNodeCvGMMParams params) :  CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures), m_minCoefficient(1)
 {
 	init(params);
 }
 
 // Constructor
-CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, size_t maxSamples, byte numGausses) : CTrainNode(nStates, nFeatures), CBaseRandomModel(nStates), m_minCoefficient(1)
+CTrainNodeCvGMM::CTrainNodeCvGMM(byte nStates, word nFeatures, size_t maxSamples, byte numGausses) : CBaseRandomModel(nStates), CTrainNode(nStates, nFeatures), m_minCoefficient(1)
 {
 	TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT;
 	params.maxSamples = maxSamples;

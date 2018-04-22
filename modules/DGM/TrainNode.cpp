@@ -4,10 +4,10 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CTrainNode::CTrainNode(byte nStates, word nFeatures) 
-	: ITrain(nStates, nFeatures)
-	, CBaseRandomModel(nStates)
-	, m_mask(Mat(nStates, 1, CV_8UC1))
+CTrainNode::CTrainNode(byte nStates, word nFeatures)
+    : CBaseRandomModel(nStates)
+    , ITrain(nStates, nFeatures)
+    , m_mask(Mat(nStates, 1, CV_8UC1))
 {}
 
 // Destructor

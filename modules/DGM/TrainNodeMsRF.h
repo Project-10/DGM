@@ -4,7 +4,7 @@
 
 #include "TrainNode.h"
 
-#ifdef USE_SHERWOOD
+//#ifdef USE_SHERWOOD
 
 namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood {
 	class LinearFeatureResponse;
@@ -105,4 +105,4 @@ namespace DirectGraphicalModels
 		std::auto_ptr<sw::TrainingParameters>											m_pParams;
 	};
 }
-#endif
+//#endif

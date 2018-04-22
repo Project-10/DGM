@@ -14,7 +14,6 @@ const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
 Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 {
 	char			str[256];
-	const byte		nStates		= m_pNodeTrainer->getNumStates();
 	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
 	const size_t	n			= m_vPalette.size();
 
