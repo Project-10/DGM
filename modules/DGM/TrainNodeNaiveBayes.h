@@ -26,9 +26,9 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainNodeNaiveBayes(byte nStates, word nFeatures);
-		DllExport ~CTrainNodeNaiveBayes(void);
+		DllExport virtual ~CTrainNodeNaiveBayes(void);
 
-		DllExport virtual void	  reset(void);		
+		DllExport virtual void	  reset(void);
 
 		DllExport virtual void	  addFeatureVec(const Mat &featureVector, byte gt);	
 		DllExport virtual void	  train(bool doClean = false);

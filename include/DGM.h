@@ -179,8 +179,9 @@ Please refer to the @ref moduleVIS documentation
 
 /**
 @page s3 Installation
-Curently the DGM library may be installed only on Windows machines. It is also based on OpenCV library v.3.3.0.<br> 
-In order to build the DGM library, the OpenCV library should be built and installed first.
+DGM is a cross-platform library which may be installed on Windows or MacOS machines. It was tested with MS Visual Studio and Xcode respectively.<br>
+DGM has only one dependency: it is based on OpenCV library.
+In order to build the DGM library, the OpenCV library (v.3.3.0 or newer) should be installed first.
 
 @section sec_install_cv Installing OpenCV
 -# Download the OpenCV library from <a href="http://sourceforge.net/projects/opencvlibrary/files/opencv-win/3.3.0/" target="_blank">sourcefourge</a>

@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
 	Timer::stop();
 	imwrite(argv[4], classMap);
 
-	imwrite("D:\\hist2d_CvRF_pred.jpg", classMap);
 	imshow("class map 2d", classMap);
 	cvWaitKey(1000);
 
