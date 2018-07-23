@@ -1,176 +1,135 @@
 // Example "Dense-CRF" 2D-case with model training
 #include "DGM.h"
 #include "VIS.h"
-#include "DGM\serialize.h"
-#include "..\3rdparty\densecrf\densecrf.h"
+#include "DGM/timer.h"
+#include "DGM/serialize.h"
+#include "../3rdparty/densecrf/densecrf.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-// Store the colors we read, so that we can write them again.
-std::vector<Vec3b> vPalette;
-
-// Produce a color image from a bunch of labels
-template <typename T>
-Mat colorize(const Mat &map)
+void print_help(char *argv0)
 {
-	Mat res(map.size(), CV_8UC3);
-
-	for (int y = 0; y < res.rows; y++) {
-		const T *pMap = map.ptr<T>(y);
-		Vec3b	*pRes = res.ptr<Vec3b>(y);
-		for (int x = 0; x < res.cols; x++) 
-			pRes[x]= vPalette[pMap[x]];
-	}
-
-	return res;
-}
-
-// Simple classifier that is 50% certain that the annotation is correct
-Mat classify(const Mat &gt, int nStates)
-{
-	// Certainty that the groundtruth is correct
-	const float GT_PROB = 0.55f;
-
-	Mat res(gt.size(), CV_32FC(nStates));
-	res.setTo( (1.0f - GT_PROB) / (nStates - 1));
-	
-	for (int y = 0; y < res.rows; y++) {
-		const byte	* pGt  = gt.ptr<byte>(y);
-		float		* pRes = res.ptr<float>(y);
-		for (int x = 0; x < res.cols; x++) {
-
-			int state = pGt[x];
-
-			//for (int s = 0; s < nStates; s++) pRes[x * nStates + s] = (1.0f - GT_PROB) / (nStates - 1);
-			pRes[x * nStates + state] = GT_PROB;
-		} // x
-	} // y
-
-	return res;
-}
-
-void fillPalette(void)
-{
-	if (!vPalette.empty()) vPalette.clear();
-	vPalette.push_back(Vec3b(   0, 0,   255));		
-	vPalette.push_back(Vec3b(   0, 128, 255));		
-	vPalette.push_back(Vec3b(   0, 255, 255));		
-	vPalette.push_back(Vec3b(   0, 255, 128));		
-	vPalette.push_back(Vec3b(   0, 255, 0 ));		
-	vPalette.push_back(Vec3b( 128, 255, 0 ));		
-	vPalette.push_back(Vec3b( 255, 255, 0 ));		
-	vPalette.push_back(Vec3b( 255, 128, 0 ));		
-	vPalette.push_back(Vec3b( 255, 0,   0 ));		
-	vPalette.push_back(Vec3b( 255, 0,   128));		
-	vPalette.push_back(Vec3b( 255, 0,   255));		
-	vPalette.push_back(Vec3b( 128, 0,   255));		
-	vPalette.push_back(Vec3b(   0, 0,   128));		
-	vPalette.push_back(Vec3b(   0, 64,  128));		
-	vPalette.push_back(Vec3b(   0, 128, 128));		
-	vPalette.push_back(Vec3b(   0, 128, 64));		
-	vPalette.push_back(Vec3b(   0, 128, 0 ));		
-//	vPalette.push_back(Vec3b(  64, 128, 0 ));					
-	vPalette.push_back(Vec3b( 128, 128, 0 ));		
-	vPalette.push_back(Vec3b( 128,  64, 0 ));		
-	vPalette.push_back(Vec3b( 128,   0, 0 ));		
-	vPalette.push_back(Vec3b( 128,   0, 64));		
-	
+	printf("Usage: %s training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n", argv0);
 }
 
 int main(int argc, char *argv[])
 {
-	const int nStates = 21;
+	const CvSize		imgSize = cvSize(400, 400);
+	const int			width = imgSize.width;
+	const int			height = imgSize.height;
+	const unsigned int	nStates = 6;		// {road, traffic island, grass, agriculture, tree, car} 	
+	const unsigned int	nFeatures = 3;
+
+	if (argc != 7) {
+		print_help(argv[0]);
+		return 0;
+	}
+
+	// Reading parameters and images
+	Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
+	Mat test_fv = imread(argv[3], 1); resize(test_fv, test_fv, imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt = imread(argv[4], 0); resize(test_gt, test_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+
+	CTrainNode		* nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);
+	CTrainEdge		* edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);
+	CGraphExt		* graph = new CGraphExt(nStates);
+	CInfer			* decoder = new CInferLBP(graph);
+	CMarker			* marker = new CMarker(DEF_PALETTE_6);
+	CCMat			* confMat = new CCMat(nStates);
+	float			  params[] = { 100, 0.01f };
+	size_t			  params_len = 1;
+
+
+	// ==================== STAGE 1: Building the graph ====================
+	Timer::start("Building the Graph... ");
+	graph->build(imgSize);
+	Timer::stop();
+
+	// ========================= STAGE 2: Training =========================
+	Timer::start("Training... ");
+	// Node Training (compact notation)
+	nodeTrainer->addFeatureVec(train_fv, train_gt);
+
+	// Edge Training (comprehensive notation)
+	Mat featureVector1(nFeatures, 1, CV_8UC1);
+	Mat featureVector2(nFeatures, 1, CV_8UC1);
+	for (int y = 1; y < height; y++) {
+		byte *pFv1 = train_fv.ptr<byte>(y);
+		byte *pFv2 = train_fv.ptr<byte>(y - 1);
+		byte *pGt1 = train_gt.ptr<byte>(y);
+		byte *pGt2 = train_gt.ptr<byte>(y - 1);
+		for (int x = 1; x < width; x++) {
+			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
+
+			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
+			edgeTrainer->addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt1[x - 1]);
+			edgeTrainer->addFeatureVecs(featureVector2, pGt1[x - 1], featureVector1, pGt1[x]);
+
+			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
+			edgeTrainer->addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt2[x]);
+			edgeTrainer->addFeatureVecs(featureVector2, pGt2[x], featureVector1, pGt1[x]);
+		} // x
+	} // y
+
+	nodeTrainer->train();
+	edgeTrainer->train();
+	Timer::stop();
+
+
+	// CTrainEdgePotts::getEdgePotentials(100, nStates); // default Potts edge potential
+
+	// ==================== STAGE 3: Filling the Graph =====================
+	Timer::start("Filling the Graph... ");
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
+	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
+
+	for (int y = 0; y < height; y++) {
+		float		* pPot = nodePotentials.ptr<float>(y);
+		for (int x = 0; x < width; x++) {
+			for (int s = 0; s < nStates; s++)
+				pPot[x * nStates + s] = -logf(pPot[x * nStates + s]);
+		} // x
+	} // y
+
+	DenseCRF2D crf(width, height, nStates);
+	crf.setUnaryEnergy(reinterpret_cast<float *>(nodePotentials.data));
+	crf.addPairwiseGaussian(3, 3, 3);
+	crf.addPairwiseBilateral(60, 60, 20, 20, 20, test_img.data, 10);
+	Timer::stop();
+
+
+	// ========================= STAGE 4: Decoding =========================
+	Timer::start("Decoding... ");
+	short *map = new short[width * height];
+	crf.map(100, map);
+	vec_byte_t	optimalDecoding;
+	for (int i = 0; i < width * height; i++)
+		optimalDecoding.push_back(static_cast<byte>(map[i]));
+	delete[] map;
+	Timer::stop();
+
+
+	// ====================== Evaluation =======================
+	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
+	confMat->estimate(test_gt, solution);
+	char str[255];
+	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
+	printf("%s\n", str);
+
+	// ====================== Visualization =======================
+	marker->markClasses(test_img, solution);
+	rectangle(test_img, Point(width - 160, height - 18), Point(width, height), CV_RGB(0, 0, 0), -1);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	imwrite(argv[6], test_img);
 	
-	CCMat	confMat(nStates), confMatGlobal(nStates);
-
-	char path[256];
-
-	fillPalette();
-
-	for (word m = 1; m <= 21; m++) {
-		if (m == 17) continue;
-		for (word i = 11; i <= 20; i++) {
-			if (m == 6 && i == 17) continue;
-			if (m == 18 && i == 9) continue;
-			printf("#%d-%d: ", m, i);
-		
-			sprintf(path, "Z:\\Data\\EMDS4\\_Kimiaki\\Original_EM_Images\\t4-g%02d-%02d.png", m < 17 ? m : m - 1, i);
-			Mat img = imread(path);
-			imshow("Input Image", img);
-
-			// ==================== STAGE 3: Filling the Graph =====================
-			sprintf(path, "D:\\Res\\CNN 1024 Potentials\\t4-g%02d-%02d.dat", m, i);
-			Mat pot = Serialize::from(path);
-			for (int y = 0; y < pot.rows; y++) {
-				float		* pPot = pot.ptr<float>(y);
-				for (int x = 0; x < pot.cols; x++) {
-					for (int s = 0; s < nStates; s++)
-						pPot[x * nStates + s] = -logf(pPot[x * nStates + s]);
-				} // x
-			} // y
-
-			DenseCRF2D crf(img.cols, img.rows, nStates);
-			crf.setUnaryEnergy(reinterpret_cast<float *>(pot.data));
-			crf.addPairwiseGaussian(3, 3, 3);
-			crf.addPairwiseBilateral(60, 60, 20, 20, 20, img.data, 10);
-			
-			// ========================= STAGE 4: Decoding =========================
-			short *map = new short[img.cols * img.rows];
-			crf.map(10, map);
-			vec_byte_t	optimalDecoding;
-			for (int i = 0; i < img.cols * img.rows; i++)
-				optimalDecoding.push_back( static_cast<byte>(map[i]));
-			delete[] map;
-
-			// ====================== Evaluation =======================
-			Mat solution(img.size(), CV_8UC1, optimalDecoding.data());
-			sprintf(path, "D:\\Res\\SC %d\\t4-g%02d-%02d-result.bmp", 1024, m, i);
-			imwrite(path, solution);
-			
-			sprintf(path, "Z:\\Data\\_Kimiaki\\GroundTruthImages_BlackOrWhite\\t4-g%02d-%02d.png", m < 17 ? m : m - 1, i);
-			Mat gt = imread(path, 0);
-			imshow("Groundtruth", gt);
-			gt /= 255;
-			byte gt_state = (m > 17) ? m - 1 : m;
-			gt *= gt_state;
-
-			confMatGlobal.estimate(gt, solution);
-			confMat.estimate(gt, solution);
-			float accuracy = confMat.getAccuracy();
-			confMat.reset();
-
-			char str[255];
-			sprintf(str, "Accuracy = %.2f%%", accuracy);
-			printf("%s\n", str);
-
-			// ====================== Visualization =======================
-			Mat res = colorize<byte>(solution);
-			imshow("Solution", res);
-			sprintf(path, "D:\\Res\\SC %d\\t4-g%02d-%02d-solution-CNN_%d (%d,%02d).jpg", 1024, m, i, 1024, (int)accuracy, (int)((accuracy - (int)accuracy) * 100));
-			imwrite(path, res);
-
-			cvWaitKey(25);
-		} // i
-	} // m
-
-	CMarker marker;
-	Mat confusionMat = confMatGlobal.getConfusionMatrix();
-	Mat confusionMatImg = marker.drawConfusionMatrix(confusionMat, MARK_BW | MARK_PERCLASS);
-	imshow("Confusion Matrix", confusionMatImg);
-	sprintf(path, "D:\\Res\\SC %d\\cMat.jpg", 1024);
-	imwrite(path, confusionMatImg);
-
+	imshow("Image", test_img);
 	cvWaitKey();
+
 	return 0;
 
-	/*
-	CGraphExt graph(nStates);
-	graph.build(pot.size());
-	graph.setNodes(pot);
-	vec_byte_t optimalDecoding = CDecode::decode(&graph);
-	Mat solution(pot.size(), CV_8UC1, optimalDecoding.data());
-	Mat resDGM = colorize<byte>(solution);
-	imshow("Result DGB", resDGM);
-	*/
+
 }
