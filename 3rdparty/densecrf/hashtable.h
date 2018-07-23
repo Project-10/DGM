@@ -2,10 +2,10 @@
 
 #include "types.h"
 
-class HashTable {
+class CHashTable {
 public:
-	HashTable(int key_size, int n_elements);
-	~HashTable(void);
+	CHashTable(int key_size, int n_elements);
+	~CHashTable(void);
 
 	size_t		  size(void) const { return m_filled; }
 	void		  reset(void);
@@ -27,5 +27,5 @@ protected:
 
 
 private:
-	HashTable(const HashTable & o);
+	CHashTable(const CHashTable & o);
 };

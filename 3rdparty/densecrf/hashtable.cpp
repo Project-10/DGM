@@ -1,7 +1,7 @@
 #include "hashtable.h"
 
 // Constructor
-HashTable::HashTable(int key_size, int n_elements) : m_key_size(key_size), m_filled(0), m_capacity(2 * n_elements) 
+CHashTable::CHashTable(int key_size, int n_elements) : m_key_size(key_size), m_capacity(2 * n_elements), m_filled(0)
 {
 	m_pTable = new int[m_capacity];
 	m_pKeys = new short[(m_capacity / 2 + 10) * m_key_size];
@@ -9,7 +9,7 @@ HashTable::HashTable(int key_size, int n_elements) : m_key_size(key_size), m_fil
 }
 
 // Copy Constructor
-HashTable::HashTable(const HashTable & o) : m_key_size(o.m_key_size), m_filled(0), m_capacity(o.m_capacity)
+CHashTable::CHashTable(const CHashTable & o) : m_key_size(o.m_key_size), m_capacity(o.m_capacity), m_filled(0)
 {
 	m_pTable = new int[m_capacity];
 	m_pKeys = new short[(m_capacity / 2 + 10) * m_key_size];
@@ -17,19 +17,19 @@ HashTable::HashTable(const HashTable & o) : m_key_size(o.m_key_size), m_filled(0
 }
 
 // Destructor
-HashTable::~HashTable(void) 
+CHashTable::~CHashTable(void)
 {
 	delete[] m_pKeys;
 	delete[] m_pTable;
 }
 
-void HashTable::reset(void) 
+void CHashTable::reset(void)
 {
 	m_filled = 0;
 	memset(m_pTable, -1, m_capacity * sizeof(int));
 }
 
-int HashTable::find(const short * k, bool create) 
+int CHashTable::find(const short * k, bool create)
 {
 	if (2 * m_filled >= m_capacity) grow();
 	
@@ -65,7 +65,7 @@ int HashTable::find(const short * k, bool create)
 	}
 }
 
-void HashTable::grow(void) 
+void CHashTable::grow(void)
 {
 	// Swap out the old memory
 	short * old_keys = m_pKeys;
@@ -91,7 +91,7 @@ void HashTable::grow(void)
 	delete[] old_table;
 }
 
-size_t HashTable::hash(const short * k) 
+size_t CHashTable::hash(const short * k)
 {
 	size_t r = 0;
 	for (size_t i = 0; i < m_key_size; i++) {
