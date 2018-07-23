@@ -25,7 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "densecrf.h"
-#include "util.h"
+#include "permutohedral.h"
 
 class BPPottsPotential: public PairwisePotential{
 protected:
@@ -36,20 +36,21 @@ protected:
 	float *norm_;
 public:
 	~BPPottsPotential(){
-		deallocate( norm_ );
+		if (norm_) delete[] norm_;
 	}
-	BPPottsPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, bool per_pixel_normalization=true) :N1_(N1), N2_(N2), w_(w) {
+
+	BPPottsPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, bool per_pixel_normalization=true) : N1_(N1), N2_(N2), w_(w) {
 		float * features = new float[ (N1_+N2_)*D ];
 		memset( features, 0, (N1_+N2_)*D*sizeof(float) );
-		memcpy( features      , features1, N1_*D*sizeof(float) );
-		memcpy( features+N1_*D, features2, N2_*D*sizeof(float) );
-		lattice_.init( features, D, N1_+N2_ );
+		memcpy( features      , features1, N1_ * D * sizeof(float));
+		memcpy( features+N1_*D, features2, N2_ * D * sizeof(float));
+		lattice_.init( features, D, N1_ + N2_ );
 		delete [] features;
 		
-		norm_ = allocate( N2_ );
-		float * tmp = allocate( N1_ );
-		for( int i=0; i<N1_; i++ )
-			tmp[i] = 1;
+		norm_ = new float[N2_];
+		memset(norm_, 0, N2_ * sizeof(float));
+		float *tmp = new float[N1_];
+		for (int i = 0; i < N1_; i++) tmp[i] = 1;
 		// Compute the normalization factor
 		lattice_.compute( norm_, tmp, 1, 0, N1_, N1_, N2_ );
 		if( per_pixel_normalization ){
@@ -66,8 +67,9 @@ public:
 			for( int i=0; i<N2_; i++ )
 				norm_[i] = mean_norm;
 		}
-		deallocate( tmp );
+		delete[] tmp;
 	}
+
 	virtual void apply( float * out_values, const float * in_values, float * tmp, int value_size ) const{
 		lattice_.compute( tmp, in_values, value_size, 0, N1_, N1_, N2_ );
 		for( int i=0,k=0; i<N2_; i++ )
@@ -75,6 +77,7 @@ public:
 				out_values[k] += w_*norm_[i]*tmp[k];
 	}
 };
+
 class BPSemiMetricPotential: public BPPottsPotential{
 protected:
 	const SemiMetricFunction * function_;

@@ -28,7 +28,6 @@
 #include "densecrf.h"
 #include "fastmath.h"
 #include "permutohedral.h"
-#include "util.h"
 #include <cmath>
 #include <cstring>
 
@@ -45,13 +44,12 @@ protected:
 	float *norm_;
 public:
 	~PottsPotential(){
-		deallocate( norm_ );
+		if (norm_) delete[] norm_;
 	}
 	PottsPotential(const float* features, int D, int N, float w, bool per_pixel_normalization=true) :N_(N), w_(w) {
 		lattice_.init( features, D, N );
-		norm_ = allocate( N );
-		for ( int i=0; i<N; i++ )
-			norm_[i] = 1;
+		norm_ = new float[N];
+		for (int i = 0; i < N; i++) norm_[i] = 1;
 		// Compute the normalization factor
 		lattice_.compute( norm_, norm_, 1 );
 		if ( per_pixel_normalization ) {
@@ -105,22 +103,20 @@ public:
 /////  Alloc / Dealloc  /////
 /////////////////////////////
 DenseCRF::DenseCRF(int N, int M) : N_(N), M_(M) {
-	unary_ = allocate( N_*M_ );
-	additional_unary_ = allocate( N_*M_ );
-	current_ = allocate( N_*M_ );
-	next_ = allocate( N_*M_ );
-	tmp_ = allocate( 2*N_*M_ );
-	// Set the additional_unary_ to zero
-	memset( additional_unary_, 0, sizeof(float)*N_*M_ );
+	unary_				= new float[N_ * M_];	memset(unary_, 0, N_ * M_ * sizeof(float));
+	additional_unary_	= new float[N_ * M_];	memset(additional_unary_, 0, N_ * M_ * sizeof(float));
+	current_			= new float[N_ * M_];	memset(current_, 0, N_ * M_ * sizeof(float));
+	next_				= new float[N_ * M_];	memset(next_, 0, N_ * M_ * sizeof(float));
+	tmp_				= new float[2 * N_*M_];	memset(tmp_, 0, 2 * N_ * M_ * sizeof(float));
 }
 
 DenseCRF::~DenseCRF() {
-	deallocate( unary_ );
-	deallocate( additional_unary_ );
-	deallocate( current_ );
-	deallocate( next_ );
-	deallocate( tmp_ );
-	for( unsigned int i=0; i<pairwise_.size(); i++ )
+	if (unary_)		delete[] unary_;
+	if (additional_unary_) delete[] additional_unary_;
+	if (current_)	delete[] current_;
+	if (next_)		delete[] next_;
+	if (tmp_)		delete[] tmp_;
+	for(unsigned int i = 0; i < pairwise_.size(); i++ )
 		delete pairwise_[i];
 }
 
@@ -258,7 +254,8 @@ void DenseCRF::unaryEnergy(const short* ass, float* result) {
 }
 
 void DenseCRF::pairwiseEnergy(const short* ass, float* result, int term) {
-	float * current = allocate( N_*M_ );
+	float * current = new float[N_ * M_];
+	memset(current, 0, N_ * M_ * sizeof(float));
 	// Build the current belief [binary assignment]
 	for( int i=0,k=0; i<N_; i++ )
 		for( int j=0; j<M_; j++, k++ )
@@ -276,7 +273,8 @@ void DenseCRF::pairwiseEnergy(const short* ass, float* result, int term) {
 			result[i] =-next_[ i*M_ + ass[i] ];
 		else
 			result[i] = 0;
-	deallocate( current );
+	delete [] current;
+	current = NULL;
 }
 
 void DenseCRF::startInference(){
