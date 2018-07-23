@@ -14,17 +14,18 @@ public:
 
 
 protected:
+	void	grow(void);
+	size_t	hash(const short * k);
+
+
+protected:
 	size_t	  m_key_size;
 	size_t	  m_capacity;
 	size_t	  m_filled;
 	short	* m_pKeys;
 	int		* m_pTable;
 
-	void	grow(void);
-	size_t	hash(const short * k);
-
 
 private:
 	HashTable(const HashTable & o);
-
 };
