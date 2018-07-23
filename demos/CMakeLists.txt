@@ -82,6 +82,20 @@ target_link_libraries(Demo_Train ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 
 #install
 install(TARGETS Demo_Train RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+# =============================================== DEMO DENSE ================================================
+add_executable(Demo_Dense "Demo Dense.cpp")
+add_dependencies(Demo_Dense DGM VIS)
+
+set_target_properties(Demo_Dense PROPERTIES PROJECT_LABEL "Demo Dense")					# in Visual Studio
+set_target_properties(Demo_Dense PROPERTIES OUTPUT_NAME "Demo Dense")
+set_target_properties(Demo_Dense PROPERTIES FOLDER "Demos")
+
+# Properties->Linker->Input->Additional Dependencies
+target_link_libraries(Demo_Dense ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
+
+#install
+install(TARGETS Demo_Dense RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	
 # =========================================== DEMO VISUALIZATION ============================================
 add_executable(Demo_Vis "Demo Visualization.cpp")
