@@ -31,21 +31,20 @@
 #include <cmath>
 #include <cstring>
 
-PairwisePotential::~PairwisePotential() {
-}
-SemiMetricFunction::~SemiMetricFunction() {
-}
-class PottsPotential: public PairwisePotential{
+class PottsPotential: public PairwisePotential
+{
 protected:
 	Permutohedral lattice_;
 	PottsPotential( const PottsPotential&o ){}
 	int N_;
 	float w_;
 	float *norm_;
+
 public:
 	~PottsPotential(){
 		if (norm_) delete[] norm_;
 	}
+	
 	PottsPotential(const float* features, int D, int N, float w, bool per_pixel_normalization=true) :N_(N), w_(w) {
 		lattice_.init( features, D, N );
 		norm_ = new float[N];
@@ -67,7 +66,8 @@ public:
 				norm_[i] = mean_norm;
 		}
 	}
-	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const {
+	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const 
+	{
 		lattice_.compute( tmp, in_values, value_size );
 		for ( int i=0,k=0; i<N_; i++ )
 			for ( int j=0; j<value_size; j++, k++ )
@@ -75,7 +75,8 @@ public:
 	}
 };
 
-class SemiMetricPotential: public PottsPotential{
+class SemiMetricPotential: public PottsPotential
+{
 protected:
 	const SemiMetricFunction * function_;
 public:
@@ -99,9 +100,6 @@ public:
 
 
 
-/////////////////////////////
-/////  Alloc / Dealloc  /////
-/////////////////////////////
 DenseCRF::DenseCRF(int N, int M) : N_(N), M_(M) {
 	unary_				= new float[N_ * M_];	memset(unary_, 0, N_ * M_ * sizeof(float));
 	additional_unary_	= new float[N_ * M_];	memset(additional_unary_, 0, N_ * M_ * sizeof(float));

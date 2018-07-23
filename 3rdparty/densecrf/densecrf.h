@@ -31,14 +31,14 @@
 
 class PairwisePotential{
 public:
-	virtual ~PairwisePotential();
+	virtual ~PairwisePotential(void) {}
 	virtual void apply( float * out_values, const float * in_values, float * tmp, int value_size ) const = 0;
 };
 
 
 class SemiMetricFunction{
 public:
-	virtual ~SemiMetricFunction();
+	virtual ~SemiMetricFunction(void) {}
 	// For two probabilities apply the semi metric transform: v_i = sum_j mu_ij u_j
 	virtual void apply( float * out_values, const float * in_values, int value_size ) const = 0;
 };
