@@ -34,7 +34,7 @@
 class PottsPotential: public PairwisePotential
 {
 protected:
-	Permutohedral lattice_;
+	CPermutohedral lattice_;
 	PottsPotential( const PottsPotential&o ){}
 	int N_;
 	float w_;

@@ -28,30 +28,38 @@
 #include "permutohedral.h"
 
 // Constructor
-Filter::Filter( const float * source_features, int N_source, const float * target_features, int N_target, int feature_dim ):n1_(N_source),o1_(0),n2_(N_target), o2_(N_source)
+CFilter::CFilter(const float *source_features, int N_source, const float *target_features, int N_target, int feature_dim)
+    : m_n1(N_source)
+    , m_o1(0)
+    , m_n2(N_target)
+    , m_o2(N_source)
 {
-    permutohedral_ = new Permutohedral();
-    float * features = new float[ (N_source+N_target)*feature_dim ];
-    memcpy( features, source_features, N_source*feature_dim*sizeof(float) );
-    memcpy( features+N_source*feature_dim, target_features, N_target*feature_dim*sizeof(float) );
-    permutohedral_->init( features, feature_dim, N_source+N_target );
-    delete[] features;
+    m_pPermutohedral = new CPermutohedral();
+    float * features = new float[(N_source + N_target) * feature_dim];
+    memcpy(features, source_features, N_source * feature_dim * sizeof(float));
+    memcpy(features + N_source * feature_dim, target_features, N_target * feature_dim * sizeof(float));
+    m_pPermutohedral->init(features, feature_dim, N_source + N_target);
+    delete [] features;
 }
 
 // Constructor
-Filter::Filter( const float * features, int N, int feature_dim ):n1_(N),o1_(0),n2_(N), o2_(0)
+CFilter::CFilter(const float *features, int N, int feature_dim )
+    : m_n1(N)
+    , m_o1(0)
+    , m_n2(N)
+    , m_o2(0)
 {
-    permutohedral_ = new Permutohedral();
-    permutohedral_->init( features, feature_dim, N );
+    m_pPermutohedral = new CPermutohedral();
+    m_pPermutohedral->init(features, feature_dim, N);
 }
 
 // Destructor
-Filter::~Filter(void)
+CFilter::~CFilter(void)
 {
-    delete permutohedral_;
+    delete m_pPermutohedral;
 }
 
-void Filter::filter( const float * source, float * target, int value_size ){
-    permutohedral_->compute( target, source, value_size, o1_, o2_, n1_, n2_ );
+void CFilter::filter(const float *source, float *target, int value_size)
+{
+    m_pPermutohedral->compute(target, source, value_size, m_o1, m_o2, m_n1, m_n2);
 }
-

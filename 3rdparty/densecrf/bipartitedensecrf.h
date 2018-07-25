@@ -6,7 +6,8 @@ class BPSemiMetricPotential : public BPPottsPotential {
 protected:
 	const SemiMetricFunction * function_;
 public:
-	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const {
+	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const
+    {
 		lattice_.compute(tmp, in_values, value_size, 0, N1_, N1_, N2_);
 
 		// To the metric transform
@@ -20,7 +21,8 @@ public:
 		}
 		delete[] tmp2;
 	}
-	BPSemiMetricPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, const SemiMetricFunction* function, bool per_pixel_normalization = true) :BPPottsPotential(features1, features2, D, N1, N2, w, per_pixel_normalization), function_(function) {
+	
+    BPSemiMetricPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, const SemiMetricFunction* function, bool per_pixel_normalization = true) :BPPottsPotential(features1, features2, D, N1, N2, w, per_pixel_normalization), function_(function) {
 	}
 };
 

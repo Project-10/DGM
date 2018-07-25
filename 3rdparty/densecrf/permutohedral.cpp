@@ -24,30 +24,30 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 #include "permutohedral.h"
+#include "hashtable.h"
 
 // Copy constructor
-Permutohedral::Permutohedral(const Permutohedral &o) : m_pOffset(NULL), m_pBarycentric(NULL), m_pBlurNeighbors(NULL), m_N(o.m_N), m_M(o.m_M), m_d(o.m_d)
+CPermutohedral::CPermutohedral(const CPermutohedral &rhs) : m_pOffset(NULL), m_N(rhs.m_N), m_M(rhs.m_M), m_pBarycentric(NULL), m_pBlurNeighbors(NULL),  m_d(rhs.m_d)
 {
-    if (o.m_pBarycentric) {
+    if (rhs.m_pBarycentric) {
         m_pBarycentric = new float[(m_d + 1) * m_N];
-        memcpy(m_pBarycentric, o.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
+        memcpy(m_pBarycentric, rhs.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
     }
-    if (o.m_pOffset) {
+    if (rhs.m_pOffset) {
         m_pOffset = new int[(m_d + 1) * m_N];
-        memcpy(m_pOffset, o.m_pOffset, (m_d + 1) * m_N * sizeof(int));
+        memcpy(m_pOffset, rhs.m_pOffset, (m_d + 1) * m_N * sizeof(int));
     }
-    if (o.m_pBlurNeighbors) {
+    if (rhs.m_pBlurNeighbors) {
         m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_N];
-        memcpy(m_pBlurNeighbors, o.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
+        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
     }
 }
 
 // Copy operator
-Permutohedral & Permutohedral::operator= (const Permutohedral &o)
+CPermutohedral & CPermutohedral::operator= (const CPermutohedral &rhs)
 {
-    if (&o == this) return *this;
+    if (&rhs == this) return *this;
     if (m_pBarycentric)    delete[] m_pBarycentric;
     if (m_pOffset)         delete[] m_pOffset;
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
@@ -55,37 +55,37 @@ Permutohedral & Permutohedral::operator= (const Permutohedral &o)
 	m_pOffset			= NULL; 
 	m_pBarycentric		= NULL; 
 	m_pBlurNeighbors	= NULL;
-    m_N = o.m_N;
-    m_M = o.m_M;
-    m_d = o.m_d;
+    m_N = rhs.m_N;
+    m_M = rhs.m_M;
+    m_d = rhs.m_d;
     
-	if (o.m_pBarycentric){
+	if (rhs.m_pBarycentric){
         m_pBarycentric = new float[(m_d + 1) * m_N];
-        memcpy( m_pBarycentric, o.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
+        memcpy( m_pBarycentric, rhs.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
     }
     
-	if (o.m_pOffset){
+	if (rhs.m_pOffset){
         m_pOffset = new int[(m_d + 1) * m_N];
-        memcpy(m_pOffset, o.m_pOffset, (m_d + 1) * m_N * sizeof(int));
+        memcpy(m_pOffset, rhs.m_pOffset, (m_d + 1) * m_N * sizeof(int));
     }
     
-	if (o.m_pBlurNeighbors){
+	if (rhs.m_pBlurNeighbors){
         m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_N];
-        memcpy(m_pBlurNeighbors, o.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
+        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
     }
     
 	return *this;
 }
 
 // Destructor
-Permutohedral::~Permutohedral(void)
+CPermutohedral::~CPermutohedral(void)
 {
     if (m_pBarycentric)    delete[] m_pBarycentric;
     if (m_pOffset)         delete[] m_pOffset;
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
 }
 
-void Permutohedral::init(const float * feature, int feature_size, int N)
+void CPermutohedral::init(const float * feature, int feature_size, int N)
 {
     // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
     m_N = N;
@@ -229,7 +229,7 @@ void Permutohedral::init(const float * feature, int feature_size, int N)
     delete[] n2;
 }
 
-void Permutohedral::compute(float * out, const float * in, int value_size, int in_offset, int out_offset, int in_size, int out_size) const
+void CPermutohedral::compute(float * out, const float * in, int value_size, int in_offset, int out_offset, int in_size, int out_size) const
 {
     if (in_size  == -1) in_size  = m_N - in_offset;
     if (out_size == -1) out_size = m_N - out_offset;

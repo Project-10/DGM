@@ -27,7 +27,6 @@
 
 #pragma once
 #include "types.h"
-#include "hashtable.h"
 
 struct Neighbors
 {
@@ -38,22 +37,23 @@ struct Neighbors
 /************************************************/
 /***          Permutohedral Lattice           ***/
 /************************************************/
-class Permutohedral
+class CPermutohedral
 {
 public:
-    Permutohedral(void) = default;
-    Permutohedral(const Permutohedral &o);
-    Permutohedral & operator= (const Permutohedral &o);
-    ~Permutohedral(void);
+    CPermutohedral(void) = default;
+    CPermutohedral(const CPermutohedral &rhs);
+    CPermutohedral & operator= (const CPermutohedral &rhs);
+    ~CPermutohedral(void);
 
-    void init(const float * feature, int feature_size, int N);
-    void compute(float * out, const float * in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1 ) const;
+    void init(const float *feature, int feature_size, int N);
+    void compute(float *out, const float *in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1) const;
 
     
-protected:
+private:
     int         m_N                 = 0;        // Number of elements
     int         m_M                 = 0;        // Size of sparse discretized space
     int         m_d                 = 0;        // Dimension of features
+    
     int       * m_pOffset           = NULL;
     float     * m_pBarycentric      = NULL;
     Neighbors * m_pBlurNeighbors    = NULL;

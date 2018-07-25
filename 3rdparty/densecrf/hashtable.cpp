@@ -8,14 +8,6 @@ CHashTable::CHashTable(int key_size, int nElements) : m_key_size(key_size), m_ca
 	memset(m_pTable, -1, m_capacity * sizeof(int));
 }
 
-// Copy Constructor
-CHashTable::CHashTable(const CHashTable & o) : m_key_size(o.m_key_size), m_capacity(o.m_capacity), m_filled(0)
-{
-	m_pTable = new int[m_capacity];
-	m_pKeys = new short[(m_capacity / 2 + 10) * m_key_size];
-	memset(m_pTable, -1, m_capacity * sizeof(int));
-}
-
 // Destructor
 CHashTable::~CHashTable(void)
 {

@@ -128,7 +128,7 @@ public:
 
 class BPPottsPotential : public PairwisePotential {
 protected:
-	Permutohedral lattice_;
+	CPermutohedral lattice_;
 	BPPottsPotential(const BPPottsPotential&o) {}
 	int N1_, N2_;
 	float w_;
