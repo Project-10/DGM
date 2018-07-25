@@ -2,31 +2,6 @@
 
 #include "densecrf.h"
 
-class BPSemiMetricPotential : public BPPottsPotential {
-protected:
-	const SemiMetricFunction * function_;
-public:
-	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const
-    {
-		lattice_.compute(tmp, in_values, value_size, 0, N1_, N1_, N2_);
-
-		// To the metric transform
-		float * tmp2 = new float[value_size];
-		for (int i = 0; i<N2_; i++) {
-			float * out = out_values + i * value_size;
-			float * t1 = tmp + i * value_size; ;
-			function_->apply(tmp2, t1, value_size);
-			for (int j = 0; j<value_size; j++)
-				out[j] -= w_ * norm_[i] * tmp2[j];
-		}
-		delete[] tmp2;
-	}
-	
-    BPSemiMetricPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, const SemiMetricFunction* function, bool per_pixel_normalization = true) :BPPottsPotential(features1, features2, D, N1, N2, w, per_pixel_normalization), function_(function) {
-	}
-};
-
-
 // A dense CRF in a bipartite graph
 class BipartiteDenseCRF {
 protected:
