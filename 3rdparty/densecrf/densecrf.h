@@ -28,6 +28,7 @@
 #pragma once
 
 #include "types.h"
+#include "permutohedral.h"
 
 class PairwisePotential{
 public:
@@ -125,73 +126,54 @@ public:
 };
 
 
-// A dense CRF in a bipartite graph
-class BipartiteDenseCRF {
+class BPPottsPotential : public PairwisePotential {
 protected:
-	// Two dense CRF's that are connected by a set of completely connected edges (in a bipartite graph)
-	DenseCRF* dense_crfs_[2];
-	
-	// Number of variables and labels
-	int N_[2], M_;
-	
-	// All bipartite pairwise potentials (all others are stored in each dense_crfs respectively)
-	std::vector<PairwisePotential*> pairwise_[2];
-	
-	// Don't copy this object, bad stuff will happen
-	BipartiteDenseCRF( BipartiteDenseCRF & o ){}
-	
-	// Run inference and return the pointer to the result
-	void runInference( int n_iterations, float ** prob, float relax);
-
-
+	Permutohedral lattice_;
+	BPPottsPotential(const BPPottsPotential&o) {}
+	int N1_, N2_;
+	float w_;
+	float *norm_;
 public:
-	// Create a dense CRF model of size N with M labels
-	BipartiteDenseCRF( int N1, int N2, int M );
-	~BipartiteDenseCRF();
-	
-	// Add  a pairwise potential defined over some feature space
-	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
-	// The kernel shape should be captured by transforming the
-	// features before passing them into this function
-	void addPairwiseEnergy( const float * features1, const float * features2, int D, float w=1.0f, const SemiMetricFunction * function=NULL );
-	
-	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
-	void addPairwiseEnergy( PairwisePotential* potential12, PairwisePotential* potential21 );
-	
-	// Run inference and return the probabilities
-	void inference( int n_iterations, float* result1, float * result2, float relax=1 );
-	
-	// Run MAP inference and return the map for each pixel
-	void map( int n_iterations, short int* result1, short int* result2, float relax=1 );
-	
-	// Access the two CRF's directly
-	DenseCRF& getCRF( int i );
-	const DenseCRF& getCRF( int i ) const;
-	
-	// Step by step inference
-	void startInference();
-	void stepInference( float relax = 1.0 );
-	void currentMap( short * result );
+	~BPPottsPotential() {
+		if (norm_) delete[] norm_;
+	}
+
+	BPPottsPotential(const float* features1, const float* features2, int D, int N1, int N2, float w, bool per_pixel_normalization = true) : N1_(N1), N2_(N2), w_(w) {
+		float * features = new float[(N1_ + N2_)*D];
+		memset(features, 0, (N1_ + N2_)*D * sizeof(float));
+		memcpy(features, features1, N1_ * D * sizeof(float));
+		memcpy(features + N1_ * D, features2, N2_ * D * sizeof(float));
+		lattice_.init(features, D, N1_ + N2_);
+		delete[] features;
+
+		norm_ = new float[N2_];
+		memset(norm_, 0, N2_ * sizeof(float));
+		float *tmp = new float[N1_];
+		for (int i = 0; i < N1_; i++) tmp[i] = 1;
+		// Compute the normalization factor
+		lattice_.compute(norm_, tmp, 1, 0, N1_, N1_, N2_);
+		if (per_pixel_normalization) {
+			// use a per pixel normalization
+			for (int i = 0; i<N2_; i++)
+				norm_[i] = 1.f / (norm_[i] + 1e-20f);
+		}
+		else {
+			float mean_norm = 0;
+			for (int i = 0; i<N2_; i++)
+				mean_norm += norm_[i];
+			mean_norm = N2_ / mean_norm;
+			// use a per pixel normalization
+			for (int i = 0; i<N2_; i++)
+				norm_[i] = mean_norm;
+		}
+		delete[] tmp;
+	}
+
+	virtual void apply(float * out_values, const float * in_values, float * tmp, int value_size) const {
+		lattice_.compute(tmp, in_values, value_size, 0, N1_, N1_, N2_);
+		for (int i = 0, k = 0; i<N2_; i++)
+			for (int j = 0; j<value_size; j++, k++)
+				out_values[k] += w_ * norm_[i] * tmp[k];
+	}
 };
 
-
-
-// This function defines a simplified interface to the permutohedral lattice
-// We assume a filter standard deviation of 1
-class Permutohedral;
-class Filter{
-protected:
-    int n1_, o1_, n2_, o2_;
-    Permutohedral * permutohedral_;
-    // Don't copy
-    Filter( const Filter& filter ){}
-public:
-    // Use different source and target features
-    Filter( const float * source_features, int N_source, const float * target_features, int N_target, int feature_dim );
-    // Use the same source and target features
-    Filter( const float * features, int N, int feature_dim );
-    //
-    ~Filter();
-    // Filter a bunch of values
-    void filter( const float * source, float * target, int value_size );
-};

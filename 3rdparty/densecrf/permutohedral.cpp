@@ -50,24 +50,31 @@ Permutohedral & Permutohedral::operator= (const Permutohedral &o)
     if (&o == this) return *this;
     if (m_pBarycentric)    delete[] m_pBarycentric;
     if (m_pOffset)         delete[] m_pOffset;
-    if (m_pBlurNeighbors) delete[] m_pBlurNeighbors;
-    m_pOffset = NULL; m_pBarycentric = NULL; m_pBlurNeighbors = NULL;
+    if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
+    
+	m_pOffset			= NULL; 
+	m_pBarycentric		= NULL; 
+	m_pBlurNeighbors	= NULL;
     m_N = o.m_N;
     m_M = o.m_M;
     m_d = o.m_d;
-    if (o.m_pBarycentric){
+    
+	if (o.m_pBarycentric){
         m_pBarycentric = new float[(m_d + 1) * m_N];
         memcpy( m_pBarycentric, o.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
     }
-    if (o.m_pOffset){
+    
+	if (o.m_pOffset){
         m_pOffset = new int[(m_d + 1) * m_N];
         memcpy(m_pOffset, o.m_pOffset, (m_d + 1) * m_N * sizeof(int));
     }
-    if (o.m_pBlurNeighbors){
+    
+	if (o.m_pBlurNeighbors){
         m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_N];
         memcpy(m_pBlurNeighbors, o.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
     }
-    return *this;
+    
+	return *this;
 }
 
 // Destructor
@@ -84,7 +91,8 @@ void Permutohedral::init(const float * feature, int feature_size, int N)
     m_N = N;
     m_d = feature_size;
     CHashTable hash_table(m_d, m_N * (m_d + 1));    // <============ Hash table
-    
+	//std::unordered_map<short, int> hash_table;
+
     // Allocate the class memory
     if (m_pOffset) delete [] m_pOffset;
     m_pOffset = new int[(m_d + 1) * m_N];
@@ -216,7 +224,8 @@ void Permutohedral::init(const float * feature, int feature_size, int N)
             m_pBlurNeighbors[j * m_M + i].n2 = hash_table.find(n2);
         }
     }
-    delete[] n1;
+    
+	delete[] n1;
     delete[] n2;
 }
 

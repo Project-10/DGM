@@ -45,7 +45,8 @@ public:
 		if (norm_) delete[] norm_;
 	}
 	
-	PottsPotential(const float* features, int D, int N, float w, bool per_pixel_normalization=true) :N_(N), w_(w) {
+	PottsPotential(const float* features, int D, int N, float w, bool per_pixel_normalization=true) : N_(N), w_(w) 
+	{
 		lattice_.init( features, D, N );
 		norm_ = new float[N];
 		for (int i = 0; i < N; i++) norm_[i] = 1;
