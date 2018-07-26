@@ -59,7 +59,7 @@ CFilter::~CFilter(void)
     delete m_pPermutohedral;
 }
 
-void CFilter::filter(const float *source, float *target, int value_size)
+void CFilter::filter(const vec_float_t &source, vec_float_t &target, int value_size)
 {
     m_pPermutohedral->compute(target, source, value_size, m_o1, m_o2, m_n1, m_n2);
 }

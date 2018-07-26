@@ -3,7 +3,7 @@
 #include "VIS.h"
 #include "DGM/timer.h"
 #include "DGM/serialize.h"
-#include "../3rdparty/densecrf/densecrf.h"
+#include "../3rdparty/densecrf/graphdense2d.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
 
 	CTrainNode		* nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);
 	CTrainEdge		* edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);
-	CGraphExt		* graph = new CGraphExt(nStates);
-	CInfer			* decoder = new CInferLBP(graph);
+//	CGraphExt		* graph = new CGraphExt(nStates);
+//	CInfer			* decoder = new CInferLBP(graph);
 	CMarker			* marker = new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat = new CCMat(nStates);
 	float			  params[] = { 100, 0.01f };
@@ -44,9 +44,9 @@ int main(int argc, char *argv[])
 
 
 	// ==================== STAGE 1: Building the graph ====================
-	Timer::start("Building the Graph... ");
-	graph->build(imgSize);
-	Timer::stop();
+//	Timer::start("Building the Graph... ");
+//	graph->build(imgSize);
+//	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
@@ -95,16 +95,16 @@ int main(int argc, char *argv[])
 		} // x
 	} // y
 
-	DenseCRF2D *crf = new DenseCRF2D(width, height, nStates);
-	crf->setNodes(nodePotentials);
-	crf->addPairwiseGaussian(3, 3, 3);
-	crf->addPairwiseBilateral(60, 60, 20, 20, 20, test_img.data, 10);
+	CGraphDense2D *graph = new CGraphDense2D(nStates);
+	graph->setNodes(nodePotentials);
+	graph->addPairwiseGaussian(test_img.size(), 3, 3, 3);
+	graph->addPairwiseBilateral(60, 60, 20, 20, 20, test_img, 10);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = crf->decode(100);
+	vec_byte_t optimalDecoding = graph->decode(100);
 	Timer::stop();
 
 

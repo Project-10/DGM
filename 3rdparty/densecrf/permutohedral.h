@@ -46,7 +46,7 @@ public:
     ~CPermutohedral(void);
 
     void init(const float *feature, int feature_size, int N);
-    void compute(float *out, const float *in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1) const;
+    void compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1) const;
 
     
 private:

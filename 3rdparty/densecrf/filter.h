@@ -15,7 +15,7 @@ public:
 	~CFilter(void);
 	
     // Filter a bunch of values
-    void filter(const float *source, float *target, int value_size);
+    void filter(const vec_float_t &source, vec_float_t &target, int value_size);
 
 
 private:

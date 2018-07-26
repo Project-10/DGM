@@ -28,7 +28,13 @@
 #include "hashtable.h"
 
 // Copy constructor
-CPermutohedral::CPermutohedral(const CPermutohedral &rhs) : m_pOffset(NULL), m_N(rhs.m_N), m_M(rhs.m_M), m_pBarycentric(NULL), m_pBlurNeighbors(NULL),  m_d(rhs.m_d)
+CPermutohedral::CPermutohedral(const CPermutohedral &rhs) 
+	: m_pOffset(NULL)
+	, m_N(rhs.m_N)
+	, m_M(rhs.m_M)
+	, m_pBarycentric(NULL)
+	, m_pBlurNeighbors(NULL)
+	, m_d(rhs.m_d)
 {
     if (rhs.m_pBarycentric) {
         m_pBarycentric = new float[(m_d + 1) * m_N];
@@ -85,7 +91,7 @@ CPermutohedral::~CPermutohedral(void)
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
 }
 
-void CPermutohedral::init(const float * feature, int feature_size, int N)
+void CPermutohedral::init(const float *feature, int feature_size, int N)
 {
     // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
     m_N = N;
@@ -125,7 +131,7 @@ void CPermutohedral::init(const float * feature, int feature_size, int N)
     // Compute the simplex each feature lies in
     for(int k = 0; k < m_N; k++) {
         // Elevate the feature ( y = Ep, see p.5 in [Adams etal 2010])
-        const float * f = feature + k*feature_size;
+        const float * f = feature + k * feature_size;
         
         // sm contains the sum of 1..n of our faeture vector
         float sm = 0;
@@ -229,7 +235,7 @@ void CPermutohedral::init(const float * feature, int feature_size, int N)
     delete[] n2;
 }
 
-void CPermutohedral::compute(float * out, const float * in, int value_size, int in_offset, int out_offset, int in_size, int out_size) const
+void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset, int out_offset, int in_size, int out_size) const
 {
     if (in_size  == -1) in_size  = m_N - in_offset;
     if (out_size == -1) out_size = m_N - out_offset;
