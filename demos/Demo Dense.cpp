@@ -104,12 +104,7 @@ int main(int argc, char *argv[])
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	short *map = new short[width * height];
-	crf->map(100, map);
-	vec_byte_t	optimalDecoding;
-	for (int i = 0; i < width * height; i++)
-		optimalDecoding.push_back(static_cast<byte>(map[i]));
-	delete[] map;
+	vec_byte_t optimalDecoding = crf->decode(100);
 	Timer::stop();
 
 

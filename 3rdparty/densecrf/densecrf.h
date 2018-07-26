@@ -50,10 +50,10 @@ public:
 	DllExport void setNodes(const Mat &pots);
 	
 	// Run inference and return the probabilities
-	DllExport void inference( int n_iterations, float* result, float relax=1.0 );
+	DllExport void infer(unsigned int nIt = 1, float *result = NULL, float relax = 1.0f);
 	
 	// Run MAP inference and return the map for each pixel
-	DllExport void map( int n_iterations, short int* result, float relax=1.0 );
+	DllExport vec_byte_t decode(unsigned int nIt = 0, float relax = 1.0);
 	
 	// Step by step inference
 	DllExport void startInference();
@@ -80,7 +80,7 @@ protected:
 	std::vector<PairwisePotential *> pairwise_;
 
 	// Run inference and return the pointer to the result
-	float* runInference(int n_iterations, float relax);
+	float *runInference(unsigned int nIt, float relax);
 
 	// Auxillary functions
 	void expAndNormalize(float* out, const float* in, float scale = 1.0, float relax = 1.0);

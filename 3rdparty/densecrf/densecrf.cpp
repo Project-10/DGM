@@ -97,36 +97,44 @@ void DenseCRF::setNodes(const Mat &pots)
 ///////////////////////
 /////  Inference  /////
 ///////////////////////
-void DenseCRF::inference ( int m_nNodesiterations, float* result, float relax ) {
+void DenseCRF::infer(unsigned int nIt, float *result, float relax) 
+{
 	// Run inference
-	float * prob = runInference( m_nNodesiterations, relax );
+	float *prob = runInference(nIt, relax);
 	// Copy the result over
-	for( int i=0; i<m_nNodes; i++ )
-		memcpy( result+i*m_nStates, prob+i*m_nStates, m_nStates*sizeof(float) );
+	for(int i = 0; i < m_nNodes; i++)
+		memcpy(result + i * m_nStates, prob + i * m_nStates, m_nStates * sizeof(float));
 }
 
-void DenseCRF::map ( int m_nNodesiterations, short* result, float relax ) {
+vec_byte_t DenseCRF::decode(unsigned int nIt, float relax)
+{
+	vec_byte_t res;
+	res.reserve(m_nNodes);
+
 	// Run inference
-	float * prob = runInference( m_nNodesiterations, relax );
+	float *prob = runInference(nIt, relax);
 	
 	// Find the map
-	for( int i=0; i<m_nNodes; i++ ){
+	for(int i = 0; i < m_nNodes; i++) {
 		const float * p = prob + i*m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = p[0];
-		int imx = 0;
-		for( int j=1; j<m_nStates; j++ )
-			if( mx < p[j] ){
+		byte imx = 0;
+		for(byte j = 1; j < m_nStates; j++)
+			if(mx < p[j]) {
 				mx = p[j];
 				imx = j;
 			}
-		result[i] = imx;
+		res.push_back(imx);
 	}
+
+	return res;
 }
 
-float* DenseCRF::runInference( int m_nNodesiterations, float relax ) {
+float* DenseCRF::runInference(unsigned int nIt, float relax )
+{
 	startInference();
-	for( int it=0; it<m_nNodesiterations; it++ )
+	for(unsigned int i = 0; i < nIt; i++)
 		stepInference(relax);
 	return current_;
 }
