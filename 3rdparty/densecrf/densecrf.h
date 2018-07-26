@@ -34,43 +34,20 @@
 class PairwisePotential;
 
 class DenseCRF {
-protected:
-	friend class BipartiteDenseCRF;
-	
-	// Number of variables and labels
-	int N_, M_;
-	float *unary_, *additional_unary_, *current_, *next_, *tmp_;
-	
-	// Store all pairwise potentials
-	std::vector<PairwisePotential *> pairwise_;
-	
-	// Run inference and return the pointer to the result
-	float* runInference( int n_iterations, float relax);
-	
-	// Auxillary functions
-	void expAndNormalize( float* out, const float* in, float scale = 1.0, float relax = 1.0 );
-	
-	// Don't copy this object, bad stuff will happen
-	DenseCRF( DenseCRF & o ){}
-
 public:
-	// Create a dense CRF model of size N with M labels
-	DllExport DenseCRF( int N, int M );
+	DllExport DenseCRF(int nNodes, byte nStates);
 	DllExport virtual ~DenseCRF();
 	// Add  a pairwise potential defined over some feature space
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
 	// The kernel shape should be captured by transforming the
 	// features before passing them into this function
-	DllExport void addPairwiseEnergy( const float * features, int D, float w=1.0f, const SemiMetricFunction * function=NULL );
+	DllExport void addPairwiseEnergy(const float *features, int D, float w=1.0f, const SemiMetricFunction * function = NULL);
 	
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
 	DllExport void addPairwiseEnergy( PairwisePotential* potential );
 	
 	// Set the unary potential for all variables and labels (memory order is [x0l0 x0l1 x0l2 .. x1l0 x1l1 ...])
-	DllExport void setUnaryEnergy( const float * unary );
-	
-	// Set the unary potential for a specific variable
-	DllExport void setUnaryEnergy( int n, const float * unary );
+	DllExport void setNodes(const Mat &pots);
 	
 	// Run inference and return the probabilities
 	DllExport void inference( int n_iterations, float* result, float relax=1.0 );
@@ -89,27 +66,48 @@ public: /* Debugging functions */
 	
 	// Compute the pairwise energy of an assignment (half of each pairwise potential is added to each of it's endpoints)
 	DllExport void pairwiseEnergy( const short * ass, float * result, int term=-1 );
+
+
+protected:
+	friend class BipartiteDenseCRF;
+
+	int		m_nNodes;		// number of pixels
+	byte	m_nStates;
+	
+	float *unary_, *additional_unary_, *current_, *next_, *tmp_;
+
+	// Store all pairwise potentials
+	std::vector<PairwisePotential *> pairwise_;
+
+	// Run inference and return the pointer to the result
+	float* runInference(int n_iterations, float relax);
+
+	// Auxillary functions
+	void expAndNormalize(float* out, const float* in, float scale = 1.0, float relax = 1.0);
+
+	// Don't copy this object, bad stuff will happen
+	DenseCRF(DenseCRF & o) {}
+
+
+private:
+
 };
 
 
 class DenseCRF2D : public DenseCRF {
-
-protected:
-	// Width, height of the 2d grid
-	int W_, H_;
-
 public:
-	// Create a 2d dense CRF model of size W x H with M labels
-	DllExport DenseCRF2D( int W, int H, int M );
-	DllExport virtual ~DenseCRF2D();
+	DllExport DenseCRF2D(int width, int height, byte nStates) : DenseCRF(width * height, nStates), m_width(width), m_height(height) {}
+	DllExport virtual ~DenseCRF2D(void) {}
+	
 	// Add a Gaussian pairwise potential with standard deviation sx and sy
 	DllExport void addPairwiseGaussian( float sx, float sy, float w, const SemiMetricFunction * function = NULL );
 	
 	// Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 	DllExport void addPairwiseBilateral( float sx, float sy, float sr, float sg, float sb, const unsigned char * im, float w, const SemiMetricFunction * function = NULL );
 	
-	// Set the unary potential for a specific variable
-	DllExport void setUnaryEnergy( int x, int y, const float * unary );
-	using DenseCRF::setUnaryEnergy;
+
+private:
+	int m_width;		// TODO: maybe CvSize?
+	int m_height;
 };
 

@@ -95,17 +95,17 @@ int main(int argc, char *argv[])
 		} // x
 	} // y
 
-	DenseCRF2D crf(width, height, nStates);
-	crf.setUnaryEnergy(reinterpret_cast<float *>(nodePotentials.data));
-	crf.addPairwiseGaussian(3, 3, 3);
-	crf.addPairwiseBilateral(60, 60, 20, 20, 20, test_img.data, 10);
+	DenseCRF2D *crf = new DenseCRF2D(width, height, nStates);
+	crf->setNodes(nodePotentials);
+	crf->addPairwiseGaussian(3, 3, 3);
+	crf->addPairwiseBilateral(60, 60, 20, 20, 20, test_img.data, 10);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
 	short *map = new short[width * height];
-	crf.map(100, map);
+	crf->map(100, map);
 	vec_byte_t	optimalDecoding;
 	for (int i = 0; i < width * height; i++)
 		optimalDecoding.push_back(static_cast<byte>(map[i]));

@@ -28,85 +28,14 @@
 #include "densecrf.h"
 #include "fastmath.h"
 #include "permutohedral.h"
-#include <cmath>
-#include <cstring>
 
-class PottsPotential: public PairwisePotential
-{
-protected:
-	CPermutohedral lattice_;
-	PottsPotential( const PottsPotential&o ){}
-	int N_;
-	float w_;
-	float *norm_;
-
-public:
-	~PottsPotential(){
-		if (norm_) delete[] norm_;
-	}
-	
-	PottsPotential(const float* features, int D, int N, float w, bool per_pixel_normalization=true) : N_(N), w_(w) 
-	{
-		lattice_.init( features, D, N );
-		norm_ = new float[N];
-		for (int i = 0; i < N; i++) norm_[i] = 1;
-		// Compute the normalization factor
-		lattice_.compute( norm_, norm_, 1 );
-		if ( per_pixel_normalization ) {
-			// use a per pixel normalization
-			for ( int i=0; i<N; i++ )
-				norm_[i] = 1.f / (norm_[i]+1e-20f);
-		}
-		else {
-			float mean_norm = 0;
-			for ( int i=0; i<N; i++ )
-				mean_norm += norm_[i];
-			mean_norm = N / mean_norm;
-			// use a per pixel normalization
-			for ( int i=0; i<N; i++ )
-				norm_[i] = mean_norm;
-		}
-	}
-	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const 
-	{
-		lattice_.compute( tmp, in_values, value_size );
-		for ( int i=0,k=0; i<N_; i++ )
-			for ( int j=0; j<value_size; j++, k++ )
-				out_values[k] += w_*norm_[i]*tmp[k];
-	}
-};
-
-class SemiMetricPotential: public PottsPotential
-{
-protected:
-	const SemiMetricFunction * function_;
-public:
-	void apply(float* out_values, const float* in_values, float* tmp, int value_size) const {
-		lattice_.compute( tmp, in_values, value_size );
-
-		// To the metric transform
-		float * tmp2 = new float[value_size];
-		for ( int i=0; i<N_; i++ ) {
-			float * out = out_values + i*value_size;
-			float * t1  = tmp  + i*value_size;
-			function_->apply( tmp2, t1, value_size );
-			for ( int j=0; j<value_size; j++ )
-				out[j] -= w_*norm_[i]*tmp2[j];
-		}
-		delete[] tmp2;
-	}
-	SemiMetricPotential(const float* features, int D, int N, float w, const SemiMetricFunction* function, bool per_pixel_normalization=true) :PottsPotential( features, D, N, w, per_pixel_normalization ),function_(function) {
-	}
-};
-
-
-
-DenseCRF::DenseCRF(int N, int M) : N_(N), M_(M) {
-	unary_				= new float[N_ * M_];	memset(unary_, 0, N_ * M_ * sizeof(float));
-	additional_unary_	= new float[N_ * M_];	memset(additional_unary_, 0, N_ * M_ * sizeof(float));
-	current_			= new float[N_ * M_];	memset(current_, 0, N_ * M_ * sizeof(float));
-	next_				= new float[N_ * M_];	memset(next_, 0, N_ * M_ * sizeof(float));
-	tmp_				= new float[2 * N_*M_];	memset(tmp_, 0, 2 * N_ * M_ * sizeof(float));
+// Constructor
+DenseCRF::DenseCRF(int nNodes, byte nStates) : m_nNodes(nNodes), m_nStates(nStates) {
+	unary_				= new float[m_nNodes * m_nStates];	memset(unary_, 0, m_nNodes * m_nStates * sizeof(float));
+	additional_unary_	= new float[m_nNodes * m_nStates];	memset(additional_unary_, 0, m_nNodes * m_nStates * sizeof(float));
+	current_			= new float[m_nNodes * m_nStates];	memset(current_, 0, m_nNodes * m_nStates * sizeof(float));
+	next_				= new float[m_nNodes * m_nStates];	memset(next_, 0, m_nNodes * m_nStates * sizeof(float));
+	tmp_				= new float[2 * m_nNodes*m_nStates];	memset(tmp_, 0, 2 * m_nNodes * m_nStates * sizeof(float));
 }
 
 DenseCRF::~DenseCRF() {
@@ -119,19 +48,14 @@ DenseCRF::~DenseCRF() {
 		delete pairwise_[i];
 }
 
-DenseCRF2D::DenseCRF2D(int W, int H, int M) : DenseCRF(W*H,M), W_(W), H_(H) {
-}
-
-DenseCRF2D::~DenseCRF2D() {
-}
 /////////////////////////////////
 /////  Pairwise Potentials  /////
 /////////////////////////////////
 void DenseCRF::addPairwiseEnergy (const float* features, int D, float w, const SemiMetricFunction * function) {
 	if (function)
-		addPairwiseEnergy( new SemiMetricPotential( features, D, N_, w, function ) );
+		addPairwiseEnergy( new SemiMetricPotential( features, D, m_nNodes, w, function ) );
 	else
-		addPairwiseEnergy( new PottsPotential( features, D, N_, w ) );
+		addPairwiseEnergy( new PottsPotential( features, D, m_nNodes, w ) );
 }
 
 void DenseCRF::addPairwiseEnergy ( PairwisePotential* potential ){
@@ -139,25 +63,25 @@ void DenseCRF::addPairwiseEnergy ( PairwisePotential* potential ){
 }
 
 void DenseCRF2D::addPairwiseGaussian ( float sx, float sy, float w, const SemiMetricFunction * function ) {
-	float * feature = new float [N_*2];
-	for( int j=0; j<H_; j++ )
-		for( int i=0; i<W_; i++ ){
-			feature[(j*W_+i)*2+0] = i / sx;
-			feature[(j*W_+i)*2+1] = j / sy;
+	float * feature = new float [m_nNodes*2];
+	for( int j=0; j<m_height; j++ )
+		for( int i=0; i<m_width; i++ ){
+			feature[(j*m_width+i)*2+0] = i / sx;
+			feature[(j*m_width+i)*2+1] = j / sy;
 		}
 	addPairwiseEnergy( feature, 2, w, function );
 	delete [] feature;
 }
 
 void DenseCRF2D::addPairwiseBilateral ( float sx, float sy, float sr, float sg, float sb, const unsigned char* im, float w, const SemiMetricFunction * function ) {
-	float * feature = new float [N_*5];
-	for( int j=0; j<H_; j++ )
-		for( int i=0; i<W_; i++ ){
-			feature[(j*W_+i)*5+0] = i / sx;
-			feature[(j*W_+i)*5+1] = j / sy;
-			feature[(j*W_+i)*5+2] = im[(i+j*W_)*3+0] / sr;
-			feature[(j*W_+i)*5+3] = im[(i+j*W_)*3+1] / sg;
-			feature[(j*W_+i)*5+4] = im[(i+j*W_)*3+2] / sb;
+	float * feature = new float [m_nNodes*5];
+	for( int j=0; j<m_height; j++ )
+		for( int i=0; i<m_width; i++ ){
+			feature[(j*m_width+i)*5+0] = i / sx;
+			feature[(j*m_width+i)*5+1] = j / sy;
+			feature[(j*m_width+i)*5+2] = im[(i+j*m_width)*3+0] / sr;
+			feature[(j*m_width+i)*5+3] = im[(i+j*m_width)*3+1] / sg;
+			feature[(j*m_width+i)*5+4] = im[(i+j*m_width)*3+2] / sb;
 		}
 	addPairwiseEnergy( feature, 5, w, function );
 	delete [] feature;
@@ -165,39 +89,33 @@ void DenseCRF2D::addPairwiseBilateral ( float sx, float sy, float sr, float sg, 
 //////////////////////////////
 /////  Unary Potentials  /////
 //////////////////////////////
-void DenseCRF::setUnaryEnergy ( const float* unary ) {
-	memcpy( unary_, unary, N_*M_*sizeof(float) );
+void DenseCRF::setNodes(const Mat &pots)
+{
+	memcpy( unary_, reinterpret_cast<const float *>(pots.data), m_nNodes*m_nStates*sizeof(float) );
 }
 
-void DenseCRF::setUnaryEnergy ( int n, const float* unary ) {
-	memcpy( unary_+n*M_, unary, M_*sizeof(float) );
-}
-
-void DenseCRF2D::setUnaryEnergy ( int x, int y, const float* unary ) {
-	memcpy( unary_+(x+y*W_)*M_, unary, M_*sizeof(float) );
-}
 ///////////////////////
 /////  Inference  /////
 ///////////////////////
-void DenseCRF::inference ( int n_iterations, float* result, float relax ) {
+void DenseCRF::inference ( int m_nNodesiterations, float* result, float relax ) {
 	// Run inference
-	float * prob = runInference( n_iterations, relax );
+	float * prob = runInference( m_nNodesiterations, relax );
 	// Copy the result over
-	for( int i=0; i<N_; i++ )
-		memcpy( result+i*M_, prob+i*M_, M_*sizeof(float) );
+	for( int i=0; i<m_nNodes; i++ )
+		memcpy( result+i*m_nStates, prob+i*m_nStates, m_nStates*sizeof(float) );
 }
 
-void DenseCRF::map ( int n_iterations, short* result, float relax ) {
+void DenseCRF::map ( int m_nNodesiterations, short* result, float relax ) {
 	// Run inference
-	float * prob = runInference( n_iterations, relax );
+	float * prob = runInference( m_nNodesiterations, relax );
 	
 	// Find the map
-	for( int i=0; i<N_; i++ ){
-		const float * p = prob + i*M_;
+	for( int i=0; i<m_nNodes; i++ ){
+		const float * p = prob + i*m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = p[0];
 		int imx = 0;
-		for( int j=1; j<M_; j++ )
+		for( int j=1; j<m_nStates; j++ )
 			if( mx < p[j] ){
 				mx = p[j];
 				imx = j;
@@ -206,33 +124,33 @@ void DenseCRF::map ( int n_iterations, short* result, float relax ) {
 	}
 }
 
-float* DenseCRF::runInference( int n_iterations, float relax ) {
+float* DenseCRF::runInference( int m_nNodesiterations, float relax ) {
 	startInference();
-	for( int it=0; it<n_iterations; it++ )
+	for( int it=0; it<m_nNodesiterations; it++ )
 		stepInference(relax);
 	return current_;
 }
 
 void DenseCRF::expAndNormalize ( float* out, const float* in, float scale, float relax ) {
-	float *V = new float[ N_+10 ];
-	for( int i=0; i<N_; i++ ){
-		const float * b = in + i*M_;
+	float *V = new float[ m_nNodes+10 ];
+	for( int i=0; i<m_nNodes; i++ ){
+		const float * b = in + i*m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = scale*b[0];
-		for( int j=1; j<M_; j++ )
+		for( int j=1; j<m_nStates; j++ )
 			if( mx < scale*b[j] )
 				mx = scale*b[j];
 		float tt = 0;
-		for( int j=0; j<M_; j++ ){
+		for( int j=0; j<m_nStates; j++ ){
 			V[j] = fast_exp( scale*b[j]-mx );
 			tt += V[j];
 		}
 		// Make it a probability
-		for( int j=0; j<M_; j++ )
+		for( int j=0; j<m_nStates; j++ )
 			V[j] /= tt;
 		
-		float * a = out + i*M_;
-		for( int j=0; j<M_; j++ )
+		float * a = out + i*m_nStates;
+		for( int j=0; j<m_nStates; j++ )
 			if (relax == 1)
 				a[j] = V[j];
 			else
@@ -245,31 +163,31 @@ void DenseCRF::expAndNormalize ( float* out, const float* in, float scale, float
 ///////////////////
 
 void DenseCRF::unaryEnergy(const short* ass, float* result) {
-	for( int i=0; i<N_; i++ )
-		if ( 0 <= ass[i] && ass[i] < M_ )
-			result[i] = unary_[ M_*i + ass[i] ];
+	for( int i=0; i<m_nNodes; i++ )
+		if ( 0 <= ass[i] && ass[i] < m_nStates )
+			result[i] = unary_[ m_nStates*i + ass[i] ];
 		else
 			result[i] = 0;
 }
 
 void DenseCRF::pairwiseEnergy(const short* ass, float* result, int term) {
-	float * current = new float[N_ * M_];
-	memset(current, 0, N_ * M_ * sizeof(float));
+	float * current = new float[m_nNodes * m_nStates];
+	memset(current, 0, m_nNodes * m_nStates * sizeof(float));
 	// Build the current belief [binary assignment]
-	for( int i=0,k=0; i<N_; i++ )
-		for( int j=0; j<M_; j++, k++ )
+	for( int i=0,k=0; i<m_nNodes; i++ )
+		for( int j=0; j<m_nStates; j++, k++ )
 			current[k] = (ass[i] == j);
 	
-	for( int i=0; i<N_*M_; i++ )
+	for( int i=0; i<m_nNodes*m_nStates; i++ )
 		next_[i] = 0;
 	if (term == -1)
 		for( unsigned int i=0; i<pairwise_.size(); i++ )
-			pairwise_[i]->apply( next_, current, tmp_, M_ );
+			pairwise_[i]->apply( next_, current, tmp_, m_nStates );
 	else
-		pairwise_[ term ]->apply( next_, current, tmp_, M_ );
-	for( int i=0; i<N_; i++ )
-		if ( 0 <= ass[i] && ass[i] < M_ )
-			result[i] =-next_[ i*M_ + ass[i] ];
+		pairwise_[ term ]->apply( next_, current, tmp_, m_nStates );
+	for( int i=0; i<m_nNodes; i++ )
+		if ( 0 <= ass[i] && ass[i] < m_nStates )
+			result[i] =-next_[ i*m_nStates + ass[i] ];
 		else
 			result[i] = 0;
 	delete [] current;
@@ -289,16 +207,16 @@ void DenseCRF::stepInference( float relax ){
 #endif
 	// Set the unary potential
 #ifdef SSE_DENSE_CRF
-	for( int i=0; i<(N_*M_-1)/4+1; i++ )
+	for( int i=0; i<(m_nNodes*m_nStates-1)/4+1; i++ )
 		sse_next_[i] = - sse_unary_[i] - sse_additional_unary_[i];
 #else
-	for( int i=0; i<N_*M_; i++ )
+	for( int i=0; i<m_nNodes*m_nStates; i++ )
 		next_[i] = -unary_[i] - additional_unary_[i];
 #endif
 	
 	// Add up all pairwise potentials
 	for( unsigned int i=0; i<pairwise_.size(); i++ )
-		pairwise_[i]->apply( next_, current_, tmp_, M_ );
+		pairwise_[i]->apply( next_, current_, tmp_, m_nStates );
 	
 	// Exponentiate and normalize
 	expAndNormalize( current_, next_, 1.0, relax );
@@ -306,12 +224,12 @@ void DenseCRF::stepInference( float relax ){
 
 void DenseCRF::currentMap( short * result ){
 	// Find the map
-	for( int i=0; i<N_; i++ ){
-		const float * p = current_ + i*M_;
+	for( int i=0; i<m_nNodes; i++ ){
+		const float * p = current_ + i*m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = p[0];
 		int imx = 0;
-		for( int j=1; j<M_; j++ )
+		for( int j=1; j<m_nStates; j++ )
 			if( mx < p[j] ){
 				mx = p[j];
 				imx = j;
