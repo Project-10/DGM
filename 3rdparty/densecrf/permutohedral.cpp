@@ -34,19 +34,19 @@ CPermutohedral::CPermutohedral(const CPermutohedral &rhs)
 	, m_M(rhs.m_M)
 	, m_pBarycentric(NULL)
 	, m_pBlurNeighbors(NULL)
-	, m_d(rhs.m_d)
+	, m_nFeatures(rhs.m_nFeatures)
 {
     if (rhs.m_pBarycentric) {
-        m_pBarycentric = new float[(m_d + 1) * m_N];
-        memcpy(m_pBarycentric, rhs.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
+        m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
+        memcpy(m_pBarycentric, rhs.m_pBarycentric, (m_nFeatures + 1) * m_N * sizeof(float));
     }
     if (rhs.m_pOffset) {
-        m_pOffset = new int[(m_d + 1) * m_N];
-        memcpy(m_pOffset, rhs.m_pOffset, (m_d + 1) * m_N * sizeof(int));
+        m_pOffset = new int[(m_nFeatures + 1) * m_N];
+        memcpy(m_pOffset, rhs.m_pOffset, (m_nFeatures + 1) * m_N * sizeof(int));
     }
     if (rhs.m_pBlurNeighbors) {
-        m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_N];
-        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
+        m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_N];
+        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_nFeatures + 1) * m_N * sizeof(Neighbors));
     }
 }
 
@@ -63,21 +63,21 @@ CPermutohedral & CPermutohedral::operator= (const CPermutohedral &rhs)
 	m_pBlurNeighbors	= NULL;
     m_N = rhs.m_N;
     m_M = rhs.m_M;
-    m_d = rhs.m_d;
+    m_nFeatures = rhs.m_nFeatures;
     
 	if (rhs.m_pBarycentric){
-        m_pBarycentric = new float[(m_d + 1) * m_N];
-        memcpy( m_pBarycentric, rhs.m_pBarycentric, (m_d + 1) * m_N * sizeof(float));
+        m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
+        memcpy( m_pBarycentric, rhs.m_pBarycentric, (m_nFeatures + 1) * m_N * sizeof(float));
     }
     
 	if (rhs.m_pOffset){
-        m_pOffset = new int[(m_d + 1) * m_N];
-        memcpy(m_pOffset, rhs.m_pOffset, (m_d + 1) * m_N * sizeof(int));
+        m_pOffset = new int[(m_nFeatures + 1) * m_N];
+        memcpy(m_pOffset, rhs.m_pOffset, (m_nFeatures + 1) * m_N * sizeof(int));
     }
     
 	if (rhs.m_pBlurNeighbors){
-        m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_N];
-        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_d + 1) * m_N * sizeof(Neighbors));
+        m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_N];
+        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_nFeatures + 1) * m_N * sizeof(Neighbors));
     }
     
 	return *this;
@@ -91,51 +91,51 @@ CPermutohedral::~CPermutohedral(void)
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
 }
 
-void CPermutohedral::init(const float *feature, int feature_size, int N)
+void CPermutohedral::init(const float *pFeature, word nFeatures, int N)
 {
     // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
     m_N = N;
-    m_d = feature_size;
-    CHashTable hash_table(m_d, m_N * (m_d + 1));    // <============ Hash table
+    m_nFeatures = nFeatures;
+    CHashTable hash_table(m_nFeatures, m_N * (m_nFeatures + 1));    // <============ Hash table
 	//std::unordered_map<short, int> hash_table;
 
     // Allocate the class memory
     if (m_pOffset) delete [] m_pOffset;
-    m_pOffset = new int[(m_d + 1) * m_N];
+    m_pOffset = new int[(m_nFeatures + 1) * m_N];
     if (m_pBarycentric) delete [] m_pBarycentric;
-    m_pBarycentric = new float[(m_d + 1) * m_N];
+    m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
     
     // Allocate the local memory
-    float * scale_factor = new float[m_d];
-    float * elevated = new float[m_d + 1];
-    float * rem0 = new float[m_d + 1];
-    float * barycentric = new float[m_d + 2];
-    short * rank = new short[m_d + 1];
-    short * canonical = new short[(m_d + 1) * (m_d + 1)];
-    short * key = new short[m_d + 1];
+    float * scale_factor = new float[m_nFeatures];
+    float * elevated = new float[m_nFeatures + 1];
+    float * rem0 = new float[m_nFeatures + 1];
+    float * barycentric = new float[m_nFeatures + 2];
+    short * rank = new short[m_nFeatures + 1];
+    short * canonical = new short[(m_nFeatures + 1) * (m_nFeatures + 1)];
+    short * key = new short[m_nFeatures + 1];
     
     // Compute the canonical simplex
-    for(int i = 0; i <= m_d; i++) {
-        for(int j = 0; j <= m_d - i; j++)
-            canonical[i * (m_d + 1) + j] = i;
-        for(int j = m_d - i + 1; j <= m_d; j++)
-            canonical[i * (m_d + 1) + j] = i - (m_d + 1);
+    for(int i = 0; i <= m_nFeatures; i++) {
+        for(int j = 0; j <= m_nFeatures - i; j++)
+            canonical[i * (m_nFeatures + 1) + j] = i;
+        for(int j = m_nFeatures - i + 1; j <= m_nFeatures; j++)
+            canonical[i * (m_nFeatures + 1) + j] = i - (m_nFeatures + 1);
     }
     
     // Expected standard deviation of our filter (p.6 in [Adams etal 2010])
-    float inv_std_dev = sqrtf(2.f / 3.f) * (m_d + 1);
+    float inv_std_dev = sqrtf(2.f / 3.f) * (m_nFeatures + 1);
     // Compute the diagonal part of E (p.5 in [Adams etal 2010])
-    for(int i = 0; i < m_d; i++)
+    for(int i = 0; i < m_nFeatures; i++)
         scale_factor[i] = 1.f / sqrtf((i + 2.f) * (i + 1.f)) * inv_std_dev;
     
     // Compute the simplex each feature lies in
     for(int k = 0; k < m_N; k++) {
         // Elevate the feature ( y = Ep, see p.5 in [Adams etal 2010])
-        const float * f = feature + k * feature_size;
+        const float *f = pFeature + k * nFeatures;
         
         // sm contains the sum of 1..n of our faeture vector
         float sm = 0;
-        for(int j = m_d; j > 0; j--){
+        for(int j = m_nFeatures; j > 0; j--){
             float cf = f[j-1]*scale_factor[j-1];
             elevated[j] = sm - j*cf;
             sm += cf;
@@ -143,55 +143,55 @@ void CPermutohedral::init(const float *feature, int feature_size, int N)
         elevated[0] = sm;
         
         // Find the closest 0-colored simplex through rounding
-        float down_factor = 1.0f / (m_d + 1);
-        float up_factor = (m_d + 1);
+        float down_factor = 1.0f / (m_nFeatures + 1);
+        float up_factor = (m_nFeatures + 1);
         int sum = 0;
-        for(int i = 0; i <= m_d; i++) {
+        for(int i = 0; i <= m_nFeatures; i++) {
             int rd = static_cast<int>(round( down_factor * elevated[i]));
             rem0[i] = rd*up_factor;
             sum += rd;
         }
         
         // Find the simplex we are in and store it in rank (where rank describes what position coorinate i has in the sorted order of the features values)
-        for(int i = 0; i <= m_d; i++)
+        for(int i = 0; i <= m_nFeatures; i++)
             rank[i] = 0;
-        for(int i = 0; i < m_d; i++) {
+        for(int i = 0; i < m_nFeatures; i++) {
             double di = elevated[i] - rem0[i];
-            for(int j = i + 1; j <= m_d; j++)
+            for(int j = i + 1; j <= m_nFeatures; j++)
                 if (di < elevated[j] - rem0[j])    rank[i]++;
                 else                            rank[j]++;
         }
         
         // If the point doesn't lie on the plane (sum != 0) bring it back
-        for(int i = 0; i <= m_d; i++) {
+        for(int i = 0; i <= m_nFeatures; i++) {
             rank[i] += sum;
             if ( rank[i] < 0 ){
-                rank[i] += m_d + 1;
-                rem0[i] += m_d + 1;
+                rank[i] += m_nFeatures + 1;
+                rem0[i] += m_nFeatures + 1;
             }
-            else if (rank[i] > m_d) {
-                rank[i] -= m_d + 1;
-                rem0[i] -= m_d + 1;
+            else if (rank[i] > m_nFeatures) {
+                rank[i] -= m_nFeatures + 1;
+                rem0[i] -= m_nFeatures + 1;
             }
         }
         
         // Compute the barycentric coordinates (p.10 in [Adams etal 2010])
-        for(int i = 0; i <= m_d + 1; i++)
+        for(int i = 0; i <= m_nFeatures + 1; i++)
             barycentric[i] = 0;
-        for(int i = 0; i <= m_d; i++) {
+        for(int i = 0; i <= m_nFeatures; i++) {
             float v = (elevated[i] - rem0[i])*down_factor;
-            barycentric[m_d - rank[i]  ] += v;
-            barycentric[m_d - rank[i] + 1] -= v;
+            barycentric[m_nFeatures - rank[i]  ] += v;
+            barycentric[m_nFeatures - rank[i] + 1] -= v;
         }
         // Wrap around
-        barycentric[0] += 1.0f + barycentric[m_d + 1];
+        barycentric[0] += 1.0f + barycentric[m_nFeatures + 1];
         
         // Compute all vertices and their offset
-        for(int remainder = 0; remainder <= m_d; remainder++) {
-            for(int i = 0; i < m_d; i++)
-                key[i] = rem0[i] + canonical[ remainder * (m_d + 1) + rank[i]];
-            m_pOffset[k * (m_d + 1) + remainder] = hash_table.find(key, true);
-            m_pBarycentric[k * (m_d + 1) + remainder] = barycentric[remainder];
+        for(int remainder = 0; remainder <= m_nFeatures; remainder++) {
+            for(int i = 0; i < m_nFeatures; i++)
+                key[i] = rem0[i] + canonical[ remainder * (m_nFeatures + 1) + rank[i]];
+            m_pOffset[k * (m_nFeatures + 1) + remainder] = hash_table.find(key, true);
+            m_pBarycentric[k * (m_nFeatures + 1) + remainder] = barycentric[remainder];
         }
     }
     delete [] scale_factor;
@@ -210,21 +210,21 @@ void CPermutohedral::init(const float *feature, int feature_size, int N)
     
     // Create the neighborhood structure
     if(m_pBlurNeighbors) delete[] m_pBlurNeighbors;
-    m_pBlurNeighbors = new Neighbors[(m_d + 1) * m_M];
+    m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_M];
     
-    short * n1 = new short[m_d + 1];
-    short * n2 = new short[m_d + 1];
+    short * n1 = new short[m_nFeatures + 1];
+    short * n2 = new short[m_nFeatures + 1];
     
     // For each of d+1 axes,
-    for(int j = 0; j <= m_d; j++) {
+    for(int j = 0; j <= m_nFeatures; j++) {
         for(int i = 0; i< m_M; i++) {
             const short * key = hash_table.getKey( i );
-            for(int k = 0; k < m_d; k++) {
+            for(int k = 0; k < m_nFeatures; k++) {
                 n1[k] = key[k] - 1;
                 n2[k] = key[k] + 1;
             }
-            n1[j] = key[j] + m_d;
-            n2[j] = key[j] - m_d;
+            n1[j] = key[j] + m_nFeatures;
+            n2[j] = key[j] - m_nFeatures;
             
             m_pBlurNeighbors[j * m_M + i].n1 = hash_table.find(n1);
             m_pBlurNeighbors[j * m_M + i].n2 = hash_table.find(n2);
@@ -249,15 +249,15 @@ void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_
     
     // Splatting
     for(int i = 0; i < in_size; i++) {
-        for(int j = 0; j <= m_d; j++) {
-            int o = m_pOffset[(in_offset + i) * (m_d + 1) + j] + 1;
-            float w = m_pBarycentric[(in_offset + i) * (m_d + 1) + j];
+        for(int j = 0; j <= m_nFeatures; j++) {
+            int o = m_pOffset[(in_offset + i) * (m_nFeatures + 1) + j] + 1;
+            float w = m_pBarycentric[(in_offset + i) * (m_nFeatures + 1) + j];
             for(int k = 0; k < value_size; k++)
                 values[o * value_size + k] += w * in[i * value_size + k];
         }
     }
     
-    for(int j = 0; j <= m_d; j++) {
+    for(int j = 0; j <= m_nFeatures; j++) {
         for(int i = 0; i < m_M; i++) {
             float * old_val = values + (i + 1) * value_size;
             float * new_val = new_values + (i + 1) * value_size;
@@ -274,15 +274,15 @@ void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_
         new_values = tmp;
     }
     // Alpha is a magic scaling constant (write Andrew if you really wanna understand this)
-    float alpha = 1.0f / (1.0f + powf(2.0f, -static_cast<float>(m_d)));
+    float alpha = 1.0f / (1.0f + powf(2.0f, -static_cast<float>(m_nFeatures)));
     
     // Slicing
     for(int i = 0; i < out_size; i++) {
         for(int k = 0; k < value_size; k++)
             out[i * value_size + k] = 0;
-        for(int j = 0; j <= m_d; j++) {
-            int o = m_pOffset[(out_offset + i) * (m_d + 1) + j] + 1;
-            float w = m_pBarycentric[(out_offset + i) * (m_d + 1) + j];
+        for(int j = 0; j <= m_nFeatures; j++) {
+            int o = m_pOffset[(out_offset + i) * (m_nFeatures + 1) + j] + 1;
+            float w = m_pBarycentric[(out_offset + i) * (m_nFeatures + 1) + j];
             for(int k = 0; k < value_size; k++)
                 out[i * value_size + k] += w * values[o * value_size + k] * alpha;
         }

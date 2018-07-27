@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Reading parameters and images
-	Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+    Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
 	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
 	Mat test_fv = imread(argv[3], 1); resize(test_fv, test_fv, imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
 	Mat test_gt = imread(argv[4], 0); resize(test_gt, test_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	CGraphDense2D *graph = new CGraphDense2D(nStates);
 	graph->setNodes(nodePotentials);
 	graph->addPairwiseGaussian(test_img.size(), 3, 3, 3);
-	graph->addPairwiseBilateral(60, 60, 20, 20, 20, test_img, 10);
+	graph->addPairwiseBilateral(test_img, 60, 60, 20, 20, 20, 10);
 	Timer::stop();
 
 

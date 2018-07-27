@@ -5,7 +5,7 @@ void CGraphDense2D::setNodes(const Mat &pots)
 	DenseCRF::setNodes(reinterpret_cast<const float *>(pots.data), pots.cols * pots.rows);
 }
 
-void CGraphDense2D::addPairwiseGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction * function)
+void CGraphDense2D::addPairwiseGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *function)
 {
 	Mat feature(imgSize, CV_32FC2);
 	for (int y = 0; y < feature.rows; y++) {
@@ -18,10 +18,9 @@ void CGraphDense2D::addPairwiseGaussian(CvSize imgSize, float sx, float sy, floa
 	addPairwiseEnergy(reinterpret_cast<float *>(feature.data), 2, w, function);
 }
 
-void CGraphDense2D::addPairwiseBilateral(float sx, float sy, float sr, float sg, float sb, const Mat &img, float w, const SemiMetricFunction * function)
+void CGraphDense2D::addPairwiseBilateral(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const SemiMetricFunction * function)
 {
 	Mat feature(img.size(), CV_MAKE_TYPE(CV_32F, 5));
-
 	for (int y = 0; y < feature.rows; y++) {
 		const byte *pImg = img.ptr<byte>(y);
 		float *pFeature = feature.ptr<float>(y);

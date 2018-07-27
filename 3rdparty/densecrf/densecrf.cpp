@@ -66,13 +66,13 @@ void DenseCRF::setNodes(const float *pots, int nNodes)
 /////////////////////////////////
 /////  Pairwise Potentials  /////
 /////////////////////////////////
-void DenseCRF::addPairwiseEnergy (const float* features, int D, float w, const SemiMetricFunction * function) 
+void DenseCRF::addPairwiseEnergy(const float *features, word nFeatures, float w, const SemiMetricFunction *function)
 {
-	if (function)	addPairwiseEnergy(new SemiMetricPotential( features, D, m_nNodes, w, function));
-	else			addPairwiseEnergy(new PottsPotential(features, D, m_nNodes, w));
+	if (function)	addPairwiseEnergy(new CSemiMetricPotential(features, nFeatures, m_nNodes, w, function));
+	else			addPairwiseEnergy(new CPottsPotential(features, nFeatures, m_nNodes, w));
 }
 
-void DenseCRF::addPairwiseEnergy ( PairwisePotential* potential )
+void DenseCRF::addPairwiseEnergy (CPairwisePotential *potential)
 {
 	pairwise_.push_back( potential );
 }
@@ -85,7 +85,7 @@ void DenseCRF::infer(unsigned int nIt, float *result, float relax)
 	// Run inference
 	vec_float_t vProb = runInference(nIt, relax);
 
-	// Copy the result over
+    // Copy the result over     // TODO:
 	for(int i = 0; i < m_nNodes; i++)
 		memcpy(result + i * m_nStates, vProb.data() + i * m_nStates, m_nStates * sizeof(float));
 }

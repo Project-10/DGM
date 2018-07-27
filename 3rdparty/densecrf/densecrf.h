@@ -31,12 +31,12 @@
 #include "permutohedral.h"
 #include "pairwisepotential.h"
 
-class PairwisePotential;
+class CPairwisePotential;
 
 class DenseCRF {
 public:
 	DllExport DenseCRF(byte nStates);
-	DllExport virtual ~DenseCRF();
+	DllExport virtual ~DenseCRF(void);
 
 	// Set the unary potential for all variables and labels (memory order is [x0l0 x0l1 x0l2 .. x1l0 x1l1 ...])
 	DllExport virtual void setNodes(const float *pots, int nNodes);
@@ -45,10 +45,10 @@ public:
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
 	// The kernel shape should be captured by transforming the
 	// features before passing them into this function
-	DllExport void addPairwiseEnergy(const float *features, int D, float w=1.0f, const SemiMetricFunction * function = NULL);
+	DllExport void addPairwiseEnergy(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *function = NULL);
 	
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
-	DllExport void addPairwiseEnergy(PairwisePotential* potential);
+	DllExport void addPairwiseEnergy(CPairwisePotential *potential);
 	
 	// Run inference and return the probabilities
 	DllExport void infer(unsigned int nIt = 1, float *result = NULL, float relax = 1.0f);
@@ -81,7 +81,7 @@ private:
 
 
 	// Store all pairwise potentials
-	std::vector<PairwisePotential *> pairwise_;
+	std::vector<CPairwisePotential *> pairwise_;
 
 	// Run inference and return the pointer to the result
 	vec_float_t runInference(unsigned int nIt, float relax);
