@@ -34,10 +34,8 @@
 DenseCRF::DenseCRF(byte nStates) : m_nStates(nStates)
 { }
 
-DenseCRF::~DenseCRF() {
-	if (unary_)		delete[] unary_;
-	if (additional_unary_) delete[] additional_unary_;
-	if (current_)	delete[] current_;
+DenseCRF::~DenseCRF(void)
+{
 	for(unsigned int i = 0; i < pairwise_.size(); i++ )
 		delete pairwise_[i];
 }
@@ -48,16 +46,15 @@ DenseCRF::~DenseCRF() {
 void DenseCRF::setNodes(const float *pots, int nNodes)
 {
 	m_nNodes = nNodes;
-	
-	unary_ = new float[m_nNodes * m_nStates];
-	memcpy(unary_, pots, m_nNodes*m_nStates * sizeof(float));
+		
+    m_vUnary = vec_float_t(pots, pots + m_nNodes * m_nStates);
 
-	additional_unary_ = new float[m_nNodes * m_nStates];
-	memset(additional_unary_, 0, m_nNodes * m_nStates * sizeof(float));
-
-	current_ = new float[m_nNodes * m_nStates];
-	memset(current_, 0, m_nNodes * m_nStates * sizeof(float));
-
+    m_vAdditionalUnary.resize(m_nNodes * m_nStates);
+    std::fill(m_vAdditionalUnary.begin(), m_vAdditionalUnary.end(), 0);
+    
+    m_vCurrent.resize(m_nNodes * m_nStates);
+    std::fill(m_vCurrent.begin(), m_vCurrent.end(), 0);
+    
 	m_vNext.resize(m_nNodes * m_nStates);
 	std::fill(m_vNext.begin(), m_vNext.end(), 0);
 
@@ -86,11 +83,11 @@ void DenseCRF::addPairwiseEnergy ( PairwisePotential* potential )
 void DenseCRF::infer(unsigned int nIt, float *result, float relax) 
 {
 	// Run inference
-	float *prob = runInference(nIt, relax);
+	vec_float_t vProb = runInference(nIt, relax);
 
 	// Copy the result over
 	for(int i = 0; i < m_nNodes; i++)
-		memcpy(result + i * m_nStates, prob + i * m_nStates, m_nStates * sizeof(float));
+		memcpy(result + i * m_nStates, vProb.data() + i * m_nStates, m_nStates * sizeof(float));
 }
 
 vec_byte_t DenseCRF::decode(unsigned int nIt, float relax)
@@ -99,11 +96,11 @@ vec_byte_t DenseCRF::decode(unsigned int nIt, float relax)
 	res.reserve(m_nNodes);
 
 	// Run inference
-	float *prob = runInference(nIt, relax);
+	vec_float_t vProb = runInference(nIt, relax);
 	
 	// Find the map
 	for(int i = 0; i < m_nNodes; i++) {
-		const float * p = prob + i*m_nStates;
+		const float *p = vProb.data() + i * m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = p[0];
 		byte imx = 0;
@@ -118,19 +115,19 @@ vec_byte_t DenseCRF::decode(unsigned int nIt, float relax)
 	return res;
 }
 
-float* DenseCRF::runInference(unsigned int nIt, float relax )
+vec_float_t DenseCRF::runInference(unsigned int nIt, float relax)
 {
 	startInference();
 	for(unsigned int i = 0; i < nIt; i++)
 		stepInference(relax);
-	return current_;
+	return m_vCurrent;
 }
 
-void DenseCRF::expAndNormalize ( float* out, const float* in, float scale, float relax ) 
+void DenseCRF::expAndNormalize (vec_float_t &out, const vec_float_t &in, float scale, float relax)
 {
 	float *V = new float[ m_nNodes+10 ];
 	for( int i=0; i<m_nNodes; i++ ){
-		const float * b = in + i*m_nStates;
+		const float * b = in.data() + i*m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = scale*b[0];
 		for( int j=1; j<m_nStates; j++ )
@@ -145,8 +142,8 @@ void DenseCRF::expAndNormalize ( float* out, const float* in, float scale, float
 		for( int j=0; j<m_nStates; j++ )
 			V[j] /= tt;
 		
-		float * a = out + i*m_nStates;
-		for( int j=0; j<m_nStates; j++ )
+		float *a = out.data() + i * m_nStates;
+		for(int j = 0; j < m_nStates; j++)
 			if (relax == 1)
 				a[j] = V[j];
 			else
@@ -157,9 +154,10 @@ void DenseCRF::expAndNormalize ( float* out, const float* in, float scale, float
 ///////////////////
 /////  Debug  /////
 ///////////////////
-
-void DenseCRF::unaryEnergy(const short* ass, float* result) {
-	for( int i=0; i<m_nNodes; i++ )
+#ifdef DEBUG_MODE1
+void DenseCRF::unaryEnergy(const short* ass, float* result)
+{
+	for(int i = 0; i < m_nNodes; i++ )
 		if ( 0 <= ass[i] && ass[i] < m_nStates )
 			result[i] = unary_[ m_nStates*i + ass[i] ];
 		else
@@ -185,31 +183,32 @@ void DenseCRF::pairwiseEnergy(const short* ass, float* result, int term)
 		if ( 0 <= ass[i] && ass[i] < m_nStates)	result[i] = -m_vNext[i * m_nStates + ass[i]];
 		else									result[i] = 0;
 }
+#endif
 
 void DenseCRF::startInference(void)
 {
-	expAndNormalize(current_, unary_, -1);			// Initialize using the unary energies
+	expAndNormalize(m_vCurrent, m_vUnary, -1);			// Initialize using the unary energies
 }
 
 void DenseCRF::stepInference(float relax)
 {
 	// Set the unary potential
 	for(size_t i = 0; i < m_vNext.size(); i++)
-		m_vNext[i] = -unary_[i] - additional_unary_[i];
+		m_vNext[i] = -m_vUnary[i] - m_vAdditionalUnary[i];
 	
 	// Add up all pairwise potentials
 	for( unsigned int i=0; i<pairwise_.size(); i++ )
-		pairwise_[i]->apply(m_vNext, vec_float_t(current_, current_ + m_nNodes * m_nStates), m_vTmp, m_nStates );
+		pairwise_[i]->apply(m_vNext, m_vCurrent, m_vTmp, m_nStates);
 	
 	// Exponentiate and normalize
-	expAndNormalize( current_, m_vNext.data(), 1.0, relax );
+	expAndNormalize(m_vCurrent, m_vNext, 1.0f, relax);
 }
 
 void DenseCRF::currentMap(short *result)
 {
 	// Find the map
 	for( int i=0; i<m_nNodes; i++ ){
-		const float * p = current_ + i*m_nStates;
+		const float * p = m_vCurrent.data() + i * m_nStates;
 		// Find the max and subtract it so that the exp doesn't explode
 		float mx = p[0];
 		int imx = 0;

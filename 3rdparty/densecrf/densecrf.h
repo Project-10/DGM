@@ -73,19 +73,21 @@ private:
 	int			m_nNodes;		// number of pixels
 	byte		m_nStates;
 	
-	vec_float_t	m_vTmp;
+    vec_float_t m_vUnary;
+    vec_float_t m_vAdditionalUnary;
+    vec_float_t m_vCurrent;
+    vec_float_t	m_vTmp;
 	vec_float_t m_vNext;
 
-	float *unary_, *additional_unary_, *current_;
 
 	// Store all pairwise potentials
 	std::vector<PairwisePotential *> pairwise_;
 
 	// Run inference and return the pointer to the result
-	float *runInference(unsigned int nIt, float relax);
+	vec_float_t runInference(unsigned int nIt, float relax);
 
 	// Auxillary functions
-	void expAndNormalize(float* out, const float* in, float scale = 1.0f, float relax = 1.0f);
+	void expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale = 1.0f, float relax = 1.0f);
 
 
 private:
