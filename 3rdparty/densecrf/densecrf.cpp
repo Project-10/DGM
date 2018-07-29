@@ -27,7 +27,7 @@
 
 #include "densecrf.h"
 #include "fastmath.h"
-#include "permutohedral.h"
+#include "edgePotentialPotts.h"
 #include "macroses.h"
 
 // Constructor
@@ -36,8 +36,8 @@ DenseCRF::DenseCRF(byte nStates) : m_nStates(nStates)
 
 DenseCRF::~DenseCRF(void)
 {
-	for(unsigned int i = 0; i < pairwise_.size(); i++ )
-		delete pairwise_[i];
+	for (auto edgePot : m_vpEdgePots)
+		delete edgePot;
 }
 
 //////////////////////////////
@@ -66,15 +66,15 @@ void DenseCRF::setNodes(const float *pots, int nNodes)
 /////////////////////////////////
 /////  Pairwise Potentials  /////
 /////////////////////////////////
-void DenseCRF::addPairwiseEnergy(const float *features, word nFeatures, float w, const SemiMetricFunction *function)
+void DenseCRF::setEdgesPotts(const float *features, word nFeatures, float w, const SemiMetricFunction *function)
 {
-	if (function)	addPairwiseEnergy(new CSemiMetricPotential(features, nFeatures, m_nNodes, w, function));
-	else			addPairwiseEnergy(new CPottsPotential(features, nFeatures, m_nNodes, w));
+	if (function)	setEdges(new CEdgePotentialPottsSemiMetric(features, nFeatures, m_nNodes, w, function));
+	else			setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w));
 }
 
-void DenseCRF::addPairwiseEnergy (CPairwisePotential *potential)
+void DenseCRF::setEdges(CEdgePotential *pEdgePot)
 {
-	pairwise_.push_back( potential );
+	m_vpEdgePots.push_back(pEdgePot);
 }
 
 ///////////////////////
@@ -197,8 +197,8 @@ void DenseCRF::stepInference(float relax)
 		m_vNext[i] = -m_vUnary[i] - m_vAdditionalUnary[i];
 	
 	// Add up all pairwise potentials
-	for( unsigned int i=0; i<pairwise_.size(); i++ )
-		pairwise_[i]->apply(m_vNext, m_vCurrent, m_vTmp, m_nStates);
+	for (auto &edgePot : m_vpEdgePots)
+		edgePot->apply(m_vNext, m_vCurrent, m_vTmp, m_nStates);
 	
 	// Exponentiate and normalize
 	expAndNormalize(m_vCurrent, m_vNext, 1.0f, relax);

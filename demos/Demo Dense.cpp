@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
 
 	CGraphDense2D *graph = new CGraphDense2D(nStates);
 	graph->setNodes(nodePotentials);
-	graph->addPairwiseGaussian(test_img.size(), 3, 3, 3);
-	graph->addPairwiseBilateral(test_img, 60, 60, 20, 20, 20, 10);
+	graph->setEdgesGaussian(test_img.size(), 3, 3, 3);
+	graph->setEdgesBilateral(test_img, 60, 60, 20, 20, 20, 10);
 	Timer::stop();
 
 
