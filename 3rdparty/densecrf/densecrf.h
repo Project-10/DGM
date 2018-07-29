@@ -28,10 +28,9 @@
 #pragma once
 
 #include "types.h"
-#include "permutohedral.h"
-#include "pairwisepotential.h"
 
-class CPairwisePotential;
+class CEdgePotential;
+class SemiMetricFunction;
 
 class DenseCRF {
 public:
@@ -45,10 +44,10 @@ public:
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
 	// The kernel shape should be captured by transforming the
 	// features before passing them into this function
-	DllExport void addPairwiseEnergy(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *function = NULL);
+	DllExport void setEdgesPotts(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *function = NULL);
 	
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
-	DllExport void addPairwiseEnergy(CPairwisePotential *potential);
+	DllExport void setEdges(CEdgePotential *pEdgePot);
 	
 	// Run inference and return the probabilities
 	DllExport void infer(unsigned int nIt = 1, float *result = NULL, float relax = 1.0f);
@@ -81,7 +80,7 @@ private:
 
 
 	// Store all pairwise potentials
-	std::vector<CPairwisePotential *> pairwise_;
+	std::vector<CEdgePotential *> m_vpEdgePots;
 
 	// Run inference and return the pointer to the result
 	vec_float_t runInference(unsigned int nIt, float relax);
