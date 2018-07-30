@@ -8,7 +8,7 @@
 class CEdgePotentialPotts : public CEdgePotential
 {
 public:
-	CEdgePotentialPotts(const float *pFeatures, word nFeatures, int nNodes, float w, bool per_pixel_normalization = true);
+	CEdgePotentialPotts(const float *pFeatures, word nFeatures, size_t nNodes, float w, bool per_pixel_normalization = true);
 	virtual ~CEdgePotentialPotts(void) {}
 
 	void apply(vec_float_t &out_values, const vec_float_t &in_values, vec_float_t &tmp, int value_size) const;
@@ -28,7 +28,7 @@ protected:
 class CEdgePotentialPottsSemiMetric : public CEdgePotentialPotts
 {
 public:
-	CEdgePotentialPottsSemiMetric(const float *features, word nFeatures, int nNodes, float w, const SemiMetricFunction *function, bool per_pixel_normalization = true)
+	CEdgePotentialPottsSemiMetric(const float *features, word nFeatures, size_t nNodes, float w, const SemiMetricFunction *function, bool per_pixel_normalization = true)
 		: CEdgePotentialPotts(features, nFeatures, nNodes, w, per_pixel_normalization)
 		, m_pFunction(function)
 	{ }

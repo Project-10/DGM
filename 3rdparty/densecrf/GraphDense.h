@@ -32,13 +32,15 @@
 class CEdgePotential;
 class SemiMetricFunction;
 
-class DenseCRF {
+class CGraphDense {
+	friend class CInferDense;
+
 public:
-	DllExport DenseCRF(byte nStates);
-	DllExport virtual ~DenseCRF(void);
+	DllExport CGraphDense(byte nStates);
+	DllExport virtual ~CGraphDense(void);
 
 	// Set the unary potential for all variables and labels (memory order is [x0l0 x0l1 x0l2 .. x1l0 x1l1 ...])
-	DllExport virtual void setNodes(const float *pots, int nNodes);
+	DllExport virtual void setNodes(const float *pots, size_t nNodes);
 
 	// Add  a pairwise potential defined over some feature space
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
@@ -49,50 +51,26 @@ public:
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
 	DllExport void setEdges(CEdgePotential *pEdgePot);
 	
-	// Run inference and return the probabilities
-	DllExport void infer(unsigned int nIt = 1, float *result = NULL, float relax = 1.0f);
 	
-	// Run MAP inference and return the map for each pixel
-	DllExport vec_byte_t decode(unsigned int nIt = 0, float relax = 1.0);
-	
-	// Step by step inference
-	DllExport void startInference();
-	DllExport void stepInference(float relax = 1.0);
-	DllExport void currentMap(short *result);
-	
-public: /* Debugging functions */
-	// Compute the unary energy of an assignment
-	DllExport void unaryEnergy( const short * ass, float * result );
-	
-	// Compute the pairwise energy of an assignment (half of each pairwise potential is added to each of it's endpoints)
-	DllExport void pairwiseEnergy( const short * ass, float * result, int term=-1 );
+	/**
+	* @brief Returns the number of nodes in the graph
+	* @returns number of nodes
+	*/
+	DllExport virtual size_t	getNumNodes(void) const { return m_nNodes; }
 
 
 private:
-	int			m_nNodes;		// number of pixels
+	size_t		m_nNodes;					// number of pixels
 	byte		m_nStates;
 	
-    vec_float_t m_vUnary;
-    vec_float_t m_vAdditionalUnary;
-    vec_float_t m_vCurrent;
-    vec_float_t	m_vTmp;
-	vec_float_t m_vNext;
-
-
-	// Store all pairwise potentials
-	std::vector<CEdgePotential *> m_vpEdgePots;
-
-	// Run inference and return the pointer to the result
-	vec_float_t runInference(unsigned int nIt, float relax);
-
-	// Auxillary functions
-	void expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale = 1.0f, float relax = 1.0f);
+    vec_float_t						m_vUnary;
+	std::vector<CEdgePotential *>	m_vpEdgePots;
 
 
 private:
 	// Copy semantics are disabled
-	DenseCRF(const DenseCRF &rhs) {}
-	const DenseCRF & operator= (const DenseCRF & rhs) { return *this; }
+	CGraphDense(const CGraphDense &rhs) {}
+	const CGraphDense & operator= (const CGraphDense & rhs) { return *this; }
 };
 
 

@@ -25,37 +25,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include "GraphDense.h"
+#include "edgePotentialPotts.h"
+#include "macroses.h"
 
-#include "types.h"
+// Constructor
+CGraphDense::CGraphDense(byte nStates) : m_nStates(nStates)
+{ }
 
-struct Neighbors
+// Destructor
+CGraphDense::~CGraphDense(void)
 {
-    int n1, n2;
-    Neighbors(int n1 = 0, int n2 = 0) : n1(n1), n2(n2) {}
-};
+	for (auto edgePot : m_vpEdgePots)
+		delete edgePot;
+}
 
-/************************************************/
-/***          Permutohedral Lattice           ***/
-/************************************************/
-class CPermutohedral
+void CGraphDense::setNodes(const float *pots, size_t nNodes)
 {
-public:
-    CPermutohedral(void) = default;
-    CPermutohedral(const CPermutohedral &rhs);
-    CPermutohedral & operator= (const CPermutohedral &rhs);
-    ~CPermutohedral(void);
+	m_nNodes = nNodes;
+    m_vUnary = vec_float_t(pots, pots + m_nNodes * m_nStates);
+}
 
-    void init(const float *pFeature, word nFeatures, int N);
-    void compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1) const;
+void CGraphDense::setEdgesPotts(const float *features, word nFeatures, float w, const SemiMetricFunction *function)
+{
+	if (function)	setEdges(new CEdgePotentialPottsSemiMetric(features, nFeatures, m_nNodes, w, function));
+	else			setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w));
+}
 
-    
-private:
-    int         m_N                 = 0;        // Number of elements
-    int         m_M                 = 0;        // Size of sparse discretized space
-    word        m_nFeatures         = 0;        // Dimension of features
-    
-    int       * m_pOffset           = NULL;
-    float     * m_pBarycentric      = NULL;
-    Neighbors * m_pBlurNeighbors    = NULL;
-};
+void CGraphDense::setEdges(CEdgePotential *pEdgePot)
+{
+	m_vpEdgePots.push_back(pEdgePot);
+}

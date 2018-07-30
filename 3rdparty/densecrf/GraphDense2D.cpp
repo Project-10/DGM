@@ -2,7 +2,7 @@
 
 void CGraphDense2D::setNodes(const Mat &pots)
 {
-	DenseCRF::setNodes(reinterpret_cast<const float *>(pots.data), pots.cols * pots.rows);
+	CGraphDense::setNodes(reinterpret_cast<const float *>(pots.data), pots.cols * pots.rows);
 }
 
 void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *function)

@@ -3,7 +3,7 @@
 #include <numeric>
 
 // Constructor
-CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures, int nNodes, float w, bool per_pixel_normalization)
+CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures, size_t nNodes, float w, bool per_pixel_normalization)
 	: CEdgePotential()
 	, m_nNodes(nNodes)
 	, m_w(w)

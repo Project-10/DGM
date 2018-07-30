@@ -1,10 +1,10 @@
 #pragma once
 
-#include "densecrf.h"
+#include "GraphDense.h"
 
-class CGraphDense2D : public DenseCRF {
+class CGraphDense2D : public CGraphDense {
 public:
-	DllExport CGraphDense2D(byte nStates) : DenseCRF(nStates) {}
+	DllExport CGraphDense2D(byte nStates) : CGraphDense(nStates) {}
 	DllExport virtual ~CGraphDense2D(void) {}
 
 	DllExport virtual void setNodes(const Mat &pots);
