@@ -28,13 +28,13 @@
 #include "hashtable.h"
 
 // Copy constructor
-CPermutohedral::CPermutohedral(const CPermutohedral &rhs) 
-	: m_pOffset(NULL)
-	, m_N(rhs.m_N)
+CPermutohedral::CPermutohedral(const CPermutohedral &rhs)
+    : m_N(rhs.m_N)
 	, m_M(rhs.m_M)
-	, m_pBarycentric(NULL)
-	, m_pBlurNeighbors(NULL)
 	, m_nFeatures(rhs.m_nFeatures)
+    , m_pOffset(NULL)
+    , m_pBarycentric(NULL)
+    , m_pBlurNeighbors(NULL)
 {
     if (rhs.m_pBarycentric) {
         m_pBarycentric = new float[(m_nFeatures + 1) * m_N];

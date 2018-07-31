@@ -47,16 +47,16 @@ vec_byte_t CInferDense::decode(unsigned int nIt, float relax)
 // TODO: infer() ?
 vec_float_t CInferDense::runInference(unsigned int nIt, float relax)
 {
-	m_vAdditionalUnary.resize(m_pGraph->getNumNodes() * m_pGraph->m_nStates);
+	m_vAdditionalUnary.resize(m_pGraph->m_vUnary.size());
 	std::fill(m_vAdditionalUnary.begin(), m_vAdditionalUnary.end(), 0);
 
-	m_vCurrent.resize(m_pGraph->getNumNodes() * m_pGraph->m_nStates);
+	m_vCurrent.resize(m_pGraph->m_vUnary.size());
 	std::fill(m_vCurrent.begin(), m_vCurrent.end(), 0);
 
-	m_vNext.resize(m_pGraph->getNumNodes() * m_pGraph->m_nStates);
+	m_vNext.resize(m_pGraph->m_vUnary.size());
 	std::fill(m_vNext.begin(), m_vNext.end(), 0);
 
-	m_vTmp.resize(2 * m_pGraph->getNumNodes() * m_pGraph->m_nStates);
+	m_vTmp.resize(2 * m_pGraph->m_vUnary.size());
 	std::fill(m_vTmp.begin(), m_vTmp.end(), 0);
 	
 	startInference();

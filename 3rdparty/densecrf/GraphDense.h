@@ -28,28 +28,31 @@
 #pragma once
 
 #include "types.h"
+#include "edgePotentialPotts.h"
 
-class CEdgePotential;
+
 class SemiMetricFunction;
 
 class CGraphDense {
 	friend class CInferDense;
 
 public:
-	DllExport CGraphDense(byte nStates);
-	DllExport virtual ~CGraphDense(void);
+    DllExport CGraphDense(byte nStates) : m_nStates(nStates) { }
+    DllExport virtual ~CGraphDense(void) { }
 
 	// Set the unary potential for all variables and labels (memory order is [x0l0 x0l1 x0l2 .. x1l0 x1l1 ...])
-	DllExport virtual void setNodes(const float *pots, size_t nNodes);
+    DllExport virtual void setNodes(const vec_float_t &pots);
 
 	// Add  a pairwise potential defined over some feature space
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
 	// The kernel shape should be captured by transforming the
 	// features before passing them into this function
-	DllExport void setEdgesPotts(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *function = NULL);
+    DllExport void setEdgesPotts(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *pFunction = NULL) {
+        setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w, pFunction));
+    }
 	
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
-	DllExport void setEdges(CEdgePotential *pEdgePot);
+    DllExport void setEdges(CEdgePotential *pEdgePot) { m_vpEdgePots.emplace_back(pEdgePot); }
 	
 	
 	/**
@@ -63,8 +66,8 @@ private:
 	size_t		m_nNodes;					// number of pixels
 	byte		m_nStates;
 	
-    vec_float_t						m_vUnary;
-	std::vector<CEdgePotential *>	m_vpEdgePots;
+    vec_float_t						                m_vUnary;
+    std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgePots;
 
 
 private:

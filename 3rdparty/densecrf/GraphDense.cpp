@@ -26,33 +26,13 @@
 */
 
 #include "GraphDense.h"
-#include "edgePotentialPotts.h"
-#include "macroses.h"
 
-// Constructor
-CGraphDense::CGraphDense(byte nStates) : m_nStates(nStates)
-{ }
-
-// Destructor
-CGraphDense::~CGraphDense(void)
+void CGraphDense::setNodes(const vec_float_t &vPots)
 {
-	for (auto edgePot : m_vpEdgePots)
-		delete edgePot;
+	m_nNodes = vPots.size() / m_nStates;
+    m_vUnary = vec_float_t(vPots);
+    
+    // TODO: put it ti inferense or whatever
+    for (float &p : m_vUnary) p = -logf(p);
 }
 
-void CGraphDense::setNodes(const float *pots, size_t nNodes)
-{
-	m_nNodes = nNodes;
-    m_vUnary = vec_float_t(pots, pots + m_nNodes * m_nStates);
-}
-
-void CGraphDense::setEdgesPotts(const float *features, word nFeatures, float w, const SemiMetricFunction *function)
-{
-	if (function)	setEdges(new CEdgePotentialPottsSemiMetric(features, nFeatures, m_nNodes, w, function));
-	else			setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w));
-}
-
-void CGraphDense::setEdges(CEdgePotential *pEdgePot)
-{
-	m_vpEdgePots.push_back(pEdgePot);
-}

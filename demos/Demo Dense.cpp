@@ -3,8 +3,8 @@
 #include "VIS.h"
 #include "DGM/timer.h"
 #include "DGM/serialize.h"
-#include "../3rdparty/densecrf/graphdense2d.h"
-#include "../3rdparty/densecrf/inferdense.h"
+#include "../3rdparty/densecrf/GraphDense2D.h"
+#include "../3rdparty/densecrf/InferDense.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
 //	CInfer			* decoder = new CInferLBP(graph);
 	CMarker			* marker = new CMarker(DEF_PALETTE_6);
 	CCMat			* confMat = new CCMat(nStates);
-	float			  params[] = { 100, 0.01f };
-	size_t			  params_len = 1;
+//	float			  params[] = { 100, 0.01f };
+//	size_t			  params_len = 1;
 
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -87,14 +87,6 @@ int main(int argc, char *argv[])
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
 	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
-
-	for (int y = 0; y < height; y++) {
-		float		* pPot = nodePotentials.ptr<float>(y);
-		for (int x = 0; x < width; x++) {
-			for (int s = 0; s < nStates; s++)
-				pPot[x * nStates + s] = -logf(pPot[x * nStates + s]);
-		} // x
-	} // y
 
 	CGraphDense2D * graph	= new CGraphDense2D(nStates);
 	CInferDense	  * decoder	= new CInferDense(graph);

@@ -2,10 +2,11 @@
 
 void CGraphDense2D::setNodes(const Mat &pots)
 {
-	CGraphDense::setNodes(reinterpret_cast<const float *>(pots.data), pots.cols * pots.rows);
+    const float *pData = reinterpret_cast<const float *>(pots.data);
+    CGraphDense::setNodes(vec_float_t(pData, pData + pots.cols * pots.rows * pots.channels()));
 }
 
-void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *function)
+void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *pFunction)
 {
 	Mat feature(imgSize, CV_32FC2);
 	for (int y = 0; y < feature.rows; y++) {
@@ -15,10 +16,10 @@ void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w
 			pFeature[x * 2 + 1] = y / sy;
 		} // x
 	}// y
-	setEdgesPotts(reinterpret_cast<float *>(feature.data), 2, w, function);
+    setEdges(new CEdgePotentialPotts(reinterpret_cast<float *>(feature.data), 2, feature.rows * feature.cols, w, pFunction));
 }
 
-void CGraphDense2D::setEdgesBilateral(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const SemiMetricFunction * function)
+void CGraphDense2D::setEdgesBilateral(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const SemiMetricFunction *pFunction)
 {
 	Mat feature(img.size(), CV_MAKE_TYPE(CV_32F, 5));
 	for (int y = 0; y < feature.rows; y++) {
@@ -32,6 +33,5 @@ void CGraphDense2D::setEdgesBilateral(const Mat &img, float sx, float sy, float 
 			pFeature[x * 5 + 4] = pImg[x * 3 + 2] / sb;
 		} // x
 	} // y
-
-	setEdgesPotts(reinterpret_cast<float *>(feature.data), 5, w, function);
+	setEdges(new CEdgePotentialPotts(reinterpret_cast<float *>(feature.data), 5, feature.rows * feature.cols, w, pFunction));
 }
