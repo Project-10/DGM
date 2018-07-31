@@ -1,4 +1,5 @@
 #include "GraphDense2D.h"
+#include "edgePotentialPotts.cpp"
 
 void CGraphDense2D::setNodes(const Mat &pots)
 {

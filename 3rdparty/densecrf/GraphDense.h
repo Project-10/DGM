@@ -47,9 +47,9 @@ public:
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
 	// The kernel shape should be captured by transforming the
 	// features before passing them into this function
-    DllExport void setEdgesPotts(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *pFunction = NULL) {
-        setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w, pFunction));
-    }
+//    DllExport void setEdgesPotts(const float *features, word nFeatures, float w = 1.0f, const SemiMetricFunction *pFunction = NULL) {
+//        setEdges(new CEdgePotentialPotts(features, nFeatures, m_nNodes, w, pFunction));
+//    }
 	
 	// Add your own favorite pairwise potential (ownwership will be transfered to this class)
     DllExport void setEdges(CEdgePotential *pEdgePot) { m_vpEdgePots.emplace_back(pEdgePot); }
