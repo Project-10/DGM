@@ -91,7 +91,7 @@ CPermutohedral::~CPermutohedral(void)
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
 }
 
-void CPermutohedral::init(const float *pFeature, word nFeatures, int N)
+void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
 {
     // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
     m_N = N;
@@ -144,7 +144,7 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, int N)
         
         // Find the closest 0-colored simplex through rounding
         float down_factor = 1.0f / (m_nFeatures + 1);
-        float up_factor = (m_nFeatures + 1);
+        float up_factor = static_cast<float>(m_nFeatures + 1);
         int sum = 0;
         for(int i = 0; i <= m_nFeatures; i++) {
             int rd = static_cast<int>(round( down_factor * elevated[i]));
@@ -189,7 +189,7 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, int N)
         // Compute all vertices and their offset
         for(int remainder = 0; remainder <= m_nFeatures; remainder++) {
             for(int i = 0; i < m_nFeatures; i++)
-                key[i] = rem0[i] + canonical[ remainder * (m_nFeatures + 1) + rank[i]];
+                key[i] = static_cast<short>(rem0[i] + canonical[ remainder * (m_nFeatures + 1) + rank[i]]);
             m_pOffset[k * (m_nFeatures + 1) + remainder] = hash_table.find(key, true);
             m_pBarycentric[k * (m_nFeatures + 1) + remainder] = barycentric[remainder];
         }
@@ -235,7 +235,7 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, int N)
     delete[] n2;
 }
 
-void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset, int out_offset, int in_size, int out_size) const
+void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
     if (in_size  == -1) in_size  = m_N - in_offset;
     if (out_size == -1) out_size = m_N - out_offset;

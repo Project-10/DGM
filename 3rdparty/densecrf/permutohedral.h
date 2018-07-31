@@ -46,13 +46,13 @@ public:
     CPermutohedral & operator= (const CPermutohedral &rhs);
     ~CPermutohedral(void);
 
-    void init(const float *pFeature, word nFeatures, int N);
-    void compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset = 0, int out_offset = 0, int in_size = -1, int out_size = -1) const;
+    void init(const float *pFeature, word nFeatures, size_t N);
+    void compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset = 0, int out_offset = 0, size_t in_size = -1, size_t out_size = -1) const;
 
     
 private:
-    int         m_N                 = 0;        // Number of elements
-    int         m_M                 = 0;        // Size of sparse discretized space
+    size_t      m_N                 = 0;        // Number of elements
+    size_t      m_M                 = 0;        // Size of sparse discretized space
     word        m_nFeatures         = 0;        // Dimension of features
     
     int       * m_pOffset           = NULL;

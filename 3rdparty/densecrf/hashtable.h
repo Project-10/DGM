@@ -4,7 +4,7 @@
 
 class CHashTable {
 public:
-	CHashTable(int key_size, int nElements);
+	CHashTable(int key_size, size_t nElements);
 	~CHashTable(void);
 
 	void		  reset(void);

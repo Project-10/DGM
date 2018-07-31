@@ -1,7 +1,7 @@
 #include "hashtable.h"
 
 // Constructor
-CHashTable::CHashTable(int key_size, int nElements) : m_key_size(key_size), m_capacity(2 * nElements), m_filled(0)
+CHashTable::CHashTable(int key_size, size_t nElements) : m_key_size(key_size), m_capacity(2 * nElements), m_filled(0)
 {
 	m_pTable = new int[m_capacity];
 	m_pKeys = new short[(m_capacity / 2 + 10) * m_key_size];
