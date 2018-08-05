@@ -10,13 +10,12 @@ public:
 	CInferDense(CGraphDense *pGraph) : m_pGraph(pGraph) {}
 	virtual ~CInferDense(void) {}
 
-	
-	// Run inference and return the probabilities
-	DllExport vec_float_t infer(unsigned int nIt = 1, float relax = 1.0f);
-
-	// Run MAP inference and return the map for each pixel
+    	// Run MAP inference and return the map for each pixel
 	DllExport vec_byte_t decode(unsigned int nIt = 0, float relax = 1.0);
 
+    // Run inference and return the probabilities
+    vec_float_t infer(unsigned int nIt, float relax);
+    
 	// Step by step inference
 	DllExport void startInference(void);
 	DllExport void stepInference(float relax = 1.0);
@@ -37,11 +36,8 @@ protected:
 
 
 private:
-	// Run inference and return the pointer to the result
-	vec_float_t runInference(unsigned int nIt, float relax);
-
 	// Auxillary functions
-	void expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale = 1.0f, float relax = 1.0f);
+    void expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale = 1.0f, float relax = 1.0f) const;
 
 
 private:

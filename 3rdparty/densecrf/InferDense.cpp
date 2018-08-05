@@ -2,64 +2,30 @@
 #include "GraphDense.h"
 #include "fastmath.h"
 #include "edgePotentialPotts.h"
-
-// TODO: getPotentials ?
-vec_float_t CInferDense::infer(unsigned int nIt, float relax)
-{
-	vec_float_t res(m_pGraph->getNumNodes() * m_pGraph->m_nStates);
-	
-	// Run inference
-	vec_float_t vProb = runInference(nIt, relax);
-
-	// Copy the result over     // TODO:
-	for (int i = 0; i < m_pGraph->getNumNodes(); i++)
-		memcpy(res.data() + i * m_pGraph->m_nStates, vProb.data() + i * m_pGraph->m_nStates, m_pGraph->m_nStates * sizeof(float));
-
-	return res;
-}
+#include <numeric>
 
 // TODO: probably switch to the DGM decode 
 vec_byte_t CInferDense::decode(unsigned int nIt, float relax)
 {
-	vec_byte_t res;
+    vec_byte_t res;
 	res.reserve(m_pGraph->getNumNodes());
 
 	// Run inference
-	vec_float_t vProb = runInference(nIt, relax);
-
+    vec_float_t vProb = infer(nIt, relax);
+    
 	// Find the map
-	for (int i = 0; i < m_pGraph->getNumNodes(); i++) {
-		const float *p = vProb.data() + i * m_pGraph->m_nStates;
-		// Find the max and subtract it so that the exp doesn't explode
-		float mx = p[0];
-		byte imx = 0;
-		for (byte j = 1; j < m_pGraph->m_nStates; j++)
-			if (mx < p[j]) {
-				mx = p[j];
-				imx = j;
-			}
-		res.push_back(imx);
+	for (size_t i = 0; i < m_pGraph->getNumNodes(); i++) {
+        auto it = std::max_element(vProb.begin() + i * m_pGraph->m_nStates, vProb.begin() +  (i + 1) * m_pGraph->m_nStates);
+        byte idx = static_cast<byte>(std::distance(vProb.begin() + i * m_pGraph->m_nStates, it));   // index of the maximum element
+		res.push_back(idx);
 	}
 
 	return res;
 }
 
-// TODO: infer() ?
-vec_float_t CInferDense::runInference(unsigned int nIt, float relax)
+vec_float_t CInferDense::infer(unsigned int nIt, float relax)
 {
-	m_vAdditionalUnary.resize(m_pGraph->m_vUnary.size());
-	std::fill(m_vAdditionalUnary.begin(), m_vAdditionalUnary.end(), 0);
-
-	m_vCurrent.resize(m_pGraph->m_vUnary.size());
-	std::fill(m_vCurrent.begin(), m_vCurrent.end(), 0);
-
-	m_vNext.resize(m_pGraph->m_vUnary.size());
-	std::fill(m_vNext.begin(), m_vNext.end(), 0);
-
-	m_vTmp.resize(2 * m_pGraph->m_vUnary.size());
-	std::fill(m_vTmp.begin(), m_vTmp.end(), 0);
-	
-	startInference();
+    startInference();
 	
 	for (unsigned int i = 0; i < nIt; i++)
 		stepInference(relax);
@@ -67,52 +33,63 @@ vec_float_t CInferDense::runInference(unsigned int nIt, float relax)
 	return m_vCurrent;
 }
 
-void CInferDense::expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale, float relax)
-{
-	float *V = new float[m_pGraph->getNumNodes() + 10];
-	for (int i = 0; i<m_pGraph->getNumNodes(); i++) {
-		const float * b = in.data() + i * m_pGraph->m_nStates;
-		// Find the max and subtract it so that the exp doesn't explode
-		float mx = scale * b[0];
-		for (int j = 1; j<m_pGraph->m_nStates; j++)
-			if (mx < scale*b[j])
-				mx = scale * b[j];
-		float tt = 0;
-		for (int j = 0; j<m_pGraph->m_nStates; j++) {
-			V[j] = fast_exp(scale*b[j] - mx);
-			tt += V[j];
-		}
-		// Make it a probability
-		for (int j = 0; j<m_pGraph->m_nStates; j++)
-			V[j] /= tt;
-
-		float *a = out.data() + i * m_pGraph->m_nStates;
-		for (int j = 0; j < m_pGraph->m_nStates; j++)
-			if (relax == 1)
-				a[j] = V[j];
-			else
-				a[j] = (1 - relax)*a[j] + relax * V[j];
-	}
-	delete[] V;
-}
-
 void CInferDense::startInference(void)
 {
-	expAndNormalize(m_vCurrent, m_pGraph->m_vUnary, -1);			// Initialize using the unary energies
+    m_vAdditionalUnary.resize(m_pGraph->m_vUnary.size());
+    std::fill(m_vAdditionalUnary.begin(), m_vAdditionalUnary.end(), 0);
+    
+    m_vCurrent.resize(m_pGraph->m_vUnary.size());
+    std::fill(m_vCurrent.begin(), m_vCurrent.end(), 0);
+    
+    m_vNext.resize(m_pGraph->m_vUnary.size());
+    std::fill(m_vNext.begin(), m_vNext.end(), 0);
+    
+    m_vTmp.resize(2 * m_pGraph->m_vUnary.size());
+    std::fill(m_vTmp.begin(), m_vTmp.end(), 0);
+    
+    expAndNormalize(m_vCurrent, m_pGraph->m_vUnary, -1.0f);            // Initialize using the unary energies
 }
 
 void CInferDense::stepInference(float relax)
 {
-	// Set the unary potential
-	for (size_t i = 0; i < m_vNext.size(); i++)
-		m_vNext[i] = -m_pGraph->m_vUnary[i] - m_vAdditionalUnary[i];
+    // Set the unary potential
+    for (size_t i = 0; i < m_vNext.size(); i++)
+        m_vNext[i] = -m_pGraph->m_vUnary[i] - m_vAdditionalUnary[i];
 
-	// Add up all pairwise potentials
-	for (auto &edgePot : m_pGraph->m_vpEdgePots)
-		edgePot->apply(m_vNext, m_vCurrent, m_vTmp, m_pGraph->m_nStates);
+    
+    // Add up all pairwise potentials
+    for (auto &edgePot : m_pGraph->m_vpEdgePots)
+        edgePot->apply(m_vNext, m_vCurrent, m_vTmp, m_pGraph->m_nStates);
+    
+    // Exponentiate and normalize
+    expAndNormalize(m_vCurrent, m_vNext, 1.0f, relax);
+}
 
-	// Exponentiate and normalize
-	expAndNormalize(m_vCurrent, m_vNext, 1.0f, relax);
+void CInferDense::expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale, float relax) const
+{
+    vec_float_t V(m_pGraph->m_nStates);
+    for (size_t i = 0; i < m_pGraph->getNumNodes(); i++) {
+		size_t shift = i * m_pGraph->m_nStates;
+		
+        // Find the max and subtract it so that the exp doesn't explode
+      //  float mx = *std::max_element(in.begin() + i * m_pGraph->m_nStates, in.begin() + (i + 1) * m_pGraph->m_nStates);
+        float max = scale * in[shift];
+		for (int j = 1; j < m_pGraph->m_nStates; j++)
+			if (scale * in[shift + j] > max) max = scale * in[shift + j];
+        
+		for (size_t j = 0; j < V.size(); j++)
+			V[j] = fast_exp(scale * in[shift + j] - max);
+
+        float sum = 0;
+        for (float &v : V) sum += v;
+//      float sum = std::accumulate(V.begin(), V.end(), 0);
+        
+        // Make it a probability
+        for (float &v : V) v /= sum;
+
+		for (size_t j = 0; j < V.size(); j++)
+            out[shift + j] = (relax == 1) ? V[j] : (1 - relax) * out[shift + j] + relax * V[j];
+	}
 }
 
 void CInferDense::currentMap(short *result)
