@@ -53,8 +53,8 @@ namespace DirectGraphicalModels
 		*/		
 		DllExport virtual void	load(const std::string &path, const std::string &name = std::string(), short idx = -1); 
 		/**
-		* @brief Returns number of features
-		* @return Number of features 
+		* @brief Returns number of states (classes)
+		* @return Number of states (features) 
 		*/		
 		DllExport byte			getNumStates(void) const { return m_nStates; }	
 

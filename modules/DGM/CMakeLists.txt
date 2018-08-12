@@ -34,6 +34,7 @@ source_group("Source Files\\Common\\Utilities" FILES "serialize.h")
 source_group("Source Files\\Decoding" FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact" FILES "DecodeExact.h" "DecodeExact.cpp")												
 source_group("Source Files\\Graph" FILES	"IGraph.h"
+											"IGraphTemp.h"
 											"Graph.h"
 											"Graph.cpp"
 											"GraphWeiss.h"

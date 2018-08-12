@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X 
 #pragma once
 
-#include "IGraph.h"
+#include "IGraphTemp.h"
 
 namespace DirectGraphicalModels
 {
@@ -69,7 +69,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraph : public IGraph
+	class CGraph : public IGraphTemp
 	{
 		friend class CMessagePassing;
 
@@ -89,7 +89,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraph(byte nStates) : IGraph(nStates), m_IDx(0) {}
+		DllExport CGraph(byte nStates) : IGraphTemp(nStates), m_IDx(0) {}
 		DllExport virtual ~CGraph(void) {}
 
 		DllExport virtual void		reset(void);

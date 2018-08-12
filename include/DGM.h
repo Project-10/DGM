@@ -40,7 +40,7 @@
 #include "DGM/TrainLink.h"
 #include "DGM/TrainLinkNested.h"
 
-#include "DGM/IGraph.h"
+#include "DGM/IGraphTemp.h"
 #include "DGM/Graph.h"
 #include "DGM/GraphWeiss.h"
 #include "DGM/GraphExt.h"

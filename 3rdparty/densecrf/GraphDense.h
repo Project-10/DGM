@@ -57,7 +57,7 @@ public:
 	
 	/**
 	* @brief Returns the number of nodes in the graph
-	* @returns number of nodes
+	* @returns The number of nodes
 	*/
 	DllExport virtual size_t	getNumNodes(void) const { return m_nNodes; }
 

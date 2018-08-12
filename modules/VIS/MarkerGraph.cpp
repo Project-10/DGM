@@ -1,5 +1,5 @@
 #include "MarkerGraph.h"
-#include "DGM/IGraph.h"
+#include "DGM/IGraphTemp.h"
 #include "ColorSpaces.h"
 #include "macroses.h"
 
@@ -73,7 +73,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	Mat drawGraph(int size, IGraph * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	Mat drawGraph(int size, IGraphTemp * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		Point2f	pt1, pt2;
 		Scalar	color1, color2;
@@ -319,7 +319,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void showGraph3D(int size, IGraph *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	void showGraph3D(int size, IGraphTemp *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
 		const size_t	nNodes			= pGraph->getNumNodes();

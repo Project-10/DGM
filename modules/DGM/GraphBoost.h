@@ -3,7 +3,7 @@
 #include "IGraph.h"
 
 namespace DirectGraphicalModels {
-	class CGraphBoost : public IGraph
+	class CGraphBoost : public IGraphTemp
 	{
 	public:
 		/**
