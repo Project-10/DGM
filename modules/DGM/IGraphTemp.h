@@ -18,32 +18,10 @@ namespace DirectGraphicalModels {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport IGraphTemp(byte nStates) : IGraph(nStates) {};
-		DllExport virtual ~IGraphTemp(void) {};
+		DllExport IGraphTemp(byte nStates) : IGraph(nStates) {}
+		DllExport virtual ~IGraphTemp(void) {}
 
-		/**
-		* @brief Adds an additional node
-		* @return the node's ID
-		*/
-		DllExport virtual size_t	addNode(void) = 0;
-		/**
-		* @brief Adds an additional node with specified potentional
-		* @param pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
-		* @return the node's ID
-		*/
-		DllExport virtual size_t	addNode(const Mat &pot) = 0;
-		/**
-		* @brief Sets or changes the potential of node
-		* @param node node index
-		* @param pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
-		*/
-		DllExport virtual void		setNode(size_t node, const Mat &pot) = 0;
-		/**
-		* @brief Returns the node potential
-		* @param[in] node node index
-		* @param[out] pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
-		*/
-		DllExport virtual void		getNode(size_t node, Mat &pot) const = 0;
+
 		/**
 		* @brief Returns the set of IDs of the child nodes of the argument node
 		* @param[in] node node index
