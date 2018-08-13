@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IGraph.h"
+#include "IGraphTemp.h"
 
 namespace DirectGraphicalModels {
 	class CGraphBoost : public IGraphTemp
