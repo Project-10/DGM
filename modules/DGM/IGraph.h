@@ -39,6 +39,9 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual size_t	addNode(const Mat &pot) = 0;
 		/**
+		*/
+		//DllExport virtual void		
+		/**
 		* @brief Sets or changes the potential of node
 		* @param node node index
 		* @param pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
