@@ -3,8 +3,7 @@
 
 void CGraphDense2D::setNodes(const Mat &pots)
 {
-    const float *pData = reinterpret_cast<const float *>(pots.data);
-    CGraphDense::setNodes(vec_float_t(pData, pData + pots.cols * pots.rows * pots.channels()));
+	CGraphDense::setNodes(pots.clone().reshape(1, pots.cols * pots.rows));
 }
 
 void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *pFunction)

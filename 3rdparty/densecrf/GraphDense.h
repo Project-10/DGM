@@ -41,7 +41,7 @@ public:
     DllExport virtual ~CGraphDense(void) { }
 
 	// Set the unary potential for all variables and labels (memory order is [x0l0 x0l1 x0l2 .. x1l0 x1l1 ...])
-    DllExport virtual void setNodes(const vec_float_t &pots);
+    DllExport virtual void setNodes(const Mat &pots);
 
 	// Add  a pairwise potential defined over some feature space
 	// The potential will have the form:    w*exp(-0.5*|f_i - f_j|^2)
@@ -66,7 +66,7 @@ private:
 	size_t		m_nNodes;					// number of pixels
 	byte		m_nStates;
 	
-    vec_float_t						                m_vUnary;
+    Mat												m_unary;
     std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgePots;
 
 

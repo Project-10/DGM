@@ -35,26 +35,40 @@ vec_float_t CInferDense::infer(unsigned int nIt, float relax)
 
 void CInferDense::startInference(void)
 {
-    m_vAdditionalUnary.resize(m_pGraph->m_vUnary.size());
+	const int rows = m_pGraph->m_unary.rows;
+	const int cols = m_pGraph->m_unary.cols;
+	
+	m_vAdditionalUnary.resize(rows * cols);
     std::fill(m_vAdditionalUnary.begin(), m_vAdditionalUnary.end(), 0);
     
-    m_vCurrent.resize(m_pGraph->m_vUnary.size());
+    m_vCurrent.resize(rows * cols);
     std::fill(m_vCurrent.begin(), m_vCurrent.end(), 0);
     
-    m_vNext.resize(m_pGraph->m_vUnary.size());
+    m_vNext.resize(rows * cols);
     std::fill(m_vNext.begin(), m_vNext.end(), 0);
     
-    m_vTmp.resize(2 * m_pGraph->m_vUnary.size());
+    m_vTmp.resize(2 * rows * cols);
     std::fill(m_vTmp.begin(), m_vTmp.end(), 0);
     
-    expAndNormalize(m_vCurrent, m_pGraph->m_vUnary, -1.0f);            // Initialize using the unary energies
+
+	// Making log potentials
+	for (int n = 0; n < rows; n++) {
+		float *pUnary = m_pGraph->m_unary.ptr<float>(n);
+		for (int s = 0; s < cols; s++)
+			pUnary[s] = -logf(pUnary[s]);
+	}
+	
+	// TODO: exp is not needed actually
+	const float *pData = reinterpret_cast<const float *>(m_pGraph->m_unary.data);
+	expAndNormalize(m_vCurrent, vec_float_t(pData, pData + rows * cols), -1.0f);            // Initialize using the unary energies
 }
 
 void CInferDense::stepInference(float relax)
 {
-    // Set the unary potential
-    for (size_t i = 0; i < m_vNext.size(); i++)
-        m_vNext[i] = -m_pGraph->m_vUnary[i] - m_vAdditionalUnary[i];
+	// Set the unary potential
+	const float *pData = reinterpret_cast<const float *>(m_pGraph->m_unary.data);
+	for (size_t i = 0; i < m_vNext.size(); i++)
+        m_vNext[i] = -pData[i] - m_vAdditionalUnary[i];
 
     
     // Add up all pairwise potentials

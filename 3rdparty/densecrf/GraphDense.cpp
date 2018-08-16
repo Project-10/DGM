@@ -27,12 +27,9 @@
 
 #include "GraphDense.h"
 
-void CGraphDense::setNodes(const vec_float_t &vPots)
+void CGraphDense::setNodes(const Mat &pots)
 {
-	m_nNodes = vPots.size() / m_nStates;
-    m_vUnary = vec_float_t(vPots);
-    
-    // TODO: put it ti inferense or whatever
-    for (float &p : m_vUnary) p = -logf(p);
+	m_nNodes = pots.rows;
+    m_unary = pots.clone();
 }
 
