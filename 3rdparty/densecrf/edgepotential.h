@@ -8,7 +8,7 @@ class CEdgePotential
 public:
 	CEdgePotential(void) {}
 	virtual ~CEdgePotential(void) {}
-	virtual void apply(vec_float_t &out_values, const vec_float_t &in_values, vec_float_t &tmp, int value_size) const = 0;
+	virtual void apply(Mat &out, const Mat &in, Mat &temp, int value_size) const = 0;
 
 
 private:

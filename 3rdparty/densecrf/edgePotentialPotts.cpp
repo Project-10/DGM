@@ -12,42 +12,43 @@ CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures,
 {
 	m_pLattice->init(pFeatures, nFeatures, nNodes);
 
-	m_vNorm.resize(nNodes);
-	std::fill(m_vNorm.begin(), m_vNorm.end(), 1);
+    m_norm = Mat(nNodes, 1, CV_32FC1, Scalar(1));
 
 	// Compute the normalization factor
-	m_pLattice->compute(m_vNorm, m_vNorm, 1);
+	m_pLattice->compute(m_norm, m_norm, 1);
 	if (per_pixel_normalization)
-		for (float &norm : m_vNorm)
-			norm = 1.f / (norm + FLT_EPSILON);
+        for (int n = 0; n < m_norm.rows; n++)
+			m_norm.at<float>(n, 0) = 1.f / (m_norm.at<float>(n, 0) + FLT_EPSILON);
 	else {
-		float mean_norm = std::accumulate(m_vNorm.begin(), m_vNorm.end(), 0.0f);
-		mean_norm = m_vNorm.size() / mean_norm;
-		std::fill(m_vNorm.begin(), m_vNorm.end(), mean_norm);
+        float mean_norm = static_cast<float>(sum(m_norm)[0]);
+		mean_norm = m_norm.rows / mean_norm;
+        m_norm.setTo(mean_norm);
 	}
 }
 
-void CEdgePotentialPotts::apply(vec_float_t &out_values, const vec_float_t &in_values, vec_float_t &tmp, int value_size) const
+// TODO: perhaps value_size is not needed anymore
+void CEdgePotentialPotts::apply(Mat &out, const Mat &in, Mat &temp, int value_size) const
 {
-	m_pLattice->compute(tmp, in_values, value_size);
+	m_pLattice->compute(temp, in, value_size);
 
     if (m_pFunction) { // ------------------------- With the SemiMetric function -------------------------
         // To the metric transform
         float * tmp2 = new float[value_size];
-        for (size_t i = 0; i < m_nNodes; i++) {
-            float * out = out_values.data() + i * value_size;
-            float * t1 = tmp.data() + i * value_size;
-            m_pFunction->apply(tmp2, t1, value_size);
+        for (size_t n = 0; n < m_nNodes; n++) {
+            float *pOut = out.ptr<float>(n);
+            float *pTemp = temp.ptr<float>(n);
+            m_pFunction->apply(tmp2, pTemp, value_size);
             
             for (int j = 0; j < value_size; j++)
-                out[j] -= m_w * m_vNorm[i] * tmp2[j];
+                pOut[j] -= m_w * m_norm.at<float>(n, 0) * tmp2[j];
         }
         delete[] tmp2;
     } else {            // ------------------------- Standard -------------------------
+        // TODO:optimize
         size_t k = 0;
-        for (const float &norm : m_vNorm)
+        for (int n = 0; n < m_norm.rows; n++)
             for (int j = 0; j < value_size; j++) {
-                out_values[k] += m_w * norm * tmp[k];
+                reinterpret_cast<float *>(out.data)[k] += m_w * m_norm.at<float>(n, 0) * reinterpret_cast<float *>(temp.data)[k];
                 k++;
             } // j
     }

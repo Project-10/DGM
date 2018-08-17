@@ -37,12 +37,13 @@ protected:
 
 private:
 	// Auxillary functions
-    void expAndNormalize(vec_float_t &out, const vec_float_t &in, float scale = 1.0f, float relax = 1.0f) const;
+    // TODO: make static and anonyme namespace
+    void expAndNormalize(Mat &out, const Mat &in, float scale = 1.0f, float relax = 1.0f) const;
 
 
 private:
-	vec_float_t m_vAdditionalUnary;
-	vec_float_t m_vCurrent;					
-	vec_float_t	m_vTmp;
-	vec_float_t m_vNext;
+	Mat m_additionalUnary;
+	Mat m_current;
+	Mat	m_temp;
+	Mat m_next;
 };

@@ -235,7 +235,8 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
     delete[] n2;
 }
 
-void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_size, int in_offset, int out_offset, size_t in_size, size_t out_size) const
+// TODO: perhaps value_size is not needed
+void CPermutohedral::compute(Mat &out, const Mat &in, int value_size, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
     if (in_size  == -1) in_size  = m_N - in_offset;
     if (out_size == -1) out_size = m_N - out_offset;
@@ -249,11 +250,12 @@ void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_
     
     // Splatting
     for(int i = 0; i < in_size; i++) {
+        const float *pIn = in.ptr<float>(i);
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(in_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(in_offset + i) * (m_nFeatures + 1) + j];
             for(int k = 0; k < value_size; k++)
-                values[o * value_size + k] += w * in[i * value_size + k];
+                values[o * value_size + k] += w * pIn[k];
         }
     }
     
@@ -278,13 +280,14 @@ void CPermutohedral::compute(vec_float_t &out, const vec_float_t &in, int value_
     
     // Slicing
     for(int i = 0; i < out_size; i++) {
+        float *pOut = out.ptr<float>(i);
         for(int k = 0; k < value_size; k++)
-            out[i * value_size + k] = 0;
+            pOut[k] = 0;
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(out_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(out_offset + i) * (m_nFeatures + 1) + j];
             for(int k = 0; k < value_size; k++)
-                out[i * value_size + k] += w * values[o * value_size + k] * alpha;
+                pOut[k] += w * values[o * value_size + k] * alpha;
         }
     }
     
