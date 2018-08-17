@@ -34,6 +34,36 @@ vec_float_t CInferDense::infer(unsigned int nIt, float relax)
     return vec_float_t(pData, pData + m_current.rows * m_current.cols);
 }
 
+namespace {
+void expAndNormalize(Mat &out, const Mat &in, float scale = 1.0f, float relax = 1.0f)
+{
+    vec_float_t V(in.cols);
+    for (int n = 0; n < in.rows; n++) {             // node
+        const float *pIn    = in.ptr<float>(n);
+        float       *pOut   = out.ptr<float>(n);
+        
+        // Find the max and subtract it so that the exp doesn't explode
+        //  float mx = *std::max_element(in.begin() + i * m_pGraph->m_nStates, in.begin() + (i + 1) * m_pGraph->m_nStates);
+        float max = scale * pIn[0];
+        for (int s = 1; s < in.cols; s++)
+            if (scale * pIn[s] > max) max = scale * pIn[s];
+        
+        for (size_t j = 0; j < V.size(); j++)
+            V[j] = fast_exp(scale * pIn[j] - max);
+        
+        float sum = 0;
+        for (float &v : V) sum += v;
+        //      float sum = std::accumulate(V.begin(), V.end(), 0);
+        
+        // Make it a probability
+        for (float &v : V) v /= sum;
+        
+        for (size_t j = 0; j < V.size(); j++)
+            pOut[j] = (relax == 1) ? V[j] : (1 - relax) * pOut[j] + relax * V[j];
+    }
+}
+}
+
 void CInferDense::startInference(void)
 {
 	const int rows = m_pGraph->m_unary.rows;
@@ -58,10 +88,7 @@ void CInferDense::startInference(void)
 void CInferDense::stepInference(float relax)
 {
 	// Set the unary potential
-    // TODO: optimize
-    for (int n = 0; n < m_next.rows; n++)
-        for (int s = 0; s < m_next.cols; s++)
-            m_next.at<float>(n, s) = -m_pGraph->m_unary.at<float>(n, s) - m_additionalUnary.at<float>(n, s);
+    m_next = -m_pGraph->m_unary - m_additionalUnary;
     
     // Add up all pairwise potentials
     for (auto &edgePot : m_pGraph->m_vpEdgePots)
@@ -71,33 +98,6 @@ void CInferDense::stepInference(float relax)
     expAndNormalize(m_current, m_next, 1.0f, relax);
 }
 
-void CInferDense::expAndNormalize(Mat &out, const Mat &in, float scale, float relax) const
-{
-    vec_float_t V(in.cols);
-    for (int n = 0; n < in.rows; n++) {             // node
-        const float *pIn    = in.ptr<float>(n);
-        float       *pOut   = out.ptr<float>(n);
-		
-        // Find the max and subtract it so that the exp doesn't explode
-        //  float mx = *std::max_element(in.begin() + i * m_pGraph->m_nStates, in.begin() + (i + 1) * m_pGraph->m_nStates);
-        float max = scale * pIn[0];
-		for (int s = 1; s < in.cols; s++)
-			if (scale * pIn[s] > max) max = scale * pIn[s];
-        
-		for (size_t j = 0; j < V.size(); j++)
-			V[j] = fast_exp(scale * pIn[j] - max);
-
-        float sum = 0;
-        for (float &v : V) sum += v;
-//      float sum = std::accumulate(V.begin(), V.end(), 0);
-        
-        // Make it a probability
-        for (float &v : V) v /= sum;
-
-		for (size_t j = 0; j < V.size(); j++)
-            pOut[j] = (relax == 1) ? V[j] : (1 - relax) * pOut[j] + relax * V[j];
-	}
-}
 
 void CInferDense::currentMap(short *result)
 {

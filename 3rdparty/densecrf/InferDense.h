@@ -36,12 +36,6 @@ protected:
 
 
 private:
-	// Auxillary functions
-    // TODO: make static and anonyme namespace
-    void expAndNormalize(Mat &out, const Mat &in, float scale = 1.0f, float relax = 1.0f) const;
-
-
-private:
 	Mat m_additionalUnary;
 	Mat m_current;
 	Mat	m_temp;
