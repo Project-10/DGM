@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2018 for Project X 
 #pragma once
 
-#include "IGraph.h"
+#include "Graph.h"
 
 namespace DirectGraphicalModels {
 	// ================================ Graph Interface Class ================================
@@ -11,15 +11,15 @@ namespace DirectGraphicalModels {
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphDense : public IGraph {
+	class CGraphDense : public CGraph {
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraphDense(byte nStates) : IGraph(nStates) {};
+		DllExport CGraphDense(byte nStates) : CGraph(nStates) {};
 		DllExport virtual ~CGraphDense(void) {}
 
-		// IGraph
+		// CGraph
 		DllExport virtual void		reset(void) { m_vNodePotentials.clear(); }
 		
 		DllExport virtual size_t	addNode(void);

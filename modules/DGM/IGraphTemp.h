@@ -2,7 +2,7 @@
 // Written by Sergey Kosov in 2015 for Project X
 #pragma once
 
-#include "IGraph.h"
+#include "Graph.h"
 
 namespace DirectGraphicalModels {
 	// ================================ Graph Interface Class ================================
@@ -11,14 +11,14 @@ namespace DirectGraphicalModels {
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class IGraphTemp : public IGraph
+	class IGraphTemp : public CGraph
 	{
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport IGraphTemp(byte nStates) : IGraph(nStates) {}
+		DllExport IGraphTemp(byte nStates) : CGraph(nStates) {}
 		DllExport virtual ~IGraphTemp(void) {}
 
 

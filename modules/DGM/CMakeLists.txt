@@ -33,13 +33,13 @@ source_group("Source Files\\Common\\Utilities" FILES "timer.h")
 source_group("Source Files\\Common\\Utilities" FILES "serialize.h")
 source_group("Source Files\\Decoding" 		   FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact"   FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" 			   FILES "IGraph.h")
+source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp")
 source_group("Source Files\\Graph\\Dense" 	   FILES "GraphDense.h" "GraphDense.cpp")
 source_group("Source Files\\Graph\\Pairwise"   FILES	
 											"IGraphTemp.h"
 											"GraphDense.h"
-											"Graph.h"
-											"Graph.cpp"
+											"GraphPairwise.h"
+											"GraphPairwise.cpp"
 											"GraphWeiss.h"
 											"GraphWeiss.cpp"
 											"Graph3.h"
