@@ -25,9 +25,9 @@ Mat CTree::getEdgePot(void)
 	return res;
 }
 
-CGraph * CTree::buildTree()
+CGraphPairwise * CTree::buildTree()
 {
-	CGraph *graph = new CGraph(nStates);
+	CGraphPairwise *graph = new CGraphPairwise(nStates);
 	
 	// Build a complete graph
 	// Add nodes with default potentials
@@ -65,7 +65,7 @@ CGraph * CTree::buildTree()
 void CTree::Main(void)
 {
 	srand(0);
-	CGraph	*graph = buildTree();					// Returns a tree with default potentials
+	CGraphPairwise	*graph = buildTree();					// Returns a tree with default potentials
 	CInfer	*inferer = new CInferTree(graph);
 
 

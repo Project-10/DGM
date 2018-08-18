@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	int		  width		= img.cols;
 	int		  height	= img.rows;
 	
-	CGraph	* graph		= new CGraph(nStates);
+	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
 	CInfer  * decoder	= new CInferViterbi(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);						// node Potential (column-vector)

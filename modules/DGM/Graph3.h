@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2014 for Project X 
 #pragma once
 
-#include "Graph.h"
+#include "GraphPairwise.h"
 
 namespace DirectGraphicalModels
 {
@@ -28,14 +28,14 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraph3 : public CGraph
+	class CGraph3 : public CGraphPairwise
 	{
 	public:
 /**
 @brief Constructor
 @param nStates the number of States (classes)
 */	
-		DllExport CGraph3(byte nStates) : CGraph(nStates) {}
+		DllExport CGraph3(byte nStates) : CGraphPairwise(nStates) {}
 		DllExport virtual ~CGraph3(void) {}
 
 

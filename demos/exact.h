@@ -12,8 +12,8 @@ public:
 
 
 private:
-	void fillGraph(CGraph *graph);
-    void printMarginals(const CGraph *graph, const std::string &str);
+	void fillGraph(CGraphPairwise *graph);
+    void printMarginals(const CGraphPairwise *graph, const std::string &str);
 };
 /// @endcond
 
@@ -35,7 +35,7 @@ every graph node will have 2 states:
 	const byte   nStates = 2;												// {false, true}
 	const size_t nNodes  = 4;												// four students
 	
-	CGraph *graph = new CGraph(nStates);
+	CGraphPairwise *graph = new CGraphPairwise(nStates);
 
 	for (size_t i = 0; i < nNodes; i++)     graph->addNode();				// add nodes
 	for (size_t i = 0; i < nNodes - 1; i++) graph->addArc(i, i + 1);		// add arcs

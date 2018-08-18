@@ -38,7 +38,7 @@ with undirected arcs:
 	const byte	 nStates = 7;				// {grad scool, industry, video games, industry (with PhD), academia, video games (with PhD), deceased}
 	const size_t nNodes = 60;				// sixty years
 
-	CGraph *graph = new CGraph(nStates);
+	CGraphPairwise *graph = new CGraphPairwise(nStates);
 
 	Mat nodePot = getNodePot();
 	graph->addNode(nodePot);				// add the first node

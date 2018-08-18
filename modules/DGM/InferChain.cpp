@@ -1,5 +1,5 @@
 #include "InferChain.h"
-#include "Graph.h"
+#include "GraphPairwise.h"
 
 namespace DirectGraphicalModels
 {

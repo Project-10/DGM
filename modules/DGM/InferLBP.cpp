@@ -1,5 +1,5 @@
 #include "InferLBP.h"
-#include "Graph.h"
+#include "GraphPairwise.h"
 
 namespace DirectGraphicalModels
 {

@@ -16,7 +16,7 @@ public:
 /**
 @page demo1d Demo 1D
 Here we introduce the application of the DGM library to some well-known probabilistic models. Particaulary, we show how to compose graphical models with the help of 
-DirectGraphicalModels::CGraph class. We fill the model by hand with potentials and study inferece and decoding processes on them. First we demonstrate brute-force 
+DirectGraphicalModels::CGraphPairwise class. We fill the model by hand with potentials and study inferece and decoding processes on them. First we demonstrate brute-force 
 algorithms for exact decoding and inference on a small graph, and consider a possible use of marginal probabilities calculated by inference algorithm for approximate 
 decoding. Next we show message-passing algorithms for approximate inference, and consider the difference between \a sum-product and \a max-sum approaches. Finally, 
 we consider \a sum-product message-passing algorithms, which provide an efficient framework for exact inference in chain- and tree-structuresd graphs.

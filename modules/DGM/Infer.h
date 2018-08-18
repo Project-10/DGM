@@ -8,7 +8,7 @@
 
 namespace DirectGraphicalModels 
 {
-	class CGraph;
+	class CGraphPairwise;
 
 	// ================================ Infer Class ===============================
 	/**
@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CInfer(CGraph *pGraph) : CDecode(pGraph) {};
+		DllExport CInfer(CGraphPairwise *pGraph) : CDecode(pGraph) {};
 		DllExport virtual ~CInfer(void) {};
 
 		/**
@@ -41,7 +41,7 @@ namespace DirectGraphicalModels
 		* In other words:
 		* @code
 		*	using namespace DirectGraphicalModels;
-		*	CGraph  * graph   = new CGraph(nStates);
+		*	CGraphPairwise  * graph   = new CGraphPairwise(nStates);
 		*	CInfer  * inferer = new CInferExact(graph);
 		*	CDecode * decoder = new CDecodeExact(graph);
 		*	inferer->decode() == decoder->decode();		// This statement is not always true!

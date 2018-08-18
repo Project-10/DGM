@@ -7,7 +7,7 @@ using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
 typedef struct {
-	CGraph				* pGraph;
+	CGraphPairwise				* pGraph;
 	CMarkerHistogram	* pMarker;
 	int					  imgWidth;
 } USER_DATA;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	CTrainEdge			* edgeTrainer	 = new CTrainEdgePottsCS(nStates, nFeatures);
 	float				  params[]		 = {400, 0.001f};						
 	size_t				  params_len	 = 2;
-	CGraph				* graph			 = new CGraph(nStates); 
+	CGraphPairwise				* graph			 = new CGraphPairwise(nStates); 
 	CInfer				* decoder		 = new CInferLBP(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
 	vec_nColor_t		  palette;

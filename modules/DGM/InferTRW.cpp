@@ -1,5 +1,5 @@
 #include "InferTRW.h"
-#include "Graph.h"
+#include "GraphPairwise.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels

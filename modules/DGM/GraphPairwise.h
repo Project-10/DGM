@@ -69,7 +69,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraph : public IGraphTemp
+	class CGraphPairwise : public IGraphTemp
 	{
 		friend class CMessagePassing;
 
@@ -89,8 +89,8 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraph(byte nStates) : IGraphTemp(nStates), m_IDx(0) {}
-		DllExport virtual ~CGraph(void) {}
+		DllExport CGraphPairwise(byte nStates) : IGraphTemp(nStates), m_IDx(0) {}
+		DllExport virtual ~CGraphPairwise(void) {}
 
 		DllExport virtual void		reset(void);
 		DllExport virtual size_t	addNode(void);

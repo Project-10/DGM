@@ -33,8 +33,8 @@ void CChain::Main(void)
 {
 	size_t i;
 
-	CGraph	*graph = new CGraph(nStates);
-	CInfer  *inferer = new CInferChain(graph);
+	CGraphPairwise	*graph		= new CGraphPairwise(nStates);
+	CInfer			*inferer	= new CInferChain(graph);
 
 	Mat nodePot = getNodePot();
 	graph->addNode(nodePot);				// add the first node

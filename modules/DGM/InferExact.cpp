@@ -1,5 +1,5 @@
 #include "InferExact.h"
-#include "Graph.h"
+#include "GraphPairwise.h"
 #include <numeric>
 
 namespace DirectGraphicalModels

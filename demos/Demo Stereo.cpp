@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraph	* graph		= new CGraph(nStates);
+	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
 	CInfer	* decoder	= new CInferTRW(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)

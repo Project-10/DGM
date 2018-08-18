@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/		
-		DllExport CDecodeExact(CGraph *pGraph) : CDecode(pGraph) {}
+		DllExport CDecodeExact(CGraphPairwise *pGraph) : CDecode(pGraph) {}
 		DllExport virtual ~CDecodeExact(void) {}
 
 		/**

@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CGraph;
+	class CGraphPairwise;
 
 	// ================================ Decode Class ===============================
 	/**
@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CDecode(CGraph *pGraph) : m_pGraph(pGraph) {};
+		DllExport CDecode(CGraphPairwise *pGraph) : m_pGraph(pGraph) {};
 		
 
 	public:
@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = EmptyMat);
+		DllExport static vec_byte_t	decode(const CGraphPairwise *pGraph, Mat &lossMatrix = EmptyMat);
 		/**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)
@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CGraph	* m_pGraph;		///< Pointer to the graph
+		CGraphPairwise * m_pGraph;		///< Pointer to the graph
 
 
 	protected:

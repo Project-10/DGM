@@ -3,7 +3,7 @@
 const byte   nStates = 2;						// {false, true}
 const size_t nNodes  = 4;						// four students
 
-void CExact::fillGraph(CGraph *graph)
+void CExact::fillGraph(CGraphPairwise *graph)
 {
 	Mat nodePot(nStates, 1, CV_32FC1);			// node Potential (column-vector)
 	Mat edgePot(nStates, nStates, CV_32FC1);	// edge Potential (matrix)
@@ -30,7 +30,7 @@ void CExact::fillGraph(CGraph *graph)
 		graph->setArc(i, i + 1, edgePot);
 }
 
-void CExact::printMarginals(const CGraph *graph, const std::string &str)
+void CExact::printMarginals(const CGraphPairwise *graph, const std::string &str)
 {
 	Mat		 nodePot;
 	printf("%s:\t", str.c_str());
@@ -43,7 +43,7 @@ void CExact::printMarginals(const CGraph *graph, const std::string &str)
 void CExact::Main(void)
 {
 	size_t	  i;
-	CGraph	* graph				= new CGraph(nStates);
+	CGraphPairwise	* graph				= new CGraphPairwise(nStates);
 	CDecode * decoderExcact		= new CDecodeExact(graph);
 	CInfer  * infererExact		= new CInferExact(graph);
 	CInfer  * infererChain		= new CInferChain(graph);

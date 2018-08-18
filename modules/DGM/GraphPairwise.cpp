@@ -1,4 +1,4 @@
-#include "GraphPairwise.h"
+#include "Graph.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels

@@ -1,10 +1,10 @@
 #include "Decode.h"
-#include "Graph.h"
+#include "GraphPairwise.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
 {
-vec_byte_t CDecode::decode(const CGraph *pGraph, Mat &lossMatrix) 
+vec_byte_t CDecode::decode(const CGraphPairwise *pGraph, Mat &lossMatrix)
 {
 	size_t		nNodes		= pGraph->getNumNodes();			// number of nodes
 	vec_byte_t	state(nNodes);

@@ -14,7 +14,7 @@ public:
 private:
 	Mat		 getNodePot(void);
 	Mat		 getEdgePot(void);
-	CGraph * buildTree(void);
+	CGraphPairwise * buildTree(void);
 };
 /// @endcond
 
@@ -44,7 +44,7 @@ Function \b srand(0) assures that the graph structure remains the same during mu
 	const size_t nSources = 1;						// number of sources
 
 	srand(0);
-	CGraph	*graph = buildTree();					// Returns a tree with default potentials
+	CGraphPairwise	*graph = buildTree();					// Returns a tree with default potentials
 @endcode
 
 Next, we separate all the nodes into 3 types and assigne them the following labels: 
@@ -95,7 +95,7 @@ The edge potential matrix is represented here as a transition matrix:
 After the tree was created, its edges had symmetric potentials: 
 \f$\frac{1}{2}edgePot^\top+\frac{1}{2}edgePot\f$. Now, we have to re-initialize the edge potentials with the 
 original nonsymmetrical \f$edgePot\f$: set them in the direction from the source nodes to the tap nodes
-DirectGraphicalModels::CGraph::setArc(size_t src, size_t dst, const Mat& edgePot):
+DirectGraphicalModels::CGraphPairwise::setArc(size_t src, size_t dst, const Mat& edgePot):
 @code
 	std::vector<size_t> vChilds;
 	std::vector<bool>	ifSource(nNodes, false);

@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CInferExact(CGraph *pGraph) : CInfer(pGraph) {}
+		DllExport CInferExact(CGraphPairwise *pGraph) : CInfer(pGraph) {}
 		DllExport virtual ~CInferExact(void) {}
 
 		/**
@@ -29,7 +29,7 @@ namespace DirectGraphicalModels
 		* general is \b NOT the same as the set of most likely states. It means the following:
 		* @code
 		* using namespace DirectGraphicalModels;
-		* CGraph  * graph   = new CGraph(nStates);
+		* CGraphPairwise  * graph   = new CGraphPairwise(nStates);
 		* CInfer  * inferer = new CInferExact(graph);
 		* CDecode * decoder = new CDecodeExact(graph);
 		* inferer->decode() == decoder->decode();		// This statement is not always true!

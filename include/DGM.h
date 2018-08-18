@@ -41,7 +41,7 @@
 #include "DGM/TrainLinkNested.h"
 
 #include "DGM/IGraphTemp.h"
-#include "DGM/Graph.h"
+#include "DGM/GraphPairwise.h"
 #include "DGM/GraphWeiss.h"
 #include "DGM/GraphExt.h"
 #include "DGM/Graph3.h"
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
 	int		  width		= img.cols;
 	int		  height	= img.rows;
 	
-	CGraph	* graph		= new CGraph(nStates);
+	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
 	CInfer  * decoder	= new CInferViterbi(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);						// node Potential (column-vector)
@@ -675,7 +675,7 @@ int main(int argc, char *argv[])
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraph	* graph		= new CGraph(nStates);
+	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
 	CInfer	* decoder	= new CInferTRW(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)

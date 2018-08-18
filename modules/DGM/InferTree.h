@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CInferTree(CGraph * pGraph) : CMessagePassing(pGraph) {}
+		DllExport CInferTree(CGraphPairwise * pGraph) : CMessagePassing(pGraph) {}
 		DllExport virtual ~CInferTree(void) {}
 
 
