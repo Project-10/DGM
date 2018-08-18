@@ -47,12 +47,12 @@ public:
     ~CPermutohedral(void);
 
     void init(const float *pFeature, word nFeatures, size_t N);
-    void compute(Mat &out, const Mat &in, int value_size, int in_offset = 0, int out_offset = 0, size_t in_size = -1, size_t out_size = -1) const;
+    void compute(Mat &out, const Mat &in, int in_offset, int out_offset, size_t in_size, size_t out_size) const;
 
     
 private:
-    size_t      m_N                 = 0;        // Number of elements
-    size_t      m_M                 = 0;        // Size of sparse discretized space
+    int			m_N                 = 0;        // Number of elements
+    int			m_M                 = 0;        // Size of sparse discretized space
     word        m_nFeatures         = 0;        // Dimension of features
     
     int       * m_pOffset           = NULL;

@@ -26,6 +26,7 @@
 */
 #include "permutohedral.h"
 #include "hashtable.h"
+#include "macroses.h"
 
 // Copy constructor
 CPermutohedral::CPermutohedral(const CPermutohedral &rhs)
@@ -235,18 +236,15 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
     delete[] n2;
 }
 
-// TODO: perhaps value_size is not needed
-void CPermutohedral::compute(Mat &out, const Mat &in, int value_size, int in_offset, int out_offset, size_t in_size, size_t out_size) const
+// TODO: 
+void CPermutohedral::compute(Mat &out, const Mat &in, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
-    if (in_size  == -1) in_size  = m_N - in_offset;
-    if (out_size == -1) out_size = m_N - out_offset;
+	if (in_size  == 0) in_size  = m_N - in_offset;
+    if (out_size == 0) out_size = m_N - out_offset;
     
     // Shift all values by 1 such that -1 -> 0 (used for blurring)
-    float * values = new float[(m_M + 2) * value_size];
-    float * new_values = new float[(m_M + 2) * value_size];
-    
-    for(int i = 0; i < (m_M + 2) * value_size; i++)
-        values[i] = new_values[i] = 0;
+	Mat values(m_M + 2, in.cols, CV_32FC1, Scalar(0));
+    Mat newValues(m_M + 2, in.cols, CV_32FC1, Scalar(0));
     
     // Splatting
     for(int i = 0; i < in_size; i++) {
@@ -254,26 +252,25 @@ void CPermutohedral::compute(Mat &out, const Mat &in, int value_size, int in_off
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(in_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(in_offset + i) * (m_nFeatures + 1) + j];
-            for(int k = 0; k < value_size; k++)
-                values[o * value_size + k] += w * pIn[k];
+			float *pValues = values.ptr<float>(o);
+			for(int k = 0; k < in.cols; k++)
+				pValues[k] += w * pIn[k];
         }
     }
     
     for(int j = 0; j <= m_nFeatures; j++) {
         for(int i = 0; i < m_M; i++) {
-            float * old_val = values + (i + 1) * value_size;
-            float * new_val = new_values + (i + 1) * value_size;
+            float *pValues		= values.ptr<float>(i + 1);
+            float *pNewValues	= newValues.ptr<float>(i + 1);
             
             int n1 = m_pBlurNeighbors[j * m_M + i].n1 + 1;
             int n2 = m_pBlurNeighbors[j * m_M + i].n2 + 1;
-            float * n1_val = values + n1 * value_size;
-            float * n2_val = values + n2 * value_size;
-            for(int k = 0; k < value_size; k++)
-                new_val[k] = old_val[k] + 0.5f * (n1_val[k] + n2_val[k]);
+            float *n1_val = values.ptr<float>(n1);
+            float *n2_val = values.ptr<float>(n2);
+            for(int k = 0; k < in.cols; k++)
+				pNewValues[k] = pValues[k] + 0.5f * (n1_val[k] + n2_val[k]);
         }
-        float * tmp = values;
-        values = new_values;
-        new_values = tmp;
+		swap(values, newValues);
     }
     // Alpha is a magic scaling constant (write Andrew if you really wanna understand this)
     float alpha = 1.0f / (1.0f + powf(2.0f, -static_cast<float>(m_nFeatures)));
@@ -281,17 +278,14 @@ void CPermutohedral::compute(Mat &out, const Mat &in, int value_size, int in_off
     // Slicing
     for(int i = 0; i < out_size; i++) {
         float *pOut = out.ptr<float>(i);
-        for(int k = 0; k < value_size; k++)
+        for(int k = 0; k < in.cols; k++)
             pOut[k] = 0;
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(out_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(out_offset + i) * (m_nFeatures + 1) + j];
-            for(int k = 0; k < value_size; k++)
-                pOut[k] += w * values[o * value_size + k] * alpha;
+			float *pValues = values.ptr<float>(o);
+			for(int k = 0; k < in.cols; k++)
+                pOut[k] += w * pValues[k] * alpha;
         }
     }
-    
-    
-    delete[] values;
-    delete[] new_values;
 }
