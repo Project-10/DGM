@@ -25,10 +25,10 @@ namespace DirectGraphicalModels {
 		
 		DllExport virtual size_t	addNode(void);
 		DllExport virtual size_t	addNode(const Mat &pot);
-//		DllExport virtual void		addNodes(const vec_float_t &pots);
+		DllExport virtual void		addNodes(const Mat &pots);
 
 		DllExport virtual void		setNode(size_t node, const Mat &pot);
-//		DllExport virtual void		setNodes(const vec_float_t &pots);
+		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0);
 		
 		DllExport virtual void		getNode(size_t node, Mat &pot) const;
 		

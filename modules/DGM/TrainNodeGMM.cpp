@@ -143,7 +143,6 @@ namespace DirectGraphicalModels
 
 					//printMat<double>("MU:", gauss.getMu());
 					//printMat<double>("SIGMA:", gauss.getSigma()); 
-
 				} // gausses
 				printf("\n");
 			} // s

@@ -4,7 +4,7 @@
 namespace DirectGraphicalModels 
 {
 	// Add a new node to the graph
-	size_t	CGraphDense::addNode(void)
+	size_t CGraphDense::addNode(void)
 	{
 		size_t res = getNumNodes();
 		m_nodePotentials.push_back(Mat(1, m_nStates, CV_32FC1, Scalar(1.0f / m_nStates)));
@@ -12,11 +12,16 @@ namespace DirectGraphicalModels
 	}
 	
 	// Add a new node to the graph with specified potentional
-	size_t	CGraphDense::addNode(const Mat &pot)
+	size_t CGraphDense::addNode(const Mat &pot)
 	{
 		size_t res = getNumNodes();
 		m_nodePotentials.push_back(pot.t());
 		return res;
+	}
+
+	void CGraphDense::addNodes(const Mat &pots)
+	{
+		m_nodePotentials.push_back(pots);
 	}
 
 	// Set or change the potential of node idx
@@ -26,6 +31,14 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG((pot.cols == 1) && (pot.rows == m_nStates), "Potential size (%d x %d) does not match (%d x %d)", pot.cols, pot.rows, 1, m_nStates);
 		
 		m_nodePotentials.row(static_cast<int>(node)) = pot.t();
+	}
+
+	void CGraphDense::setNodes(const Mat &pots, size_t start_node)
+	{
+		DGM_ASSERT_MSG(start_node + pots.rows < getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
+		DGM_ASSERT_MSG(pots.cols == m_nStates, "Potential size (%d) does not match (%d)", pots.cols, m_nStates);
+		
+		pots.copyTo(m_nodePotentials(Rect(0, start_node, m_nStates, pots.rows)));
 	}
 
 	// Return node potential vector 
