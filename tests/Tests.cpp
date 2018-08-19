@@ -28,25 +28,38 @@ void testGraphBuilding(CGraph *pGraph, byte nStates)
 {
 	ASSERT_EQ(nStates, pGraph->getNumStates());
 	
-	int nNodes1 = random::u<int>(100, 100000);
-	int nNodes2 = random::u<int>(50, nNodes1 - 50);
-	
-	Mat pots1 = random::U(Size(nStates, nNodes1), CV_32FC1, 0.0, 100.0);
-	Mat pots2 = random::U(Size(nStates, nNodes2), CV_32FC1, 0.0, 100.0);
+	int nNodes = random::u<int>(100, 100000);
+	Mat pots1 = random::U(Size(nStates, nNodes), CV_32FC1, 0.0, 100.0);
 
+	ASSERT_EQ(0, pGraph->addNode());
+	ASSERT_EQ(1, pGraph->addNode(pots1.row(1).t()));
 	pGraph->addNodes(pots1);
-//	pGraph->setNodes(pots2, 50);
+	ASSERT_EQ(nNodes + 2, pGraph->getNumNodes());
+	pGraph->setNode(0, pots1.row(0).t());
 
-	Mat pot;
-	for (int n = 0; n < nNodes1; n++) {
-		pGraph->getNode(n, pot);
-		for (byte s = 0; s < nStates; s++)
-			if (n < 50)
-				ASSERT_EQ(pot.at<float>(s, 0), pots1.at<float>(n, s));
-		//		(pot.at<float>(s, 0) != pots1.at<float>(n, s)) return false;
+	Mat pot0, pot1;
+	pGraph->getNode(0, pot0);
+	pGraph->getNode(1, pot1);
+
+	float *pPot0 = pots1.ptr<float>(0);
+	float *pPot1 = pots1.ptr<float>(1);
+	for (byte s = 0; s < nStates; s++) {
+		ASSERT_EQ(pot0.at<float>(s, 0), pPot0[s]);
+		ASSERT_EQ(pot1.at<float>(s, 0), pPot1[s]);
 	}
 
-	//return true;
+	Mat pots2 = random::U(Size(nStates, pGraph->getNumNodes() - 10), CV_32FC1, 0.0, 100.0);
+	pGraph->setNodes(pots2, 2);
+	Mat pot;
+	for (size_t n = 2; n < pGraph->getNumNodes(); n++) {
+		pGraph->getNode(n, pot);
+		float *pPot = (n - 2 < pots2.rows) ? pots2.ptr<float>(n - 2) : pots1.ptr<float>(n - 2);
+		for (byte s = 0; s < nStates; s++)
+			ASSERT_EQ(pot.at<float>(s, 0), pPot[s]);
+	}
+
+	pGraph->reset();
+	ASSERT_EQ(pGraph->getNumEdges(), 0);
 }
 
 

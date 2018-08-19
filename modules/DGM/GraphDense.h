@@ -17,11 +17,11 @@ namespace DirectGraphicalModels {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraphDense(byte nStates) : CGraph(nStates) {};
+		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(Mat()){};
 		DllExport virtual ~CGraphDense(void) {}
 
 		// CGraph
-		DllExport virtual void		reset(void) { m_vNodePotentials.clear(); }
+		DllExport virtual void		reset(void) { m_nodePotentials.release(); }
 		
 		DllExport virtual size_t	addNode(void);
 		DllExport virtual size_t	addNode(const Mat &pot);
@@ -32,7 +32,7 @@ namespace DirectGraphicalModels {
 		
 		DllExport virtual void		getNode(size_t node, Mat &pot) const;
 		
-		DllExport virtual size_t	getNumNodes(void) const { return m_vNodePotentials.size() / m_nStates; }
+		DllExport virtual size_t	getNumNodes(void) const { return static_cast<size_t>(m_nodePotentials.rows); }
 		DllExport virtual size_t	getNumEdges(void) const { return getNumNodes() * (getNumNodes() - 1) / 2; }
 
 
@@ -41,7 +41,7 @@ namespace DirectGraphicalModels {
 		* The container for the node potentials. 
 		* The potentials are stores as follows: node[0]:pot[0], node[0]:pot[1], ..., node[0]:pot[m_nStates-1], node[1]:pot[0], ...
 		*/
-		vec_float_t m_vNodePotentials;		
+		Mat m_nodePotentials;		
 	
 	};
 }
