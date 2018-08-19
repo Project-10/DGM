@@ -9,10 +9,3 @@ public:
 	CTests(void) {}
 	~CTests(void) {}
 };
-
-
-class CTestGraph : public ::testing::Test {
-public:
-	CTestGraph(void) {}
-	~CTestGraph(void) {}
-};

@@ -54,6 +54,7 @@ namespace DirectGraphicalModels {
         * @details
         * > This function supports PPL
         * @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
+		* @param start_node The index of the node, starting from which the potentials should be set
 		*/
 		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0);
 		/**

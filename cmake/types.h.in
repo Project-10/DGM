@@ -18,6 +18,7 @@
 #include <math.h>
 #ifdef ENABLE_PPL
 #include <ppl.h>
+#include "concrtrm.h"
 #endif
 #ifdef ENABLE_AMP
 #include <amp.h>
