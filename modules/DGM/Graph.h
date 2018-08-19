@@ -39,6 +39,8 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual size_t	addNode(const Mat &pot) = 0;
 		/**
+        * @brief Adds the graph nodes with potentials
+        * @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void		addNodes(const Mat &pots);
 		/**
@@ -48,6 +50,10 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		setNode(size_t node, const Mat &pot) = 0;
 		/**
+        * @brief Fills the graph nodes with new potentials
+        * @details
+        * > This function supports PPL
+        * @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0);
 		/**
