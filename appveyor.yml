@@ -22,7 +22,7 @@ platform: x64
 #  -cmd: choco install OpenCV
 
 build_script:
-  - choco install opencv 
+  - choco install opencv
   - cd c:\projects\dgm
   - md build
   - cd build
