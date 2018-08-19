@@ -23,3 +23,43 @@ TEST_F(CTests, parallel_gemm)
 	ASSERT_TRUE(std::equal(ppl_res.begin<float>(), ppl_res.end<float>(), amp_res.begin<float>()));
 #endif
 }
+
+void testGraphBuilding(CGraph *pGraph, byte nStates)
+{
+	ASSERT_EQ(nStates, pGraph->getNumStates());
+	
+	int nNodes1 = random::u<int>(100, 100000);
+	int nNodes2 = random::u<int>(50, nNodes1 - 50);
+	
+	Mat pots1 = random::U(Size(nStates, nNodes1), CV_32FC1, 0.0, 100.0);
+	Mat pots2 = random::U(Size(nStates, nNodes2), CV_32FC1, 0.0, 100.0);
+
+	pGraph->addNodes(pots1);
+//	pGraph->setNodes(pots2, 50);
+
+	Mat pot;
+	for (int n = 0; n < nNodes1; n++) {
+		pGraph->getNode(n, pot);
+		for (byte s = 0; s < nStates; s++)
+			if (n < 50)
+				ASSERT_EQ(pot.at<float>(s, 0), pots1.at<float>(n, s));
+		//		(pot.at<float>(s, 0) != pots1.at<float>(n, s)) return false;
+	}
+
+	//return true;
+}
+
+
+TEST_F(CTestGraph, graph_dense_building)
+{
+	const byte nStates = static_cast<byte>(random::u(10, 255));
+	CGraph *pGraph = new CGraphDense(nStates);
+	testGraphBuilding(pGraph, nStates);
+}
+
+TEST_F(CTestGraph, graph_pairwise_building)
+{
+	const byte nStates = static_cast<byte>(random::u(10, 255));
+	CGraph *pGraph = new CGraphPairwise(nStates);
+	testGraphBuilding(pGraph, nStates);
+}

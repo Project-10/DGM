@@ -12,6 +12,7 @@ namespace DirectGraphicalModels {
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphDense : public CGraph {
+	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
