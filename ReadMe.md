@@ -4,6 +4,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-green.svg)](License.txt)
 [![Version](https://img.shields.io/github/release/Project-10/DGM.svg)](https://github.com/Project-10/DGM/releases)
+[![CodeFactor](https://www.codefactor.io/repository/github/project-10/dgm/badge)](https://www.codefactor.io/repository/github/project-10/dgm)
 [![Build status](https://ci.appveyor.com/api/projects/status/0phsc4anotab6pvv?svg=true)](https://ci.appveyor.com/project/ProjectX/dgm)
 
 DGM is a cross-platform C++ library implementing various tasks in probabilistic graphical models with pairwise 
