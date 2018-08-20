@@ -37,12 +37,12 @@ add_dependencies(VIS DGM)
 target_link_libraries(VIS PRIVATE ${OpenCV_LIBS} ${DGM_LIB})
 
 if(USE_OPENGL)
-	include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/include
+	include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew-2.1.0/include
 						${PROJECT_SOURCE_DIR}/3rdparty/glm-0.9.8.0
 						"Trackball Camera")
 
 	# GLEW
-	add_library(glew STATIC ${PROJECT_SOURCE_DIR}/3rdparty/glew-2.0.0/src/glew.c)
+	add_library(glew STATIC ${PROJECT_SOURCE_DIR}/3rdparty/glew-2.1.0/src/glew.c)
 	target_link_libraries(glew ${OPENGL_LIBRARY} ${EXTRA_LIBS})	
 	set_target_properties(glew PROPERTIES FOLDER "3rdparty")
 	add_definitions(-DGLEW_STATIC)
