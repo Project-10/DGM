@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Graph.h"
+#include "densecrf/edgePotentialPotts.h"
 
 namespace DirectGraphicalModels {
 	// ================================ Graph Interface Class ================================
@@ -12,6 +13,8 @@ namespace DirectGraphicalModels {
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphDense : public CGraph {
+		friend class CInferDense;
+	
 	public:
 		/**
 		* @brief Constructor
@@ -35,13 +38,23 @@ namespace DirectGraphicalModels {
 		DllExport virtual size_t	getNumNodes(void) const { return static_cast<size_t>(m_nodePotentials.rows); }
 		DllExport virtual size_t	getNumEdges(void) const { return getNumNodes() * (getNumNodes() - 1) / 2; }
 
+		/**
+		* @brief Adds an edge model
+		* @param pEdgeModel Poiter to an dense edge model
+		*/
+		DllExport void				setEdgeModel(CEdgePotential *pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
+
 
 	private:
 		/**
 		* The container for the node potentials. 
-		* The potentials are stores as follows: node[0]:pot[0], node[0]:pot[1], ..., node[0]:pot[m_nStates-1], node[1]:pot[0], ...
+		* Every row is a node potential vector. Thus the size of the matrix is width: nStates; height: nNodes
 		*/
-		Mat m_nodePotentials;		
+		Mat												m_nodePotentials;		
+		/**
+		*/
+		std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;
+
 	
 	};
 }
