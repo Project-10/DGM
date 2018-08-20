@@ -5,7 +5,7 @@
 #include "types.h"
 
 namespace DirectGraphicalModels { 
-	class IGraphTemp;
+	class IGraphPairwise;
 	namespace vis
 {
 	/**
@@ -29,7 +29,7 @@ namespace DirectGraphicalModels {
 	* @return Image \b size x \b size pixels with visualized graph.
 	*/
 	DllExport Mat drawGraph(int								  size, 
-							IGraphTemp						* pGraph, 
+							IGraphPairwise						* pGraph, 
 							std::function<Point2f(size_t)>	  posFunc, 
 							std::function<CvScalar(size_t)>   colorFunc		= nullptr, 
 							const vec_scalar_t				& groupsColor	= vec_scalar_t());
@@ -59,7 +59,7 @@ namespace DirectGraphicalModels {
 	* @param groupsColor The list of colors for graph edge groups.                                 
 	*/
 	DllExport void showGraph3D(int								 size, 
-							   IGraphTemp					   * pGraph, 
+							   IGraphPairwise					   * pGraph, 
 							   std::function<Point3f(size_t)>    posFunc, 
 							   std::function<CvScalar(size_t)>   colorFunc	= nullptr,
 							   const vec_scalar_t			   & groupsColor	= vec_scalar_t());

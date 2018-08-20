@@ -2,7 +2,7 @@
 
 namespace DirectGraphicalModels 
 {
-	CGraphBoost::CGraphBoost(byte nStates) : IGraphTemp(nStates)
+	CGraphBoost::CGraphBoost(byte nStates) : IGraphPairwise(nStates)
 	{
 	}
 

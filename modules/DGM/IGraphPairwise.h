@@ -11,15 +11,15 @@ namespace DirectGraphicalModels {
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class IGraphTemp : public CGraph
+	class IGraphPairwise : public CGraph
 	{
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport IGraphTemp(byte nStates) : CGraph(nStates) {}
-		DllExport virtual ~IGraphTemp(void) {}
+		DllExport IGraphPairwise(byte nStates) : CGraph(nStates) {}
+		DllExport virtual ~IGraphPairwise(void) {}
 
 
 		/**

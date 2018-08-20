@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2011 - 2014 for Project X (based on M. A. Weiss recommendations) 
 #pragma once
 
-#include "IGraphTemp.h"
+#include "IGraphPairwise.h"
 
 
 namespace DirectGraphicalModels
@@ -15,7 +15,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphWeiss : public IGraphTemp
+	class CGraphWeiss : public IGraphPairwise
 	{
 	friend class CInferLBP;
 	friend class CInferViterbi;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "IGraphTemp.h"
+#include "IGraphPairwise.h"
 
 namespace DirectGraphicalModels {
-	class CGraphBoost : public IGraphTemp
+	class CGraphBoost : public IGraphPairwise
 	{
 	public:
 		/**

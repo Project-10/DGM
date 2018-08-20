@@ -36,10 +36,11 @@ source_group("Source Files\\Decoding\\Exact"   FILES "DecodeExact.h" "DecodeExac
 source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp")
 source_group("Source Files\\Graph\\Dense" 	   FILES "GraphDense.h" "GraphDense.cpp")
 source_group("Source Files\\Graph\\Pairwise"   FILES	
-											"IGraphTemp.h"
-											"GraphDense.h"
+											"IGraphPairwise.h"
 											"GraphPairwise.h"
 											"GraphPairwise.cpp"
+									)
+source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
 											"GraphWeiss.h"
 											"GraphWeiss.cpp"
 											"Graph3.h"

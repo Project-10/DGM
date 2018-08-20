@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2015 for Project X 
 #pragma once
 
-#include "IGraphTemp.h"
+#include "IGraphPairwise.h"
 
 namespace DirectGraphicalModels
 {
@@ -69,7 +69,7 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphPairwise : public IGraphTemp
+	class CGraphPairwise : public IGraphPairwise
 	{
 		friend class CMessagePassing;
 
@@ -89,7 +89,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraphPairwise(byte nStates) : IGraphTemp(nStates), m_IDx(0) {}
+		DllExport CGraphPairwise(byte nStates) : IGraphPairwise(nStates), m_IDx(0) {}
 		DllExport virtual ~CGraphPairwise(void) {}
 
 		DllExport virtual void		reset(void);
