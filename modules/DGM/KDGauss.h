@@ -79,13 +79,6 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void			clear(void);
 		/**
-		* @brief Freezes the state of the Gaussian function
-		* @details This is an optimization function, which calculates and fills internal variables need for major
-		* get- accessors of this class. If the function was not called, tese variable will be calculated in the
-		* get- accessors every tiime on call.
-		*/
-		DllExport void			freeze(void);
-		/**
 		* @brief Checks weather the Gaussian function is approximated
 		* @retval TRUE if the Gaussian had at least 1 point for approximation, or
 		* @retval FALSE otherwise
@@ -212,16 +205,15 @@ namespace DirectGraphicalModels
 
 	private:
 		static const bool USE_SAFE_SIGMA;
-		static const bool SHOW_OPTIMIZATION_HINTS;
 
 	
 	private:
-		size_t		  m_nPoints;				// number of samples
-		Mat			  m_mu;						// The mathematical expectation \f$mu\f$: (size: k x 1; type: CV_64FC1)
-		Mat			  m_sigma;					// The covariance matrix \f$\Sigma\f$: (size: k x k; type: CV_64FC1)
-		Mat			  m_sigmaInv	= Mat();	// the inverse to the <sigma> matrix
-		Mat			  m_Q			= Mat();	// aux Mat for getSample()
-		long double	  m_alpha		= -1;		// gaussian coefficient
+		size_t		          m_nPoints;				// number of samples
+		Mat	        		  m_mu;						// The mathematical expectation \f$mu\f$: (size: k x 1; type: CV_64FC1)
+		Mat	        		  m_sigma;					// The covariance matrix \f$\Sigma\f$: (size: k x k; type: CV_64FC1)
+		mutable Mat			  m_sigmaInv	= Mat();	// the inverse to the <sigma> matrix
+		mutable Mat			  m_Q			= Mat();	// aux Mat for getSample()
+		mutable long double	  m_alpha		= -1;		// gaussian coefficient
 
 	
 	private:		

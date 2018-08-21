@@ -7,7 +7,6 @@ namespace DirectGraphicalModels
 {
 	// Constants
 	const bool CKDGauss::USE_SAFE_SIGMA = false;
-	const bool CKDGauss::SHOW_OPTIMIZATION_HINTS = true;
 
 	// Constructor
 	CKDGauss::CKDGauss(dword k) {
@@ -88,21 +87,6 @@ namespace DirectGraphicalModels
 		reset_SigmaInv_Q_Alpha();
 	}
 
-	void CKDGauss::freeze(void)
-	{
-		// m_sigmaInv
-		invert(m_sigma, m_sigmaInv, DECOMP_SVD);
-
-		// m_Q
-		m_Q = calculateQ();
-
-		// m_alpha
-		int k = m_sigma.cols;
-		long double det = MAX(LDBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
-		long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
-		m_alpha = 1 / (det * sPi);
-	}
-
 	void CKDGauss::addPoint(const Mat &point, bool approximate)
 	{
 		// Assertions
@@ -171,26 +155,21 @@ namespace DirectGraphicalModels
 
 	Mat CKDGauss::getSigmaInv(void) const
 	{
-		if (m_sigmaInv.empty()) {
-			DGM_IF_WARNING(SHOW_OPTIMIZATION_HINTS, "Use CKDGauss::freeze() method in order to pre-calculate this value and speed up sequential calculations");
-			Mat sigmaInv;
-			invert(m_sigma, sigmaInv, DECOMP_SVD);	// sigmaInv = sigma^-1
-			return sigmaInv;
-		}
-		else return m_sigmaInv;
+		if (m_sigmaInv.empty()) invert(m_sigma, m_sigmaInv, DECOMP_SVD);	// sigmaInv = sigma^-1
+		
+        return m_sigmaInv;
 	}
 
 	long double CKDGauss::getAlpha(void) const
 	{
 		if (m_alpha < 0) {
-			DGM_IF_WARNING(SHOW_OPTIMIZATION_HINTS, "Use CKDGauss::freeze() method in order to pre-calculate this value and speed up sequential calculations");
-			int k = m_sigma.cols;
-			long double det = MAX(DBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
-			long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
-			long double alpha = 1 / (det * sPi);
-			return alpha;
+            int k = m_sigma.cols;
+            long double det = MAX(LDBL_EPSILON, sqrtl(static_cast<long double>(determinant(m_sigma))));
+            long double sPi = powl(2 * static_cast<long double>(Pi), static_cast<long double>(k) / 2);
+            m_alpha = 1 / (det * sPi);
 		}
-		else return m_alpha;
+		
+        return m_alpha;
 	}
 
 	double CKDGauss::getValue(Mat &x, Mat &X, Mat &p1, Mat &p2) const
@@ -251,11 +230,10 @@ namespace DirectGraphicalModels
 	{
 		Mat X = random::N(m_mu.size(), m_mu.type());				// X - vector of independ random variable with normal distribution
 
-		DGM_IF_WARNING(SHOW_OPTIMIZATION_HINTS && m_Q.empty(), "Use CKDGauss::freeze() method in order to pre-calculate m_Q and speed up sequential calculations");
-		Mat Q = m_Q.empty() ? calculateQ() : m_Q;
+        if (m_Q.empty()) m_Q = calculateQ();
 
 		Mat res;
-		gemm(Q, X, 1, m_mu, 1, res, GEMM_1_T);
+		gemm(m_Q, X, 1, m_mu, 1, res, GEMM_1_T);
 		return res;
 	}
 
