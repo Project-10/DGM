@@ -28,12 +28,18 @@ build_script:
   - cd build
   - cmake -DOpenCV_DIR=c:\tools\opencv\build -G"Visual Studio 14 Win64" -DUSE_OPENGL=ON ..
   - msbuild /m /p:Configuration=Release /p:Platform="x64" DGM.sln
-  
+
 test_script:
   - cmd: |-
       copy C:\tools\opencv\build\x64\vc14\bin\opencv_world???.dll  ".\bin\Release"
       copy C:\tools\opencv\build\x64\vc14\bin\opencv_world???d.dll ".\bin\Debug"
       .\bin\Release\Tests.exe --gtest_output=xml:tests.xml > tests.txt
+
+after_test:
+  - ps: |
+      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
+      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+      bash codecov.sh -f "tests.xml" -t 7f81e53e-1ebf-44f8-8b49-54da37b0a0a8
 
 on_finish:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path c:\projects\dgm\build\tests.xml))

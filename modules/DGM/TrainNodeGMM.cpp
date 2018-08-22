@@ -154,7 +154,6 @@ namespace DirectGraphicalModels
 		// merge gausses with too small number of samples 
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto it = gaussianMixture.begin(); it != gaussianMixture.end(); it++) {
-				it->freeze();
 				size_t nPoints = it->getNumPoints();
 				if (nPoints < m_params.min_samples) {				// if Gaussian is not full
 					if (nPoints >= MIN_SAMPLES) {
@@ -178,7 +177,6 @@ namespace DirectGraphicalModels
 		// getting the coefficients
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto itGauss = gaussianMixture.begin(); itGauss != gaussianMixture.end(); itGauss++) {
-				itGauss->freeze();
 				long double alpha = itGauss->getAlpha();
 				if (alpha > MAX_COEFFICIENT) {			// i.e. if (Coefficient = \infinitiy) delete Gaussian
 					gaussianMixture.erase(itGauss);
@@ -257,7 +255,6 @@ namespace DirectGraphicalModels
 				gauss.setMu(mu);
 				gauss.setSigma(sigma);
 				gauss.setNumPoints(nPoints);
-				gauss.freeze();
 
 				mu.release();
 				sigma.release();
