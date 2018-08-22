@@ -8,8 +8,6 @@
 
 namespace DirectGraphicalModels 
 {
-	class CGraphPairwise;
-
 	// ================================ Infer Class ===============================
 	/**
 	* @ingroup moduleDecode
@@ -23,7 +21,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CInfer(CGraphPairwise *pGraph) : CDecode(pGraph) {};
+		DllExport CInfer(CGraph *pGraph) : CDecode(pGraph) {};
 		DllExport virtual ~CInfer(void) {};
 
 		/**
@@ -49,7 +47,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport vec_byte_t	decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) {
 			if (nIt) infer(nIt); 
-			return CDecode::decode(m_pGraph, lossMatrix);
+			return CDecode::decode(getGraph(), lossMatrix);
 		}
 		/**
 		* @brief Inference

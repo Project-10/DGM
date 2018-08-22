@@ -5,12 +5,12 @@ namespace DirectGraphicalModels
 {
 	vec_float_t CInfer::getConfidence(void) const
 	{
-		size_t nNodes = m_pGraph->getNumNodes();
+		size_t nNodes = getGraph()->getNumNodes();
 		vec_float_t res(nNodes);
 		Mat pot, srt;
 
 		for (size_t n = 0; n < nNodes; n++) {						// all nodes
-			m_pGraph->getNode(n, pot);
+			getGraph()->getNode(n, pot);
 		
 			sort(pot, srt, CV_SORT_EVERY_COLUMN | CV_SORT_DESCENDING);
 
@@ -26,12 +26,12 @@ namespace DirectGraphicalModels
 
 	vec_float_t CInfer::getPotentials(byte state) const 
 	{
-		size_t nNodes = m_pGraph->getNumNodes();
+		size_t nNodes = getGraph()->getNumNodes();
 		vec_float_t res(nNodes);
 		Mat pot;
 
 		for (size_t n = 0; n < nNodes; n++) {						// all nodes
-			m_pGraph->getNode(n, pot);
+			getGraph()->getNode(n, pot);
 			res[n] = pot.at<float>(state, 0);
 		} // n
 

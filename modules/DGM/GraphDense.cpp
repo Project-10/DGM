@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(start_node + pots.rows < getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
 		DGM_ASSERT_MSG(pots.cols == m_nStates, "Potential size (%d) does not match (%d)", pots.cols, m_nStates);
 		
-		pots.copyTo(m_nodePotentials(Rect(0, start_node, m_nStates, pots.rows)));
+		pots.copyTo(m_nodePotentials(Rect(0, static_cast<int>(start_node), m_nStates, pots.rows)));
 	}
 
 	// Return node potential vector 

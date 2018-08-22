@@ -20,7 +20,7 @@ namespace DirectGraphicalModels {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(Mat()){};
+		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(EmptyMat)         {};
 		DllExport virtual ~CGraphDense(void) {}
 
 		// CGraph

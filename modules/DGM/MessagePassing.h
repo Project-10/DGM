@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Infer.h"
+#include "GraphPairwise.h"
 
 namespace DirectGraphicalModels
 {
@@ -28,6 +29,11 @@ namespace DirectGraphicalModels
 
 
 	protected:
+		/**
+		* @brief Returns the pointer to the graph
+		* @return The pointer to the graph
+		*/
+		CGraphPairwise * getGraphPairwise(void) const { return reinterpret_cast<CGraphPairwise *>(CDecode::getGraph()); }
 		/**
 		* @brief Calculates messages, associated with the edges of corresponding graphical model
 		* @details > This function may modify Edge::msg and Edge::msg_temp containers of graph edges

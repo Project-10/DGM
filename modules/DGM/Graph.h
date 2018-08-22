@@ -77,7 +77,7 @@ namespace DirectGraphicalModels {
 		* @brief Returns number of states (classes)
 		* @return Number of states (features)
 		*/
-		DllExport size_t			getNumStates(void) const { return m_nStates; }
+		DllExport byte				getNumStates(void) const { return m_nStates; }
 
 	protected:
 		byte m_nStates;		///< The number of states (classes)

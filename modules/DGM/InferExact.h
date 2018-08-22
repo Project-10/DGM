@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Infer.h"
+#include "DecodeExact.h"
 
 namespace DirectGraphicalModels
 {
@@ -13,14 +14,14 @@ namespace DirectGraphicalModels
 	* @note Use this class only if \f$ nStates^{nNodes} < 2^{32}\f$
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CInferExact : public CInfer
+	class CInferExact : public CInfer, private CDecodeExact
 	{
 	public:
 		/**
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CInferExact(CGraphPairwise *pGraph) : CInfer(pGraph) {}
+		DllExport CInferExact(CGraphPairwise *pGraph) : CInfer(pGraph), CDecodeExact(pGraph) {}
 		DllExport virtual ~CInferExact(void) {}
 
 		/**

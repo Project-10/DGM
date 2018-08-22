@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CGraphPairwise;
+	class CGraph;
 
 	// ================================ Decode Class ===============================
 	/**
@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/
-		DllExport CDecode(CGraphPairwise *pGraph) : m_pGraph(pGraph) {};
+		DllExport CDecode(CGraph *pGraph) : m_pGraph(pGraph) {};
 		
 
 	public:
@@ -47,7 +47,7 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport static vec_byte_t	decode(const CGraphPairwise *pGraph, Mat &lossMatrix = EmptyMat);
+		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = EmptyMat);
 		/**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)
@@ -60,32 +60,17 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CGraphPairwise * m_pGraph;		///< Pointer to the graph
-
-
-	protected:
 		/**
-		* @brief Sets the \a state according to the configuration index \a configuration 
-		* @details This function is used in exact inference / decoding
-		* @param state Array of \a nNodes elements with the current configuration (states destributed along the nodes)
-		* @param configuration Configuration index \f$\in[0; nStates^{nNodes}]\f$
+		* @brief Returns the pointer to the graph
+		* @return The pointer to the graph
 		*/
-		void		setState(vec_byte_t &state, qword configuration) const;
-		/**
-		* @brief Increases the \a state by one, \a i.e. switches the \a state array to the consequent configuration
-		* @details This function is used in exact inference / decoding
-		* @param state Array of \a nNodes elements with the current configuration (states destributed along the nodes)
-		*/
-		void		incState(vec_byte_t &state) const;
-		/**
-		* @brief Calculates potentials for all possible configurations
-		* @details This function is used in exact inference / decoding
-		* @return \f$nStates^{nNodes}\f$ potentials, corresponding to the all possible configurations (states destributed along the nodes)
-		*/
-		vec_float_t	calculatePotentials(void) const;
+		CGraph * getGraph(void) const { return m_pGraph; }
 
 
-	
+	private:
+		CGraph * m_pGraph;		///< Pointer to the graph
+
+
 	private:
 		// Copy semantics are disabled
 		CDecode(const CDecode &rhs) {}
