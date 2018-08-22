@@ -7,7 +7,7 @@ namespace DirectGraphicalModels
 	vec_byte_t CDecode::decode(const CGraph *pGraph, Mat &lossMatrix)
 	{
 		size_t		nNodes		= pGraph->getNumNodes();			// number of nodes
-		vec_byte_t	state(nNodes);
+		vec_byte_t	res(nNodes);
 		Mat			pot;
 		bool		ifLossMat	= !lossMatrix.empty();
 
@@ -19,10 +19,10 @@ namespace DirectGraphicalModels
 			Point extremumLoc;
 			if (ifLossMat) minMaxLoc(pot, NULL, NULL, &extremumLoc, NULL);
 			else minMaxLoc(pot, NULL, NULL, NULL, &extremumLoc);
-			state[n] = static_cast<byte>(extremumLoc.y);
+			res[n] = static_cast<byte>(extremumLoc.y);
 		} // n
 
-		return state;
+		return res;
 	}
 
 	Mat	CDecode::getDefaultLossMatrix(byte nStates)

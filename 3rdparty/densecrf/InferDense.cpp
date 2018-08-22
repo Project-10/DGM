@@ -4,36 +4,18 @@
 #include "edgePotentialPotts.h"
 #include <numeric>
 
-namespace DirectGraphicalModels {
-
-	// TODO: probably switch to the DGM decode 
-	vec_byte_t CInferDense::decode(unsigned int nIt, float relax)
+namespace DirectGraphicalModels 
+{
+	void CInferDense::infer(unsigned int nIt)
 	{
-		vec_byte_t res;
-		res.reserve(m_pGraph->getNumNodes());
+		float relax = 1.0f;
 
-		// Run inference
-		vec_float_t vProb = infer(nIt, relax);
-
-		// Find the map
-		for (size_t i = 0; i < m_pGraph->getNumNodes(); i++) {
-			auto it = std::max_element(vProb.begin() + i * m_pGraph->m_nStates, vProb.begin() + (i + 1) * m_pGraph->m_nStates);
-			byte idx = static_cast<byte>(std::distance(vProb.begin() + i * m_pGraph->m_nStates, it));   // index of the maximum element
-			res.push_back(idx);
-		}
-
-		return res;
-	}
-
-	vec_float_t CInferDense::infer(unsigned int nIt, float relax)
-	{
 		startInference();
 
 		for (unsigned int i = 0; i < nIt; i++)
 			stepInference(relax);
 
-		float *pData = reinterpret_cast<float *>(m_current.data);
-		return vec_float_t(pData, pData + m_current.rows * m_current.cols);
+		m_current.copyTo(getGraphDense()->m_nodePotentials);
 	}
 
 	namespace {
@@ -68,8 +50,8 @@ namespace DirectGraphicalModels {
 
 	void CInferDense::startInference(void)
 	{
-		const int rows = m_pGraph->m_nodePotentials.rows;
-		const int cols = m_pGraph->m_nodePotentials.cols;
+		const int rows = getGraphDense()->m_nodePotentials.rows;
+		const int cols = getGraphDense()->m_nodePotentials.cols;
 
 		m_additionalUnary = Mat(rows, cols, CV_32FC1, Scalar(0));
 		m_current = Mat(rows, cols, CV_32FC1, Scalar(0));
@@ -78,22 +60,22 @@ namespace DirectGraphicalModels {
 
 		// Making log potentials
 		for (int n = 0; n < rows; n++) {
-			float *pUnary = m_pGraph->m_nodePotentials.ptr<float>(n);
+			float *pUnary = getGraphDense()->m_nodePotentials.ptr<float>(n);
 			for (int s = 0; s < cols; s++)
 				pUnary[s] = -logf(pUnary[s]);
 		}
 
 		// TODO: exp is not needed actually
-		expAndNormalize(m_current, m_pGraph->m_nodePotentials, -1.0f);            // Initialize using the unary energies
+		expAndNormalize(m_current, getGraphDense()->m_nodePotentials, -1.0f);            // Initialize using the unary energies
 	}
 
 	void CInferDense::stepInference(float relax)
 	{
 		// Set the unary potential
-		m_next = -m_pGraph->m_nodePotentials - m_additionalUnary;
+		m_next = -getGraphDense()->m_nodePotentials - m_additionalUnary;
 
 		// Add up all pairwise potentials
-		for (auto &edgePot : m_pGraph->m_vpEdgeModels)
+		for (auto &edgePot : getGraphDense()->m_vpEdgeModels)
 			edgePot->apply(m_next, m_current, m_temp);
 
 		// Exponentiate and normalize
@@ -109,7 +91,7 @@ namespace DirectGraphicalModels {
 			// Find the max and subtract it so that the exp doesn't explode
 			float mx = pCurrent[0];
 			int imx = 0;
-			for (int j = 1; j < m_pGraph->m_nStates; j++)
+			for (int j = 1; j < getGraph()->getNumStates(); j++)
 				if (mx < pCurrent[j]) {
 					mx = pCurrent[j];
 					imx = j;
@@ -117,38 +99,4 @@ namespace DirectGraphicalModels {
 			result[n] = imx;
 		}
 	}
-
-	///////////////////
-	/////  Debug  /////
-	///////////////////
-#ifdef DEBUG_MODE1
-	void CGraphDense::unaryEnergy(const short* ass, float* result)
-	{
-		for (int i = 0; i < m_nNodes; i++)
-			if (0 <= ass[i] && ass[i] < m_nStates)
-				result[i] = unary_[m_nStates*i + ass[i]];
-			else
-				result[i] = 0;
-	}
-
-	void CGraphDense::pairwiseEnergy(const short* ass, float* result, int term)
-	{
-		vec_float_t current(m_nNodes * m_nStates, 0);
-		// Build the current belief [binary assignment]
-		for (int i = 0, k = 0; i < m_nNodes; i++)
-			for (int j = 0; j < m_nStates; j++, k++)
-				current[k] = (ass[i] == j);
-
-		std::fill(m_vNext.begin(), m_vNext.end(), 0);
-
-		if (term == -1)
-			for (unsigned int i = 0; i < pairwise_.size(); i++)
-				pairwise_[i]->apply(m_vNext, current, m_vTmp, m_nStates);
-		else
-			pairwise_[term]->apply(m_vNext, current, m_vTmp, m_nStates);
-		for (int i = 0; i < m_nNodes; i++)
-			if (0 <= ass[i] && ass[i] < m_nStates)	result[i] = -m_vNext[i * m_nStates + ass[i]];
-			else									result[i] = 0;
-	}
-#endif
 }

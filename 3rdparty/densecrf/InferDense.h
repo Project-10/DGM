@@ -1,26 +1,25 @@
 #pragma once
 
-#include "types.h"
+#include "../modules/DGM/Infer.h"
+#include "../modules/DGM/GraphDense.h"
 
-namespace DirectGraphicalModels {
-
-	class CGraphDense;
-
-	class CInferDense
+namespace DirectGraphicalModels 
+{
+	class CInferDense : public CInfer
 	{
 	public:
-		CInferDense(CGraphDense *pGraph) : m_pGraph(pGraph) {}
-		virtual ~CInferDense(void) {}
+		DllExport CInferDense(CGraphDense *pGraph) : CInfer(pGraph) {}
+		DllExport virtual ~CInferDense(void) {}
 
-		// Run MAP inference and return the map for each pixel
-		DllExport vec_byte_t decode(unsigned int nIt = 0, float relax = 1.0);
-
-		// Run inference and return the probabilities
-		DllExport vec_float_t infer(unsigned int nIt, float relax);
+		DllExport virtual void	infer(unsigned int nIt = 1);
 
 
 	protected:
-		CGraphDense * m_pGraph;		///< Pointer to the graph
+		/**
+		* @brief Returns the pointer to the graph
+		* @return The pointer to the graph
+		*/
+		CGraphDense * getGraphDense(void) const { return reinterpret_cast<CGraphDense *>(getGraph()); }
 
 
 	private:
