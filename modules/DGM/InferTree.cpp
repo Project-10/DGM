@@ -67,7 +67,6 @@ void CInferTree::calculateMessages(unsigned int)
 				if (nFromEdges[n2] <= 1) nodeQueue.push_back(n2);
 			}
 		}
-
 	} // while
 
 	delete[] temp;

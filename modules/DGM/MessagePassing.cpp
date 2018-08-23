@@ -62,7 +62,6 @@ void CMessagePassing::infer(unsigned int nIt)
 														// node.Pot.at<float>(s,0) *= edge_from->msg[s];
 				node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + edge_from->msg[s]);		// Soft multiplication
 			} //s
-
 		} // e_f
 		  // Normalization
 		float SUM_pot = 0;

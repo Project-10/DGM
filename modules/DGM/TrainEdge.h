@@ -85,6 +85,5 @@ namespace DirectGraphicalModels
 		* @returns The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/	
 		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const = 0;
-
 	};
 }
