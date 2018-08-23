@@ -71,6 +71,5 @@ namespace DirectGraphicalModels
 
 	private:
 		ePotPenalApproach	m_penApproach;
-
 	};
 }

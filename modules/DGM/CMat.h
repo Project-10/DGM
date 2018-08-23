@@ -85,7 +85,5 @@ namespace DirectGraphicalModels
 
 	//	DllExport void	saveFile(FILE *pFile) const {CPriorEdge::saveFile(pFile);} 
 	//	DllExport void	loadFile(FILE *pFile) {CPriorEdge::loadFile(pFile);}		
-
-
 	};
 }

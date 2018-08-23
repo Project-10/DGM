@@ -268,7 +268,6 @@ namespace DirectGraphicalModels { namespace vis
 #endif
 				glDetachShader(NodeProgramID, VertexShaderID);
 				glDetachShader(NodeProgramID, NodeFragmentShaderID);
-
 			}
 			
 			glDeleteShader(VertexShaderID);

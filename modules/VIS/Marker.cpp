@@ -81,7 +81,6 @@ Mat CMarker::drawPotentials(const Mat &potential, byte flag) const
 		if (potential.cols == 1)	return drawVector(potential, flag);	// Node potential 
 		else 						return drawMatrix(potential, flag);	// Edge potential
 	} else							return drawVoxel(potential, flag);	// Triplet potential 		
-
 }
 
 Mat	CMarker::drawConfusionMatrix(const Mat &confusionMat, byte flag) const

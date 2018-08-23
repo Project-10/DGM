@@ -85,6 +85,5 @@ namespace DirectGraphicalModels
 
 	protected:
 		byte	m_nStates;		///< The number of states (classes)
-
 	};
 }

@@ -52,9 +52,8 @@ namespace DirectGraphicalModels {
 		*/
 		Mat												m_nodePotentials;		
 		/**
+		* @todo Add documentation here
 		*/
-		std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;
-
-	
+		std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;	
 	};
 }

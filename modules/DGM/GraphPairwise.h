@@ -133,7 +133,6 @@ namespace DirectGraphicalModels
 		size_t		m_IDx;			// = 0;	Primary Key
 		vec_node_t	m_vNodes;		// Nodes container
 		vec_edge_t	m_vEdges;		// Edges container
-
 	};
 }
 

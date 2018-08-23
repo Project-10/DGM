@@ -77,7 +77,6 @@ namespace DirectGraphicalModels
 			m_pPrior->addNodeGroundTruth(gt);
 			m_pConcatenator->concatenate(featureVector1, featureVector2, m_featureVector);
 			m_pTrainer->addFeatureVec(m_featureVector, gt);
-
 		}
 		virtual void	train(bool doClean = false) { m_pTrainer->train(doClean); }
 
@@ -118,7 +117,6 @@ namespace DirectGraphicalModels
 			}
 
 			return res;
-
 		}
 	
 
@@ -132,6 +130,4 @@ namespace DirectGraphicalModels
 		Mat						  m_featureVector;	
 
 	};
-
-
 }

@@ -31,7 +31,5 @@ namespace DirectGraphicalModels
 		* @param nIt is not used
 		*/
 		DllExport virtual void calculateMessages(unsigned int nIt);
-
-
 	};
 }

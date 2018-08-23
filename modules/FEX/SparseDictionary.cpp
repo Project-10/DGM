@@ -128,7 +128,6 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 		Mat _W, W;
 		Mat tmp;
 		for (int x = 0; x < dataWidth; x += blockSize) {
-
 			int s = y * dataWidth + x;										// sample index
 			Mat sample = X.row(s);											// sample
 			sample.convertTo(sample, CV_32FC1, 1.0 / normalizer);
