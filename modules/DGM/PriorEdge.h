@@ -30,44 +30,43 @@ namespace DirectGraphicalModels
 		eP_APP_NORM_ASYMMETRIC	///< Asymmetric approach
 	}; 	
 
-// ================================ Edge Prior Class ================================
-/**
-@brief %Edge prior probability estimation class.
-@author Sergey G. Kosov, sergey.kosov@project-10.de
-*/	
+	// ================================ Edge Prior Class ================================
+	/**
+	@brief %Edge prior probability estimation class.
+	@author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/	
 	class CPriorEdge : public CPrior
 	{
 	public:
-/**
-@brief Constructor
-@param nStates Number of states (classes)
-@param normApp Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
-*/
+		/**
+		@brief Constructor
+		@param nStates Number of states (classes)
+		@param normApp Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
+		*/
 		DllExport CPriorEdge(byte nStates, ePotNormApproach normApp = eP_APP_NORM_SYMMETRIC) : CBaseRandomModel(nStates), CPrior(nStates, RM_PAIRWISE), m_normApp(normApp) {}
 		DllExport ~CPriorEdge(void) {}
 
-/**
-@brief Adds the groud-truth value to the co-occurance histogram matrix
-@details Here \b gt1 is the X-coordinate of the co-occurance histogram matrix and \b gt2 - Y-coordinate of the co-occurance histogram matrix.
-@param gt1 The ground-truth state (value) of the first node in edge. 
-@param gt2 The ground-truth state (class) of the second node in edge. 
-*/
+		/**
+		@brief Adds the groud-truth value to the co-occurance histogram matrix
+		@details Here \b gt1 is the X-coordinate of the co-occurance histogram matrix and \b gt2 - Y-coordinate of the co-occurance histogram matrix.
+		@param gt1 The ground-truth state (value) of the first node in edge. 
+		@param gt2 The ground-truth state (class) of the second node in edge. 
+		*/
 		DllExport void			addEdgeGroundTruth(byte gt1, byte gt2); 
 
 		
 		
 	protected:		
-/**
-@brief Returns the prior edge probability
-@details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the addEdgeGroundTruth() function.
-If the histogram was not built, this functions returns a uniform distribution "all ones".
-@return Prior edge probability matrix: Mat(size: nStates x nStates; type: CV_32FC1)
-*/
+		/**
+		@brief Returns the prior edge probability
+		@details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the addEdgeGroundTruth() function.
+		If the histogram was not built, this functions returns a uniform distribution "all ones".
+		@return Prior edge probability matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		*/
 		DllExport Mat			calculatePrior(void) const;
 
 
 	protected:
 		ePotNormApproach		m_normApp;		///< Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
-
 	};
 }

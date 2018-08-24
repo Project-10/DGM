@@ -82,7 +82,5 @@ namespace DirectGraphicalModels
 
 	private:
 		void				  calculatePrior(void);
-
 	};
 }
-

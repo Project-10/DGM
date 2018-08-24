@@ -40,7 +40,5 @@ namespace DirectGraphicalModels
 		* @return Prior node probability vector: Mat(size: nStates x 1; type: CV_32FC1)
 		*/
 		DllExport Mat	calculatePrior(void) const;
-
-
 	};
 }

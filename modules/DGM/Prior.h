@@ -53,6 +53,5 @@ namespace DirectGraphicalModels
 
 	private:
 		RandomModelType			m_type;
-
 	};
 }

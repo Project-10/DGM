@@ -412,6 +412,5 @@ namespace DirectGraphicalModels
 			for (size_t &parent : parentNodes) removeEdge(parent, node);
 			for (size_t &child : childNodes)  removeEdge(node, child);
 		} // n
-
 	}
 }

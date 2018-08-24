@@ -32,6 +32,5 @@ namespace DirectGraphicalModels { namespace fex
 		* @return The variance feature image of type \b CV_8UC1.
 		*/
 		DllExport static Mat	get(const Mat &img, SqNeighbourhood nbhd = sqNeighbourhood(5));
-
 	};
 } }

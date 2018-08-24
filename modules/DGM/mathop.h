@@ -85,7 +85,6 @@ namespace DirectGraphicalModels
 			}
 			res = sqrt(res);
 			return res;
-
 		}
 
 		template <typename T>

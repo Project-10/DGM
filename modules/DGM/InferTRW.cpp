@@ -121,7 +121,6 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 				if (edge_from->node1 < edge_from->node2) calculateMessage(*edge_from, temp, data);
 			} // e_f
 		}); // All Nodes
-
 	} // iterations
 
 	delete[] data;
