@@ -81,6 +81,5 @@ namespace DirectGraphicalModels
 	protected:
 		Ptr<ml::ANN_MLP>			  m_pANN;					///< Artificial Neural Network 
 		CSamplesAccumulator			* m_pSamplesAcc;			///< Samples Accumulator
-
 	};
 }

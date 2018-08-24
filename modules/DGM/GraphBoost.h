@@ -29,7 +29,5 @@ namespace DirectGraphicalModels {
 		DllExport virtual void		addArc(size_t Node1, size_t Node2, const Mat &pot) {};
 		DllExport virtual void		setArc(size_t Node1, size_t Node2, const Mat &pot) {};
 		DllExport virtual size_t	getNumNodes(void) const { return 0; };
-
-
 	};
 }

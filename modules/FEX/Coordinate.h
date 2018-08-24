@@ -41,6 +41,5 @@ namespace DirectGraphicalModels { namespace fex
 		* @return The coordinate feature image of type \b CV_8UC1.
 		*/
 		DllExport static Mat	get(const Mat &img, coordinateType type = COORDINATE_ORDINATE);
-
 	};
 } }

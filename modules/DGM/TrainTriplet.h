@@ -8,11 +8,11 @@
 
 namespace DirectGraphicalModels
 {
-// ============================= Triplet Train Class =============================
-/**
-@brief  Base abstract class for triplet potential training
-@author Sergey G. Kosov, sergey.kosov@project-10.de
-*/
+	// ============================= Triplet Train Class =============================
+	/**
+	@brief  Base abstract class for triplet potential training
+	@author Sergey G. Kosov, sergey.kosov@project-10.de
+	*/
 	class CTrainTriplet : public ITrain, private CPriorTriplet
 	{
 	public:
@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		DllExport void	reset(void) {CPriorTriplet::reset(); }
 
 
-		DllExport void	train(bool doClean = false) {};
+		DllExport void	train(bool doClean = false) {}
 
 		DllExport Mat	getTripletPotentials(const Mat &featureVector1, const Mat &featureVector2, const Mat &featureVector3) const;
 
@@ -33,15 +33,14 @@ namespace DirectGraphicalModels
 		* @warning This function is not implemented
 		*/			
 		DllExport void	saveFile(FILE *pFile) const 
-		{DGM_WARNING("Save function is not implemented yet!");}; 
+		{ DGM_WARNING("Save function is not implemented yet!"); } 
 		/**
 		* @todo Implement load() function
 		* @warning This function is not implemented
 		*/			
 		DllExport void	loadFile(FILE *pFile) 
-		{DGM_WARNING("Load function is not implemented yet!");}; 
+		{ DGM_WARNING("Load function is not implemented yet!"); } 
 		
 		DllExport void	calculateTripletPotentials(const Mat &featureVector1, const Mat &featureVector2, const Mat &featureVector3) const;
-
 	};
 }

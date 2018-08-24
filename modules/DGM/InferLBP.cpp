@@ -33,11 +33,9 @@ void CInferLBP::calculateMessages(unsigned int nIt)
 #endif
 		}); // nodes
 		swapMessages();										// Coping data from msg_temp to msg
-
 	} // iterations
 #ifndef ENABLE_PPL
 	delete[] temp;
 #endif
-
 }
 }

@@ -35,8 +35,7 @@ namespace DirectGraphicalModels
 			word nStates = static_cast<word>(nStatesBase) * static_cast<word>(nStatesOccl);
 			DGM_ASSERT(nStates < 256);
 			m_pPrior	= new CPriorNode(static_cast<byte>(nStates));
-			m_pTrainer	= new Trainer(static_cast<byte>(nStates), nFeatures);
-			
+			m_pTrainer	= new Trainer(static_cast<byte>(nStates), nFeatures);			
 		}
 		/**
 		* @brief Constructor
@@ -122,6 +121,5 @@ namespace DirectGraphicalModels
 	protected:
 		CPriorNode				* m_pPrior;				///< %Node prior poobability
 		CTrainNode				* m_pTrainer;			///< %Node trainer
-
 	};
 }

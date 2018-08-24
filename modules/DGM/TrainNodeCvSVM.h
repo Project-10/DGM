@@ -78,6 +78,5 @@ namespace DirectGraphicalModels
 	protected:
 		Ptr<ml::SVM>				  m_pSVM;					///< Support Vector Machine
 		CSamplesAccumulator			* m_pSamplesAcc;			///< Samples Accumulator
-
 	};
 }

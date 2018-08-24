@@ -118,6 +118,4 @@ int main(int argc, char *argv[])
 	cvWaitKey();
 
 	return 0;
-
-
 }

@@ -96,7 +96,6 @@ float * CPowell::getParams(float kappa)
 	else if (m_vKappa[pD] < 0)   m_vKappa[pD] = kappa;
 
 	while (true) {
-
 		// Need kappa: -1
 		if (m_vKappa[mD] < 0) {
 			if (m_midPoint == minArg) m_vKappa[mD] = 0.0f;

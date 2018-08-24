@@ -6,11 +6,11 @@
 
 namespace DirectGraphicalModels
 {
-// =============================== Triplet Structure ==============================
-/**
-@brief %Triplet structure
-@details Basic item stored in adjacency list. 
-*/
+	// =============================== Triplet Structure ==============================
+	/**
+	@brief %Triplet structure
+	@details Basic item stored in adjacency list. 
+	*/
 	struct Triplet {
 		size_t	node1;			///< First node in edge
 		size_t	node2;			///< Second node in edge
@@ -31,43 +31,37 @@ namespace DirectGraphicalModels
 	class CGraph3 : public CGraphPairwise
 	{
 	public:
-/**
-@brief Constructor
-@param nStates the number of States (classes)
-*/	
+		/**
+		@brief Constructor
+		@param nStates the number of States (classes)
+		*/	
 		DllExport CGraph3(byte nStates) : CGraphPairwise(nStates) {}
 		DllExport virtual ~CGraph3(void) {}
 
 
 
-/**
-@brief Adds an additional directed edge 
-@param[in] Node1 index of the first node
-@param[in] Node2 index of the second node
-@param[in] Node3 index of the third node
-*/
+		/**
+		@brief Adds an additional directed edge 
+		@param[in] Node1 index of the first node
+		@param[in] Node2 index of the second node
+		@param[in] Node3 index of the third node
+		*/
 		DllExport void		addTriplet(dword Node1, dword Node2, dword Node3);
-/**
-@brief Adds an additional directed edge with specified potentional
-@param[in] Node1 index of the first node
-@param[in] Node2 index of the second node
-@param[in] Node3 index of the third node
-@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
-*/
+		/**
+		@brief Adds an additional directed edge with specified potentional
+		@param[in] Node1 index of the first node
+		@param[in] Node2 index of the second node
+		@param[in] Node3 index of the third node
+		@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		*/
 		DllExport void		addTriplet(dword Node1, dword Node2, dword Node3, const Mat &pot);
-/**
-@brief Sets or changes the potentional of directed edge
-@param[in] Node1 index of the first node
-@param[in] Node2 index of the second node
-@param[in] Node3 index of the third node
-@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
-*/
+		/**
+		@brief Sets or changes the potentional of directed edge
+		@param[in] Node1 index of the first node
+		@param[in] Node2 index of the second node
+		@param[in] Node3 index of the third node
+		@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		*/
 		DllExport void		setTriplet(dword Node1, dword Node2, dword Node3, const Mat &pot);
-
-	protected:
-
-
-	private:
-
 	};
 }

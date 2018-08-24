@@ -39,6 +39,5 @@ namespace DirectGraphicalModels
 		* @note This function changes the graph nodes' potentials
 		*/
 		DllExport virtual void	  infer(unsigned int nIt = 0);
-
 	};
 }
