@@ -5,7 +5,8 @@
 #include "Graph.h"
 #include "densecrf/edgePotentialPotts.h"
 
-namespace DirectGraphicalModels {
+namespace DirectGraphicalModels 
+{
 	// ================================ Graph Interface Class ================================
 	/**
 	* @brief Interface class for dense graphical models
@@ -14,6 +15,7 @@ namespace DirectGraphicalModels {
 	*/
 	class CGraphDense : public CGraph {
 		friend class CInferDense;
+		friend class CInferDense1;
 	
 	public:
 		/**

@@ -54,6 +54,7 @@ source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
 source_group("Source Files\\Graph\\Triplet" FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")
 source_group("Source Files\\Inference\\Exact" FILES "InferExact.h" "InferExact.cpp")
+source_group("Source Files\\Inference\\Dense" FILES "InferDense.h" "InferDense.cpp")
 source_group("Source Files\\Inference\\Message Passing" FILES "MessagePassing.h" "MessagePassing.cpp")
 source_group("Source Files\\Inference\\Message Passing\\Chain" FILES "InferChain.h" "InferChain.cpp")
 source_group("Source Files\\Inference\\Message Passing\\LBP" FILES "InferLBP.h" "InferLBP.cpp")

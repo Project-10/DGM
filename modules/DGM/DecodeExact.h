@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 		* @brief Returns the pointer to the graph
 		* @return The pointer to the graph
 		*/
-		CGraphPairwise * getGraphPairwise(void) const { return reinterpret_cast<CGraphPairwise *>(CDecode::getGraph()); }
+		CGraphPairwise * getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise *>(CDecode::getGraph()); }
 		/**
 		* @brief Sets the \a state according to the configuration index \a configuration
 		* @details This function is used in exact inference / decoding

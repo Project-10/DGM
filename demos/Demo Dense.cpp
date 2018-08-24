@@ -4,7 +4,6 @@
 #include "DGM/timer.h"
 #include "DGM/serialize.h"
 #include "../3rdparty/densecrf/GraphDense2D.h"
-#include "../3rdparty/densecrf/InferDense.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -89,7 +88,7 @@ int main(int argc, char *argv[])
 	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
 
 	CGraphDense2D * graph	= new CGraphDense2D(nStates);
-	CInferDense	  * decoder	= new CInferDense(graph);
+	CInferDense   * decoder	= new CInferDense(graph);
 	graph->setNodes(nodePotentials);
 	graph->setEdgesGaussian(test_img.size(), 3, 3, 3);
 	graph->setEdgesBilateral(test_img, 60, 60, 20, 20, 20, 10);

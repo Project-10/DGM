@@ -49,6 +49,7 @@
 
 #include "DGM/Infer.h"
 #include "DGM/InferExact.h"
+#include "DGM/InferDense.h"
 #include "DGM/InferChain.h"
 #include "DGM/InferTree.h"
 #include "DGM/InferLBP.h"
