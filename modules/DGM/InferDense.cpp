@@ -3,31 +3,34 @@
 namespace DirectGraphicalModels
 {
 	namespace {
-		void expAndNormalize(Mat &out, const Mat &in, float scale = 1.0f)
+		template<typename T>
+		void normalize(const Mat &src, Mat dst) {
+			if(dst.empty()) dst = Mat(src.size(), src.type());
+			for (int y = 0; y < src.rows; y++) {
+				const T *pSrc = src.ptr<T>(y);
+				T *pDst = dst.ptr<T>(y);
+				T sum = 0;
+				for (int x = 0; x < src.cols; x++) sum += pSrc[x];
+				if (sum > DBL_EPSILON)
+					for (int x = 0; x < src.cols; x++) pDst[x] = pSrc[x] / sum;
+			} // y
+		}
+		
+		template<typename T>
+		void myexp(const Mat &src, Mat &dst)
 		{
-			vec_float_t V(in.cols);
-			for (int n = 0; n < in.rows; n++) {             // node
-				const float *pIn  = in.ptr<float>(n);
-				float       *pOut = out.ptr<float>(n);
+			for (int y = 0; y < src.rows; y++) {             
+				const T *pSrc  = src.ptr<float>(y);
+				T *pDst = dst.ptr<float>(y);
 
 				// Find the max and subtract it so that the exp doesn't explodeh
-				float max = scale * pIn[0];
-				for (int s = 1; s < in.cols; s++)
-					if (scale * pIn[s] > max) max = scale * pIn[s];
+				T max = pSrc[0];
+				for (int x = 1; x < src.cols; x++)
+					if (pSrc[x] > max) max = pSrc[x];
 
-				for (size_t j = 0; j < V.size(); j++)
-					V[j] = expf(scale * pIn[j] - max);
-
-				float sum = 0;
-				for (float &v : V) sum += v;
-				//      float sum = std::accumulate(V.begin(), V.end(), 0);
-
-				// Make it a probability
-				for (float &v : V) v /= sum;
-
-				for (size_t j = 0; j < V.size(); j++)
-					pOut[j] = V[j];
-			}
+				for (int x = 0; x < src.cols; x++)
+					pDst[x] = expf(pSrc[x] - max);
+			} // y
 		}
 	}
 	
@@ -37,34 +40,27 @@ namespace DirectGraphicalModels
 		const int rows = getGraphDense()->m_nodePotentials.rows;
 		const int cols = getGraphDense()->m_nodePotentials.cols;
 
-		Mat current = Mat(rows, cols, CV_32FC1, Scalar(0));
-		Mat next;
 		Mat temp = Mat(2 * rows, cols, CV_32FC1, Scalar(0));
 
-		// Making log potentials
-		for (int n = 0; n < rows; n++) {
-			float *pUnary = getGraphDense()->m_nodePotentials.ptr<float>(n);
-			for (int s = 0; s < cols; s++)
-				pUnary[s] = -logf(pUnary[s]);
-		}
-
 		// TODO: exp is not needed actually
-		// Initialize using the unary energies
-		expAndNormalize(current, getGraphDense()->m_nodePotentials, -1.0f);				// current = f(m_nodePotentials)  
+		// Making log potentials
+		Mat pot_log;
+		log(getGraphDense()->m_nodePotentials, pot_log);
+
+		normalize<float>(getGraphDense()->m_nodePotentials, getGraphDense()->m_nodePotentials);
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
 			// Set the unary potential
-			next = -getGraphDense()->m_nodePotentials;
+			Mat next = pot_log.clone();																			// next_i = log(pot_0)
 
 			// Add up all pairwise potentials
 			for (auto &edgePotModel : getGraphDense()->m_vpEdgeModels)
-				edgePotModel->apply(next, current, temp);								// next = f(next, current)
+				edgePotModel->apply(getGraphDense()->m_nodePotentials, next, temp);								// next_i = f(next_i, pot_i)
 
 			// Exponentiate and normalize
-			expAndNormalize(current, next, 1.0f);										// current = f(next)
+			exp(next, getGraphDense()->m_nodePotentials);														// pot_i = exp(next_i)
+			normalize<float>(getGraphDense()->m_nodePotentials, getGraphDense()->m_nodePotentials);				
 		} // iter
-
-		current.copyTo(getGraphDense()->m_nodePotentials);
 	}
 }

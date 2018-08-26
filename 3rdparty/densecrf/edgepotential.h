@@ -8,7 +8,7 @@ class CEdgePotential
 public:
 	CEdgePotential(void) {}
 	virtual ~CEdgePotential(void) {}
-	virtual void apply(Mat &out, const Mat &in, Mat &temp) const = 0;
+	virtual void apply(const Mat &src, Mat &dst, Mat &temp = Mat()) const = 0;
 
 
 private:
@@ -22,5 +22,5 @@ private:
 class SemiMetricFunction {
 public:
 	// For two probabilities apply the semi metric transform: v_i = sum_j mu_ij u_j
-	virtual void apply(float *out_values, const float *in_values) const = 0;
+	virtual void apply(const vec_float_t &src, vec_float_t &dst) const = 0;
 };

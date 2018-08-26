@@ -9,7 +9,7 @@ namespace DirectGraphicalModels
 {
 	// ================================ Graph Interface Class ================================
 	/**
-	* @brief Interface class for dense graphical models
+	* @brief Fully-connected (dense) graph class
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/

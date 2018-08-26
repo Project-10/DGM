@@ -11,7 +11,7 @@ public:
 	CEdgePotentialPotts(const float *pFeatures, word nFeatures, size_t nNodes, float w = 1.0f, const SemiMetricFunction *pFunction = NULL, bool per_pixel_normalization = true);
 	virtual ~CEdgePotentialPotts(void) {}
 
-	void apply(Mat &out, const Mat &in, Mat &temp) const;
+	void apply(const Mat &src, Mat &dst, Mat &temp = Mat()) const;
 
 
 	// TODO: try private

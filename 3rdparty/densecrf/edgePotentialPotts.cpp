@@ -12,7 +12,7 @@ CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures,
 {
 	m_pLattice->init(pFeatures, nFeatures, nNodes);
 
-    m_norm = Mat(nNodes, 1, CV_32FC1, Scalar(1));
+    m_norm = Mat(static_cast<int>(nNodes), 1, CV_32FC1, Scalar(1));
 
 	// Compute the normalization factor
 	m_pLattice->compute(m_norm, m_norm, 0, 0, 0, 0);
@@ -26,28 +26,28 @@ CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures,
 	}
 }
 
-void CEdgePotentialPotts::apply(Mat &out, const Mat &in, Mat &temp) const
+void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 {
-	m_pLattice->compute(temp, in, 0, 0, 0, 0);
+	// TODO: temp might be empty
+	m_pLattice->compute(temp, src, 0, 0, 0, 0);
 
     if (m_pFunction) { // ------------------------- With the SemiMetric function -------------------------
         // To the metric transform
-        float * tmp2 = new float[out.cols];
-        for (size_t n = 0; n < m_nNodes; n++) {
-            float *pOut = out.ptr<float>(n);
+        vec_float_t tmp2(src.cols);
+        for (int n = 0; n < src.rows; n++) {
+            float *pDst = dst.ptr<float>(n);
             float *pTemp = temp.ptr<float>(n);
-            m_pFunction->apply(tmp2, pTemp);
+            m_pFunction->apply(vec_float_t(pTemp, pTemp + src.cols), tmp2);
             
-			for (int s = 0; s < out.cols; s++)	// states
-                pOut[s] -= m_w * m_norm.at<float>(n, 0) * tmp2[s];
+			for (int s = 0; s < src.cols; s++)	// states
+                pDst[s] -= m_w * m_norm.at<float>(n, 0) * tmp2[s];
         }
-        delete[] tmp2;
     } else {            // ------------------------- Standard -------------------------
-		for (int n = 0; n < out.rows; n++) {	// nodes
-			float *pOut = out.ptr<float>(n);
+		for (int n = 0; n < src.rows; n++) {	// nodes
+			float *pDst = dst.ptr<float>(n);
 			float *pTemp = temp.ptr<float>(n);
-			for (int s = 0; s < out.cols; s++)	// states
-				pOut[s] += m_w * m_norm.at<float>(n, 0) * pTemp[s];
+			for (int s = 0; s < src.cols; s++)	// states
+				pDst[s] += m_w * m_norm.at<float>(n, 0) * pTemp[s];
 		}
     }
 }
