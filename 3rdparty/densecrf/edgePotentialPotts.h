@@ -8,7 +8,7 @@
 class CEdgePotentialPotts : public CEdgePotential
 {
 public:
-	CEdgePotentialPotts(const float *pFeatures, word nFeatures, size_t nNodes, float w = 1.0f, const SemiMetricFunction *pFunction = NULL, bool per_pixel_normalization = true);
+	CEdgePotentialPotts(const Mat &features, float w = 1.0f, const SemiMetricFunction *pFunction = NULL, bool per_pixel_normalization = true);
 	virtual ~CEdgePotentialPotts(void) {}
 
 	void apply(const Mat &src, Mat &dst, Mat &temp = Mat()) const;
@@ -17,7 +17,6 @@ public:
 	// TODO: try private
 	// TODO: try without members
 protected:
-	size_t                          m_nNodes;
 	float                           m_w;
 	std::unique_ptr<CPermutohedral> m_pLattice;
 	Mat                             m_norm;

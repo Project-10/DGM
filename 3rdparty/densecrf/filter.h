@@ -9,13 +9,13 @@ class CPermutohedral;
 class CFilter {
 public:
 	// Use different source and target features
-	CFilter(const float *source_features, int N_source, const float *target_features, int N_target, int feature_dim);
+	CFilter(const Mat &src_features, const Mat &dst_features);
 	// Use the same source and target features
-	CFilter(const float *features, int N, int feature_dim);
+	CFilter(const Mat &features);
 	~CFilter(void);
 	
     // Filter a bunch of values
-    void filter(const Mat &source, Mat &target);
+    void filter(const Mat &src, Mat &dst);
 
 
 private:
@@ -25,6 +25,7 @@ private:
 	int m_o2;
 	
 	CPermutohedral * m_pPermutohedral;
+
 
 private:
     // Copy semantics are disabled

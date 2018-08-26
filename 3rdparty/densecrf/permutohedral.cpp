@@ -92,11 +92,11 @@ CPermutohedral::~CPermutohedral(void)
     if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
 }
 
-void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
+void CPermutohedral::init(const Mat &features)
 {
     // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
-    m_N = N;
-    m_nFeatures = nFeatures;
+    m_N = features.rows;
+    m_nFeatures = features.cols;
     CHashTable hash_table(m_nFeatures, m_N * (m_nFeatures + 1));    // <============ Hash table
 	//std::unordered_map<short, int> hash_table;
 
@@ -132,7 +132,7 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
     // Compute the simplex each feature lies in
     for(int k = 0; k < m_N; k++) {
         // Elevate the feature ( y = Ep, see p.5 in [Adams etal 2010])
-        const float *f = pFeature + k * nFeatures;
+        const float *f = features.ptr<float>(k);
         
         // sm contains the sum of 1..n of our faeture vector
         float sm = 0;
@@ -237,23 +237,23 @@ void CPermutohedral::init(const float *pFeature, word nFeatures, size_t N)
 }
 
 // TODO: 
-void CPermutohedral::compute(Mat &out, const Mat &in, int in_offset, int out_offset, size_t in_size, size_t out_size) const
+void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
 	if (in_size  == 0) in_size  = m_N - in_offset;
     if (out_size == 0) out_size = m_N - out_offset;
     
     // Shift all values by 1 such that -1 -> 0 (used for blurring)
-	Mat values(m_M + 2, in.cols, CV_32FC1, Scalar(0));
-    Mat newValues(m_M + 2, in.cols, CV_32FC1, Scalar(0));
+	Mat values(m_M + 2, src.cols, CV_32FC1, Scalar(0));
+    Mat newValues(m_M + 2, src.cols, CV_32FC1, Scalar(0));
     
     // Splatting
     for(int i = 0; i < in_size; i++) {
-        const float *pIn = in.ptr<float>(i);
+        const float *pIn = src.ptr<float>(i);
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(in_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(in_offset + i) * (m_nFeatures + 1) + j];
 			float *pValues = values.ptr<float>(o);
-			for(int k = 0; k < in.cols; k++)
+			for(int k = 0; k < src.cols; k++)
 				pValues[k] += w * pIn[k];
         }
     }
@@ -267,7 +267,7 @@ void CPermutohedral::compute(Mat &out, const Mat &in, int in_offset, int out_off
             int n2 = m_pBlurNeighbors[j * m_M + i].n2 + 1;
             float *n1_val = values.ptr<float>(n1);
             float *n2_val = values.ptr<float>(n2);
-            for(int k = 0; k < in.cols; k++)
+            for(int k = 0; k < src.cols; k++)
 				pNewValues[k] = pValues[k] + 0.5f * (n1_val[k] + n2_val[k]);
         }
 		swap(values, newValues);
@@ -277,14 +277,14 @@ void CPermutohedral::compute(Mat &out, const Mat &in, int in_offset, int out_off
     
     // Slicing
     for(int i = 0; i < out_size; i++) {
-        float *pOut = out.ptr<float>(i);
-        for(int k = 0; k < in.cols; k++)
+        float *pOut = dst.ptr<float>(i);
+        for(int k = 0; k < src.cols; k++)
             pOut[k] = 0;
         for(int j = 0; j <= m_nFeatures; j++) {
             int o = m_pOffset[(out_offset + i) * (m_nFeatures + 1) + j] + 1;
             float w = m_pBarycentric[(out_offset + i) * (m_nFeatures + 1) + j];
 			float *pValues = values.ptr<float>(o);
-			for(int k = 0; k < in.cols; k++)
+			for(int k = 0; k < src.cols; k++)
                 pOut[k] += w * pValues[k] * alpha;
         }
     }

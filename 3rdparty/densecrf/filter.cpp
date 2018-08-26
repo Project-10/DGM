@@ -26,31 +26,36 @@
 */
 #include "filter.h"
 #include "permutohedral.h"
+#include "macroses.h"
 
 // Constructor
-CFilter::CFilter(const float *source_features, int N_source, const float *target_features, int N_target, int feature_dim)
-    : m_n1(N_source)
+CFilter::CFilter(const Mat &src_features, const Mat &dst_features)
+    : m_n1(src_features.rows)
     , m_o1(0)
-    , m_n2(N_target)
-    , m_o2(N_source)
+    , m_n2(dst_features.rows)
+    , m_o2(src_features.rows)
 {
-    m_pPermutohedral = new CPermutohedral();
-    float * features = new float[(N_source + N_target) * feature_dim];
-    memcpy(features, source_features, N_source * feature_dim * sizeof(float));
-    memcpy(features + N_source * feature_dim, target_features, N_target * feature_dim * sizeof(float));
-    m_pPermutohedral->init(features, feature_dim, N_source + N_target);
-    delete [] features;
+	// Assertions
+	DGM_ASSERT(src_features.cols == dst_features.cols);
+	
+	m_pPermutohedral = new CPermutohedral();
+	
+	Mat features(src_features.rows + dst_features.rows, src_features.cols, CV_32FC1);
+	src_features.copyTo(features(Rect(0, 0, src_features.cols, src_features.rows)));
+	dst_features.copyTo(features(Rect(0, src_features.rows, dst_features.cols, dst_features.rows)));
+	
+    m_pPermutohedral->init(features);
 }
 
 // Constructor
-CFilter::CFilter(const float *features, int N, int feature_dim )
-    : m_n1(N)
+CFilter::CFilter(const Mat &features)
+    : m_n1(features.rows)
     , m_o1(0)
-    , m_n2(N)
+    , m_n2(features.rows)
     , m_o2(0)
 {
     m_pPermutohedral = new CPermutohedral();
-    m_pPermutohedral->init(features, feature_dim, N);
+    m_pPermutohedral->init(features);
 }
 
 // Destructor
@@ -59,7 +64,7 @@ CFilter::~CFilter(void)
     delete m_pPermutohedral;
 }
 
-void CFilter::filter(const Mat &source, Mat &target)
+void CFilter::filter(const Mat &src, Mat &dst)
 {
-    m_pPermutohedral->compute(target, source, m_o1, m_o2, m_n1, m_n2);
+    m_pPermutohedral->compute(src, dst, m_o1, m_o2, m_n1, m_n2);
 }

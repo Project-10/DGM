@@ -3,19 +3,18 @@
 #include <numeric>
 
 // Constructor
-CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures, size_t nNodes, float w, const SemiMetricFunction *pFunction, bool per_pixel_normalization)
+CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float w, const SemiMetricFunction *pFunction, bool per_pixel_normalization)
 	: CEdgePotential()
-	, m_nNodes(nNodes)
 	, m_w(w)
 	, m_pLattice(std::make_unique<CPermutohedral>())
     , m_pFunction(pFunction)
 {
-	m_pLattice->init(pFeatures, nFeatures, nNodes);
+	m_pLattice->init(features);
 
-    m_norm = Mat(static_cast<int>(nNodes), 1, CV_32FC1, Scalar(1));
+    m_norm = Mat(features.rows, 1, CV_32FC1, Scalar(1));
 
 	// Compute the normalization factor
-	m_pLattice->compute(m_norm, m_norm, 0, 0, 0, 0);
+	m_pLattice->compute(m_norm, m_norm);
 	if (per_pixel_normalization)
         for (int n = 0; n < m_norm.rows; n++)
 			m_norm.at<float>(n, 0) = 1.f / (m_norm.at<float>(n, 0) + FLT_EPSILON);
@@ -29,7 +28,7 @@ CEdgePotentialPotts::CEdgePotentialPotts(const float *pFeatures, word nFeatures,
 void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 {
 	// TODO: temp might be empty
-	m_pLattice->compute(temp, src, 0, 0, 0, 0);
+	m_pLattice->compute(src, temp);
 
     if (m_pFunction) { // ------------------------- With the SemiMetric function -------------------------
         // To the metric transform

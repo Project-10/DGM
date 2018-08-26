@@ -118,7 +118,7 @@ DGM implements the following inference and decoding methods:
 - <b>LBP:</b> Approximate inference based on the Loopy Belief Propagation (\a sum-product message-passing) algorithm @ref DirectGraphicalModels::CInferLBP 
 - <b>TRW:</b> Approximate inference based on the (<a href="http://pub.ist.ac.at/~vnk/papers/TRW-S-PAMI.pdf" target="_blank">Convergent Tree-Reweighted</a>) (\a max-sum message-passing) algorithm @ref DirectGraphicalModels::CInferTRW 
 - <b>Viterbi:</b> Approximate inference based on Viterbi (\a max-sum message-passing) algorithm @ref DirectGraphicalModels::CInferViterbi 
-- <b>Dense:</b> (<a href="http://vladlen.info/publications/efficient-inference-in-fully-connected-crfs-with-gaussian-edge-potentials/" target="_blank">Efficient inference for \a dense CRFs with Gaussian edge potentials</a>) @ref DirectGraphicalModels::CGraphDense
+- <b>Dense:</b> <a href="http://vladlen.info/publications/efficient-inference-in-fully-connected-crfs-with-gaussian-edge-potentials/" target="_blank">Efficient inference for \a dense CRFs with Gaussian edge potentials</a> @ref DirectGraphicalModels::CGraphDense
 
 The corresponding classes are @b CInfer* (where @b * is the name of the method above). 
 

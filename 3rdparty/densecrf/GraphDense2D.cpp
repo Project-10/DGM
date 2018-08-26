@@ -10,32 +10,34 @@ namespace DirectGraphicalModels {
 
 	void CGraphDense2D::setEdgesGaussian(CvSize imgSize, float sx, float sy, float w, const SemiMetricFunction *pFunction)
 	{
-		Mat feature(imgSize, CV_32FC2);
-		for (int y = 0; y < feature.rows; y++) {
-			float *pFeature = feature.ptr<float>(y);
-			for (int x = 0; x < feature.cols; x++) {
-				pFeature[x * 2 + 0] = x / sx;
-				pFeature[x * 2 + 1] = y / sy;
+		Mat features(imgSize.height * imgSize.width, 2, CV_32FC1);
+		int n = 0;
+		for (int y = 0; y < imgSize.height; y++) 
+			for (int x = 0; x < imgSize.width; x++) {
+				float *pFeature = features.ptr<float>(n++);
+				pFeature[0] = x / sx;
+				pFeature[1] = y / sy;
 			} // x
-		}// y
-		setEdgeModel(new CEdgePotentialPotts(reinterpret_cast<float *>(feature.data), 2, feature.rows * feature.cols, w, pFunction));
+
+		setEdgeModel(new CEdgePotentialPotts(features, w, pFunction));
 	}
 
 	void CGraphDense2D::setEdgesBilateral(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const SemiMetricFunction *pFunction)
 	{
-		Mat feature(img.size(), CV_MAKE_TYPE(CV_32F, 5));
-		for (int y = 0; y < feature.rows; y++) {
+		Mat features(img.rows * img.cols, 5, CV_32FC1);
+		int n = 0;
+		for (int y = 0; y < img.rows; y++) {
 			const byte *pImg = img.ptr<byte>(y);
-			float *pFeature = feature.ptr<float>(y);
 			for (int x = 0; x < img.cols; x++) {
-				pFeature[x * 5 + 0] = x / sx;
-				pFeature[x * 5 + 1] = y / sy;
-				pFeature[x * 5 + 2] = pImg[x * 3 + 0] / sr;
-				pFeature[x * 5 + 3] = pImg[x * 3 + 1] / sg;
-				pFeature[x * 5 + 4] = pImg[x * 3 + 2] / sb;
+				float *pFeature = features.ptr<float>(n++);
+				pFeature[0] = x / sx;
+				pFeature[1] = y / sy;
+				pFeature[2] = pImg[x * 3 + 0] / sr;
+				pFeature[3] = pImg[x * 3 + 1] / sg;
+				pFeature[4] = pImg[x * 3 + 2] / sb;
 			} // x
 		} // y
-		setEdgeModel(new CEdgePotentialPotts(reinterpret_cast<float *>(feature.data), 5, feature.rows * feature.cols, w, pFunction));
+		setEdgeModel(new CEdgePotentialPotts(features, w, pFunction));
 	}
 
 }
