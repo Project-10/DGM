@@ -29,12 +29,6 @@
 
 #include "types.h"
 
-struct Neighbors
-{
-    int n1, n2;
-    Neighbors(int n1 = 0, int n2 = 0) : n1(n1), n2(n2) {}
-};
-
 /************************************************/
 /***          Permutohedral Lattice           ***/
 /************************************************/
@@ -44,18 +38,19 @@ public:
     CPermutohedral(void) = default;
     CPermutohedral(const CPermutohedral &rhs);
     CPermutohedral & operator= (const CPermutohedral &rhs);
-    ~CPermutohedral(void);
+	~CPermutohedral(void) {}
 
     void init(const Mat &features);
     void compute(const Mat &src, Mat &dst, int in_offset = 0, int out_offset = 0, size_t in_size = 0, size_t out_size = 0) const;
 
     
 private:
-    int			m_N                 = 0;        // Number of elements
-    int			m_M                 = 0;        // Size of sparse discretized space
-    int         m_nFeatures         = 0;        // Dimension of features
+    int	m_N                 = 0;        // Number of elements
+    int	m_M                 = 0;        // Size of sparse discretized space
+    int m_nFeatures         = 0;        // Dimension of features
     
-    int       * m_pOffset           = NULL;
-    float     * m_pBarycentric      = NULL;
-    Neighbors * m_pBlurNeighbors    = NULL;
+    Mat m_offset			= Mat();
+    Mat	m_barycentric       = Mat();
+    Mat	m_blurNeighbor1		= Mat();
+	Mat	m_blurNeighbor2		= Mat();
 };

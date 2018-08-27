@@ -8,7 +8,7 @@ public:
 	~CHashTable(void);
 
 	void		  reset(void);
-	int			  find(const short *key, bool create = false);
+	int			  find(const std::vector<short> &key, bool create = false);
 	
     // Accessors
 	size_t		  size(void) const{ return m_filled; }
@@ -17,15 +17,15 @@ public:
 
 private:
 	void	grow(void);
-	size_t	hash(const short *key);
+	size_t	hash(const std::vector<short> &key);
 
 
 private:
 	size_t	  m_key_size;
 	size_t	  m_capacity;
 	size_t	  m_filled;
-	short	* m_pKeys;
-	int		* m_pTable;
+	short	* m_pKeys;			// TODO: sub
+	int		* m_pTable;			// TODO: sub
 
     
 private:

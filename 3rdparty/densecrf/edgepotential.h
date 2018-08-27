@@ -8,7 +8,7 @@ class CEdgePotential
 public:
 	CEdgePotential(void) {}
 	virtual ~CEdgePotential(void) {}
-	virtual void apply(const Mat &src, Mat &dst, Mat &temp = Mat()) const = 0;
+	virtual void apply(const Mat &src, Mat &dst, Mat &temp = EmptyMat) const = 0;
 
 
 private:

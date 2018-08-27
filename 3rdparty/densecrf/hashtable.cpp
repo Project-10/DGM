@@ -22,7 +22,7 @@ void CHashTable::reset(void)
 }
 
 // if add: returns list size - 1
-int CHashTable::find(const short *key, bool create)
+int CHashTable::find(const std::vector<short> &key, bool create)
 {
 	if (2 * m_filled >= m_capacity) grow();
 	
@@ -77,7 +77,7 @@ void CHashTable::grow(void)
 	for (int i = 0; i < old_capacity; i++)
 		if (old_table[i] >= 0) {
 			int e = old_table[i];
-			size_t h = hash(old_keys + (getKey(e) - m_pKeys)) % m_capacity;
+			size_t h = hash(std::vector<short>(old_keys + (getKey(e) - m_pKeys), old_keys + (getKey(e) - m_pKeys) + m_key_size)) % m_capacity;
 			for (; m_pTable[h] >= 0; h = h < m_capacity - 1 ? h + 1 : 0);
 			m_pTable[h] = e;
 		}
@@ -86,7 +86,7 @@ void CHashTable::grow(void)
 	delete[] old_table;
 }
 
-size_t CHashTable::hash(const short *key)
+size_t CHashTable::hash(const std::vector<short> &key)
 {
 	size_t res = 0;
 	for (size_t i = 0; i < m_key_size; i++) {

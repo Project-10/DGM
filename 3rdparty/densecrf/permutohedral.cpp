@@ -33,63 +33,28 @@ CPermutohedral::CPermutohedral(const CPermutohedral &rhs)
     : m_N(rhs.m_N)
 	, m_M(rhs.m_M)
 	, m_nFeatures(rhs.m_nFeatures)
-    , m_pOffset(NULL)
-    , m_pBarycentric(NULL)
-    , m_pBlurNeighbors(NULL)
 {
-    if (rhs.m_pBarycentric) {
-        m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
-        memcpy(m_pBarycentric, rhs.m_pBarycentric, (m_nFeatures + 1) * m_N * sizeof(float));
-    }
-    if (rhs.m_pOffset) {
-        m_pOffset = new int[(m_nFeatures + 1) * m_N];
-        memcpy(m_pOffset, rhs.m_pOffset, (m_nFeatures + 1) * m_N * sizeof(int));
-    }
-    if (rhs.m_pBlurNeighbors) {
-        m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_N];
-        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_nFeatures + 1) * m_N * sizeof(Neighbors));
-    }
+	if (!rhs.m_offset.empty()) rhs.m_offset.copyTo(m_offset); 
+	if (!rhs.m_barycentric.empty()) rhs.m_barycentric.copyTo(m_barycentric);
+	if (!rhs.m_blurNeighbor1.empty()) rhs.m_blurNeighbor1.copyTo(m_blurNeighbor1);
+	if (!rhs.m_blurNeighbor2.empty()) rhs.m_blurNeighbor2.copyTo(m_blurNeighbor2);
 }
 
 // Copy operator
 CPermutohedral & CPermutohedral::operator= (const CPermutohedral &rhs)
 {
     if (&rhs == this) return *this;
-    if (m_pBarycentric)    delete[] m_pBarycentric;
-    if (m_pOffset)         delete[] m_pOffset;
-    if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
-    
-	m_pOffset			= NULL; 
-	m_pBarycentric		= NULL; 
-	m_pBlurNeighbors	= NULL;
-    m_N = rhs.m_N;
-    m_M = rhs.m_M;
-    m_nFeatures = rhs.m_nFeatures;
-    
-	if (rhs.m_pBarycentric){
-        m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
-        memcpy( m_pBarycentric, rhs.m_pBarycentric, (m_nFeatures + 1) * m_N * sizeof(float));
-    }
-    
-	if (rhs.m_pOffset){
-        m_pOffset = new int[(m_nFeatures + 1) * m_N];
-        memcpy(m_pOffset, rhs.m_pOffset, (m_nFeatures + 1) * m_N * sizeof(int));
-    }
-    
-	if (rhs.m_pBlurNeighbors){
-        m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_N];
-        memcpy(m_pBlurNeighbors, rhs.m_pBlurNeighbors, (m_nFeatures + 1) * m_N * sizeof(Neighbors));
-    }
-    
-	return *this;
-}
 
-// Destructor
-CPermutohedral::~CPermutohedral(void)
-{
-    if (m_pBarycentric)    delete[] m_pBarycentric;
-    if (m_pOffset)         delete[] m_pOffset;
-    if (m_pBlurNeighbors)  delete[] m_pBlurNeighbors;
+	m_N				= rhs.m_N;
+    m_M				= rhs.m_M;
+    m_nFeatures		= rhs.m_nFeatures;
+    
+	m_offset		= rhs.m_offset.empty()			? Mat() : rhs.m_offset.clone();
+	m_barycentric	= rhs.m_barycentric.empty()		? Mat() : rhs.m_barycentric.clone();
+	m_blurNeighbor1 = rhs.m_blurNeighbor1.empty()	? Mat() : rhs.m_blurNeighbor1.clone();
+	m_blurNeighbor2 = rhs.m_blurNeighbor2.empty()	? Mat() : rhs.m_blurNeighbor2.clone();
+
+	return *this;
 }
 
 void CPermutohedral::init(const Mat &features)
@@ -101,19 +66,18 @@ void CPermutohedral::init(const Mat &features)
 	//std::unordered_map<short, int> hash_table;
 
     // Allocate the class memory
-    if (m_pOffset) delete [] m_pOffset;
-    m_pOffset = new int[(m_nFeatures + 1) * m_N];
-    if (m_pBarycentric) delete [] m_pBarycentric;
-    m_pBarycentric = new float[(m_nFeatures + 1) * m_N];
+	m_offset		= Mat(m_N, m_nFeatures + 1, CV_32SC1); 
+    m_barycentric	= Mat(m_N, m_nFeatures + 1, CV_32FC1);
+
     
     // Allocate the local memory
-    float * scale_factor = new float[m_nFeatures];
-    float * elevated = new float[m_nFeatures + 1];
-    float * rem0 = new float[m_nFeatures + 1];
-    float * barycentric = new float[m_nFeatures + 2];
-    short * rank = new short[m_nFeatures + 1];
-    short * canonical = new short[(m_nFeatures + 1) * (m_nFeatures + 1)];
-    short * key = new short[m_nFeatures + 1];
+    vec_float_t scale_factor(m_nFeatures);
+    vec_float_t elevated(m_nFeatures + 1);
+    vec_float_t rem0(m_nFeatures + 1);
+    vec_float_t barycentric(m_nFeatures + 2);
+    std::vector<short> rank(m_nFeatures + 1);
+    std::vector<short> canonical((m_nFeatures + 1) * (m_nFeatures + 1));
+	std::vector<short> key(m_nFeatures + 1);
     
     // Compute the canonical simplex
     for(int i = 0; i <= m_nFeatures; i++) {
@@ -188,52 +152,47 @@ void CPermutohedral::init(const Mat &features)
         barycentric[0] += 1.0f + barycentric[m_nFeatures + 1];
         
         // Compute all vertices and their offset
-        for(int remainder = 0; remainder <= m_nFeatures; remainder++) {
+		int		*pOffset		= m_offset.ptr<int>(k);
+		float	*pBarycentric	= m_barycentric.ptr<float>(k);
+		for(int remainder = 0; remainder <= m_nFeatures; remainder++) {
             for(int i = 0; i < m_nFeatures; i++)
                 key[i] = static_cast<short>(rem0[i] + canonical[ remainder * (m_nFeatures + 1) + rank[i]]);
-            m_pOffset[k * (m_nFeatures + 1) + remainder] = hash_table.find(key, true);
-            m_pBarycentric[k * (m_nFeatures + 1) + remainder] = barycentric[remainder];
+			pOffset[remainder]		= hash_table.find(key, true);	
+			pBarycentric[remainder]	= barycentric[remainder];		
         }
-    }
-    delete [] scale_factor;
-    delete [] elevated;
-    delete [] rem0;
-    delete [] barycentric;
-    delete [] rank;
-    delete [] canonical;
-    delete [] key;
-    
+    } // k
     
     // Find the Neighbors of each lattice point
-    
     // Get the number of vertices in the lattice
     m_M = hash_table.size();
     
     // Create the neighborhood structure
-    if(m_pBlurNeighbors) delete[] m_pBlurNeighbors;
-    m_pBlurNeighbors = new Neighbors[(m_nFeatures + 1) * m_M];
+	m_blurNeighbor1 = Mat(m_M, m_nFeatures + 1, CV_32SC1);
+	m_blurNeighbor2 = Mat(m_M, m_nFeatures + 1, CV_32SC1);
     
-    short * n1 = new short[m_nFeatures + 1];
-    short * n2 = new short[m_nFeatures + 1];
+    std::vector<short> n1(m_nFeatures + 1);
+    std::vector<short> n2(m_nFeatures + 1);
     
     // For each of d+1 axes,
-    for(int j = 0; j <= m_nFeatures; j++) {
-        for(int i = 0; i< m_M; i++) {
-            const short * key = hash_table.getKey( i );
-            for(int k = 0; k < m_nFeatures; k++) {
+	for (int i = 0; i < m_M; i++) {
+		int *pBlurNeighbor1 = m_blurNeighbor1.ptr<int>(i);
+		int *pBlurNeighbor2 = m_blurNeighbor2.ptr<int>(i);
+		
+		const short * key = hash_table.getKey(i);
+
+		for(int j = 0; j <= m_nFeatures; j++) {
+
+			for(int k = 0; k < m_nFeatures; k++) {
                 n1[k] = key[k] - 1;
                 n2[k] = key[k] + 1;
             }
             n1[j] = key[j] + m_nFeatures;
             n2[j] = key[j] - m_nFeatures;
             
-            m_pBlurNeighbors[j * m_M + i].n1 = hash_table.find(n1);
-            m_pBlurNeighbors[j * m_M + i].n2 = hash_table.find(n2);
+            pBlurNeighbor1[j] = hash_table.find(n1);
+            pBlurNeighbor2[j] = hash_table.find(n2);
         }
     }
-    
-	delete[] n1;
-    delete[] n2;
 }
 
 // TODO: 
@@ -248,10 +207,12 @@ void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_of
     
     // Splatting
     for(int i = 0; i < in_size; i++) {
-        const float *pIn = src.ptr<float>(i);
-        for(int j = 0; j <= m_nFeatures; j++) {
-            int o = m_pOffset[(in_offset + i) * (m_nFeatures + 1) + j] + 1;
-            float w = m_pBarycentric[(in_offset + i) * (m_nFeatures + 1) + j];
+        const float *pIn			= src.ptr<float>(i);
+		const int	*pOffset		= m_offset.ptr<int>(in_offset + i);
+		const float	*pBarycentric	= m_barycentric.ptr<float>(in_offset + i);
+		for(int j = 0; j <= m_nFeatures; j++) {
+            int   o	= pOffset[j] + 1;
+            float w = pBarycentric[j];	
 			float *pValues = values.ptr<float>(o);
 			for(int k = 0; k < src.cols; k++)
 				pValues[k] += w * pIn[k];
@@ -263,8 +224,8 @@ void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_of
             float *pValues		= values.ptr<float>(i + 1);
             float *pNewValues	= newValues.ptr<float>(i + 1);
             
-            int n1 = m_pBlurNeighbors[j * m_M + i].n1 + 1;
-            int n2 = m_pBlurNeighbors[j * m_M + i].n2 + 1;
+            int n1 = m_blurNeighbor1.at<int>(i, j) + 1;
+            int n2 = m_blurNeighbor2.at<int>(i, j) + 1;
             float *n1_val = values.ptr<float>(n1);
             float *n2_val = values.ptr<float>(n2);
             for(int k = 0; k < src.cols; k++)
@@ -277,12 +238,14 @@ void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_of
     
     // Slicing
     for(int i = 0; i < out_size; i++) {
-        float *pOut = dst.ptr<float>(i);
-        for(int k = 0; k < src.cols; k++)
+        float		*pOut			= dst.ptr<float>(i);
+		const int	*pOffset		= m_offset.ptr<int>(in_offset + i);
+		const float	*pBarycentric	= m_barycentric.ptr<float>(in_offset + i);
+		for(int k = 0; k < src.cols; k++)
             pOut[k] = 0;
         for(int j = 0; j <= m_nFeatures; j++) {
-            int o = m_pOffset[(out_offset + i) * (m_nFeatures + 1) + j] + 1;
-            float w = m_pBarycentric[(out_offset + i) * (m_nFeatures + 1) + j];
+            int   o = pOffset[j] + 1;		
+            float w = pBarycentric[j];	
 			float *pValues = values.ptr<float>(o);
 			for(int k = 0; k < src.cols; k++)
                 pOut[k] += w * pValues[k] * alpha;
