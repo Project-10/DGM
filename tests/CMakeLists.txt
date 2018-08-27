@@ -22,8 +22,12 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 add_executable(Tests ${TESTS_SOURCES} ${TESTS_HEADERS} ${GTEST_SOURCES})
 add_dependencies(Tests DGM)
 
+if (UNIX AND NOT APPLE)
+set(LINUX_LIB "-lpthread -lm")
+endif()
+
 # Properties->Linker->Input->Additional Dependencies
-target_link_libraries(Tests ${OpenCV_LIBS} ${DGM_LIB})  
+target_link_libraries(Tests ${OpenCV_LIBS} ${DGM_LIB} ${LINUX_LIB})  
 
 # Creates folder "Modules" and adds target project 
 set_target_properties(Tests PROPERTIES PROJECT_LABEL "Tests")						# in Visual Studio
