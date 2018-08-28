@@ -1,28 +1,24 @@
 #include "hashtable.h"
 
 // Constructor
-CHashTable::CHashTable(int key_size, size_t nElements) : m_key_size(key_size), m_capacity(2 * nElements), m_filled(0)
+CHashTable::CHashTable(int key_size, int nElements) : m_key_size(key_size), m_capacity(nElements / 24), m_filled(0)
 {
-	m_pTable = new int[m_capacity];
-	m_pKeys = new short[(m_capacity / 2 + 10) * m_key_size];
-	memset(m_pTable, -1, m_capacity * sizeof(int));
+	m_vTable = std::vector<int>(m_capacity, -1);
+	m_keys   = Mat(m_capacity / 2 + 10, m_key_size, CV_16SC1);
 }
 
 // Destructor
 CHashTable::~CHashTable(void)
-{
-	delete[] m_pKeys;
-	delete[] m_pTable;
-}
+{}
 
 void CHashTable::reset(void)
 {
 	m_filled = 0;
-	memset(m_pTable, -1, m_capacity * sizeof(int));
+	std::fill(m_vTable.begin(), m_vTable.end(), -1);
 }
 
 // if add: returns list size - 1
-int CHashTable::find(const std::vector<short> &key, bool create)
+int CHashTable::find(const Mat &key, bool create)
 {
 	if (2 * m_filled >= m_capacity) grow();
 	
@@ -31,15 +27,18 @@ int CHashTable::find(const std::vector<short> &key, bool create)
 	
 	// Find the element with he right key, using linear probing
 	while (true) {
-		int e = m_pTable[h];
+		int e = m_vTable[h];
 		if (e == -1) {
 			if (create) {
 				// Insert a new key and return the new id
+				short *pKeys = m_keys.ptr<short>(m_filled);
+				const short *pKey = key.ptr<short>(0);
 				for (size_t i = 0; i < m_key_size; i++)
-					m_pKeys[m_filled * m_key_size + i] = key[i];
-				m_pTable[h] = static_cast<int>(m_filled);
+					pKeys[i] = pKey[i];			// TODO
+				
+				m_vTable[h] = static_cast<int>(m_filled);
 				m_filled++;
-				return m_pTable[h];
+				return m_vTable[h];
 			}
 			else
 				return -1;
@@ -48,8 +47,10 @@ int CHashTable::find(const std::vector<short> &key, bool create)
 		// Check if the current key is The One
 		bool good = true;
 		
+		short *pKeys = m_keys.ptr<short>(e);
+		const short *pKey = key.ptr<short>(0);
 		for (size_t i = 0; i < m_key_size && good; i++)
-			if (m_pKeys[e * m_key_size + i] != key[i])
+			if (pKeys[i] != pKey[i])
 				good = false;
 		
 		if (good) return e;
@@ -63,34 +64,31 @@ int CHashTable::find(const std::vector<short> &key, bool create)
 void CHashTable::grow(void)
 {
 	// Swap out the old memory
-	short	*old_keys  = m_pKeys;
-	int		*old_table = m_pTable;
+	std::vector<int>	old_table = m_vTable;
+	
 	size_t	old_capacity = m_capacity;
 	m_capacity *= 2;
+	
 	// Allocate the new memory
-	m_pKeys = new short[(old_capacity + 10) * m_key_size];
-	m_pTable = new int[m_capacity];
-	memset(m_pTable, -1, m_capacity * sizeof(int));
-	memcpy(m_pKeys, old_keys, m_filled * m_key_size * sizeof(short));
+	copyMakeBorder(m_keys, m_keys, 0, (old_capacity + 10) * m_key_size - m_keys.rows, 0, 0, BORDER_CONSTANT);
+	m_vTable = std::vector<int>(m_capacity, -1);
 
 	// Reinsert each element
-	for (int i = 0; i < old_capacity; i++)
-		if (old_table[i] >= 0) {
-			int e = old_table[i];
-			size_t h = hash(std::vector<short>(old_keys + (getKey(e) - m_pKeys), old_keys + (getKey(e) - m_pKeys) + m_key_size)) % m_capacity;
-			for (; m_pTable[h] >= 0; h = h < m_capacity - 1 ? h + 1 : 0);
-			m_pTable[h] = e;
+	for (int i = 0; i < old_capacity; i++) {
+		int e = old_table[i];
+		if (e >= 0) {
+			size_t h = hash(getKey(e)) % m_capacity;
+			for (; m_vTable[h] >= 0; h = h < m_capacity - 1 ? h + 1 : 0);
+			m_vTable[h] = e;
 		}
-
-	delete[] old_keys;
-	delete[] old_table;
+	} // i
 }
 
-size_t CHashTable::hash(const std::vector<short> &key)
+size_t CHashTable::hash(const Mat &key)
 {
 	size_t res = 0;
-	for (size_t i = 0; i < m_key_size; i++) {
-		res += key[i];
+	for (int i = 0; i < m_key_size; i++) {
+		res += key.at<short>(0, i);		
 		res *= 1664525;
 	}
 	return res;

@@ -45,9 +45,9 @@ public:
 
     
 private:
-    int	m_N                 = 0;        // Number of elements
+    int	m_nFeatures         = 0;        // Number of elements
     int	m_M                 = 0;        // Size of sparse discretized space
-    int m_nFeatures         = 0;        // Dimension of features
+    int m_featureSize       = 0;        // Dimension of features
     
     Mat m_offset			= Mat();
     Mat	m_barycentric       = Mat();

@@ -4,28 +4,29 @@
 
 class CHashTable {
 public:
-	CHashTable(int key_size, size_t nElements);
+	CHashTable(int key_size, int nElements);
 	~CHashTable(void);
 
-	void		  reset(void);
-	int			  find(const std::vector<short> &key, bool create = false);
+	void	reset(void);
+	int		find(const Mat &key, bool create = false);
 	
     // Accessors
-	size_t		  size(void) const{ return m_filled; }
-	const short	* getKey(int i) const { return m_pKeys + i * m_key_size; }
+	int		size(void) const { return m_filled; }
+	Mat		getKey(int i) const { return m_keys.row(i); }
 
 
 private:
 	void	grow(void);
-	size_t	hash(const std::vector<short> &key);
+	size_t	hash(const Mat &key);
 
 
 private:
-	size_t	  m_key_size;
-	size_t	  m_capacity;
-	size_t	  m_filled;
-	short	* m_pKeys;			// TODO: sub
-	int		* m_pTable;			// TODO: sub
+	int					m_capacity;
+	int					m_key_size;
+	int					m_filled;
+	
+	Mat					m_keys;
+	std::vector<int>	m_vTable;	
 
     
 private:
