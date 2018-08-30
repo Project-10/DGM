@@ -8,7 +8,8 @@ public:
 	~CHashTable(void);
 
 	void	reset(void);
-	int		find(const Mat &key, bool create = false);
+	int		find(const Mat &key) const;
+	void	insert(const Mat &key, int value);
 	
     // Accessors
 	int		size(void) const { return m_filled; }
@@ -17,7 +18,6 @@ public:
 
 private:
 	void	grow(void);
-	size_t	hash(const Mat &key);
 
 
 private:

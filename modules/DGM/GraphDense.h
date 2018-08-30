@@ -15,14 +15,13 @@ namespace DirectGraphicalModels
 	*/
 	class CGraphDense : public CGraph {
 		friend class CInferDense;
-		friend class CInferDense1;
 	
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(EmptyMat)         {};
+		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(EmptyMat) {}
 		DllExport virtual ~CGraphDense(void) {}
 
 		// CGraph

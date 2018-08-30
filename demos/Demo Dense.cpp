@@ -3,7 +3,6 @@
 #include "VIS.h"
 #include "DGM/timer.h"
 #include "DGM/serialize.h"
-#include "../3rdparty/densecrf/GraphDense2D.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
@@ -28,9 +27,9 @@ int main(int argc, char *argv[])
 
 	// Reading parameters and images
     Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for training
-	Mat test_fv = imread(argv[3], 1); resize(test_fv, test_fv, imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
-	Mat test_gt = imread(argv[4], 0); resize(test_gt, test_gt, imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
+	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
+	Mat test_fv  = imread(argv[3], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt  = imread(argv[4], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNode		* nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);
@@ -87,17 +86,21 @@ int main(int argc, char *argv[])
 	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
 	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
 
-	CGraphDense2D * graph	= new CGraphDense2D(nStates);
-	CInferDense   * decoder	= new CInferDense(graph);
-	graph->setNodes(nodePotentials);
-	graph->setEdgesGaussian(test_img.size(), 3, 3, 3);
-	graph->setEdgesBilateral(test_img, 60, 60, 20, 20, 20, 10);
+	CGraphDense graph(nStates);
+	CGraphDenseExt graphExt(graph);
+	CInferDense decoder(&graph);
+	
+	
+	
+	graphExt.setNodes(nodePotentials);
+	graphExt.setEdgesGaussian(test_img.size(), 3, 3, 3);
+	graphExt.setEdgesBilateral(test_img, 60, 60, 20, 20, 20, 10);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
 
 

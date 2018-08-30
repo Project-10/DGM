@@ -63,7 +63,7 @@ void CPermutohedral::init(const Mat &features)
     m_nFeatures = features.rows;
     m_featureSize = features.cols;
     CHashTable hash_table(m_featureSize, m_nFeatures * (m_featureSize + 1));    // <============ Hash table
-	//std::unordered_map<short, int> hash_table;
+	//std::unordered_map<Mat, int> hash_table1;
 
     // Allocate the class memory
 	m_offset		= Mat(m_nFeatures, m_featureSize + 1, CV_32SC1); 
@@ -157,7 +157,13 @@ void CPermutohedral::init(const Mat &features)
 		for(int remainder = 0; remainder <= m_featureSize; remainder++) {
             for(int i = 0; i < m_featureSize; i++)
                 key.at<short>(0, i) = static_cast<short>(rem0[i] + canonical[ remainder * (m_featureSize + 1) + rank[i]]);		// TODO
-			pOffset[remainder]		= hash_table.find(key, true);	
+			
+			int val = hash_table.find(key);
+			if (val == -1) {
+				val = hash_table.size();
+				hash_table.insert(key, val);
+			}
+			pOffset[remainder]		= val;	
 			pBarycentric[remainder]	= barycentric[remainder];		
         }
     } // k

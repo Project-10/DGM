@@ -17,47 +17,72 @@ void CHashTable::reset(void)
 	std::fill(m_vTable.begin(), m_vTable.end(), -1);
 }
 
-// if add: returns list size - 1
-int CHashTable::find(const Mat &key, bool create)
+namespace {
+	size_t hashfunc(const Mat &key)
+	{
+		size_t res = 0;
+		for (int i = 0; i < key.cols; i++) {
+			res += key.at<short>(0, i);
+			res *= 1664525;
+		}
+		return res;
+	}
+
+	size_t index(const Mat &key, size_t array_size)
+	{
+		size_t hash = hashfunc(key);
+		size_t index = hash % array_size;
+		return index;
+	}
+}
+
+int CHashTable::find(const Mat &key) const
 {
-	if (2 * m_filled >= m_capacity) grow();
-	
 	// Get the hash value
-	size_t h = hash(key) % m_capacity;
+	size_t idx = index(key(Rect(0, 0, m_key_size, 1)), m_capacity);
 	
 	// Find the element with he right key, using linear probing
 	while (true) {
-		int e = m_vTable[h];
-		if (e == -1) {
-			if (create) {
-				// Insert a new key and return the new id
-				short *pKeys = m_keys.ptr<short>(m_filled);
-				const short *pKey = key.ptr<short>(0);
-				for (size_t i = 0; i < m_key_size; i++)
-					pKeys[i] = pKey[i];			// TODO
-				
-				m_vTable[h] = static_cast<int>(m_filled);
-				m_filled++;
-				return m_vTable[h];
-			}
-			else
-				return -1;
-		}
+		int value = m_vTable[idx];
+		if (value == -1) return value;
 		
 		// Check if the current key is The One
 		bool good = true;
 		
-		short *pKeys = m_keys.ptr<short>(e);
+		const short *pKeys = m_keys.ptr<short>(value);
 		const short *pKey = key.ptr<short>(0);
 		for (size_t i = 0; i < m_key_size && good; i++)
 			if (pKeys[i] != pKey[i])
 				good = false;
 		
-		if (good) return e;
+		if (good) return value;
 		
 		// Continue searching
-		h++;
-		if (h == m_capacity) h = 0;
+		idx++;
+		if (idx == m_capacity) idx = 0;
+	}
+}
+
+void CHashTable::insert(const Mat &key, int value)
+{
+	if (2 * m_filled >= m_capacity) grow();
+
+	// Get the hash value
+	size_t idx = index(key(Rect(0, 0, m_key_size, 1)), m_capacity);
+
+	while (true) {
+		int value = m_vTable[idx];
+		if (value == -1) {
+			// Insert a new key and return the new id
+			key(Rect(0, 0, m_key_size, 1)).copyTo(m_keys.row(m_filled));
+
+			m_vTable[idx] = static_cast<int>(m_filled);
+			m_filled++;
+			return;
+		}
+		// Continue searching empty cell
+		idx++;
+		if (idx == m_capacity) idx = 0;
 	}
 }
 
@@ -75,21 +100,11 @@ void CHashTable::grow(void)
 
 	// Reinsert each element
 	for (int i = 0; i < old_capacity; i++) {
-		int e = old_table[i];
-		if (e >= 0) {
-			size_t h = hash(getKey(e)) % m_capacity;
-			for (; m_vTable[h] >= 0; h = h < m_capacity - 1 ? h + 1 : 0);
-			m_vTable[h] = e;
+		int value = old_table[i];
+		if (value >= 0) {
+			size_t idx = index(getKey(value), m_capacity);
+			for (; m_vTable[idx] >= 0; idx = idx < m_capacity - 1 ? idx + 1 : 0);
+			m_vTable[idx] = value;
 		}
 	} // i
-}
-
-size_t CHashTable::hash(const Mat &key)
-{
-	size_t res = 0;
-	for (int i = 0; i < m_key_size; i++) {
-		res += key.at<short>(0, i);		
-		res *= 1664525;
-	}
-	return res;
 }

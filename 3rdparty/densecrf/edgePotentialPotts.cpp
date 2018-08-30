@@ -17,7 +17,7 @@ CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float w, const Sem
 	m_pLattice->compute(m_norm, m_norm);
 	if (per_pixel_normalization)
         for (int n = 0; n < m_norm.rows; n++)
-			m_norm.at<float>(n, 0) = 1.f / (m_norm.at<float>(n, 0) + FLT_EPSILON);
+			m_norm.at<float>(n, 0) = 1.0f / (m_norm.at<float>(n, 0) + FLT_EPSILON);
 	else {
         float mean_norm = static_cast<float>(sum(m_norm)[0]);
 		mean_norm = m_norm.rows / mean_norm;
