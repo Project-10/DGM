@@ -71,16 +71,13 @@ namespace DirectGraphicalModels
 		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
 	
-	protected:
-		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]
-		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials and 2 features[state]
-
-
-	private:
-		Mat			  m_prior;				///< The class prior probability vector
-
-
 	private:
 		void				  calculatePrior(void);
+
+
+	private:
+		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]
+		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials and 2 features[state]
+		Mat			  m_prior;				///< The class prior probability vector
 	};
 }

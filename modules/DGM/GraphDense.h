@@ -25,7 +25,7 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphDense(void) {}
 
 		// CGraph
-		DllExport virtual void		reset(void) { m_nodePotentials.release(); }
+		DllExport virtual void		reset(void) { m_nodePotentials.release(); m_vpEdgeModels.clear(); }
 		
 		DllExport virtual size_t	addNode(void);
 		DllExport virtual size_t	addNode(const Mat &pot);
@@ -43,7 +43,7 @@ namespace DirectGraphicalModels
 		* @brief Adds an edge model
 		* @param pEdgeModel Poiter to an dense edge model
 		*/
-		DllExport void				setEdgeModel(CEdgePotential *pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
+		DllExport void				addEdgeModel(CEdgePotential *pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
 
 
 	private:
@@ -53,7 +53,7 @@ namespace DirectGraphicalModels
 		*/
 		Mat												m_nodePotentials;		
 		/**
-		* @todo Add documentation here
+		* The set of edge models
 		*/
 		std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;	
 	};

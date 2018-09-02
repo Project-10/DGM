@@ -27,8 +27,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		DllExport virtual void	saveFile(FILE *pFile) const;
-		DllExport virtual void	loadFile(FILE *pFile);
+		DllExport virtual void		saveFile(FILE *pFile) const;
+		DllExport virtual void		loadFile(FILE *pFile);
 
 	
 	private:

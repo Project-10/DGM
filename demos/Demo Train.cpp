@@ -52,14 +52,15 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-	CTrainNode		* nodeTrainer	= NULL; 
-	CTrainEdge		* edgeTrainer	= NULL;
-	CGraphExt		* graph			= new CGraphExt(nStates);
-	CInfer			* decoder		= new CInferLBP(graph);
-	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
-	CCMat			* confMat		= new CCMat(nStates);
-	float			  params[]		= {100, 0.01f};						
-	size_t			  params_len;
+	CTrainNode			* nodeTrainer	= NULL; 
+	CTrainEdge			* edgeTrainer	= NULL;
+	CGraphPairwise		* graph			= new CGraphPairwise(nStates);
+	CGraphPairwiseExt	* graphExt		= new CGraphPairwiseExt(*graph);
+	CInfer				* decoder		= new CInferLBP(graph);
+	CMarker				* marker		= new CMarker(DEF_PALETTE_6);
+	CCMat				* confMat		= new CCMat(nStates);
+	float				  params[]		= {100, 0.01f};						
+	size_t				  params_len;
 
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");
-	graph->build(imgSize);
+	graphExt->build(imgSize);
 	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
@@ -125,8 +126,8 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graph->setNodes(nodePotentials);									// Filling-in the graph nodes
-	graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
+	graphExt->setNodes(nodePotentials);									// Filling-in the graph nodes
+	graphExt->fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================

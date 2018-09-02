@@ -52,7 +52,7 @@ source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
 											"Graph3.cpp"
 											"GraphBoost.h"
 											"GraphBoost.cpp"
-											"GraphExt.h"
+											"GraphPairwiseExt.h"
 											"GraphLayered.h"
 											"GraphLayered.cpp"
 									)

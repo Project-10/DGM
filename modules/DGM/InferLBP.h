@@ -25,10 +25,12 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		DllExport virtual void calculateMessages(unsigned int nIt);
+		DllExport virtual void	calculateMessages(unsigned int nIt);
+		void					setMaxSum(bool maxSum) { m_maxSum = maxSum; }
+		bool					isMaxSum(void) const { return m_maxSum; }
 
 
-	protected:
+	private:
 		bool m_maxSum;			///< Flag indicating weather the max-sum LBP (Viterbi algorithm) should be applied
 	};
 

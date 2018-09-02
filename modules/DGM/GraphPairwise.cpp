@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 	void CGraphPairwise::setNode(size_t node, const Mat &pot)
 	{
 		DGM_ASSERT_MSG(node < m_vNodes.size(), "Node %zu is out of range %zu", node, m_vNodes.size());
-		DGM_ASSERT_MSG((pot.cols == 1) && (pot.rows == m_nStates), "Potential size (%d x %d) does not match (%d x %d)", pot.cols, pot.rows, 1, m_nStates);
+		DGM_ASSERT_MSG((pot.cols == 1) && (pot.rows == getNumStates()), "Potential size (%d x %d) does not match (%d x %d)", pot.cols, pot.rows, 1, getNumStates());
 
 		if (!m_vNodes[node]->Pot.empty()) m_vNodes[node]->Pot.release();
 		pot.copyTo(m_vNodes[node]->Pot);

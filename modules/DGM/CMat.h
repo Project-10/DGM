@@ -80,7 +80,7 @@ namespace DirectGraphicalModels
 //		DllExport void	getAccuracy(int shiftBase, double *base, double *occlusion, double *overall);
 
 
-	protected:
+	private:
 		CPriorEdge	* m_pConfusionMatrix;		///< COnfusion matrix container
 
 	//	DllExport void	saveFile(FILE *pFile) const {CPriorEdge::saveFile(pFile);} 

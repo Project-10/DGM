@@ -6,26 +6,23 @@
 
 namespace DirectGraphicalModels 
 {
-	class CTrainNode;
-	class CTrainEdge;
-	
-	// ================================ Extended Graph Class ================================
+	// ================================ Extended Pairwise Graph Class ================================
 	/**
 	* @brief Extended Pairwise graph class
 	* @ingroup moduleGraph
 	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphExt : public CGraphLayered
+	class CGraphPairwiseExt : public CGraphLayered
 	{
 	public:
 		/**
 		* @brief Constructor
-		* @param nStates The number of States (classes)
+		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphExt(byte nStates, byte gType = GRAPH_EDGES_GRID) : CGraphLayered(nStates, 1, gType) {}
-		DllExport virtual ~CGraphExt(void) {}
+		DllExport CGraphPairwiseExt(CGraphPairwise & graph, byte gType = GRAPH_EDGES_GRID) : CGraphLayered(graph, 1, gType) {}
+		DllExport virtual ~CGraphPairwiseExt(void) {}
 
 		/**
 		* @brief Fills the graph nodes with potentials

@@ -1,10 +1,10 @@
 #include "TrainEdge.h"
-#include "GraphExt.h"
+#include "GraphPairwiseExt.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
 {
-	void CTrainEdge::addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphExt *pGraph)
+	void CTrainEdge::addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(featureVectors.size() == gt.size(), "The size of <featureVectors> does not correspond to the size of <gt>");
@@ -13,7 +13,7 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(featureVectors.channels() == m_nFeatures,
 			"Number of features in the <featureVectors> (%d) does not correspond to the specified (%d)", featureVectors.channels(), m_nFeatures);
 
-		const byte		graphType = pGraph->getType();
+		const byte		graphType = graph.getType();
 		const word		nFeatures = featureVectors.channels();
 
 		Mat featureVector1(nFeatures, 1, CV_8UC1);
@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 		} // y
 	}
 
-	void CTrainEdge::addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphExt *pGraph)
+	void CTrainEdge::addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(featureVectors[0].size() == gt.size(), "The size of <featureVectors> does not correspond to the size of <gt>");
@@ -63,7 +63,7 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(featureVectors.size() == m_nFeatures,
 			"Number of features in the <featureVectors> (%zu) does not correspond to the specified (%d)", featureVectors.size(), m_nFeatures);
 
-		const byte		graphType = pGraph->getType();
+		const byte		graphType = graph.getType();
 		const word		nFeatures = static_cast<word>(featureVectors.size());
 
 		Mat featureVector1(nFeatures, 1, CV_8UC1);

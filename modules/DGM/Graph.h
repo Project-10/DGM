@@ -79,7 +79,8 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport byte				getNumStates(void) const { return m_nStates; }
 
-	protected:
+	
+	private:
 		byte m_nStates;		///< The number of states (classes)
 
 

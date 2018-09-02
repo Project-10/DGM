@@ -7,7 +7,7 @@ namespace DirectGraphicalModels
 	size_t CGraphDense::addNode(void)
 	{
 		size_t res = getNumNodes();
-		m_nodePotentials.push_back(Mat(1, m_nStates, CV_32FC1, Scalar(1.0f / m_nStates)));
+		m_nodePotentials.push_back(Mat(1, getNumStates(), CV_32FC1, Scalar(1.0f / getNumStates())));
 		return res;
 	}
 	
@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 	void CGraphDense::setNode(size_t node, const Mat &pot)
 	{
 		DGM_ASSERT_MSG(node < getNumNodes(), "Node %zu is out of range %zu", node, getNumNodes());
-		DGM_ASSERT_MSG((pot.cols == 1) && (pot.rows == m_nStates), "Potential size (%d x %d) does not match (%d x %d)", pot.cols, pot.rows, 1, m_nStates);
+		DGM_ASSERT_MSG((pot.cols == 1) && (pot.rows == getNumStates()), "Potential size (%d x %d) does not match (%d x %d)", pot.cols, pot.rows, 1, getNumStates());
 		
 		m_nodePotentials.row(static_cast<int>(node)) = pot.t();
 	}
@@ -36,19 +36,19 @@ namespace DirectGraphicalModels
 	void CGraphDense::setNodes(const Mat &pots, size_t start_node)
 	{
 		DGM_ASSERT_MSG(start_node + pots.rows < getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
-		DGM_ASSERT_MSG(pots.cols == m_nStates, "Potential size (%d) does not match (%d)", pots.cols, m_nStates);
+		DGM_ASSERT_MSG(pots.cols == getNumStates(), "Potential size (%d) does not match (%d)", pots.cols, getNumStates());
 		
-		pots.copyTo(m_nodePotentials(Rect(0, static_cast<int>(start_node), m_nStates, pots.rows)));
+		pots.copyTo(m_nodePotentials(Rect(0, static_cast<int>(start_node), getNumStates(), pots.rows)));
 	}
 
 	// Return node potential vector 
 	void CGraphDense::getNode(size_t node, Mat &pot) const
 	{
 		DGM_ASSERT_MSG(node < getNumNodes(), "Node %zu is out of range %zu", node, getNumNodes());
-		if (pot.empty() || pot.cols != 1 || pot.rows != m_nStates) pot = Mat(m_nStates, 1, CV_32FC1);
+		if (pot.empty() || pot.cols != 1 || pot.rows != getNumStates()) pot = Mat(getNumStates(), 1, CV_32FC1);
 		
 		const float *pPot = m_nodePotentials.ptr<float>(static_cast<int>(node));
-		for (byte s = 0; s < m_nStates; s++)
+		for (byte s = 0; s < getNumStates(); s++)
 			pot.at<float>(s, 0) = pPot[s];
 	}
 }

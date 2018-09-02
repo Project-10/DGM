@@ -45,7 +45,7 @@
 #include "DGM/IGraphPairwise.h"
 #include "DGM/GraphPairwise.h"
 #include "DGM/GraphWeiss.h"
-#include "DGM/GraphExt.h"
+#include "DGM/GraphPairwiseExt.h"
 #include "DGM/Graph3.h"
 
 #include "DGM/Infer.h"

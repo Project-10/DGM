@@ -82,8 +82,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		virtual void	saveFile(FILE *pFile) const {} 
-		virtual void	loadFile(FILE *pFile) {} 		
+		DllExport virtual void	saveFile(FILE *pFile) const {} 
+		DllExport virtual void	loadFile(FILE *pFile) {} 		
 		/**
 		* @brief Returns the data-dependent edge potentials
 		* @details This function returns edge potential matrix, which elements are obrained from the unary potential vector: 
@@ -97,7 +97,7 @@ namespace DirectGraphicalModels
 		* @param params_len The length of the \b params parameter. It must be equal to \a 1.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const 
+		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const 
 		{
 			const float nodePotWeight = 1.0f;
 			m_pConcatenator->concatenate(featureVector1, featureVector2, const_cast<Mat &>(m_featureVector));
@@ -120,13 +120,10 @@ namespace DirectGraphicalModels
 		}
 	
 
-	protected:
+	private:
 		CPriorNode				* m_pPrior;				///< %Node prior poobability
 		CTrainNode				* m_pTrainer;			///< %Node trainer
 		CFeaturesConcatenator	* m_pConcatenator;		///< Feature concatenator
-
-
-	private:
-		Mat						  m_featureVector;	
+		Mat						  m_featureVector;		///< Feature vector
 	};
 }

@@ -44,14 +44,14 @@ namespace DirectGraphicalModels
 		* implemented in derived classes. 
 		* @returns 1D (nStates) for node, 2D (nStates x nStates) for edge or 3D (nStates x nStates x nStates) for triplet Mat of type CV_32FC1 with prior probabilies.		
 		*/
-		DllExport virtual Mat	calculatePrior(void) const = 0;
+		DllExport virtual Mat		calculatePrior(void) const = 0;
 
 
 	protected:
 		Mat						m_histogramPrior;		///< The class cooccurance histogram
-
-
-	private:
-		RandomModelType			m_type;
+		
+	
+	private:		
+		RandomModelType			m_type;					///< Type of the random model (@ref RandomModelType)
 	};
 }

@@ -140,7 +140,7 @@ namespace DirectGraphicalModels
 		} // s
 	}
 
-	inline void CTrainNodeNaiveBayes::calculatePrior(void)
+	void CTrainNodeNaiveBayes::calculatePrior(void)
 	{
 		if (!m_prior.empty()) m_prior.release();
 		m_prior = getPrior(FLT_MAX);

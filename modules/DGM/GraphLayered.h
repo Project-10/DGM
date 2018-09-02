@@ -2,13 +2,14 @@
 // Written by Sergey Kosov in 2016 for Project X
 #pragma once
 
-#include "GraphPairwise.h"
+#include "types.h"
 
 namespace DirectGraphicalModels
 {
-	class CTrainNode;
+	class CGraphPairwise;
 	class CTrainEdge;
 	class CTrainLink;
+
 
 	/**
 	* @brief Graph types
@@ -28,16 +29,16 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphLayered : public CGraphPairwise
+	class CGraphLayered
 	{
 	public:
 		/**
 		* @brief Constructor
-		* @param nStates The number of States (classes)
+		* @param graph The graph
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(byte nStates, word nLayers, byte gType = GRAPH_EDGES_GRID) : CGraphPairwise(nStates), m_nLayers(nLayers), m_gType(gType), m_size(cvSize(0, 0)) {}
+		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cvSize(0, 0)) {}
 		DllExport virtual ~CGraphLayered(void) {}
 
 		/**
@@ -118,9 +119,10 @@ namespace DirectGraphicalModels
 		DllExport CvSize getSize(void) const { return m_size; }
 
 
-	protected:
-		word	m_nLayers;			///< Number of layers
-		byte	m_gType;			///< Graph type (Ref. @ref graphType)
-		CvSize	m_size;				///< Size of the graph
+	private:
+		CGraphPairwise	& m_graph;			///< The graph
+		word			  m_nLayers;		///< Number of layers
+		byte			  m_gType;			///< Graph type (Ref. @ref graphType)
+		CvSize			  m_size;			///< Size of the graph
 	};
 }

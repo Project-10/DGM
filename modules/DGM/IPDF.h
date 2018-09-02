@@ -49,7 +49,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport bool				isEstimated(void) { return m_nPoints != 0; }
 
-
+	
 	protected:
 		long	m_nPoints;				///< The number of samples, added with the addPoint() function
 	};

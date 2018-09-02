@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CGraphExt;
+	class CGraphPairwiseExt;
 	
 	// ============================= Edge Train Class =============================
 	/**
@@ -35,7 +35,7 @@ namespace DirectGraphicalModels
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
 		*/
-		DllExport void			addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphExt *pGraph);
+		DllExport void			addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
@@ -45,7 +45,7 @@ namespace DirectGraphicalModels
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
 		*/
-		DllExport void			addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphExt *pGraph);
+		DllExport void			addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
 		/**
 		* @brief Adds a pair of feature vectors
 		* @details Used to add \b featureVector1 and \b featureVector2, corresponding to the ground-truth states (classes) \b gt1 and \b gt2 for training.

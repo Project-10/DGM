@@ -87,8 +87,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		virtual void	saveFile(FILE *pFile) const {}
-		virtual void	loadFile(FILE *pFile) {}
+		DllExport virtual void	saveFile(FILE *pFile) const {}
+		DllExport virtual void	loadFile(FILE *pFile) {}
 		/**
 		* @brief Returns the data-dependent link (inter-layer edge) potentials
 		* @details This function returns edge potential matrix, which elements are obrained from the unary potential vector:
@@ -117,8 +117,10 @@ namespace DirectGraphicalModels
 			return res;
 		}
 
+	//	CPriorNode * getPrior(void) const { return m_pPrior; }
+	//	CTrainNode * getTrainer(void) const { return m_pTrainer; }
 
-	protected:
+	private:
 		CPriorNode				* m_pPrior;				///< %Node prior poobability
 		CTrainNode				* m_pTrainer;			///< %Node trainer
 	};

@@ -19,7 +19,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param pGraph The graph
 		*/			
-		DllExport CInferViterbi(CGraphPairwise *pGraph) : CInferLBP(pGraph) { m_maxSum = true; };
+		DllExport CInferViterbi(CGraphPairwise *pGraph) : CInferLBP(pGraph) { setMaxSum(true); }
 		DllExport virtual ~CInferViterbi(void) {};
 	};
 

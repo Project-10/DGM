@@ -66,7 +66,7 @@ namespace DirectGraphicalModels
 		DllExport Mat			calculatePrior(void) const;
 
 
-	protected:
+	private:
 		ePotNormApproach		m_normApp;		///< Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
 	};
 }
