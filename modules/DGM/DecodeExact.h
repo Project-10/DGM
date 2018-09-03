@@ -19,9 +19,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/		
-		DllExport CDecodeExact(CGraphPairwise *pGraph) : CDecode(pGraph) {}
+		DllExport CDecodeExact(CGraphPairwise &graph) : CDecode(graph) {}
 		DllExport virtual ~CDecodeExact(void) {}
 
 		/**
@@ -35,10 +35,10 @@ namespace DirectGraphicalModels
 
 	protected:
 		/**
-		* @brief Returns the pointer to the graph
-		* @return The pointer to the graph
+		* @brief Returns the graph
+		* @return The graph
 		*/
-		CGraphPairwise *getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise *>(CDecode::getGraph()); }
+		CGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise &>(CDecode::getGraph()); }
 		/**
 		* @brief Sets the \a state according to the configuration index \a configuration
 		* @details This function is used in exact inference / decoding

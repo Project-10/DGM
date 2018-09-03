@@ -3,7 +3,7 @@
 const byte   nStates = 2;						// {false, true}
 const size_t nNodes  = 4;						// four students
 
-void CExact::fillGraph(CGraphPairwise *graph)
+void CExact::fillGraph(CGraphPairwise &graph)
 {
 	Mat nodePot(nStates, 1, CV_32FC1);			// node Potential (column-vector)
 	Mat edgePot(nStates, nStates, CV_32FC1);	// edge Potential (matrix)
@@ -18,7 +18,7 @@ void CExact::fillGraph(CGraphPairwise *graph)
 			nodePot.at<float>(0, 0) = 0.75f;	// nPot = (0.75; 0.25)^T
 			nodePot.at<float>(1, 0) = 0.25f;
 		}
-		graph->setNode(i, nodePot);
+		graph.setNode(i, nodePot);
 	}
 
 	// Defying the edge potential matrix
@@ -27,15 +27,15 @@ void CExact::fillGraph(CGraphPairwise *graph)
 
 	// Setting the edges potentials
 	for (size_t i = 0; i < nNodes - 1; i++)
-		graph->setArc(i, i + 1, edgePot);
+		graph.setArc(i, i + 1, edgePot);
 }
 
-void CExact::printMarginals(const CGraphPairwise *graph, const std::string &str)
+void CExact::printMarginals(const CGraphPairwise &graph, const std::string &str)
 {
 	Mat		 nodePot;
 	printf("%s:\t", str.c_str());
 	for (int i = 0; i < nNodes; i++) {
-		graph->getNode(i, nodePot);
+		graph.getNode(i, nodePot);
 		printf((i < nNodes - 1) ? " %.2f\t%.2f\t|" : " %.2f\t%.2f\n", nodePot.at<float>(0, 0), nodePot.at<float>(1, 0));
 	}
 }
@@ -43,7 +43,7 @@ void CExact::printMarginals(const CGraphPairwise *graph, const std::string &str)
 void CExact::Main(void)
 {
 	size_t	  i;
-	CGraphPairwise	* graph				= new CGraphPairwise(nStates);
+	CGraphPairwise	graph(nStates);
 	CDecode * decoderExcact		= new CDecodeExact(graph);
 	CInfer  * infererExact		= new CInferExact(graph);
 	CInfer  * infererChain		= new CInferChain(graph);
@@ -52,8 +52,8 @@ void CExact::Main(void)
 	CInfer  * infererViterbi	= new CInferViterbi(graph);
 
 	// Building the graph
-	for (i = 0; i < nNodes; i++)		graph->addNode();
-	for (i = 0; i < nNodes - 1; i++)	graph->addArc(i, i + 1);
+	for (i = 0; i < nNodes; i++)		graph.addNode();
+	for (i = 0; i < nNodes - 1; i++)	graph.addArc(i, i + 1);
 
 	printf("\t\t\t\tINFERENCE\n\t");
 	for (i = 0; i < nNodes - 1; i++) printf("   Node %zd\t|", i); printf("   Node %zd\n\t", i);
@@ -97,7 +97,6 @@ void CExact::Main(void)
 	printf("LBP inferer:\t");	for (i = 0; i < nNodes; i++) printf(decoding_infererLBP[i]     ? "true\t" : "false\t");	printf("\n");
 	printf("Vtrbi inferer:\t");	for (i = 0; i < nNodes; i++) printf(decoding_infererViterbi[i] ? "true\t" : "false\t"); printf("\n");
 
-	delete graph;
 	delete decoderExcact;
 	delete infererExact;
 	delete infererChain;

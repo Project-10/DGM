@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	int		  width		= img.cols;
 	int		  height	= img.rows;
 	
-	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
+	CGraphPairwise	graph(nStates);
 	CInfer  * decoder	= new CInferViterbi(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);						// node Potential (column-vector)
@@ -45,11 +45,11 @@ int main(int argc, char *argv[])
 			float p = 1.0f - static_cast<float>(noise.at<byte>(y,x)) / 255.0f;
 			nodePot.at<float>(0, 0) = p;
 			nodePot.at<float>(1, 0) = 1.0f - p;
-			size_t idx = graph->addNode(nodePot);
-			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (y > 0) graph->addArc(idx, idx - width, edgePot);
-			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);	
-			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);											
+			size_t idx = graph.addNode(nodePot);
+			if (x > 0) graph.addArc(idx, idx - 1, edgePot);
+			if (y > 0) graph.addArc(idx, idx - width, edgePot);
+			if ((x > 0) && (y > 0)) graph.addArc(idx, idx - width - 1, edgePot);	
+			if ((x < width - 1) && (y > 0)) graph.addArc(idx, idx - width + 1, edgePot);											
 		} // x
 
 	// =============================== Decoding ===============================

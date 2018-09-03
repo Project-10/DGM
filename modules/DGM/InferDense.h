@@ -18,9 +18,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/
-		DllExport CInferDense(CGraphDense *pGraph) : CInfer(pGraph) {}
+		DllExport CInferDense(CGraphDense &graph) : CInfer(graph) {}
 		DllExport virtual ~CInferDense(void) {}
 	
 		DllExport virtual void	infer(unsigned int nIt = 1);
@@ -28,9 +28,9 @@ namespace DirectGraphicalModels
 
 	protected:
 		/**
-		* @brief Returns the pointer to the graph
-		* @return The pointer to the graph
+		* @brief Returns the graph
+		* @return The graph
 		*/
-		CGraphDense * getGraphDense(void) const { return dynamic_cast<CGraphDense *>(getGraph()); }
+		CGraphDense & getGraphDense(void) const { return dynamic_cast<CGraphDense &>(getGraph()); }
 	};
 }

@@ -6,14 +6,14 @@ namespace DirectGraphicalModels
 {
 void CMessagePassing::infer(unsigned int nIt)
 {
-	const byte   nStates = getGraph()->getNumStates();
+	const byte   nStates = getGraph().getNumStates();
 
 	// ====================================== Initialization ======================================			
 	createMessages(); 
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
+	concurrency::parallel_for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #else
-	std::for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
+	std::for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #endif
 		std::fill(edge->msg, edge->msg + nStates, 1.0f / nStates);							// msg[] = 1 / nStates;
 		std::fill(edge->msg_temp, edge->msg_temp + nStates, 1.0f / nStates);					// msg_temp[] = 1 / nStates;
@@ -24,9 +24,9 @@ void CMessagePassing::infer(unsigned int nIt)
 
 	// =================================== Calculating beliefs ===================================	
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise()->m_vNodes.begin(), getGraphPairwise()->m_vNodes.end(), [&, nStates](ptr_node_t &node) {
+	concurrency::parallel_for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&, nStates](ptr_node_t &node) {
 #else
-	std::for_each(getGraphPairwise()->m_vNodes.begin(), getGraphPairwise()->m_vNodes.end(), [&,nStates](ptr_node_t &node) {
+	std::for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&,nStates](ptr_node_t &node) {
 #endif
 		size_t nFromEdges = node->from.size();
 		// Don't understand the normalization step, replaced with another version.
@@ -55,7 +55,7 @@ void CMessagePassing::infer(unsigned int nIt)
 
 
 		for (size_t e_f = 0; e_f < nFromEdges; e_f++) {
-			Edge *edge_from = getGraphPairwise()->m_vEdges[node->from[e_f]].get();	// current incoming edge
+			Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();	// current incoming edge
 
 			float epsilon = FLT_EPSILON;
 			for (byte s = 0; s < nStates; s++) { 		// states
@@ -82,15 +82,15 @@ void CMessagePassing::infer(unsigned int nIt)
 void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
 {
 	byte		  s;													// state indexes
-	Node		* node = getGraphPairwise()->m_vNodes[edge_to->node1].get();		// source node
+	Node		* node = getGraphPairwise().m_vNodes[edge_to->node1].get();		// source node
 	size_t		  nFromEdges = node->from.size();						// number of incoming eges
-	const byte	  nStates = getGraph()->getNumStates();					// number of states
+	const byte	  nStates = getGraph().getNumStates();					// number of states
 
 	// Compute temp = product of all incoming msgs except e_t
 	for (s = 0; s < nStates; s++) temp[s] = node->Pot.at<float>(s, 0);		// temp = node.Pot
 
 	for (size_t e_f = 0; e_f < nFromEdges; e_f++) {							// incoming edges
-		Edge *edge_from = getGraphPairwise()->m_vEdges[node->from[e_f]].get();		// current incoming edge
+		Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();		// current incoming edge
 		if (edge_from->node1 != edge_to->node2)
 			for (s = 0; s < nStates; s++)
 				temp[s] *= edge_from->msg[s];								// temp = temp * msg
@@ -112,11 +112,11 @@ void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, 
 
 void CMessagePassing::createMessages(void)
 {
-	const byte nStates = getGraph()->getNumStates();
+	const byte nStates = getGraph().getNumStates();
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
+	concurrency::parallel_for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #else
-	std::for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [nStates](ptr_edge_t &edge) {
+	std::for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
 #endif
 		if (!edge->msg) edge->msg = new float[nStates];
 		DGM_ASSERT_MSG(edge->msg, "Out of Memory");
@@ -129,9 +129,9 @@ void CMessagePassing::createMessages(void)
 void CMessagePassing::deleteMessages(void)
 {
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [](ptr_edge_t &edge) {
+	concurrency::parallel_for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [](ptr_edge_t &edge) {
 #else
-	std::for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [](ptr_edge_t &edge) {
+	std::for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [](ptr_edge_t &edge) {
 #endif
 		if (edge->msg) {
 			delete[] edge->msg;
@@ -147,9 +147,9 @@ void CMessagePassing::deleteMessages(void)
 void CMessagePassing::swapMessages(void)
 {
 #ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [](ptr_edge_t &edge) { edge->msg_swap(); });
+	concurrency::parallel_for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [](ptr_edge_t &edge) { edge->msg_swap(); });
 #else
-	std::for_each(getGraphPairwise()->m_vEdges.begin(), getGraphPairwise()->m_vEdges.end(), [](ptr_edge_t &edge) { edge->msg_swap(); });
+	std::for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [](ptr_edge_t &edge) { edge->msg_swap(); });
 #endif	
 }
 

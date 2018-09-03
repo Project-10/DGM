@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
 		* @param graphSize The size of the graph
 		*/
-		DllExport virtual void build(CvSize graphSize);
+		DllExport virtual void addNodes(CvSize graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details

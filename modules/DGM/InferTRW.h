@@ -21,9 +21,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/
-		DllExport CInferTRW(CGraphPairwise *pGraph) : CMessagePassing(pGraph) {}
+		DllExport CInferTRW(CGraphPairwise &graph) : CMessagePassing(graph) {}
 		DllExport virtual ~CInferTRW(void) {}
 
 		DllExport virtual void infer(unsigned int nIt = 1);

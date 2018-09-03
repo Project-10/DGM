@@ -9,7 +9,7 @@
 
 namespace DirectGraphicalModels
 {
-	void CGraphLayered::build(CvSize graphSize)
+	void CGraphLayered::addNodes(CvSize graphSize)
 	{
 		if (m_graph.getNumNodes() != 0) m_graph.reset();
 		m_size = graphSize;

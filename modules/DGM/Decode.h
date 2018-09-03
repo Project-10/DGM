@@ -19,9 +19,9 @@ namespace DirectGraphicalModels
 	protected:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/
-		DllExport CDecode(CGraph *pGraph) : m_pGraph(pGraph) {};
+		DllExport CDecode(CGraph &graph) : m_graph(graph) {};
 		
 
 	public:
@@ -36,18 +36,18 @@ namespace DirectGraphicalModels
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) const { return decode(m_pGraph, lossMatrix); }
+		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) const { return decode(m_graph, lossMatrix); }
 		/**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
 		* based on marginal probabilities in graph nodes.
-		* @param pGraph The graph
+		* @param graph The graph
 		* @param lossMatrix (optional) The loss matrix \f$L\f$ (size: nStates x nStates; type: CV_32FC1). 
 		* It must be a quadratic zero-diagonal matrix, whith all non-diagonal elements \f$L_{i,j} > 0, \forall i\neq j\f$.
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport static vec_byte_t	decode(const CGraph *pGraph, Mat &lossMatrix = EmptyMat);
+		DllExport static vec_byte_t	decode(const CGraph &graph, Mat &lossMatrix = EmptyMat);
 		/**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)
@@ -64,16 +64,10 @@ namespace DirectGraphicalModels
 		* @brief Returns the pointer to the graph
 		* @return The pointer to the graph
 		*/
-		CGraph * getGraph(void) const { return m_pGraph; }
+		CGraph & getGraph(void) const { return m_graph; }
 
 
 	private:
-		CGraph * m_pGraph;		///< Pointer to the graph
-
-
-	private:
-		// Copy semantics are disabled
-		CDecode(const CDecode &rhs) {}
-		const CDecode & operator= (const CDecode & rhs) {return *this;}
+		CGraph & m_graph;		///< Pointer to the graph
 	};
 }

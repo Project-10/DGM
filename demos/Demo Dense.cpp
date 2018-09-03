@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 
 	CGraphDense graph(nStates);
 	CGraphDenseExt graphExt(graph);
-	CInferDense decoder(&graph);
+	CInferDense decoder(graph);
 	
 	
 	

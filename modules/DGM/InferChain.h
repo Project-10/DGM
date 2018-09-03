@@ -18,9 +18,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/
-		DllExport CInferChain(CGraphPairwise * pGraph) : CMessagePassing(pGraph) {}
+		DllExport CInferChain(CGraphPairwise & graph) : CMessagePassing(graph) {}
 		DllExport virtual ~CInferChain(void) {}
 
 

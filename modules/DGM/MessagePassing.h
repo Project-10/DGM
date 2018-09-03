@@ -20,9 +20,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/
-		DllExport CMessagePassing(CGraphPairwise * pGraph) : CInfer(pGraph) {}
+		DllExport CMessagePassing(CGraphPairwise &graph) : CInfer(graph) {}
 		DllExport virtual ~CMessagePassing(void) {}
 		
 		DllExport virtual void	  infer(unsigned int nIt = 1);
@@ -30,10 +30,10 @@ namespace DirectGraphicalModels
 
 	protected:
 		/**
-		* @brief Returns the pointer to the graph
-		* @return The pointer to the graph
+		* @brief Returns the graph
+		* @return The graph
 		*/
-		CGraphPairwise * getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise *>(CDecode::getGraph()); }
+		CGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise &>(CDecode::getGraph()); }
 		/**
 		* @brief Calculates messages, associated with the edges of corresponding graphical model
 		* @details > This function may modify Edge::msg and Edge::msg_temp containers of graph edges

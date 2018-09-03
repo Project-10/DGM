@@ -22,7 +22,6 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Constructor
 		* @param graph The graph
-		* @param gType The graph type. (Ref. @ref graphType)
 		*/
 		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
 		DllExport ~CGraphDenseExt(void) {}

@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	CTrainEdge			* edgeTrainer	 = new CTrainEdgePottsCS(nStates, nFeatures);
 	float				  params[]		 = {400, 0.001f};						
 	size_t				  params_len	 = 2;
-	CGraphPairwise				* graph			 = new CGraphPairwise(nStates); 
+	CGraphPairwise		  graph(nStates); 
 	CInfer				* decoder		 = new CInferLBP(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
 	vec_nColor_t		  palette;
@@ -98,17 +98,17 @@ int main(int argc, char *argv[])
 		for (int x = 0; x < width; x++) {
 			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
 			nodePot = nodeTrainer->getNodePotentials(featureVector1, 1.0f);											// node potential
-			size_t idx = graph->addNode(nodePot);
+			size_t idx = graph.addNode(nodePot);
 
 			if (x > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->addArc(idx, idx - 1, edgePot);
+				graph.addArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
 				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->addArc(idx, idx - width, edgePot);
+				graph.addArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
 	} // y
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
 	// Setting up handlers
 	USER_DATA userData;
-	userData.pGraph		= graph;
+	userData.pGraph		= &graph;
 	userData.pMarker	= marker;
 	userData.imgWidth	= width;
 	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);

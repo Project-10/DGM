@@ -66,7 +66,7 @@ void CTree::Main(void)
 {
 	srand(0);
 	CGraphPairwise	*graph = buildTree();					// Returns a tree with default potentials
-	CInfer	*inferer = new CInferTree(graph);
+	CInfer	*inferer = new CInferTree(*graph);
 
 
 	std::vector<size_t>		 vParents, vChilds;

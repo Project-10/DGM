@@ -530,7 +530,7 @@ int main(int argc, char *argv[])
 }
 @endcode
 
-Please note, that in this tutorial we used the Extended Graph class: @ref DirectGraphicalModels::CGraphExt, which is built upon the regular Graph class and 
+Please note, that in this tutorial we used the Extended Graph class: @ref DirectGraphicalModels::CGraphPairwiseExt, which is built upon the regular Graph class and 
 adds wrappers for common DGM operations on rectangular images. Among other wrappers it has one wrapper for graph building (used in the Stage 1) and other 
 wrappers for nodes / edges classification (used in Stage 3).
 */

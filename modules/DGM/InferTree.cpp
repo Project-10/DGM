@@ -5,11 +5,11 @@ namespace DirectGraphicalModels
 {
 void CInferTree::calculateMessages(unsigned int)
 {
-	byte	nStates = getGraph()->getNumStates();
-	size_t	nNodes	= getGraph()->getNumNodes();
+	byte	nStates = getGraph().getNumStates();
+	size_t	nNodes	= getGraph().getNumNodes();
 
 	// ====================================== Initialization ======================================
-	for (ptr_edge_t &edge: getGraphPairwise()->m_vEdges) {
+	for (ptr_edge_t &edge: getGraphPairwise().m_vEdges) {
 		delete[] edge->msg;
 		edge->msg = NULL;
 		edge->suspend = false;
@@ -18,7 +18,7 @@ void CInferTree::calculateMessages(unsigned int)
 	// =================================== Computing messages ===================================	
 	size_t  * nFromEdges = new size_t[nNodes];							// Count number of neighbors
 	std::deque<size_t> nodeQueue;
-	for (ptr_node_t &node: getGraphPairwise()->m_vNodes) {
+	for (ptr_node_t &node: getGraphPairwise().m_vNodes) {
 		nFromEdges[node->id] = node->from.size();						// number of incoming edges
 		if (nFromEdges[node->id] <= 1) nodeQueue.push_back(node->id);	// Add all leafs to the queue
 	}
@@ -31,12 +31,12 @@ void CInferTree::calculateMessages(unsigned int)
 		size_t n = nodeQueue.front();					// n - node with one neighbour
 		nodeQueue.pop_front();
 
-		Node  *node     = getGraphPairwise()->m_vNodes[n].get();	// Node with one neighbour
+		Node  *node     = getGraphPairwise().m_vNodes[n].get();	// Node with one neighbour
 		size_t nToEdges = node->to.size();
 			
 		bool allSuspend = true;
 		for (size_t e_t = 0; e_t < nToEdges; e_t++) {
-			Edge *edge_to = getGraphPairwise()->m_vEdges[node->to[e_t]].get();
+			Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
 			if (!edge_to->suspend) {
 				allSuspend = false;
 				break;
@@ -45,7 +45,7 @@ void CInferTree::calculateMessages(unsigned int)
 
 		if (allSuspend) {	// Now prepare messages for suspending edges
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
-				Edge *edge_to = getGraphPairwise()->m_vEdges[node->to[e_t]].get();
+				Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
 				if (edge_to->msg) continue;
 					
 				calculateMessage(edge_to, temp, edge_to->msg);
@@ -56,7 +56,7 @@ void CInferTree::calculateMessages(unsigned int)
 			}
 		} else {			// Prepare messages for all non-suspending edges	
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
-				Edge * edge_to = getGraphPairwise()->m_vEdges[node->to[e_t]].get();
+				Edge * edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
 				if (edge_to->suspend) continue;
 				if (edge_to->msg)     continue;
 					

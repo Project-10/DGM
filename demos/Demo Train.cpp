@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
 
 	CTrainNode			* nodeTrainer	= NULL; 
 	CTrainEdge			* edgeTrainer	= NULL;
-	CGraphPairwise		* graph			= new CGraphPairwise(nStates);
-	CGraphPairwiseExt	* graphExt		= new CGraphPairwiseExt(*graph);
+	CGraphPairwise		  graph(nStates);
+	CGraphPairwiseExt	  graphExt(graph);
 	CInfer				* decoder		= new CInferLBP(graph);
 	CMarker				* marker		= new CMarker(DEF_PALETTE_6);
 	CCMat				* confMat		= new CCMat(nStates);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");
-	graphExt->build(imgSize);
+	graphExt.addNodes(imgSize);
 	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graphExt->setNodes(nodePotentials);									// Filling-in the graph nodes
-	graphExt->fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
+	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
+	graphExt.fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================

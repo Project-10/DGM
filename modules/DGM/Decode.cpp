@@ -4,16 +4,16 @@
 
 namespace DirectGraphicalModels
 {
-	vec_byte_t CDecode::decode(const CGraph *pGraph, Mat &lossMatrix)
+	vec_byte_t CDecode::decode(const CGraph &graph, Mat &lossMatrix)
 	{
-		size_t		nNodes		= pGraph->getNumNodes();			// number of nodes
+		size_t		nNodes		= graph.getNumNodes();			// number of nodes
 		vec_byte_t	res(nNodes);
 		Mat			pot;
 		bool		ifLossMat	= !lossMatrix.empty();
 
 		// Getting optimal state
 		for (size_t n = 0; n < nNodes; n++) {						// all nodes
-			pGraph->getNode(n, pot);
+			graph.getNode(n, pot);
 			if (ifLossMat) gemm(lossMatrix, pot, 1.0, Mat(), 0.0, pot);
 		
 			Point extremumLoc;

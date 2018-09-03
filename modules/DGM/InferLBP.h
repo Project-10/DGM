@@ -18,9 +18,9 @@ namespace DirectGraphicalModels
 	public:
 		/**
 		* @brief Constructor
-		* @param pGraph The graph
+		* @param graph The graph
 		*/			
-		DllExport CInferLBP(CGraphPairwise *pGraph) : CMessagePassing(pGraph), m_maxSum(false) {}
+		DllExport CInferLBP(CGraphPairwise &graph) : CMessagePassing(graph), m_maxSum(false) {}
 		DllExport virtual ~CInferLBP(void) {}
 
 

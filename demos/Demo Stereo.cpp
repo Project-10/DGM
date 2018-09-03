@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
+	CGraphPairwise graph(nStates);
 	CInfer	* decoder	= new CInferTRW(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
 				nodePot.at<float>(s, 0) = p * p;
 			}
 
-			size_t idx = graph->addNode(nodePot);
-			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (y > 0) graph->addArc(idx, idx - width, edgePot);
+			size_t idx = graph.addNode(nodePot);
+			if (x > 0) graph.addArc(idx, idx - 1, edgePot);
+			if (y > 0) graph.addArc(idx, idx - width, edgePot);
 		} // x
 	} // y
 

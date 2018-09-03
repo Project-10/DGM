@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 		* provided via \b pGraph
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
-		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
+		* @param graph The extended graph, which defines the structure of the graph
 		*/
 		DllExport void			addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
 		/**
@@ -43,7 +43,7 @@ namespace DirectGraphicalModels
 		* provided via \b pGraph
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
-		* @param pGraph Pointer to the extended graph, which defines the structure of the graph
+		* @param graph The extended graph, which defines the structure of the graph
 		*/
 		DllExport void			addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
 		/**

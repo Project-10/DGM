@@ -12,8 +12,8 @@ public:
 
 
 private:
-	void fillGraph(CGraphPairwise *graph);
-    void printMarginals(const CGraphPairwise *graph, const std::string &str);
+	void fillGraph(CGraphPairwise &graph);
+    void printMarginals(const CGraphPairwise &graph, const std::string &str);
 };
 /// @endcond
 

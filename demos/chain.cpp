@@ -33,31 +33,28 @@ void CChain::Main(void)
 {
 	size_t i;
 
-	CGraphPairwise	*graph		= new CGraphPairwise(nStates);
-	CInfer			*inferer	= new CInferChain(graph);
+	CGraphPairwise	graph(nStates);
+	CInferChain		inferer(graph);
 
 	Mat nodePot = getNodePot();
-	graph->addNode(nodePot);				// add the first node
+	graph.addNode(nodePot);				// add the first node
 	nodePot.setTo(1.0f / nStates);			// uniform distribution
 	for (i = 1; i < nNodes; i++)
-		graph->addNode(nodePot);			// add nodes
+		graph.addNode(nodePot);			// add nodes
 
 	Mat edgePot = getEdgePot();
 	for (i = 0; i < nNodes - 1; i++)
-		graph->addArc(i, i + 1, edgePot);	// add arcs
+		graph.addArc(i, i + 1, edgePot);	// add arcs
 
 	// Inference
-	inferer->infer();
+	inferer.infer();
 
 	// Print Out Results
 	printf("Node\t"); for (byte s = 0; s < nStates; s++) printf("State %d\t", s); printf("\n");
 	printf("---------------------------------------------------------------\n");
 	for (i = 0; i < nNodes; i++) {
 		printf("%zd \t", i);
-		graph->getNode(i, nodePot);
+		graph.getNode(i, nodePot);
 		printf("%.4f", nodePot.at<float>(0, 0));  for (byte s = 1; s < nStates; s++) printf("\t%.4f", nodePot.at<float>(s, 0)); printf("\n");
 	}
-
-	delete graph;
-	delete inferer;
 }

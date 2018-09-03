@@ -6,7 +6,7 @@ namespace DirectGraphicalModels
 {
 void CInferExact::infer(unsigned int)
 {
-	size_t		nNodes = getGraphPairwise()->getNumNodes();
+	size_t		nNodes = getGraphPairwise().getNumNodes();
 	vec_byte_t	state(nNodes);				
 	
 	// Calculating the potentials for every possible configuration
@@ -16,10 +16,10 @@ void CInferExact::infer(unsigned int)
 	float Z = std::accumulate(P.cbegin(), P.cend(), 0.0f);
 	
 	// Filling node potentials with marginal probabilities
-	for (ptr_node_t &node : getGraphPairwise()->m_vNodes) node->Pot.setTo(0);
+	for (ptr_node_t &node : getGraphPairwise().m_vNodes) node->Pot.setTo(0);
 	setState(state, 0);
 	for(float &p : P) {
-		for (ptr_node_t &node: getGraphPairwise()->m_vNodes)
+		for (ptr_node_t &node: getGraphPairwise().m_vNodes)
 			node->Pot.at<float>(state[node->id], 0) += p / Z;
 		incState(state);
 	};

@@ -13,9 +13,9 @@ namespace DirectGraphicalModels
 	* @ingroup moduleGraph
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphDense : public CGraph {
+	class CGraphDense : public CGraph 
+	{
 		friend class CInferDense;
-	
 	public:
 		/**
 		* @brief Constructor
