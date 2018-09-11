@@ -51,7 +51,11 @@ namespace DirectGraphicalModels
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
-			// Set the unary potential
+#ifdef DEBUG_PRINT_INFO
+            if (i == 0) printf("\n");
+            if (i % 5 == 0) printf("--- It: %d ---\n", i);
+#endif
+            // Set the unary potential
 			Mat next = pot_log.clone();																			// next_i = log(pot_0)
 
 			// Add up all pairwise potentials

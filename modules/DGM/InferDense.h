@@ -1,4 +1,4 @@
-﻿// Dense inference class interface
+// Dense inference class interface
 // Written by Sergey G. Kosov in 2018 for Project X (insired by Philipp Kraehenbühl Dense CRF implementation) 
 #pragma once
 

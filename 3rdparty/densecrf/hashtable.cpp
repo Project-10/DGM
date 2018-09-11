@@ -1,7 +1,7 @@
 #include "hashtable.h"
 
 // Constructor
-CHashTable::CHashTable(int key_size, int nElements) : m_key_size(key_size), m_capacity(nElements / 24), m_filled(0)
+CHashTable::CHashTable(int key_size, int nElements) : m_capacity(nElements / 24), m_key_size(key_size), m_filled(0)
 {
 	m_vTable = std::vector<int>(m_capacity, -1);
 	m_keys   = Mat(m_capacity / 2 + 10, m_key_size, CV_16SC1);
