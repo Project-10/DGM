@@ -41,7 +41,6 @@ void testGraphBuilding(CGraph *pGraph, byte nStates)
 	ASSERT_EQ(pGraph->getNumEdges(), 0);
 }
 
-
 TEST_F(CTestGraph, graph_dense_building)
 {
 	const byte nStates = static_cast<byte>(random::u(10, 255));

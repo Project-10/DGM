@@ -6,8 +6,10 @@ file(GLOB TESTS_HEADERS	"*.h")
 # Empty name lists them directly under the .vcproj
 source_group("" FILES  ${TESTS_SOURCES} ${TESTS_HEADERS}) 
 source_group("Source Files" FILES "main.cpp" ${GTEST_SOURCES})
-source_group("Source Files\\Tests" FILES "Tests.h" "Tests.cpp" "TestGraph.h" "TestGraph.cpp")
-
+source_group("Source Files\\Tests" FILES "Tests.h" "Tests.cpp" 
+										 "TestGraph.h" "TestGraph.cpp"
+										 "TestInference.h" "TestInference.cpp"
+			)
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/3rdparty/
