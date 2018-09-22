@@ -30,13 +30,12 @@ namespace DirectGraphicalModels
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
 		* based on marginal probabilities in graph nodes.
-		* @param nIt Number of iterations
 		* @param lossMatrix (optional) The loss matrix \f$L\f$ (size: nStates x nStates; type: CV_32FC1). 
 		* It must be a quadratic zero-diagonal matrix, whith all non-diagonal elements \f$L_{i,j} > 0, \forall i\neq j\f$.
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) const { return decode(m_graph, lossMatrix); }
+		DllExport virtual vec_byte_t decode(Mat &lossMatrix = EmptyMat) const { return decode(m_graph, lossMatrix); }
 		/**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
@@ -56,18 +55,18 @@ namespace DirectGraphicalModels
 		* @note Resulting loss matrix will cause no effect when using inside the decode() function. 
 		* This function provides only a default matrix for further user modification before using in the decode() function.
 		*/
-		DllExport static Mat	  getDefaultLossMatrix(byte nStates);
+		DllExport static Mat		getDefaultLossMatrix(byte nStates);
 
 
 	protected:
 		/**
-		* @brief Returns the pointer to the graph
-		* @return The pointer to the graph
+		* @brief Returns the reference to the graph
+		* @return The reference to the graph
 		*/
 		CGraph & getGraph(void) const { return m_graph; }
 
 
 	private:
-		CGraph & m_graph;		///< Pointer to the graph
+		CGraph & m_graph;		///< The graph
 	};
 }

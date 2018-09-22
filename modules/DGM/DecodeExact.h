@@ -26,11 +26,10 @@ namespace DirectGraphicalModels
 
 		/**
 		* @brief Exact decoding
-		* @param nIt is not used
 		* @param lossMatrix is not used
 		* @return The most probable configuration
 		*/
-		DllExport virtual vec_byte_t decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat) const;
+		DllExport virtual vec_byte_t decode(Mat &lossMatrix = EmptyMat) const;
 
 
 	protected:

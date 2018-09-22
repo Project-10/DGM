@@ -4,7 +4,7 @@
 
 namespace DirectGraphicalModels
 {
-	vec_byte_t CDecodeExact::decode(unsigned int, Mat &lossMatrix) const
+	vec_byte_t CDecodeExact::decode(Mat &lossMatrix) const
 	{
 		DGM_IF_WARNING(!lossMatrix.empty(), "The Loss Matrix is not supported by the algorithm.");
 

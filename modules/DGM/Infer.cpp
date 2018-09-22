@@ -1,8 +1,15 @@
 #include "Infer.h"
-#include "GraphPairwise.h"
+#include "Decode.h"
+#include "Graph.h"
 
 namespace DirectGraphicalModels
 {
+	vec_byte_t CInfer::decode(unsigned int nIt, Mat &lossMatrix) 
+	{
+		if (nIt) infer(nIt);
+		return CDecode::decode(getGraph(), lossMatrix);
+	}
+	
 	vec_float_t CInfer::getConfidence(void) const
 	{
 		size_t nNodes = getGraph().getNumNodes();
@@ -22,7 +29,6 @@ namespace DirectGraphicalModels
 	
 		return res;
 	}
-
 
 	vec_float_t CInfer::getPotentials(byte state) const 
 	{
