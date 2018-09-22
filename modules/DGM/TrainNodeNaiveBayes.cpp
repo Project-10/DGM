@@ -7,7 +7,7 @@
 namespace DirectGraphicalModels
 {
 	// Constructor
-	CTrainNodeNaiveBayes::CTrainNodeNaiveBayes(byte nStates, word nFeatures)
+	CTrainNodeBayes::CTrainNodeBayes(byte nStates, word nFeatures)
 		: CBaseRandomModel(nStates)
 		, CTrainNode(nStates, nFeatures)
 		, CPriorNode(nStates)
@@ -29,7 +29,7 @@ namespace DirectGraphicalModels
 	}
 
 	// Destructor
-	CTrainNodeNaiveBayes::~CTrainNodeNaiveBayes(void) 
+	CTrainNodeBayes::~CTrainNodeBayes(void)
 	{
 		if (!m_prior.empty()) m_prior.release();
 		for (byte s = 0; s < m_nStates; s++) {
@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		}
 	}
 
-	void CTrainNodeNaiveBayes::reset(void) 
+	void CTrainNodeBayes::reset(void)
 	{
 		CPriorNode::reset();							// resetting the prior histogram vector
 		if (!m_prior.empty()) m_prior.release();		// resetting the prior
@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
 				m_pPDF2D[s]->reset();
 	}
 
-	void CTrainNodeNaiveBayes::addFeatureVec(const Mat &featureVector, byte gt) 
+	void CTrainNodeBayes::addFeatureVec(const Mat &featureVector, byte gt)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(gt < m_nStates, "The groundtruth value %d is out of range %d", gt, m_nStates);
@@ -81,12 +81,12 @@ namespace DirectGraphicalModels
 		}
 	}
 
-	void CTrainNodeNaiveBayes::train(bool)
+	void CTrainNodeBayes::train(bool)
 	{
 		calculatePrior(); 
 	}
 
-	void CTrainNodeNaiveBayes::smooth(int nIt)
+	void CTrainNodeBayes::smooth(int nIt)
 	{
 		if (typeid(*** m_pPDF) != typeid(CPDFHistogram)) return;
 		for (byte s = 0; s < m_nStates; s++)
@@ -97,7 +97,7 @@ namespace DirectGraphicalModels
 				dynamic_cast<CPDFHistogram2D *>(m_pPDF2D[s])->smooth(nIt);
 	}
 
-	void CTrainNodeNaiveBayes::saveFile(FILE *pFile) const 
+	void CTrainNodeBayes::saveFile(FILE *pFile) const
 	{
 		CPriorNode::saveFile(pFile);
 
@@ -109,7 +109,7 @@ namespace DirectGraphicalModels
 				m_pPDF2D[s]->saveFile(pFile);
 	} 
 
-	void CTrainNodeNaiveBayes::loadFile(FILE *pFile) 
+	void CTrainNodeBayes::loadFile(FILE *pFile)
 	{
 		CPriorNode::loadFile(pFile);
 		calculatePrior();		// loads m_prior from the CPriorNode class
@@ -122,7 +122,7 @@ namespace DirectGraphicalModels
 				m_pPDF2D[s]->loadFile(pFile);
 	} 
 
-	void CTrainNodeNaiveBayes::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
+	void CTrainNodeBayes::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 	{
 		m_prior.copyTo(potential);
 		for (byte s = 0; s < m_nStates; s++) {				// state
@@ -140,7 +140,7 @@ namespace DirectGraphicalModels
 		} // s
 	}
 
-	void CTrainNodeNaiveBayes::calculatePrior(void)
+	void CTrainNodeBayes::calculatePrior(void)
 	{
 		if (!m_prior.empty()) m_prior.release();
 		m_prior = getPrior(FLT_MAX);

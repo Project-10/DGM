@@ -12,9 +12,9 @@ public:
 
 
 private:
-	Mat		 getNodePot(void);
-	Mat		 getEdgePot(void);
-	CGraphPairwise * buildTree(void);
+	Mat		getNodePot(void);
+	Mat		getEdgePot(void);
+    void    buildTree(CGraphPairwise &graph);
 };
 /// @endcond
 

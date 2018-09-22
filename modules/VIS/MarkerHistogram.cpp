@@ -14,7 +14,7 @@ const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
 Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 {
 	char			str[256];
-	const word		nFeatures	= m_pNodeTrainer->getNumFeatures();
+	const word		nFeatures	= m_nodeTrainer.getNumFeatures();
 	const size_t	n			= m_vPalette.size();
 
 	Mat		res(2 * margin.height + 256, 2 * margin.height + 256, CV_8UC3);	
@@ -32,7 +32,7 @@ Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 			Vec3b *pRes = res.ptr<Vec3b>(margin.height + 255 - y);
 			for (int x = 0; x < 256; x++) {
 				fv.at<byte>(0, 0) = static_cast<byte>(x);
-				Mat pot = m_pNodeTrainer->getNodePotentials(fv, 1.0f, Z);
+				Mat pot = m_nodeTrainer.getNodePotentials(fv, 1.0f, Z);
 
 				for (int s = 0; s < pot.rows; s++) {
 					float val = MIN(100, pot.at<float>(s, 0));
@@ -88,7 +88,7 @@ void CMarkerHistogram::close(void) const
 Mat CMarkerHistogram::drawHistogram(Scalar color) const
 {
 	const byte		fMaxHeight = 9;					// The maximal number of feature histograms in a column
-	const word		nFeatures = m_pNodeTrainer->getNumFeatures();
+	const word		nFeatures = m_nodeTrainer.getNumFeatures();
 	const int		activeState = getActiveState(color);
 
 	CvSize			fSize;								// Size of the resulting image in feature histograms
@@ -145,7 +145,7 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 {
 	int				x, y;
 	char			str[256];
-	const byte		nStates	= m_pNodeTrainer->getNumStates();
+	const byte		nStates	= m_nodeTrainer.getNumStates();
 	const int		koeff	= 1200;						// coefficient for histogram value enlargement
 	const size_t	n		= m_vPalette.size();
 
@@ -159,9 +159,9 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	}
 
 	// histogram
-	if (typeid(*m_pNodeTrainer) == typeid(CTrainNodeNaiveBayes))
+	if (typeid(m_nodeTrainer) == typeid(CTrainNodeBayes))
 		for (byte s = 0; s < nStates; s++) {				// states
-				IPDF *pPDF = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF(s, f);
+				IPDF *pPDF = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF(s, f);
 				DGM_ASSERT(pPDF);
 				for (x = 0; x < 256; x++) {
 					int len	=  static_cast<int>(koeff * pPDF->getDensity(x));
@@ -194,8 +194,8 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
 {
 	char			str[256];
-	const byte		nStates = m_pNodeTrainer->getNumStates();
-	const word		nFeatures = m_pNodeTrainer->getNumFeatures();
+	const byte		nStates = m_nodeTrainer.getNumStates();
+	const word		nFeatures = m_nodeTrainer.getNumFeatures();
 	const int		koeff = 1000000;					// coefficient for histogram value enlargement
 	const size_t	n = m_vPalette.size();
 
@@ -204,9 +204,9 @@ Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
 	Mat		tmp(res.size(), res.type());									tmp.setTo(0);
 
 	// histogram
-	if ((typeid(*m_pNodeTrainer) == typeid(CTrainNodeNaiveBayes)) && (nFeatures == 2)) {
+	if ((typeid(m_nodeTrainer) == typeid(CTrainNodeBayes)) && (nFeatures == 2)) {
 		for (byte s = 0; s < nStates; s++) {				// states
-			IPDF *pPDF2D = dynamic_cast<const CTrainNodeNaiveBayes *>(m_pNodeTrainer)->getPDF2D(s);
+			IPDF *pPDF2D = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF2D(s);
 			DGM_ASSERT(pPDF2D);
 			for (int y = 0; y < 256; y++) {
 				Vec3b *pTmp = tmp.ptr<Vec3b>(margin.height + 256 - y);
@@ -223,7 +223,7 @@ Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
 		} // s
 		tmp.release();
 	}
-	else DGM_WARNING("The node trainer (%s) is not Bayes or the number of features (%d) is not 2", typeid(*m_pNodeTrainer).name(), nFeatures);
+	else DGM_WARNING("The node trainer (%s) is not Bayes or the number of features (%d) is not 2", typeid(m_nodeTrainer).name(), nFeatures);
 
 	// Feature Names
 	tmp = Mat(margin.height, res.rows, CV_8UC3);	
@@ -245,7 +245,7 @@ Mat CMarkerHistogram::drawLegend(int maxHeight, int activeState) const
 {
 	char			str[256];
 	const byte		sMaxHeight	= maxHeight / (2 * margin.height);					// The maximal number of states in a column
-	const byte		nStates		= m_pNodeTrainer->getNumStates();
+	const byte		nStates		= m_nodeTrainer.getNumStates();
 	const size_t	n			= m_vPalette.size();
 	
 	CvSize			sSize;								// Size of the resulting image in states

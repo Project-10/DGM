@@ -56,24 +56,24 @@ int main(int argc, char *argv[])
 	CTrainEdge			* edgeTrainer	= NULL;
 	CGraphPairwise		  graph(nStates);
 	CGraphPairwiseExt	  graphExt(graph);
-	CInfer				* decoder		= new CInferLBP(graph);
-	CMarker				* marker		= new CMarker(DEF_PALETTE_6);
-	CCMat				* confMat		= new CCMat(nStates);
+	CInferLBP			  decoder(graph);
+	CMarker				  marker(DEF_PALETTE_6);
+	CCMat				  confMat(nStates);
 	float				  params[]		= {100, 0.01f};						
 	size_t				  params_len;
 
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		break;
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
+		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);	break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);	break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);	break;
+		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);	break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);	break;
 #ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);	break;
 #endif
-		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		break;
-		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		break;
+		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);	break;
+		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);	break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
 		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
 		case 4:	
-			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
+			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
 		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
 	// Node Training (compact notation)
-	nodeTrainer->addFeatureVec(train_fv, train_gt);					
+	nodeTrainer->addFeatureVecs(train_fv, train_gt);					
 
 	// Edge Training (comprehensive notation)
 	Mat featureVector1(nFeatures, 1, CV_8UC1); 
@@ -132,18 +132,18 @@ int main(int argc, char *argv[])
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
 
 	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(test_gt, solution);								// compare solution with the groundtruth
+	confMat.estimate(test_gt, solution);								// compare solution with the groundtruth
 	char str[255];
-	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
+	sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());
 	printf("%s\n", str);
 
 	// ====================== Visualization =======================
-	marker->markClasses(test_img, solution);
+	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
 	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
 	imwrite(argv[8], test_img);

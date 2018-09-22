@@ -73,12 +73,12 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	Mat drawGraph(int size, IGraphPairwise * pGraph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	Mat drawGraph(int size, IGraphPairwise &graph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		Point2f	pt1, pt2;
 		Scalar	color1, color2;
 
-		const size_t	nNodes = pGraph->getNumNodes();
+		const size_t	nNodes = graph.getNumNodes();
 		
 		Mat res(size, size, CV_8UC3);
 		Mat alpha(size, size, CV_8UC3);
@@ -87,7 +87,7 @@ namespace DirectGraphicalModels { namespace vis
 		// Edges
 		for (size_t n = 0; n < nNodes; n++) {
 			vec_size_t childs;
-			pGraph->getChildNodes(n, childs);
+			graph.getChildNodes(n, childs);
 
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size; 
@@ -96,7 +96,7 @@ namespace DirectGraphicalModels { namespace vis
 			color1 = colorFunc ? colorFunc(n) : colorspaces::hsv2rgb(DGM_HSV(360.0 * n / nNodes, 255.0, 192.0));
 
 			for (size_t c : childs) {
-				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
+				if (graph.isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
 			
 				pt2 = posFunc(c);
 				pt2.x = 0.5f * (1 + pt2.x) * size; 
@@ -105,11 +105,11 @@ namespace DirectGraphicalModels { namespace vis
 
 				// Group edge color
 				if (groupsColor.size() > 0) 
-					color1 = color2 = groupsColor[pGraph->getEdgeGroup(n, c) % groupsColor.size()];
+					color1 = color2 = groupsColor[graph.getEdgeGroup(n, c) % groupsColor.size()];
 
 				alpha.setTo(0);
-				if (pGraph->isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
-				else							drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
+				if (graph.isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
+				else						drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
 				add(res, alpha, res);
 			}
 		}
@@ -255,11 +255,11 @@ namespace DirectGraphicalModels { namespace vis
 				glLinkProgram(EdgeProgramID);
 
 #ifdef DEBUG_MODE	// Check the program
-				glGetProgramiv(NodeProgramID, GL_LINK_STATUS, &Result);
-				glGetProgramiv(NodeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+				glGetProgramiv(EdgeProgramID, GL_LINK_STATUS, &Result);
+				glGetProgramiv(EdgeProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 				if (InfoLogLength > 1) {
 					std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-					glGetProgramInfoLog(NodeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+					glGetProgramInfoLog(EdgeProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 					printf("%s\n", &ProgramErrorMessage[0]);
 				}
 #endif
@@ -318,10 +318,10 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void showGraph3D(int size, IGraphPairwise *pGraph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	void showGraph3D(int size, IGraphPairwise &graph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
-		const size_t	nNodes			= pGraph->getNumNodes();
+		const size_t	nNodes			= graph.getNumNodes();
 		const bool		isGroupsColor	= groupsColor.size() > 0;
 
 		// Initialise GLFW
@@ -395,21 +395,21 @@ namespace DirectGraphicalModels { namespace vis
 		// Edges
 		for (size_t n = 0; n < nNodes; n++) {
 			vec_size_t childs;
-			pGraph->getChildNodes(n, childs);
+			graph.getChildNodes(n, childs);
 			
 			for (size_t c : childs) {
-				if (pGraph->isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
+				if (graph.isEdgeArc(n, c) && n < c) continue;			// draw only one edge in arc
 				vIndices.push_back(static_cast<word>(n));				// src
 				vIndices.push_back(static_cast<word>(c));				// dst
 				
 				if (isGroupsColor) {
-					byte group = pGraph->getEdgeGroup(n, c);
+					byte group = graph.getEdgeGroup(n, c);
 					CvScalar color = groupsColor[group % groupsColor.size()];
 					color = static_cast<Scalar>(color) / 255;
 					vGroupColors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
 				}
 
-				if (!pGraph->isEdgeArc(n, c))
+				if (!graph.isEdgeArc(n, c))
 					addCone(vVertices, vColors, vConeIndices, vVertices[n], vVertices[c], vColors[c], 30.0f / size);
 			}
 		}

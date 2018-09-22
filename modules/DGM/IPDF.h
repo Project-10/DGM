@@ -15,7 +15,7 @@ namespace DirectGraphicalModels
 	*/	
 	class IPDF : public CBaseRandomModel 
 	{
-	friend class CTrainNodeNaiveBayes;
+	friend class CTrainNodeBayes;
 	
 	public:
 		DllExport IPDF(void) : CBaseRandomModel(0), m_nPoints(0) {}

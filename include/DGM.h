@@ -88,7 +88,7 @@ These tasks are optimized for speed, @a i.e. high-efficient calculations. The co
 DGM implements the following training methods: 
 
 @subsubsection sec_main_train_nodes Nodes | Unary Potentials
-- <b>NaiveBayes:</b> Naive Bayes training @ref DirectGraphicalModels::CTrainNodeNaiveBayes
+- <b>NaiveBayes:</b> Naive Bayes training @ref DirectGraphicalModels::CTrainNodeBayes
 - <b>GMM:</b> Gaussian Mixture Model training (<a href="http://www.project-10.de/Kosov/files/GCPR_2013.pdf" target="_blank">Sequential GMM Training Algorithm</a>) @ref DirectGraphicalModels::CTrainNodeGMM
 - <b>CvGMM:</b> OpenCV Gaussian Mixture Model training @ref DirectGraphicalModels::CTrainNodeCvGMM
 - <b>KNN:</b> <i>k</i>-Nearest Neighbors training @ref DirectGraphicalModels::CTrainNodeKNN
@@ -441,7 +441,7 @@ int main(int argc, char *argv[])
 	size_t			  params_len;
 
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	break;
+		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	    break;
 		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
 		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
 		case 4:
-			edgeTrainer = new CTrainEdgeConcat<CTrainNodeNaiveBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
+			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
 			params_len = 1;
 			break;
 		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
@@ -574,7 +574,7 @@ int main(int argc, char *argv[])
 	float Z;																				// the value of partition function
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 2e34f; break;
+		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	    Z = 2e34f; break;
 		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
 		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;

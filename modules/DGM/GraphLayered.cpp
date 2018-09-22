@@ -148,7 +148,7 @@ namespace DirectGraphicalModels
 					add(ePot, ePot.t(), ePot);
 					if (m_nLayers >= 2)
 						m_graph.setArc(idx, idx + 1, ePot);
-					ePot = CTrainEdgePotts::getEdgePotentials(100, m_graph.getNumStates());
+					ePot = CTrainEdge::getDefaultEdgePotentials(100, m_graph.getNumStates());
 					for (l = 2; l < m_nLayers; l++)
 						m_graph.setEdge(idx + l - 1, idx + l, ePot);
 				} // edges_link
@@ -231,7 +231,7 @@ namespace DirectGraphicalModels
 					add(ePot, ePot.t(), ePot);
 					if (m_nLayers >= 2)
 						m_graph.setArc(idx, idx + 1, ePot);
-					ePot = CTrainEdgePotts::getEdgePotentials(100, m_graph.getNumStates());
+					ePot = CTrainEdge::getDefaultEdgePotentials(100, m_graph.getNumStates());
 					for (l = 2; l < m_nLayers; l++)
 						m_graph.setEdge(idx + l - 1, idx + l, ePot);
 				} // edges_link

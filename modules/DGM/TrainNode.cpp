@@ -14,13 +14,13 @@ CTrainNode::CTrainNode(byte nStates, word nFeatures)
 CTrainNode::~CTrainNode(void) 
 { }
 	
-void CTrainNode::addFeatureVec(const Mat &featureVectors, const Mat &gt)
+void CTrainNode::addFeatureVecs(const Mat &featureVectors, const Mat &gt)
 {
 	DGM_ASSERT_MSG(featureVectors.channels() == m_nFeatures, "Number of features in the <featureVectors> (%d) does not correspond to the specified (%d)", featureVectors.channels(), m_nFeatures);
 	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
 }
 
-void CTrainNode::addFeatureVec(const vec_mat_t &featureVectors, const Mat &gt)
+void CTrainNode::addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt)
 {
 	DGM_ASSERT_MSG(featureVectors.size() == m_nFeatures, "Number of features in the <featureVectors> (%zu) does not correspond to the specified (%d)", featureVectors.size(), m_nFeatures);
 	DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);

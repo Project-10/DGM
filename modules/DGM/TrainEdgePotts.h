@@ -30,24 +30,6 @@ namespace DirectGraphicalModels
 		DllExport virtual void	reset(void) {}	
 
 		DllExport virtual void	addFeatureVecs(const Mat &featureVector1, byte gt1, const Mat &featureVector2, byte gt2) {}
-		/**
-		* @brief Returns the data-independent edge potentials
-		* @details This function returns matrix with diagonal elements equal to the argument \b val, all the other elements are 1's, what imitates the Potts model. 
-		* \f[edgePot[nStates][nStates] = \begin{bmatrix} val & 1 & \cdots & 1 \\ 1 & val & \cdots & 1 \\ \vdots & \vdots & \ddots & \vdots \\ 1 & 1 & \cdots & val \end{bmatrix} \f]
-		* @param val The diagonal element of the matrix
-		* @param nStates Number of states (classes)
-		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)	
-		*/
-		DllExport static Mat	getEdgePotentials(float val, byte nStates);		
-		/**
-		* @brief Returns the data-independent edge potentials
-		* @details This function returns matrix with diagonal elements specified by argument array \b values, all the other elements are 1's, what imitates the Potts model. 
-		* \f[edgePot[nStates][nStates] = \begin{bmatrix} values_1 & 1 & \cdots & 1 \\ 1 & values_2 & \cdots & 1 \\ \vdots & \vdots & \ddots & \vdots \\ 1 & 1 & \cdots & values_{nStates} \end{bmatrix} \f]
-		* @param values The array of diagonal elements of the matrix. In must include \a nStates values, specifying smoothness strength for each state (class) individually.
-		* @param nStates Number of states (classes)
-		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)	
-		*/
-		DllExport static Mat	getEdgePotentials(float *values, byte nStates);
 
 
 	protected:

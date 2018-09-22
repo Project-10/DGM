@@ -17,7 +17,7 @@ namespace DirectGraphicalModels
 	* which is based on strong (naive) independence assumptions between the features.
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CTrainNodeNaiveBayes : public CTrainNode, private CPriorNode
+	class CTrainNodeBayes : public CTrainNode, private CPriorNode
 	{
 	public:
 		/**
@@ -25,8 +25,8 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainNodeNaiveBayes(byte nStates, word nFeatures);
-		DllExport virtual ~CTrainNodeNaiveBayes(void);
+		DllExport CTrainNodeBayes(byte nStates, word nFeatures);
+		DllExport virtual ~CTrainNodeBayes(void);
 
 		DllExport virtual void	  reset(void);
 

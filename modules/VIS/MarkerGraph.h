@@ -12,7 +12,7 @@ namespace DirectGraphicalModels {
 	* @ingroup moduleVIS
 	* @brief Visualizes the graph structure
 	* @param size The size of resulting image
-	* @param pGraph The graph
+	* @param graph The graph
 	* @param posFunc The positioning function: a mapper, that defines spacial position at the canvas for every graph node.
 	* The coordinates must lie in range [-1; 1].<br>
 	* For example:
@@ -29,7 +29,7 @@ namespace DirectGraphicalModels {
 	* @return Image \b size x \b size pixels with visualized graph.
 	*/
 	DllExport Mat drawGraph(int								  size, 
-							IGraphPairwise						* pGraph, 
+							IGraphPairwise					& graph,
 							std::function<Point2f(size_t)>	  posFunc, 
 							std::function<CvScalar(size_t)>   colorFunc		= nullptr, 
 							const vec_scalar_t				& groupsColor	= vec_scalar_t());
@@ -42,7 +42,7 @@ namespace DirectGraphicalModels {
 	* User may rotate, zoom, pan and centralize the visualized graph.
 	* > In order to use this function, OpenGL must be built with the \b USE_OPENGL flag
 	* @param size The size of the viewing window (\b size x \b size pixels)
-	* @param pGraph The graph
+	* @param graph The graph
 	* @param posFunc The positioning function: a mapper, that defines spacial position in 3D world for every graph node.
 	* For better wieving expierence, the coordinates should lie in range [-0.5; 0.5].<br>
 	* For example:
@@ -59,7 +59,7 @@ namespace DirectGraphicalModels {
 	* @param groupsColor The list of colors for graph edge groups.                                 
 	*/
 	DllExport void showGraph3D(int								 size, 
-							   IGraphPairwise					   * pGraph, 
+							   IGraphPairwise				   & graph,
 							   std::function<Point3f(size_t)>    posFunc, 
 							   std::function<CvScalar(size_t)>   colorFunc	= nullptr,
 							   const vec_scalar_t			   & groupsColor	= vec_scalar_t());

@@ -62,20 +62,20 @@ int main(int argc, char *argv[])
 	float Z;																				// the value of partition function
 	CTrainNode	* nodeTrainer = NULL;
 	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeNaiveBayes(nStates, nFeatures);	Z = 2e34f; break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
-		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);		Z = 1.0f; break;
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
+		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	Z = 2e34f; break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);	Z = 1.0f; break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);	Z = 1.0f; break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);	Z = 1.0f; break;
+		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);	Z = 1.0f; break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);	Z = 1.0f; break;
 #ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 0.0f; break;
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);	Z = 0.0f; break;
 #endif
-		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);		Z = 0.0f; break;
-		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);		Z = 1.0f; break;
+		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);	Z = 0.0f; break;
+		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);	Z = 1.0f; break;
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
-	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
+	CMarkerHistogram marker(*nodeTrainer, DEF_PALETTE_3);
 
 	//	---------- Features Extraction ----------
 	vec_mat_t featureVector;
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
 	//	---------- Training ----------
 	Timer::start("Training... ");
-	nodeTrainer->addFeatureVec(featureVector, gt);
+	nodeTrainer->addFeatureVecs(featureVector, gt);
 	nodeTrainer->train();
 	Timer::stop();
 

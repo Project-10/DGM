@@ -25,14 +25,12 @@ Mat CTree::getEdgePot(void)
 	return res;
 }
 
-CGraphPairwise * CTree::buildTree()
+void CTree::buildTree(CGraphPairwise &graph)
 {
-	CGraphPairwise *graph = new CGraphPairwise(nStates);
-	
-	// Build a complete graph
+    // Build a complete graph
 	// Add nodes with default potentials
 	Mat nPot(nStates, 1, CV_32FC1, 1.0f / nStates);
-	for (size_t n = 0; n < nNodes; n++)	graph->addNode(nPot);
+	for (size_t n = 0; n < nNodes; n++)	graph.addNode(nPot);
 
 	// Create weighted edges with random weights
 	std::vector<std::pair<ptr_edge_t, float>> edges; 
@@ -54,30 +52,27 @@ CGraphPairwise * CTree::buildTree()
 		while ((it = std::find_if(edges.begin(), edges.end(), [&](std::pair<ptr_edge_t, float> &edge) { return N[edge.first->node1] ^ N[edge.first->node2]; })) != edges.end()) {
 			size_t n1 = it->first->node1;
 			size_t n2 = it->first->node2;
-			graph->addArc(n1, n2, edgePot);						// Add an arc to the tree
+			graph.addArc(n1, n2, edgePot);						// Add an arc to the tree
 			N[n1] = N[n2] = true;								// Now both nodes are accounted
 		}
-	} 
-
-	return graph;
+	}
 }
 
 void CTree::Main(void)
 {
 	srand(0);
-	CGraphPairwise	*graph = buildTree();					// Returns a tree with default potentials
-	CInfer	*inferer = new CInferTree(*graph);
-
+    CGraphPairwise graph(nStates);
+    buildTree(graph);					            // Returns a tree with default potentials
+	CInferTree inferer(graph);
 
 	std::vector<size_t>		 vParents, vChilds;
 	std::vector<size_t>		 sources;
 	std::deque<size_t>		 sourceQueue;			// Queue with indexes of the source nodes
 	std::vector<std::string> labels(nNodes);
 	
-
 	// Separate all nodes into Source, Internal and Tap nodes
 	for (size_t n = 0; n < nNodes; n++) {
-		graph->getParentNodes(n, vParents);
+		graph.getParentNodes(n, vParents);
 		if (vParents.size() <= 1) {					// if the node is a leaf
 			if (sources.size() < nSources) {
 				labels[n] = "Source";				// => it is either a source
@@ -91,7 +86,7 @@ void CTree::Main(void)
 	// Setting the node and edge potentials in the tree
 	// Nodes
 	Mat nodePot = getNodePot();
-	for(size_t n: sources) graph->setNode(n, nodePot);
+	for(size_t n: sources) graph.setNode(n, nodePot);
 
 	// Edges
 	std::vector<bool> ifSource(nNodes, false); 
@@ -104,30 +99,30 @@ void CTree::Main(void)
 	while (!sourceQueue.empty()) {
 		size_t n1 = sourceQueue.front();			// pop the front index of a source node
 		sourceQueue.pop_front();
-		graph->getChildNodes(n1, vChilds);
+		graph.getChildNodes(n1, vChilds);
 		for(size_t n2: vChilds) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
-				graph->setArc(n1, n2, edgePot);		// set the potential,
+				graph.setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}
 		}
 	}
 
-	inferer->infer();
+	inferer.infer();
 
 	// Print Out Results
 	printf("Node\tType\t"); for (byte s = 0; s < nStates; s++) printf("State %d\t", s); printf("\n");
 	printf("-----------------------------------------------\n");
 	for (size_t n = 0; n < nNodes; n++) {
 		printf("%zd\t%s\t", n, labels[n].c_str());
-		graph->getNode(n, nodePot);
+		graph.getNode(n, nodePot);
 		printf("%.4f", nodePot.at<float>(0, 0));  for (byte s = 1; s < nStates; s++) printf("\t%.4f", nodePot.at<float>(s, 0)); printf("\n");
 	}
 	
 
 	if (true) {
-		Mat img = vis::drawGraph(640, graph, [](size_t n) { 
+		Mat img = vis::drawGraph(640, graph, [](size_t n) {
 			return Point2f(
 				0.9f * cosf(2 * n * Pif / nNodes),
 				0.9f * sinf(2 * n * Pif / nNodes) 
@@ -148,7 +143,4 @@ void CTree::Main(void)
 
 	//cvWaitKey();
 	destroyAllWindows();
-
-	delete graph;
-	delete inferer;
 }

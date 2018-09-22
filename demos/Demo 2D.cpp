@@ -27,14 +27,14 @@ int main(int argc, char *argv[])
 	int		  height	= img.rows;
 	
 	CGraphPairwise	graph(nStates);
-	CInfer  * decoder	= new CInferViterbi(graph);
+	CInferViterbi   decoder(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);						// node Potential (column-vector)
 	Mat edgePot(nStates, nStates, CV_32FC1);				// edge Potential	
 	
 	// No training
 	// Defynig the edge potential
-	edgePot = CTrainEdgePotts::getEdgePotentials(10000, nStates);
+	edgePot = CTrainEdge::getDefaultEdgePotentials(10000, nStates);
 	// equivalent to:
 	// ePot.at<float>(0, 0) = 1000;	ePot.at<float>(0, 1) = 1;
 	// ePot.at<float>(1, 0) = 1;	ePot.at<float>(1, 1) = 1000;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
 
 	

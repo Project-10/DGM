@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	Mat fv			= imread(argv[2], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
 	Mat gt			= imread(argv[3], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
 
-	CTrainNode			* nodeTrainer	 = new CTrainNodeNaiveBayes(nStates, nFeatures); 
+	CTrainNode			* nodeTrainer	 = new CTrainNodeBayes(nStates, nFeatures); 
 	CTrainEdge			* edgeTrainer	 = new CTrainEdgePottsCS(nStates, nFeatures);
 	float				  params[]		 = {400, 0.001f};						
 	size_t				  params_len	 = 2;

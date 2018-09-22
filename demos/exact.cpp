@@ -42,14 +42,14 @@ void CExact::printMarginals(const CGraphPairwise &graph, const std::string &str)
 
 void CExact::Main(void)
 {
-	size_t	  i;
+	size_t	        i;
 	CGraphPairwise	graph(nStates);
-	CDecode * decoderExcact		= new CDecodeExact(graph);
-	CInfer  * infererExact		= new CInferExact(graph);
-	CInfer  * infererChain		= new CInferChain(graph);
-	CInfer  * infererTree		= new CInferTree(graph);
-	CInfer  * infererLBP		= new CInferLBP(graph);
-	CInfer  * infererViterbi	= new CInferViterbi(graph);
+	CDecodeExact    decoderExcact(graph);
+	CInferExact     infererExact(graph);
+	CInferChain     infererChain(graph);
+	CInferTree      infererTree(graph);
+	CInferLBP       infererLBP(graph);
+	CInferViterbi   infererViterbi(graph);
 
 	// Building the graph
 	for (i = 0; i < nNodes; i++)		graph.addNode();
@@ -63,30 +63,30 @@ void CExact::Main(void)
 	fillGraph(graph);												// Without training, filling the graph with pre-defined potentials
 	printMarginals(graph, "Init");									// Initial potentials
 
-	vec_byte_t decoding_decoderExcact = decoderExcact->decode();	// Exact decoding from decode
+	vec_byte_t decoding_decoderExcact = decoderExcact.decode();	    // Exact decoding from decode
 
-	infererExact->infer();											// Exact inference
-	vec_byte_t decoding_infererExcact = infererExact->decode();		// Exact decoding from inferer
+	infererExact.infer();											// Exact inference
+	vec_byte_t decoding_infererExcact = infererExact.decode();	// Exact decoding from inferer
 	printMarginals(graph, "Exact");
 
 	fillGraph(graph);
-	infererChain->infer();											// Chain inference
-	vec_byte_t decoding_infererChain = infererChain->decode();		// Chain decoding
+	infererChain.infer();											// Chain inference
+	vec_byte_t decoding_infererChain = infererChain.decode();		// Chain decoding
 	printMarginals(graph, "Chain");
 
 	fillGraph(graph);
-	infererTree->infer();											// Tree inference
-	vec_byte_t decoding_infererTree = infererTree->decode();		// Tree decoding
+	infererTree.infer();											// Tree inference
+	vec_byte_t decoding_infererTree = infererTree.decode();		    // Tree decoding
 	printMarginals(graph, "Tree");
 
 	fillGraph(graph);
-	infererLBP->infer(10);											// Loopy Belief Probagation inference
-	vec_byte_t decoding_infererLBP = infererLBP->decode();			// Loopy Belief Probagation decoding
+	infererLBP.infer(10);											// Loopy Belief Probagation inference
+	vec_byte_t decoding_infererLBP = infererLBP.decode();			// Loopy Belief Probagation decoding
 	printMarginals(graph, "LBP");
 
 	fillGraph(graph);
-	infererViterbi->infer(10);										// Viterbi inference
-	vec_byte_t decoding_infererViterbi = infererViterbi->decode();	// Viterbi decoding
+	infererViterbi.infer(10);										// Viterbi inference
+	vec_byte_t decoding_infererViterbi = infererViterbi.decode();	// Viterbi decoding
 	printMarginals(graph, "Vtrbi");
 
 	printf("\n\t\t\t\tDECODING\n\t\t");
@@ -96,11 +96,4 @@ void CExact::Main(void)
 	printf("Exact inferer:\t");	for (i = 0; i < nNodes; i++) printf(decoding_infererExcact[i]  ? "true\t" : "false\t");	printf("\n");
 	printf("LBP inferer:\t");	for (i = 0; i < nNodes; i++) printf(decoding_infererLBP[i]     ? "true\t" : "false\t");	printf("\n");
 	printf("Vtrbi inferer:\t");	for (i = 0; i < nNodes; i++) printf(decoding_infererViterbi[i] ? "true\t" : "false\t"); printf("\n");
-
-	delete decoderExcact;
-	delete infererExact;
-	delete infererChain;
-	delete infererTree;
-	delete infererLBP;
-	delete infererViterbi;
 }
