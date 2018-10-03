@@ -37,17 +37,17 @@ namespace DirectGraphicalModels
 	void CInferDense::infer(unsigned int nIt)
 	{
 		// ====================================== Initialization ======================================
-		const int rows = getGraphDense().m_nodePotentials.rows;
-		const int cols = getGraphDense().m_nodePotentials.cols;
+		const int rows = getGraphDense().getNodes().rows;
+		const int cols = getGraphDense().getNodes().cols;
 
 		Mat temp = Mat(2 * rows, cols, CV_32FC1, Scalar(0));
 
 		// TODO: exp is not needed actually
 		// Making log potentials
 		Mat pot_log;
-		log(getGraphDense().m_nodePotentials, pot_log);
+		log(getGraphDense().getNodes(), pot_log);
 
-		normalize<float>(getGraphDense().m_nodePotentials, getGraphDense().m_nodePotentials);
+		normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
@@ -59,12 +59,12 @@ namespace DirectGraphicalModels
 			Mat next = pot_log.clone();																			// next_i = log(pot_0)
 
 			// Add up all pairwise potentials
-			for (auto &edgePotModel : getGraphDense().m_vpEdgeModels)
-				edgePotModel->apply(getGraphDense().m_nodePotentials, next, temp);								// next_i = f(next_i, pot_i)
+			for (auto &edgePotModel : getGraphDense().getEdgeModels())
+				edgePotModel->apply(getGraphDense().getNodes(), next, temp);								// next_i = f(next_i, pot_i)
 
 			// Exponentiate and normalize
-			exp(next, getGraphDense().m_nodePotentials);														// pot_i = exp(next_i)
-			normalize<float>(getGraphDense().m_nodePotentials, getGraphDense().m_nodePotentials);				
+			exp(next, getGraphDense().getNodes());														// pot_i = exp(next_i)
+			normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
 		} // iter
 	}
 }

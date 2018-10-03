@@ -1,4 +1,4 @@
-// Dense Graph class interface;
+// Dense Graph class interface
 // Written by Sergey G. Kosov in 2018 for Project X 
 #pragma once
 
@@ -15,7 +15,6 @@ namespace DirectGraphicalModels
 	*/
 	class CGraphDense : public CGraph 
 	{
-		friend class CInferDense;
 	public:
 		/**
 		* @brief Constructor
@@ -39,22 +38,36 @@ namespace DirectGraphicalModels
 		DllExport virtual size_t	getNumNodes(void) const { return static_cast<size_t>(m_nodePotentials.rows); }
 		DllExport virtual size_t	getNumEdges(void) const { return getNumNodes() * (getNumNodes() - 1) / 2; }
 
-		/**
-		* @brief Adds an edge model
-		* @param pEdgeModel Poiter to an dense edge model
-		*/
+		// Own
+        /**
+		 * @brief Adds an edge model
+		 * @param pEdgeModel Poiter to an dense edge model
+		 */
 		DllExport void				addEdgeModel(CEdgePotential *pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
-
-
+        
+        // For internal use
+        /**
+         * @brief Returns the container with node potentials
+         * @return the container with node potentials: Mat(nNodes, nStates, CV_32FC1)
+         */
+        Mat                         getNodes(void) const { return m_nodePotentials; }
+        /**
+         * @brief Returns the contener with edge models
+         * @details One edge model applies itself to all the edges in the graph
+         * @return The container with edge models: vector of size: number of used edge models
+         */
+        std::vector<std::unique_ptr<CEdgePotential>> & getEdgeModels(void) const { return m_vpEdgeModels; }
+        
+        
 	private:
 		/**
 		* The container for the node potentials. 
 		* Every row is a node potential vector. Thus the size of the matrix is width: nStates; height: nNodes
 		*/
-		Mat												m_nodePotentials;		
+		Mat												        m_nodePotentials;
 		/**
 		* The set of edge models
 		*/
-		std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;	
+		mutable std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;
 	};
 }
