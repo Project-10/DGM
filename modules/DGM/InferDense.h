@@ -28,8 +28,8 @@ namespace DirectGraphicalModels
 
 	protected:
 		/**
-		* @brief Returns the graph
-		* @return The graph
+		* @brief Returns the dense graph
+		* @return The dense graph
 		*/
 		CGraphDense & getGraphDense(void) const { return dynamic_cast<CGraphDense &>(getGraph()); }
 	};

@@ -58,7 +58,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport vec_byte_t	decode(unsigned int nIt = 0, Mat &lossMatrix = EmptyMat);
 		/**
-		* @brief Returns the confidence of the prediction
+		* @brief Returns the confidence of the perdiction
 		* @details This function calculates the confidence values for the predicted states (classes) in the graph via CInfer::decode().
 		* The confidence values lie in range [0; 1].
 		* @return The confidence values for each node of graph.
@@ -79,6 +79,7 @@ namespace DirectGraphicalModels
 		*/
 		CGraph & getGraph(void) const { return m_graph; }
 
+        
 	private:
 		CGraph & m_graph;
 	};
