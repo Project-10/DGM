@@ -83,7 +83,7 @@ namespace DirectGraphicalModels
 
 	void CTrainNodeBayes::train(bool)
 	{
-		calculatePrior(); 
+		m_prior = getPrior(FLT_MAX);
 	}
 
 	void CTrainNodeBayes::smooth(int nIt)
@@ -112,7 +112,7 @@ namespace DirectGraphicalModels
 	void CTrainNodeBayes::loadFile(FILE *pFile)
 	{
 		CPriorNode::loadFile(pFile);
-		calculatePrior();		// loads m_prior from the CPriorNode class
+		m_prior = getPrior(FLT_MAX);		// loads m_prior from the CPriorNode class
 
 		for (byte s = 0; s < m_nStates; s++)
 			for (word f = 0; f < m_nFeatures; f++)
@@ -139,11 +139,4 @@ namespace DirectGraphicalModels
 			} // f
 		} // s
 	}
-
-	void CTrainNodeBayes::calculatePrior(void)
-	{
-		if (!m_prior.empty()) m_prior.release();
-		m_prior = getPrior(FLT_MAX);
-	}
-
 }

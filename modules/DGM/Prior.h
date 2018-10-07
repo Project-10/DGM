@@ -40,11 +40,11 @@ namespace DirectGraphicalModels
 		DllExport virtual void	loadFile(FILE *pFile);		
 		/**
 		* @brief Calculates the prior probabilies.
-		* @details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the "addGroundTruth()" functionality, 
+		* @details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the "addGroundTruth()" functionality,
 		* implemented in derived classes. 
 		* @returns 1D (nStates) for node, 2D (nStates x nStates) for edge or 3D (nStates x nStates x nStates) for triplet Mat of type CV_32FC1 with prior probabilies.		
 		*/
-		DllExport virtual Mat		calculatePrior(void) const = 0;
+		DllExport virtual Mat	calculatePrior(void) const = 0;
 
 
 	protected:

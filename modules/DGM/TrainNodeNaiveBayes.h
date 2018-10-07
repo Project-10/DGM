@@ -70,10 +70,6 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
-	
-	private:
-		void				  calculatePrior(void);
-
 
 	private:
 		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]

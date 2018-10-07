@@ -12,21 +12,21 @@ namespace DirectGraphicalModels
 		vec_byte_t		state(nNodes);
 
 		// Calculating the potentials for every possible configuration
-		vec_float_t		  P = calculatePotentials();
-
-		// Calculating the partition function
-		float Z = std::accumulate(P.cbegin(), P.cend(), 0.0f);
+		vec_float_t     P = calculatePotentials();
 
 #ifdef DEBUG_PRINT_INFO
 		// Printing out
 		printf("nConfigurations = %zd\n", P.size());
 
-		setState(state, 0);
-		std::for_each(P.begin(), P.end(), [&](float & p) {
+        // Calculating the partition function
+        float Z = std::accumulate(P.cbegin(), P.cend(), 0.0f);
+        
+        setState(state, 0);
+        for (float &p: P) {
 			for (size_t n = 0; n < nNodes; n++) printf("%d ", state[n]);
 			printf(":-> %2.1f\t| %2.1f %% \n", p, p * 100 / Z);
 			incState(state);
-		});
+		}
 #endif
 
 		// Finding the most probable configuration

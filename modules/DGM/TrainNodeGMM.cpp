@@ -128,7 +128,8 @@ namespace DirectGraphicalModels
 		}
 
 		void printStatus(std::vector<GaussianMixture> &vGaussianMixtures, long double minCoefficient) {
-			printf("\nCTrainNodeGMM::Status\n");
+#ifdef DEBUG_PRINT_INFO
+            printf("\nCTrainNodeGMM::Status\n");
 			printf("---------------------------\n");
 			printf("( minCoefficient = %Le )\n", minCoefficient);
 
@@ -146,6 +147,7 @@ namespace DirectGraphicalModels
 				} // gausses
 				printf("\n");
 			} // s
+#endif
 		}
 	}
 
@@ -188,9 +190,7 @@ namespace DirectGraphicalModels
 			} // gausses
 		} // gaussianMixture
 
-#ifdef DEBUG_PRINT_INFO
 		printStatus(m_vGaussianMixtures, m_minAlpha);
-#endif	
 	}
 
 	void CTrainNodeGMM::saveFile(FILE *pFile) const
