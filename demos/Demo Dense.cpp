@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	CInferDense decoder(graph);
 	
 	
-	
+    // TODO:
 	graphExt.addNodes(nodePotentials);
 	graphExt.addGaussianEdgeModel(test_img.size(), 3, 3, 3);
 	graphExt.addBilateralEdgeModel(test_img, 60, 60, 20, 20, 20, 10);

@@ -44,7 +44,7 @@ namespace DirectGraphicalModels
 		* @param w
 		* @param pFunction
 		*/
-		DllExport void addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w = 1.0f, const SemiMetricFunction *pFunction = NULL);
+        DllExport void addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w = 1.0f, const std::function<void(const vec_float_t &src, vec_float_t &dst)> &SemiMetricFunction = {});
 		/**
 		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 		* @param img
@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
 		* @param w
 		* param pFunction
 		*/
-		DllExport void addBilateralEdgeModel(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w = 1.0f, const SemiMetricFunction *pFunction = NULL);
+        DllExport void addBilateralEdgeModel(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w = 1.0f, const std::function<void(const vec_float_t &src, vec_float_t &dst)> &SemiMetricFunction = {});
 
 
 	private:

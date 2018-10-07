@@ -1,13 +1,14 @@
 #include "edgePotentialPotts.h"
 #include "permutohedral.h"
 #include <numeric>
+#include "types.h"
 
 // Constructor
-CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float w, const SemiMetricFunction *pFunction, bool per_pixel_normalization)
+CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float w, const std::function<void(const vec_float_t &src, vec_float_t &dst)> &SemiMetricFunction, bool per_pixel_normalization)
 	: CEdgePotential()
 	, m_w(w)
 	, m_pLattice(std::make_unique<CPermutohedral>())
-    , m_pFunction(pFunction)
+    , m_function(SemiMetricFunction)
 {
 	m_pLattice->init(features);
 
@@ -30,13 +31,13 @@ void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 	// TODO: temp might be empty
 	m_pLattice->compute(src, temp);
 
-    if (m_pFunction) { // ------------------------- With the SemiMetric function -------------------------
+    if (m_function) { // ------------------------- With the SemiMetric function -------------------------
         // To the metric transform
         vec_float_t tmp2(src.cols);
         for (int n = 0; n < src.rows; n++) {
             float *pDst = dst.ptr<float>(n);
             float *pTemp = temp.ptr<float>(n);
-            m_pFunction->apply(vec_float_t(pTemp, pTemp + src.cols), tmp2);
+            m_function(vec_float_t(pTemp, pTemp + src.cols), tmp2);
             
 			for (int s = 0; s < src.cols; s++)	// states
                 pDst[s] -= m_w * m_norm.at<float>(n, 0) * tmp2[s];
@@ -45,7 +46,8 @@ void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 		for (int n = 0; n < src.rows; n++) {	// nodes
 			float *pDst = dst.ptr<float>(n);
 			float *pTemp = temp.ptr<float>(n);
-			for (int s = 0; s < src.cols; s++)	// states
+			
+            for (int s = 0; s < src.cols; s++)	// states
 				pDst[s] += m_w * m_norm.at<float>(n, 0) * pTemp[s];
 		}
     }
