@@ -39,14 +39,14 @@ namespace DirectGraphicalModels
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
 		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cvSize(0, 0)) {}
-		DllExport virtual ~CGraphLayered(void) {}
+		DllExport ~CGraphLayered(void) {}
 
 		/**
 		* @brief Builds a graph, which fits the image resolution
 		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
 		* @param graphSize The size of the graph
 		*/
-		DllExport virtual void addNodes(CvSize graphSize);
+		DllExport void addNodes(CvSize graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
 		* @param potOccl A block of potentials for the occlusion layer: Mat(type: CV_32FC(nStatesOccl))
 		*/
-		DllExport virtual void setNodes(const Mat &potBase, const Mat &potOccl);
+		DllExport void setNodes(const Mat &potBase, const Mat &potOccl);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
@@ -68,7 +68,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges 
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
@@ -82,7 +82,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport virtual void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Assign the edges, which cross the given line to the grop \b group.
 		* @details The line is given by the equation: <b>A</b>x + <b>B</b>y + <b>C</b> = 0. \b A and \b B are not both equal to zero.
@@ -91,22 +91,13 @@ namespace DirectGraphicalModels
 		* @param C Constant line parameter
 		* @param group New group ID
 		*/
-		DllExport virtual void defineEdgeGroup(float A, float B, float C, byte group);
+		DllExport void defineEdgeGroup(float A, float B, float C, byte group);
 		/**
 		* @brief Sets potential \b pot to all edges in the group \b group
 		* @param group The edge group ID
 		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void setGroupPot(byte group, const Mat &pot);
-		/**
-		* @brief Marginalizes a set of nodes
-		* @details This function separates the marginalized graph nodes by removing all the edges connecting them with the remaining nodes.
-		* New edges are added if they correspond to the inducing pathes. The potentials of new esges are calculated as the sum of edge potentials from the 
-		* corresponding inducing path.
-		* > This functions operates with inducing pathes with maximal length of 3 nodes.
-		* @param nodes Set of nodes to be marginalized out from the graph
-		*/
-		DllExport virtual void marginalize(const vec_size_t &nodes);
+		DllExport void setGroupPot(byte group, const Mat &pot);
 		/**
 		* @brief Returns the type of the graph
 		* @returns The type of the graph (Ref. @ref graphType)

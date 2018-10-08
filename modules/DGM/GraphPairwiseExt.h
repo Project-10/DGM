@@ -2,6 +2,7 @@
 // Written by Sergey Kosov in 2016 for Project X
 #pragma once
 
+#include "types.h"
 #include "GraphLayered.h"
 
 namespace DirectGraphicalModels 
@@ -13,7 +14,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphPairwiseExt : public CGraphLayered
+	class CGraphPairwiseExt
 	{
 	public:
 		/**
@@ -21,10 +22,19 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(CGraphPairwise & graph, byte gType = GRAPH_EDGES_GRID) : CGraphLayered(graph, 1, gType) {}
-		DllExport virtual ~CGraphPairwiseExt(void) {}
+		DllExport CGraphPairwiseExt(CGraphPairwise &graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
+		DllExport ~CGraphPairwiseExt(void) {}
 
-		/**
+        /**
+         * @brief Builds a graph, which fits the image resolution
+         * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
+         * @param graphSize The size of the graph
+         */
+        DllExport void addNodes(CvSize graphSize)
+        {
+            m_pGraphML->addNodes(graphSize);
+        }
+        /**
 		* @brief Fills the graph nodes with potentials
 		* @details
 		* > This function supports PPL
@@ -32,7 +42,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void setNodes(const Mat &pots)
 		{
-			CGraphLayered::setNodes(pots, Mat());
+			m_pGraphML->setNodes(pots, Mat());
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -47,7 +57,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const Mat &featureVectors, float *params, size_t params_len, float weight = 1.0f)
 		{
-			CGraphLayered::fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
+			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -62,7 +72,48 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float weight = 1.0f) 
 		{
-			CGraphLayered::fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
+			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
 		}
+        /**
+         * @brief Assign the edges, which cross the given line to the grop \b group.
+         * @details The line is given by the equation: <b>A</b>x + <b>B</b>y + <b>C</b> = 0. \b A and \b B are not both equal to zero.
+         * @param A Constant line parameter
+         * @param B Constant line parameter
+         * @param C Constant line parameter
+         * @param group New group ID
+         */
+        DllExport void defineEdgeGroup(float A, float B, float C, byte group)
+        {
+            m_pGraphML->defineEdgeGroup(A, B, C, group);
+        }
+        /**
+         * @brief Sets potential \b pot to all edges in the group \b group
+         * @param group The edge group ID
+         * @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+         */
+        DllExport void setGroupPot(byte group, const Mat &pot)
+        {
+            m_pGraphML->setGroupPot(group, pot);
+        }
+        /**
+         * @brief Returns the type of the graph
+         * @returns The type of the graph (Ref. @ref graphType)
+         */
+        DllExport byte getType(void) const
+        {
+            return m_pGraphML->getType();
+        }
+        /**
+         * @brief Returns the size of the graph
+         * @return The size of the Graph
+         */
+        DllExport CvSize getSize(void) const
+        {
+            return m_pGraphML->getSize();
+        }
+        
+        
+    private:
+        std::unique_ptr<CGraphLayered> m_pGraphML;          ///< Enclosure of the multi-layer graph
 	};
 }

@@ -58,6 +58,8 @@ namespace DirectGraphicalModels
 		for (size_t e: m_vNodes[node]->from) { vNodes.push_back(m_vEdges[e]->node1); }
 	}
 
+
+    
 	// Add a new (directed) edge to the graph
 	void CGraphPairwise::addEdge(size_t srcNode, size_t dstNode)
 	{

@@ -42,19 +42,20 @@ source_group("Source Files\\Graph\\Dense" 	   FILES
 									)
 source_group("Source Files\\Graph\\Pairwise"   FILES	
 											"IGraphPairwise.h"
-											"GraphPairwise.h"
-											"GraphPairwise.cpp"
+											"IGraphPairwise.cpp"
+											"GraphPairwiseExt.h"
+											"GraphLayered.h"
+											"GraphLayered.cpp"
 									)
 source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
+											"GraphPairwise.h"
+											"GraphPairwise.cpp"											
 											"GraphWeiss.h"
 											"GraphWeiss.cpp"
 											"Graph3.h"
 											"Graph3.cpp"
 											"GraphBoost.h"
 											"GraphBoost.cpp"
-											"GraphPairwiseExt.h"
-											"GraphLayered.h"
-											"GraphLayered.cpp"
 									)
 source_group("Source Files\\Graph\\Triplet" FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")

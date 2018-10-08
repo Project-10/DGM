@@ -99,6 +99,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void		getNode       (size_t node, Mat &pot) const;
 		DllExport virtual void		getChildNodes (size_t node, vec_size_t &vNodes) const;
 		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const;
+ //       DllExport virtual void      marginalize(const vec_size_t &nodes);
 		
 		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode);
 		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
