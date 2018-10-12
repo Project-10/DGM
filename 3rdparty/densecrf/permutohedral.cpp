@@ -201,7 +201,7 @@ void CPermutohedral::init(const Mat &features)
     }
 }
 
-// TODO: 
+// TODO: dst might be empty
 void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
 	if (in_size  == 0) in_size  = m_nFeatures - in_offset;

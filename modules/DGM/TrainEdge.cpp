@@ -132,7 +132,7 @@ namespace DirectGraphicalModels
     Mat CTrainEdge::getDefaultEdgePotentials(const vec_float_t &values)
     {
         size_t nStates = values.size();
-        Mat res(nStates, nStates, CV_32FC1, Scalar(1.0f));
+        Mat res(static_cast<int>(nStates), static_cast<int>(nStates), CV_32FC1, Scalar(1.0f));
         for (byte s = 0; s < nStates; s++) res.at<float>(s, s) = values[s];
         return res;
     }

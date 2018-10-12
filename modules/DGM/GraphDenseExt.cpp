@@ -10,7 +10,7 @@ namespace DirectGraphicalModels
 		m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));
 	}
 
-	void CGraphDenseExt::addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w, const std::function<void(const vec_float_t &src, vec_float_t &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
 		Mat features(graphSize.height * graphSize.width, 2, CV_32FC1);
 		int n = 0;
@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, w, SemiMetricFunction));
 	}
 
-	void CGraphDenseExt::addBilateralEdgeModel(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const std::function<void(const vec_float_t &src, vec_float_t &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addBilateralEdgeModel(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
 		Mat features(img.rows * img.cols, 5, CV_32FC1);
 		int n = 0;
