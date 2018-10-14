@@ -54,8 +54,6 @@ source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
 											"GraphWeiss.cpp"
 											"Graph3.h"
 											"Graph3.cpp"
-											"GraphBoost.h"
-											"GraphBoost.cpp"
 									)
 source_group("Source Files\\Graph\\Triplet" FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")
