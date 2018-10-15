@@ -91,7 +91,7 @@ void CHashTable::grow(void)
 	// Swap out the old memory
 	std::vector<int>	old_table = m_vTable;
 	
-	size_t	old_capacity = m_capacity;
+	int	old_capacity = m_capacity;
 	m_capacity *= 2;
 	
 	// Allocate the new memory

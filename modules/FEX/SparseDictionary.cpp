@@ -117,8 +117,8 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, cv::Size imgSize) const
 	const float	lambda		= 5e-5f;		// L1-regularisation parameter (on features)
 	const float	epsilon		= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 
-	Mat res(imgSize, CV_32FC1, cvScalar(0));
-	Mat cover(imgSize, CV_32FC1, cvScalar(0));
+	Mat res(imgSize, CV_32FC1, Scalar(0));
+	Mat cover(imgSize, CV_32FC1, Scalar(0));
 
 #ifdef ENABLE_PPL
 	concurrency::parallel_for(0, dataHeight, blockSize, [&](int y) {
@@ -143,8 +143,8 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, cv::Size imgSize) const
 			gemm(W, m_D, 1.0, Mat(), 0.0, tmp);								// tmp = W x D
 			tmp = tmp.reshape(0, blockSize);
 
-			res(cvRect(x, y, blockSize, blockSize))   += tmp;
-			cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
+			res(Rect(x, y, blockSize, blockSize))   += tmp;
+			cover(Rect(x, y, blockSize, blockSize)) += 1.0;
 		}
 	}
 #ifdef ENABLE_PPL

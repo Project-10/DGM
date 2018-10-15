@@ -42,7 +42,7 @@ namespace DirectGraphicalModels
 			case CV_32S: elementSize = 4; break;
 			case CV_32F: elementSize = 4; break;
 			case CV_64F: elementSize = 8; break;
-			case CV_USRTYPE1:
+			default:
 				DGM_WARNING("Custom matrix type is not supported");
 				elementSize = 0;
 				break;
@@ -78,7 +78,7 @@ namespace DirectGraphicalModels
 			case CV_32S: elementSize = 4; break;
 			case CV_32F: elementSize = 4; break;
 			case CV_64F: elementSize = 8; break;
-			case CV_USRTYPE1:
+			default:
 				DGM_WARNING("Custom matrix type is not supported");
 				elementSize = 0;
 				break;
