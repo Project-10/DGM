@@ -19,7 +19,7 @@ namespace DirectGraphicalModels
 		for (size_t n = 0; n < nNodes; n++) {						// all nodes
 			getGraph().getNode(n, pot);
 		
-			sort(pot, srt, CV_SORT_EVERY_COLUMN | CV_SORT_DESCENDING);
+			sort(pot, srt, cv::SortFlags::SORT_EVERY_COLUMN | cv::SortFlags::SORT_DESCENDING);
 
 			float max		 = srt.at<float>(0, 0);
 			float second_max = srt.at<float>(1, 0);

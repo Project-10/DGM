@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	
 	imshow("image", noise);	
 
-	cvWaitKey();
+	cv::waitKey();
 
 	return 0;
 }

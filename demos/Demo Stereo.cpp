@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
 	imshow("Disparity", disparity);
 
-	cvWaitKey();
+	cv::waitKey();
 
 	return 0;
 }

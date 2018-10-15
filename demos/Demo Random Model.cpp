@@ -44,7 +44,7 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
+	const cv::Size		imgSize		= cv::Size(400, 400);
 	const unsigned int	nStates		= 3;	 		
 	const unsigned int	nFeatures	= 2;		// {ndvi, saturation}
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[4], classMap);
 
 	imshow("class map 2d", classMap);
-	cvWaitKey(1000);
+	cv::waitKey(1000);
 
 	return 0;
 }

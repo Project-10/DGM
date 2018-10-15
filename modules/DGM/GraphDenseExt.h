@@ -44,7 +44,7 @@ namespace DirectGraphicalModels
 		* @param w
 		* @param pFunction
 		*/
-        DllExport void addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addGaussianEdgeModel(cv::Size graphSize, float sx, float sy, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
 		/**
 		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 		* @param img

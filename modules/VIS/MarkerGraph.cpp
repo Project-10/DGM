@@ -73,7 +73,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	Mat drawGraph(int size, IGraphPairwise &graph, std::function<Point2f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	Mat drawGraph(int size, IGraphPairwise &graph, std::function<Point2f(size_t)> posFunc, std::function<cv::Scalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		Point2f	pt1, pt2;
 		Scalar	color1, color2;
@@ -108,8 +108,8 @@ namespace DirectGraphicalModels { namespace vis
 					color1 = color2 = groupsColor[graph.getEdgeGroup(n, c) % groupsColor.size()];
 
 				alpha.setTo(0);
-				if (graph.isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
-				else						drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, CV_AA);
+				if (graph.isEdgeArc(n, c))	drawLine(alpha, pt1, pt2, color1, color2, 1, cv::LineTypes::LINE_AA);
+				else						drawArrowedLine(alpha, pt1, pt2, color1, color2, 1, cv::LineTypes::LINE_AA);
 				add(res, alpha, res);
 			}
 		}
@@ -120,7 +120,7 @@ namespace DirectGraphicalModels { namespace vis
 			pt1 = posFunc(n);
 			pt1.x = 0.5f * (1 + pt1.x) * size;
 			pt1.y = 0.5f * (1 + pt1.y) * size;
-			circle(res, pt1, 3, color1, -1, CV_AA);
+			circle(res, pt1, 3, color1, -1, cv::LineTypes::LINE_AA);
 		} // n
 		
 		return res;
@@ -318,7 +318,7 @@ namespace DirectGraphicalModels { namespace vis
 		}
 	}
 
-	void showGraph3D(int size, IGraphPairwise &graph, std::function<Point3f(size_t)> posFunc, std::function<CvScalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
+	void showGraph3D(int size, IGraphPairwise &graph, std::function<Point3f(size_t)> posFunc, std::function<cv::Scalar(size_t)> colorFunc, const vec_scalar_t &groupsColor)
 	{
 		// Constants
 		const size_t	nNodes			= graph.getNumNodes();
@@ -387,7 +387,7 @@ namespace DirectGraphicalModels { namespace vis
 		for (size_t n = 0; n < nNodes; n++) {
 			Point3f pt = posFunc(n);
 			vVertices.push_back(glm::vec3(pt.x, pt.y, pt.z));
-			CvScalar color = colorFunc ? colorspaces::bgr2rgb(colorFunc(n)) : colorspaces::hsv2bgr(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
+			cv::Scalar color = colorFunc ? colorspaces::bgr2rgb(colorFunc(n)) : colorspaces::hsv2bgr(DGM_HSV(360.0 * n / nNodes, 255.0, 255.0));
 			color = static_cast<Scalar>(color) / 255;
 			vColors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
 		}		
@@ -404,7 +404,7 @@ namespace DirectGraphicalModels { namespace vis
 				
 				if (isGroupsColor) {
 					byte group = graph.getEdgeGroup(n, c);
-					CvScalar color = groupsColor[group % groupsColor.size()];
+					cv::Scalar color = groupsColor[group % groupsColor.size()];
 					color = static_cast<Scalar>(color) / 255;
 					vGroupColors.push_back(glm::vec3(color.val[0], color.val[1], color.val[2]));
 				}

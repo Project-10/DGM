@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
          * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
          * @param graphSize The size of the graph
          */
-        DllExport void addNodes(CvSize graphSize)
+        DllExport void addNodes(cv::Size graphSize)
         {
             m_pGraphML->addNodes(graphSize);
         }
@@ -107,7 +107,7 @@ namespace DirectGraphicalModels
          * @brief Returns the size of the graph
          * @return The size of the Graph
          */
-        DllExport CvSize getSize(void) const
+        DllExport cv::Size getSize(void) const
         {
             return m_pGraphML->getSize();
         }

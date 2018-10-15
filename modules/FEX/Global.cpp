@@ -6,7 +6,7 @@ size_t getNumLines(const Mat &img, int threshold1, int threshold2)
 {
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I); 
 		
 	GaussianBlur(I, I, Size(5, 5), 0.75, 0.75);		// smooth it, otherwise a lot of false circles may be detected
@@ -39,7 +39,7 @@ size_t getNumLines(const Mat &img, int threshold1, int threshold2)
 		imshow("Canny", canny8b);
 		
 		Mat tmp;
-		if (img.channels() == 1)  cvtColor(img, tmp, CV_GRAY2RGB);
+		if (img.channels() == 1)  cvtColor(img, tmp, cv::ColorConversionCodes::COLOR_GRAY2RGB);
 		else img.copyTo(tmp);
 
 #if 1
@@ -55,11 +55,11 @@ size_t getNumLines(const Mat &img, int threshold1, int threshold2)
 			pt1.y = cvRound(y0 + 1000 * a);
 			pt2.x = cvRound(x0 + 1000 * b);
 			pt2.y = cvRound(y0 - 1000 * a);
-			line(tmp, pt1, pt2, CV_RGB(255, 0, 0), 1, CV_AA);
+			line(tmp, pt1, pt2, CV_RGB(255, 0, 0), 1, cv::LineTypes::LINE_AA);
 		}
 #else
 		for (Vec4i &l : vLines) 
-			line(tmp, Point(l[0], l[1]), Point(l[2], l[3]), CV_RGB(255, 0, 0), 1, CV_AA);
+			line(tmp, Point(l[0], l[1]), Point(l[2], l[3]), CV_RGB(255, 0, 0), 1, cv::LineTypes::LINE_AA);
 #endif
 		imshow("detected lines", tmp);
 		waitKey();
@@ -72,7 +72,7 @@ size_t getNumCircles(const Mat &img, int threshold1, int threshold2)
 {
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	GaussianBlur(I, I, Size(9, 9), 2, 2);		// smooth it, otherwise a lot of false circles may be detected
@@ -80,7 +80,7 @@ size_t getNumCircles(const Mat &img, int threshold1, int threshold2)
 	std::vector<Vec3f> vCircles;
 	HoughCircles(I				// image
 		, vCircles				// circles
-		, CV_HOUGH_GRADIENT		// method
+		, cv::HoughModes::HOUGH_GRADIENT		// method
 		, 1						// dp 
 		, 1						// min distance between centers
 		, threshold1			// high treshold of the canny
@@ -93,7 +93,7 @@ size_t getNumCircles(const Mat &img, int threshold1, int threshold2)
 		imshow("Canny", canny8b);
 
 		Mat tmp;
-		if (img.channels() == 1)  cvtColor(img, tmp, CV_GRAY2RGB);
+		if (img.channels() == 1)  cvtColor(img, tmp, cv::ColorConversionCodes::COLOR_GRAY2RGB);
 		else img.copyTo(tmp);
 
 		for (Vec3f &c : vCircles) {
@@ -117,7 +117,7 @@ float getOpacity(const Mat &img)
 
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	float _mean = static_cast<float>(mean(I)[0]);
@@ -142,7 +142,7 @@ float getVariance(const Mat &img)
 {
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	Scalar mean, stddev;
@@ -156,7 +156,7 @@ int getArea(const Mat &img)
 {
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	int res = 0;
@@ -173,7 +173,7 @@ int getPerimeter(const Mat &img)
 {
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	Mat tmp(I.size(), CV_8UC1, Scalar(0));

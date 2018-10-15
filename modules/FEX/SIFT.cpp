@@ -14,7 +14,7 @@ namespace DirectGraphicalModels { namespace fex
 		
 		// Converting to one channel image
 		Mat	I;
-		if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+		if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 		else img.copyTo(I);
 
 		Ptr<xfeatures2d::SIFT> sift = xfeatures2d::SIFT::create();

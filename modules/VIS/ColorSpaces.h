@@ -5,7 +5,7 @@
 
 #include "types.h"
 
-#define DGM_HSV(h, s, v) cvScalar(h, s, v, 0 )
+#define DGM_HSV(h, s, v) cv::Scalar(h, s, v, 0 )
 
 namespace DirectGraphicalModels { namespace vis
 {
@@ -20,9 +20,9 @@ namespace DirectGraphicalModels { namespace vis
 		* @param rgb Color in Red-Green-Blue format 
 		* @return Color in Blue-Green-Red format
 		*/
-		inline CvScalar rgb2bgr(CvScalar rgb)
+		inline cv::Scalar rgb2bgr(cv::Scalar rgb)
 		{
-			CvScalar bgr;
+			cv::Scalar bgr;
 			bgr.val[0] = rgb.val[2];
 			bgr.val[1] = rgb.val[1];
 			bgr.val[2] = rgb.val[0];
@@ -34,18 +34,18 @@ namespace DirectGraphicalModels { namespace vis
 		* @param bgr Color in Blue-Green-Red format
 		* @return Color in Red-Green-Blue format 
 		*/
-		inline CvScalar bgr2rgb(CvScalar bgr) { return rgb2bgr(bgr); }
+		inline cv::Scalar bgr2rgb(cv::Scalar bgr) { return rgb2bgr(bgr); }
 		/**
 		* @brief Transforms color from \b HSV to \b BGR space
 		* @param hsv Color in Hue-Saturation-Value color space<br>
 		* Hue:[0; 360); Saturation:[0; 255]: Value:[0; 255]
 		* @return  Color in Blue-Green-Red format
 		*/
-		inline CvScalar hsv2bgr(CvScalar hsv)
+		inline cv::Scalar hsv2bgr(cv::Scalar hsv)
 		{
 			double      hh, p, q, t, ff;
 			long        i;
-			CvScalar	out;
+			cv::Scalar	out;
 
 			if (hsv.val[1] <= 0.0) {			// < is bogus, just shuts up warnings
 				out.val[0] = hsv.val[2];
@@ -104,6 +104,6 @@ namespace DirectGraphicalModels { namespace vis
 		* Hue:[0; 360); Saturation:[0; 255]: Value:[0; 255]
 		* @return Color in Red-Green-Blue format 
 		*/
-		inline CvScalar hsv2rgb(CvScalar hsv) { return bgr2rgb(hsv2bgr(hsv)); }
+		inline cv::Scalar hsv2rgb(cv::Scalar hsv) { return bgr2rgb(hsv2bgr(hsv)); }
 	}
 } }

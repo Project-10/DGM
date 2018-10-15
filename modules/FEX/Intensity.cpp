@@ -3,7 +3,7 @@
 
 namespace DirectGraphicalModels { namespace fex
 {
-Mat CIntensity::get(const Mat &img, CvScalar weight)
+Mat CIntensity::get(const Mat &img, cv::Scalar weight)
 {
 	DGM_ASSERT_MSG(img.channels() == 3, "Input image has %d channel(s), but must have 3.", img.channels());
 
