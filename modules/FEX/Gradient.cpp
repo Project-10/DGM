@@ -11,7 +11,7 @@ Mat CGradient::get(const Mat &img, float mid)
 	 
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 	
 	// Derivatives

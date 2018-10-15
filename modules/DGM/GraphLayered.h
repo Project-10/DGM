@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cvSize(0, 0)) {}
+		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cv::Size(0, 0)) {}
 		DllExport ~CGraphLayered(void) {}
 
 		/**
@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
 		* @param graphSize The size of the graph
 		*/
-		DllExport void addNodes(CvSize graphSize);
+		DllExport void addNodes(cv::Size graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
@@ -107,13 +107,13 @@ namespace DirectGraphicalModels
 		* @brief Returns the size of the graph
 		* @return The size of the Graph
 		*/
-		DllExport CvSize getSize(void) const { return m_size; }
+		DllExport cv::Size getSize(void) const { return m_size; }
 
 
 	private:
 		CGraphPairwise	& m_graph;			///< The graph
 		word			  m_nLayers;		///< Number of layers
 		byte			  m_gType;			///< Graph type (Ref. @ref graphType)
-		CvSize			  m_size;			///< Size of the graph
+		cv::Size			  m_size;			///< Size of the graph
 	};
 }

@@ -83,7 +83,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @param weight The weight coefficients, which determine the contribution of each color channel to the resulting intensity.
 		* @return Common feature extractor class with extracted intensity feature of type \b CV_8UC1.
 		*/		
-		DllExport CCommonFeatureExtractor getIntensity(CvScalar weight = CV_RGB(0.333, 0.333, 0.333)) const { return CCommonFeatureExtractor(CIntensity::get(m_img, weight)); }
+		DllExport CCommonFeatureExtractor getIntensity(cv::Scalar weight = CV_RGB(0.333, 0.333, 0.333)) const { return CCommonFeatureExtractor(CIntensity::get(m_img, weight)); }
 		/**
 		* @brief Extracts the HSV feature.
 		* @details This function transforms the input image into HSV (hue-saturation-value) color space.

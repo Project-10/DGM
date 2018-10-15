@@ -52,8 +52,8 @@ void CMarker::markClasses(Mat &base, const Mat &classes, byte flag) const
 	
 	// Desaturating
 	if (mapping && !((flag & MARK_OVER) == MARK_OVER)) { // desaturate
-		cvtColor(base, base, CV_BGR2GRAY);
-		cvtColor(base, base, CV_GRAY2RGB);
+		cvtColor(base, base, cv::ColorConversionCodes::COLOR_BGR2GRAY);
+		cvtColor(base, base, cv::ColorConversionCodes::COLOR_GRAY2RGB);
 	}
 
 	// Assertions
@@ -86,7 +86,7 @@ Mat CMarker::drawPotentials(const Mat &potential, byte flag) const
 Mat	CMarker::drawConfusionMatrix(const Mat &confusionMat, byte flag) const
 {
 	const byte		nStates		= confusionMat.rows;
-	const CvScalar	frgColor	= CV_RGB(frgIntensity, frgIntensity, frgIntensity); 
+	const cv::Scalar	frgColor	= CV_RGB(frgIntensity, frgIntensity, frgIntensity); 
 
 	bool perClass	= (flag & MARK_PERCLASS) == MARK_PERCLASS;
 
@@ -104,7 +104,7 @@ Mat	CMarker::drawConfusionMatrix(const Mat &confusionMat, byte flag) const
 		tmp.release();
 	} else cMat = drawMatrix(confusionMat, flag | TP_PERCENT);
 	
-	CvSize resSize = cMat.size();
+	cv::Size resSize = cMat.size();
 	if (!perClass) {
 		resSize.width  += ds;
 		resSize.height += ds;
@@ -201,8 +201,8 @@ Mat CMarker::drawVector(const Mat &potential, byte flag) const
 
 		if (m_vPalette.at(s % n).second.empty()) sprintf(str, "c%d", s);
 		else sprintf(str, "%s", m_vPalette.at(s % n).second.c_str()); 
-		textSize = getTextSize(str, CV_FONT_HERSHEY_SIMPLEX, 0.45, 1, NULL);
-		putText(res, str, Point(ds * s + (MAX(ds - textSize.width, 6)) / 2, 15), FONT_HERSHEY_SIMPLEX, 0.45, color_Cur, 1, CV_AA);		
+		textSize = getTextSize(str, cv::HersheyFonts::FONT_HERSHEY_SIMPLEX, 0.45, 1, NULL);
+		putText(res, str, Point(ds * s + (MAX(ds - textSize.width, 6)) / 2, 15), FONT_HERSHEY_SIMPLEX, 0.45, color_Cur, 1, cv::LineTypes::LINE_AA);		
 	} // s
 	return res;
 }
@@ -211,7 +211,7 @@ Mat CMarker::drawMatrix(const Mat &potential, byte flag) const
 {
 	const byte		nStates		= potential.rows;
 	const size_t	n			= m_vPalette.size();
-	const CvScalar	frgColor	= CV_RGB(frgIntensity, frgIntensity, frgIntensity); 
+	const cv::Scalar	frgColor	= CV_RGB(frgIntensity, frgIntensity, frgIntensity); 
 
 	bool  bw = (flag & MARK_BW) == MARK_BW;
 
@@ -291,8 +291,8 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 	drawRectangle(img, pt1, pt2, color, str, 0.65, textProp);
 
 	if (isnan(val)) {
-		line(img, pt1,  pt2, CV_RGB(127, 127, 127), 1, CV_AA);
-		line(img, Point(pt2.x, pt1.y),  Point(pt1.x, pt2.y), CV_RGB(127, 127, 127), 1, CV_AA);
+		line(img, pt1,  pt2, CV_RGB(127, 127, 127), 1, cv::LineTypes::LINE_AA);
+		line(img, Point(pt2.x, pt1.y),  Point(pt1.x, pt2.y), CV_RGB(127, 127, 127), 1, cv::LineTypes::LINE_AA);
 	}
 }
 
@@ -301,8 +301,8 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 	rectangle(img, pt1, pt2, color, -1);
 	
 	if (!str.empty()) {
-		Size textSize = getTextSize(str, CV_FONT_HERSHEY_SIMPLEX, fontScale, 1, NULL);
-		Size rectSize = cvSize(abs(pt2.x - pt1.x), abs(pt2.y - pt1.y));
+		Size textSize = getTextSize(str, cv::HersheyFonts::FONT_HERSHEY_SIMPLEX, fontScale, 1, NULL);
+		Size rectSize = cv::Size(abs(pt2.x - pt1.x), abs(pt2.y - pt1.y));
 		
 		Point org(MAX(rectSize.width- textSize.width, 6) / 2,  (rectSize.height + textSize.height) / 2);
 		if (textProp & TP_LEFT)		org.x = 3;
@@ -313,9 +313,9 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 
 		double intensity = 0;
 		for (int i = 0; i < 3; i++) intensity += color.val[i] / 3;
-		CvScalar fontColor = (intensity < 128) ? CV_RGB(255, 255, 255) : CV_RGB(0, 0, 0);
+		cv::Scalar fontColor = (intensity < 128) ? CV_RGB(255, 255, 255) : CV_RGB(0, 0, 0);
 
-		putText(img, str, org, FONT_HERSHEY_SIMPLEX, fontScale, fontColor, 1, CV_AA);		 // TODO: color	
+		putText(img, str, org, FONT_HERSHEY_SIMPLEX, fontScale, fontColor, 1, cv::LineTypes::LINE_AA);		 // TODO: color	
 	}
 }
 
@@ -331,7 +331,7 @@ Mat drawDictionary(const Mat &dictionary, double m)
 	int				height = nWords / width;
 	if (width * height < nWords) width++;
 
-	Mat res(height * (blockSize + margin) + margin, width * (blockSize + margin) + margin, CV_8UC1, cvScalar(0));
+	Mat res(height * (blockSize + margin) + margin, width * (blockSize + margin) + margin, CV_8UC1, cv::Scalar(0));
 
 	for (int w = 0; w < nWords; w++) {
 		Mat word = dictionary.row(w);
@@ -343,7 +343,7 @@ Mat drawDictionary(const Mat &dictionary, double m)
 		int y0 = y * (blockSize + margin) + margin;
 		int x0 = x * (blockSize + margin) + margin;
 
-		word.convertTo(res(cvRect(x0, y0, blockSize, blockSize)), res.type());
+		word.convertTo(res(cv::Rect(x0, y0, blockSize, blockSize)), res.type());
 	}
 
 	return res;

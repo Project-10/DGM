@@ -1,2 +1,10 @@
 
 include/types.h
+
+# Ignore build directories
+[Dd]ebug
+[Rr]elease
+[Bb]uild
+
+# Ignore install directories (if in same dir)
+[Ii]nstall

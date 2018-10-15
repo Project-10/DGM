@@ -17,7 +17,7 @@ struct USER_DATA {
 void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param)
 {
 	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == CV_EVENT_LBUTTONDOWN) {
+	if (Event == cv::MouseEventTypes::EVENT_LBUTTONDOWN) {
 		Mat			  pot, potImg;
 		size_t		  node_id	= pUserData->imgWidth * y + x;
 
@@ -47,7 +47,7 @@ void print_help(char *argv0)
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
+	const cv::Size		imgSize		= cv::Size(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(img, solution);
 	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imshow("Solution", img);
 	
 	// Feature distribution histograms
@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
 
 	// Setting up handlers
 	USER_DATA userData(graph, marker, width);
-	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
+	cv::setMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
 
-	cvWaitKey();
+	cv::waitKey();
 
 	return 0;
 }

@@ -124,7 +124,7 @@ namespace DirectGraphicalModels {
 
 
 	private:
-		static const CvSize			margin;
+		static const cv::Size			margin;
 		static const byte			bkgIntencity;
 		static const double			frgWeight;
 		static const std::string	wndName;

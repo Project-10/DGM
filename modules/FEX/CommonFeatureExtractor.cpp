@@ -13,7 +13,7 @@ CCommonFeatureExtractor CCommonFeatureExtractor::blur(int R) const
 {
 	Mat res;
 	R = 2 * R + 1;
-	GaussianBlur(m_img, res, cvSize(R, R), 0.0, 0.0, BORDER_REFLECT);
+	GaussianBlur(m_img, res, cv::Size(R, R), 0.0, 0.0, BORDER_REFLECT);
 	return CCommonFeatureExtractor(res);
 }
 
@@ -44,7 +44,7 @@ CCommonFeatureExtractor CCommonFeatureExtractor::thresholding(byte threshold) co
 {
 	// Converting to one channel image
 	Mat res;
-	if (m_img.channels() != 1) cvtColor(m_img, res, CV_RGB2GRAY);
+	if (m_img.channels() != 1) cvtColor(m_img, res, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else m_img.copyTo(res);
 
 	for (int y = 0; y < res.rows; y++) {
