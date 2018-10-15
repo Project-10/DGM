@@ -11,7 +11,7 @@ set (DGM_VERSION ${DGM_VERSION_MAJOR}.${DGM_VERSION_MINOR}.${DGM_VERSION_PATCH})
 configure_file(${PROJECT_SOURCE_DIR}/cmake/types.h.in ${PROJECT_SOURCE_DIR}/include/types.h)
 
 # OpenCV
-find_package(OpenCV 4.0 REQUIRED core features2d highgui imgproc imgcodecs ml PATHS "$ENV{OPENCVDIR}/build")
+find_package(OpenCV 3.4 REQUIRED core features2d highgui imgproc imgcodecs ml PATHS "$ENV{OPENCVDIR}/build")
 # find_package(OpenCV 3 REQUIRED PATHS "$ENV{OPENCVDIR}/build")
 
 # Turn on the ability to create folders to organize projects (.vcproj)
