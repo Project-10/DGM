@@ -51,13 +51,12 @@ namespace DirectGraphicalModels
 		* > This function supports PPL
 		* @param edgeTrainer A pointer to the edge trainer
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		* @param params Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
-		* @param params_len The length of the \b params parameter
+		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const Mat &featureVectors, float *params, size_t params_len, float weight = 1.0f)
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const Mat &featureVectors, const vec_float_t &vParams, float weight = 1.0f)
 		{
-			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
+			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -66,13 +65,12 @@ namespace DirectGraphicalModels
 		* > This function supports PPL
 		* @param edgeTrainer A pointer to the edge trainer
 		* @param featureVectors  Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
-		* @param params Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
-		* @param params_len The length of the \b params parameter
+		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float weight = 1.0f) 
+		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float weight = 1.0f)
 		{
-			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, params, params_len, weight);
+			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
         /**
          * @brief Assign the edges, which cross the given line to the grop \b group.

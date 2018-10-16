@@ -108,12 +108,9 @@ namespace DirectGraphicalModels
 		} // y
 	}
 
-	Mat CTrainEdge::getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len, float weight) const
+	Mat CTrainEdge::getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams, float weight) const
 	{
-		// Assertions
-		DGM_ASSERT_MSG(params, "Parameters are missing");
-
-		Mat res = calculateEdgePotentials(featureVector1, featureVector2, params, params_len);
+		Mat res = calculateEdgePotentials(featureVector1, featureVector2, vParams);
 		if (weight != 1.0) pow(res, weight, res);
 
 		// Normalization

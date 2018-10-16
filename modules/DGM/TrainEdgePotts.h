@@ -44,11 +44,10 @@ namespace DirectGraphicalModels
 		* > It is not used in the Potts model, thus may be empty Mat()
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the second node of the edge
 		* > It is not used in the Potts model, thus may be empty Mat()
-		* @param params Array of control parameters \f$\vec{\theta}\f$, which may consist either from \a one parameter (in this case all the diagonal elemets will be the same), 
+		* @param vParams Array of control parameters \f$\vec{\theta}\f$, which may consist either from \a one parameter (in this case all the diagonal elemets will be the same), 
 		* or from \a nStates parameters, specifying smoothness strength for each state (class) individually.
-		* @param params_len The length of the \b params parameter. It must be equal to (\a 1 || \a nStates).
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const;
+		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const;
 	};
 }

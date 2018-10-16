@@ -45,9 +45,9 @@ void CTrainEdgePrior::loadFile(FILE *pFile)
 	loadPriorMatrix();				
 }
 
-Mat	CTrainEdgePrior::calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const
+Mat	CTrainEdgePrior::calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const
 {
-	Mat res = CTrainEdgePottsCS::calculateEdgePotentials(featureVector1, featureVector2, params, params_len);
+	Mat res = CTrainEdgePottsCS::calculateEdgePotentials(featureVector1, featureVector2, vParams);
 	multiply(res, m_prior, res);
 	return res;
 }

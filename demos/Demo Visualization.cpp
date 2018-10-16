@@ -65,8 +65,7 @@ int main(int argc, char *argv[])
 
 	CTrainNodeBayes	        nodeTrainer(nStates, nFeatures);
 	CTrainEdgePottsCS	    edgeTrainer(nStates, nFeatures);
-	float				    params[]		= {400, 0.001f};
-	size_t				    params_len	    = 2;
+	vec_float_t			    vParams	= {400, 0.001f};
 	CGraphPairwise		    graph(nStates);
 	CInferLBP			    decoder(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
@@ -103,12 +102,12 @@ int main(int argc, char *argv[])
 
 			if (x > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
+				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
 				graph.addArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
+				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
 				graph.addArc(idx, idx - width, edgePot);
 			} // if y
 		} // x

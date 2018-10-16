@@ -59,8 +59,7 @@ int main(int argc, char *argv[])
 	CInferLBP			  decoder(graph);
 	CMarker				  marker(DEF_PALETTE_6);
 	CCMat				  confMat(nStates);
-	float				  params[]		= {100, 0.01f};						
-	size_t				  params_len;
+	vec_float_t			  vParams = {100, 0.01f};						
 
 	switch(nodeModel) {
 		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	break;
@@ -77,13 +76,13 @@ int main(int argc, char *argv[])
 		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 	switch(edgeModel) {
-		case 0: params[0] = 1;	// Emulate "No edges"
-		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		params_len = 1; break;
-		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
-		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
+		case 0: vParams[0] = 1;	// Emulate "No edges"
+		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		vParams.pop_back(); break;
+		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	break;
+		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		break;
 		case 4:	
 			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
-			params_len = 1;
+			vParams.pop_back();
 			break;
 		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
 	}
@@ -127,7 +126,7 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
-	graphExt.fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
+	graphExt.fillEdges(edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================

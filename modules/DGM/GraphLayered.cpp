@@ -112,7 +112,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, float *params, size_t params_len, float edgeWeight, float linkWeight)
+	void CGraphLayered::fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight, float linkWeight)
 	{
 		const word	nFeatures	= featureVectors.channels();
 
@@ -156,13 +156,13 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_GRID) {
 					if (x > 0) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVectors[x-1][y]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers, ePot);
 					} // if x
 
 					if (y > 0) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVectors[x][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width, ePot);
 					} // if y
 				} // edges_grid
@@ -170,13 +170,13 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_DIAG) {
 					if ((x > 0) && (y > 0)) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x - 1) + f];	// featureVectors[x-1][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width - m_nLayers, ePot);
 					} // if x, y
 
 					if ((x < m_size.width - 1) && (y > 0)) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x + 1) + f];	// featureVectors[x+1][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width + m_nLayers, ePot);
 					} // x, y
 				} // edges_diag
@@ -188,7 +188,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, float *params, size_t params_len, float edgeWeight, float linkWeight)
+	void CGraphLayered::fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight, float linkWeight)
 	{
 		const word	nFeatures	=static_cast<word>(featureVectors.size());
 
@@ -239,13 +239,13 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_GRID) {
 					if (x > 0) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[f][x - 1];				// featureVectors[x-1][y]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers, ePot);
 					} // if x
 
 					if (y > 0) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[f][x];					// featureVectors[x][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width, ePot);
 					} // if y
 				} // edges_grid
@@ -253,13 +253,13 @@ namespace DirectGraphicalModels
 				if (m_gType & GRAPH_EDGES_DIAG) {
 					if ((x > 0) && (y > 0)) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[f][x - 1];				// featureVectors[x-1][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width - m_nLayers, ePot);
 					} // if x, y
 
 					if ((x < m_size.width - 1) && (y > 0)) {
 						for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[f][x + 1];				// featureVectors[x+1][y-1]
-						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len, edgeWeight);
+						ePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, vParams, edgeWeight);
 						for (word l = 0; l < m_nLayers; l++) m_graph.setArc(idx + l, idx + l - m_nLayers * m_size.width + m_nLayers, ePot);
 					} // x, y
 				} // edges_diag

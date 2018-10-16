@@ -49,11 +49,11 @@ float penalizerExp (float x, float l)
 }
 
 
-Mat	CTrainEdgePottsCS::calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const
+Mat	CTrainEdgePottsCS::calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const
 {
-	DGM_ASSERT_MSG((params_len == 2) || (params_len == m_nStates + 1), "Wrong number of parameters: %zu. It must be either %d or %u", params_len, 2, m_nStates + 1);	
+	DGM_ASSERT_MSG((vParams.size() == 2) || (vParams.size() == m_nStates + 1), "Wrong number of parameters: %zu. It must be either %d or %u", vParams.size(), 2, m_nStates + 1);
 
-	Mat res = CTrainEdgePotts::calculateEdgePotentials(featureVector1, featureVector2, params, params_len - 1);
+	Mat res = CTrainEdgePotts::calculateEdgePotentials(featureVector1, featureVector2, vec_float_t(vParams.begin(), vParams.end() - 1));
 	if (featureVector1.empty() || featureVector2.empty()) return res;	// no cotrast could be calcilated -> return potts edge potential
 
 	// Assertions:
@@ -67,9 +67,9 @@ Mat	CTrainEdgePottsCS::calculateEdgePotentials(const Mat &featureVector1, const 
 	float penalty;
 	float dst = calculateContrast(featureVector1, featureVector2);
 	switch(m_penApproach) {
-		case eP_APP_PEN_CHAR:	penalty = penalizerChar(dst, params[params_len-1]);	break;
-		case eP_APP_PEN_PM:		penalty = penalizerPM(dst, params[params_len-1]);	break;
-		case eP_APP_PEN_EXP:	penalty = penalizerExp(dst, params[params_len-1]);	break;
+		case eP_APP_PEN_CHAR:	penalty = penalizerChar(dst, vParams.back());	break;
+		case eP_APP_PEN_PM:		penalty = penalizerPM(dst, vParams.back());		break;
+		case eP_APP_PEN_EXP:	penalty = penalizerExp(dst, vParams.back());	break;
 	}
 
 	for (byte s = 0; s < m_nStates; s++) res.at<float>(s, s) = MAX(1.0f, res.at<float>(s, s) * penalty);
