@@ -23,8 +23,10 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/
-		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
-		DllExport ~CGraphDenseExt(void) {}
+		DllExport CGraphDenseExt(CGraphDense& graph) : m_graph(graph) {}
+        CGraphDenseExt(const CGraphDenseExt&) = delete;
+        DllExport ~CGraphDenseExt() = default;
+        const CGraphDenseExt& operator= (const CGraphDenseExt&) = delete;
 
 		/**
 		* @brief Adds the graph nodes with potentials \b pots

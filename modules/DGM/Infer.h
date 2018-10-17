@@ -23,9 +23,11 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/
-		DllExport CInfer(CGraph &graph) : m_graph(graph) {};
-		DllExport virtual ~CInfer(void) {}
-
+		DllExport CInfer(CGraph &graph) : m_graph(graph) {}
+        CInfer(const CInfer&) = delete;
+        DllExport virtual ~CInfer() = default;
+        const CInfer& operator= (const CInfer&) = delete;
+        
 		/**
 		* @brief Inference
 		* @details This function estimates the marginal potentials for each graph node, and stores them as node potentials

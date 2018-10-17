@@ -33,7 +33,7 @@ source_group("Source Files\\Common\\Utilities" FILES "timer.h")
 source_group("Source Files\\Common\\Utilities" FILES "serialize.h")
 source_group("Source Files\\Decoding" 		   FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact"   FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp")
+source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp" "FactoryGraph.h")
 source_group("Source Files\\Graph\\Dense" 	   FILES 
 											"GraphDense.h" 
 											"GraphDense.cpp"
@@ -77,7 +77,7 @@ source_group("Source Files\\Random Model\\Prior" FILES "Prior.h" "Prior.cpp")
 source_group("Source Files\\Random Model\\Prior\\Edge" FILES "PriorEdge.h" "PriorEdge.cpp")
 source_group("Source Files\\Random Model\\Prior\\Node" FILES "PriorNode.h" "PriorNode.cpp")
 source_group("Source Files\\Random Model\\Prior\\Triplet" FILES "PriorTriplet.h" "PriorTriplet.cpp")
-source_group("Source Files\\Random Model\\Training" FILES "ITrain.h")
+source_group("Source Files\\Random Model\\Training" FILES "ITrain.h" "TrainKit.h")
 source_group("Source Files\\Random Model\\Training\\Edge" FILES "TrainEdge.h" "TrainEdge.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Contrast Sensitive" FILES "TrainEdgePottsCS.h" "TrainEdgePottsCS.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Data Dependent" FILES "TrainEdgePrior.h" "TrainEdgePrior.cpp" "TrainEdgeConcat.h")

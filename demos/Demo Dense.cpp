@@ -86,11 +86,14 @@ int main(int argc, char *argv[])
 	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
 	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
 
-	CGraphDense graph(nStates);
-	CGraphDenseExt graphExt(graph);
-	CInferDense decoder(graph);
-	
-	
+    CFactoryGraphDense factory(nStates);
+    CGraphDenseExt& graphExt = factory.getGraphExt();
+    CInfer&         decoder  = factory.getInfer();
+//    CGraphDense graph(nStates);
+//    CInferDense decoder(*dynamic_cast<CGraphDense*>(graph));
+//    CGraphDenseExt graphExt(dynamic_cast<CGraphDense&>(graph));
+
+		
     // TODO:
 	graphExt.addNodes(nodePotentials);
 	graphExt.addGaussianEdgeModel(test_img.size(), 3, 3, 3);
