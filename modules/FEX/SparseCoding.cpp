@@ -33,7 +33,7 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 
 	vec_mat_t res(nWords);
 	for (word w = 0; w < nWords; w++)
-		res[w] = Mat(img.size(), CV_8UC1, cvScalar(0));
+		res[w] = Mat(img.size(), CV_8UC1, cv::Scalar(0));
 
 #ifdef ENABLE_PPL
 	concurrency::parallel_for(0, dataHeight, 1, [&](int y) {

@@ -127,7 +127,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @param imgSize Size of the resulting image
 		* @returns Decoded image: Mat(size: \b imgSize; type: CV_8UC1)
 		*/
-		DllExport Mat TEST_decode(const Mat &X, CvSize imgSize) const;
+		DllExport Mat TEST_decode(const Mat &X, cv::Size imgSize) const;
 #endif				// --- --------- ---
 
 		/**
@@ -155,7 +155,7 @@ namespace DirectGraphicalModels { namespace fex
 		* @param imgSize The size of the image to return
 		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1 or CV_16UC1)
 		*/
-		DllExport static Mat data2img(const Mat &X, CvSize imgSize);
+		DllExport static Mat data2img(const Mat &X, cv::Size imgSize);
 
 
 	protected:

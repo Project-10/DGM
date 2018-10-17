@@ -27,12 +27,12 @@ void testGraphBuilding(CGraph *pGraph, byte nStates)
 		ASSERT_EQ(pot1.at<float>(s, 0), pPot1[s]);
 	}
 
-	Mat pots2 = random::U(Size(nStates, pGraph->getNumNodes() - 10), CV_32FC1, 0.0, 100.0);
+	Mat pots2 = random::U(Size(nStates, static_cast<int>(pGraph->getNumNodes()) - 10), CV_32FC1, 0.0, 100.0);
 	pGraph->setNodes(pots2, 2);
 	Mat pot;
 	for (size_t n = 2; n < pGraph->getNumNodes(); n++) {
 		pGraph->getNode(n, pot);
-		float *pPot = (n - 2 < pots2.rows) ? pots2.ptr<float>(n - 2) : pots1.ptr<float>(n - 2);
+		float *pPot = (static_cast<int>(n) - 2 < pots2.rows) ? pots2.ptr<float>(static_cast<int>(n) - 2) : pots1.ptr<float>(static_cast<int>(n) - 2);
 		for (byte s = 0; s < nStates; s++)
 			ASSERT_EQ(pot.at<float>(s, 0), pPot[s]);
 	}

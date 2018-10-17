@@ -10,7 +10,7 @@ Mat	CVariance::get(const Mat &img, SqNeighbourhood nbhd)
 
 	// Converting to one channel image
 	Mat	I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	Mat res(img.size(), CV_8UC1);									

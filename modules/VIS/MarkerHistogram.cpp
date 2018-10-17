@@ -6,7 +6,7 @@
 namespace DirectGraphicalModels { namespace vis 
 {
 // Constants
-const CvSize		CMarkerHistogram::margin		= cvSize(25, 16);
+const cv::Size		CMarkerHistogram::margin		= cv::Size(25, 16);
 const byte			CMarkerHistogram::bkgIntencity	= 50;
 const double		CMarkerHistogram::frgWeight		= 0.75;
 const std::string	CMarkerHistogram::wndName		= "Feature Histogram Viewer";
@@ -51,11 +51,11 @@ Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 	Mat tmp(margin.height, res.rows, CV_8UC3);
 	tmp.setTo(bkgIntencity);
 	sprintf(str, "                        feature 1                    255");
-	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 	flip(tmp.t(), tmp, 0);
 	tmp.copyTo(res(Rect(0, 0, margin.height, tmp.rows)));
 	sprintf(str, "0                       feature 0                    255");
-	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 
 	// Figure box
 	rectangle(res, Point(margin.height - 1, margin.height - 1), Point(256 + margin.height, 256 + margin.height), CV_RGB(255, 255, 255));
@@ -69,7 +69,7 @@ void CMarkerHistogram::showHistogram(void)
 	namedWindow(wndName.c_str(), WINDOW_AUTOSIZE);
 	imshow(wndName.c_str(), histogramImg);
 	setMouseCallback(wndName.c_str(), [](int Event, int x, int y, int flags, void *param) {
-		if (Event != CV_EVENT_LBUTTONDOWN) return;
+		if (Event != cv::MouseEventFlags::EVENT_FLAG_LBUTTON) return;
 		CMarkerHistogram *pUserData = static_cast<CMarkerHistogram *>(param);
 		Vec3b color = histogramImg.at<Vec3b>(y, x);	// BGR
 		histogramImg.release();
@@ -91,12 +91,12 @@ Mat CMarkerHistogram::drawHistogram(Scalar color) const
 	const word		nFeatures = m_nodeTrainer.getNumFeatures();
 	const int		activeState = getActiveState(color);
 
-	CvSize			fSize;								// Size of the resulting image in feature histograms
+	cv::Size			fSize;								// Size of the resulting image in feature histograms
 	fSize.width = nFeatures / fMaxHeight;
 	if (nFeatures % fMaxHeight != 0) fSize.width++;
 	fSize.height = (nFeatures < fMaxHeight) ? nFeatures : fMaxHeight;
 
-	CvSize	resSize;									// Size of the resulting image
+	cv::Size	resSize;									// Size of the resulting image
 	resSize.width = margin.width + fSize.width  * (256 + 2 * margin.width);
 	resSize.height = margin.height + fSize.height * (100 + margin.height);
 
@@ -178,14 +178,14 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	// Feature Names
 	if (m_vFeatureNames.empty()) sprintf(str, "feature %d", f);
 	else						 sprintf(str, "%s", m_vFeatureNames[f].c_str());
-	CvSize textSize = getTextSize(str, CV_FONT_HERSHEY_SIMPLEX, 0.5, 1, NULL);
-	putText(res, str, Point(margin.width + (MAX(256 - textSize.width, 108)) / 2, 16), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(125, 125, 125), 1, CV_AA);
+	cv::Size textSize = getTextSize(str, cv::HersheyFonts::FONT_HERSHEY_SIMPLEX, 0.5, 1, NULL);
+	putText(res, str, Point(margin.width + (MAX(256 - textSize.width, 108)) / 2, 16), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(125, 125, 125), 1, cv::LineTypes::LINE_AA);
 
 	// Figure box
 	rectangle(res, Point(margin.width - 1, 0), Point(margin.width + 256, 100), CV_RGB(255,255,255));
 	for (x = 0; x <= 255; x += 51) {
 		sprintf(str, "%d", x);
-		putText(res, str, Point(margin.width + x - 5, 109), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+		putText(res, str, Point(margin.width + x - 5, 109), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 	}
 	
 	return res;
@@ -229,11 +229,11 @@ Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
 	tmp = Mat(margin.height, res.rows, CV_8UC3);	
 	tmp.setTo(bkgIntencity);
 	sprintf(str, "                        feature 1                    255");
-	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	putText(tmp, str, Point(3, tmp.rows - 4), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 	flip(tmp.t(), tmp, 0);
 	tmp.copyTo(res(Rect(0, 0, margin.height, tmp.rows)));
 	sprintf(str, "0                       feature 0                    255");
-	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, CV_AA);
+	putText(res, str, Point(3, res.rows - 6), FONT_HERSHEY_SIMPLEX, 0.3, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 
 	// Figure box
 	rectangle(res, Point(margin.height - 1, margin.height - 1), Point(256 + margin.height, 256 + margin.height), CV_RGB(255, 255, 255));
@@ -248,12 +248,12 @@ Mat CMarkerHistogram::drawLegend(int maxHeight, int activeState) const
 	const byte		nStates		= m_nodeTrainer.getNumStates();
 	const size_t	n			= m_vPalette.size();
 	
-	CvSize			sSize;								// Size of the resulting image in states
+	cv::Size			sSize;								// Size of the resulting image in states
 	sSize.width = (nStates + 1) / sMaxHeight;
 	if ((nStates + 1) % sMaxHeight != 0) sSize.width++;
 	sSize.height = ((nStates + 1) < sMaxHeight) ? (nStates + 1) : sMaxHeight;
 
-	CvSize			resSize;							// Size of the resulting image
+	cv::Size			resSize;							// Size of the resulting image
 	resSize.width  = sSize.width  * 120;
 	resSize.height = 2 * margin.height * sSize.height;
 
@@ -276,7 +276,7 @@ Mat CMarkerHistogram::drawLegend(int maxHeight, int activeState) const
 		// Class name
 		if (m_vPalette.at(s % n).second.empty()) sprintf(str, "c%d", s);
 		else  sprintf(str, "%s", m_vPalette.at(s % n).second.c_str());
-		putText(tmp, str, Point(dx + margin.width + 5, dy + margin.height - 3), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255), 1, CV_AA);		
+		putText(tmp, str, Point(dx + margin.width + 5, dy + margin.height - 3), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);		
 	} // s
 	
 	// White "all" color box
@@ -287,7 +287,7 @@ Mat CMarkerHistogram::drawLegend(int maxHeight, int activeState) const
 		const Point triangle[3] = {Point(dx, dy), Point(dx + margin.height / 2, dy + margin.height / 2), Point(dx, dy + margin.height)}; 
 		fillConvexPoly(tmp, triangle, 3, CV_RGB(0, 0, 0));
 	}	
-	putText(tmp, "all", Point(dx + margin.width + 5, dy + margin.height - 3), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255), 1, CV_AA);
+	putText(tmp, "all", Point(dx + margin.width + 5, dy + margin.height - 3), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255), 1, cv::LineTypes::LINE_AA);
 
 	addWeighted(res, 1.0, tmp, frgWeight, 0.0, res);
 	tmp.release();

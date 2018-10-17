@@ -20,7 +20,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 
 	// 1. Initialize dictionary D randomly
 	if (!m_D.empty()) m_D.release();
-	m_D = random::N(cvSize(sampleLen, nWords), CV_32FC1, 0.0f, 0.3f);  
+	m_D = random::N(cv::Size(sampleLen, nWords), CV_32FC1, 0.0f, 0.3f);  
 
 	Mat		_W, W;					// Weights matrix (Size: nStamples x nWords)
 	float	cost;
@@ -34,7 +34,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 		// 2.1 Select a random mini-batch of 2000 patches
 		dword rndRow = random::u<dword>(0, MAX(1, nSamples - batch) - 1);
 		int normalizer = (X.depth() == CV_8U) ? 255 : 65535;
-		Mat _X = X(cvRect(0, rndRow, sampleLen, batch));
+		Mat _X = X(cv::Rect(0, rndRow, sampleLen, batch));
 		_X.convertTo(_X, CV_32FC1, 1.0 / normalizer);
 		
 		// 2.2 Initialize W
@@ -104,7 +104,7 @@ void CSparseDictionary::load(const std::string &fileName)
 }
 
 #ifdef DEBUG_MODE	// --- Debugging ---
-Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
+Mat CSparseDictionary::TEST_decode(const Mat &X, cv::Size imgSize) const
 {
 	DGM_ASSERT_MSG(!m_D.empty(), "The dictionary must me trained or loaded before using this function");
 
@@ -117,8 +117,8 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 	const float	lambda		= 5e-5f;		// L1-regularisation parameter (on features)
 	const float	epsilon		= 1e-5f;		// L1-regularisation epsilon |x| ~ sqrt(x^2 + epsilon)
 
-	Mat res(imgSize, CV_32FC1, cvScalar(0));
-	Mat cover(imgSize, CV_32FC1, cvScalar(0));
+	Mat res(imgSize, CV_32FC1, Scalar(0));
+	Mat cover(imgSize, CV_32FC1, Scalar(0));
 
 #ifdef ENABLE_PPL
 	concurrency::parallel_for(0, dataHeight, blockSize, [&](int y) {
@@ -143,8 +143,8 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, CvSize imgSize) const
 			gemm(W, m_D, 1.0, Mat(), 0.0, tmp);								// tmp = W x D
 			tmp = tmp.reshape(0, blockSize);
 
-			res(cvRect(x, y, blockSize, blockSize))   += tmp;
-			cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
+			res(Rect(x, y, blockSize, blockSize))   += tmp;
+			cover(Rect(x, y, blockSize, blockSize)) += 1.0;
 		}
 	}
 #ifdef ENABLE_PPL
@@ -165,7 +165,7 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 	varianceThreshold = sqrtf(varianceThreshold);
 	// Converting to one channel image
 	Mat I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 
 	const int	dataHeight = img.rows - blockSize + 1;
@@ -176,7 +176,7 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 
 	for (int y = 0; y < dataHeight; y++)
 		for (int x = 0; x < dataWidth; x++) {
-			sample = I(cvRect(x, y, blockSize, blockSize)).clone().reshape(0, 1);			// sample as a row-vector
+			sample = I(cv::Rect(x, y, blockSize, blockSize)).clone().reshape(0, 1);			// sample as a row-vector
 
 			Scalar stddev;
 			meanStdDev(sample, Mat(), stddev);
@@ -189,10 +189,10 @@ Mat CSparseDictionary::img2data(const Mat &img, int blockSize, float varianceThr
 	return res;
 }
 
-Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
+Mat CSparseDictionary::data2img(const Mat &X, cv::Size imgSize)
 {
-	Mat res(imgSize, CV_32FC1, cvScalar(0));
-	Mat cover(imgSize, CV_32FC1, cvScalar(0));
+	Mat res(imgSize, CV_32FC1, cv::Scalar(0));
+	Mat cover(imgSize, CV_32FC1, cv::Scalar(0));
 
 	const int	blockSize  = static_cast<int>(sqrt(X.cols));
 	const int	dataWidth  = res.cols - blockSize + 1;
@@ -205,8 +205,8 @@ Mat CSparseDictionary::data2img(const Mat &X, CvSize imgSize)
 		int y = s / dataWidth;
 		int x = s % dataWidth;
 
-		res(cvRect(x, y, blockSize, blockSize)) += sample;
-		cover(cvRect(x, y, blockSize, blockSize)) += 1.0;
+		res(cv::Rect(x, y, blockSize, blockSize)) += sample;
+		cover(cv::Rect(x, y, blockSize, blockSize)) += 1.0;
 	}
 	res /= cover;
 
@@ -221,7 +221,7 @@ void CSparseDictionary::calculate_W(const Mat &X, const Mat &D, Mat &W, float la
 {
 	// Define the velocity vectors
 	Mat gradient;
-	Mat incriment(W.size(), W.type(), cvScalar(0));
+	Mat incriment(W.size(), W.type(), cv::Scalar(0));
 
 	for (unsigned int i = 0; i < nIt; i++) {
 		float momentum = (i <= 10) ? 0.5f : 0.9f;
@@ -236,7 +236,7 @@ void CSparseDictionary::calculate_D(const Mat &X, Mat &D, const Mat &W, float ga
 {
 	// define the velocity vectors
 	Mat gradient;
-	Mat incriment(D.size(), D.type(), cvScalar(0));
+	Mat incriment(D.size(), D.type(), cv::Scalar(0));
 
 	for (unsigned int i = 0; i < nIt; i++) {
 		float momentum = (i <= 10) ? 0.5f : 0.9f;
@@ -275,14 +275,14 @@ float CSparseDictionary::calculateCost(const Mat &X, const Mat &D, const Mat &W,
 	Mat temp;
 
 	parallel::gemm(W, D, 1.0, X, -1.0, temp);		// temp =  W x D - X	
-	reduce(temp, temp, 0, CV_REDUCE_AVG);
+	reduce(temp, temp, 0, cv::ReduceTypes::REDUCE_AVG);
 	multiply(temp, temp, temp);						// temp = (W x D - X)^2
 	float J1 = static_cast<float>(sum(temp)[0]);
 
 	multiply(W, W, temp);							// temp = W^2
 	temp += epsilon;								// temp = W^2 + epsilon
 	sqrt(temp, temp);								// temp = sqrt(W^2 + epsilon)
-	reduce(temp, temp, 0, CV_REDUCE_AVG);
+	reduce(temp, temp, 0, cv::ReduceTypes::REDUCE_AVG);
 	float J2 = lambda * static_cast<float>(sum(temp)[0]);
 
 	multiply(D, D, temp);							// temp = D^2

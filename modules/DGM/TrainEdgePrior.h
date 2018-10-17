@@ -51,12 +51,11 @@ namespace DirectGraphicalModels
 		* and \f$\lambda\f$ is a parameter provided through argument \b params. For more details on penalization fuction, please refere to @ref ePotPenalApproach.
 		* @param featureVector1 Multi-dimensinal point \f$\textbf{f}_1\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the first node of the edge
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the second node of the edge
-		* @param params Array of control parameters \f$\{\vec{\theta},\lambda\} \f$. \f$\vec{\theta}\f$ may consist either from \a one parameter (in this case all the diagonal elemets will be the same), 
+		* @param vParams Array of control parameters \f$\{\vec{\theta},\lambda\} \f$. \f$\vec{\theta}\f$ may consist either from \a one parameter (in this case all the diagonal elemets will be the same), 
 		* or from \a nStates parameters, specifying smoothness strength for each state (class) individually; \f$\lambda\f$ consists from \a one parameter.
-		* @param params_len The length of the \b params parameter. It must be equal to (\a 1 || \a nStates) + \a 1.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const;
+		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const;
 
 
 	private:

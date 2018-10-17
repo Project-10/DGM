@@ -15,7 +15,7 @@ Mat CHOG::get(const Mat &img, int nBins, SqNeighbourhood nbhd)
 
 	// Converting to one channel image
 	Mat	I;
-	if (img.channels() != 1) cvtColor(img, I, CV_RGB2GRAY);
+	if (img.channels() != 1) cvtColor(img, I, cv::ColorConversionCodes::COLOR_RGB2GRAY);
 	else img.copyTo(I);
 	
 	// Derivatives
@@ -78,10 +78,10 @@ Mat CHOG::get(const Mat &img, int nBins, SqNeighbourhood nbhd)
 			int x0 = MAX(0, x - nbhd.leftGap);
 			int x1 = MIN(x + nbhd.rightGap, width - 1);
 
-			Mat HOGcell(cvSize(nBins, 1), CV_64FC1);
+			Mat HOGcell(cv::Size(nBins, 1), CV_64FC1);
 			double *pHOGcell = HOGcell.ptr<double>(0);
 			for (i = 0; i < nBins; i++) pHOGcell[i] = pInts1[i][x1 + 1] - pInts1[i][x0] - pInts0[i][x1 + 1] + pInts0[i][x0];
-			normalize(HOGcell, HOGcell, 255, 0, CV_MINMAX);
+			normalize(HOGcell, HOGcell, 255, 0, cv::NormTypes::NORM_MINMAX);
 			for (i = 0; i < nBins; i++) pTemp[i][x] = static_cast<byte>(pHOGcell[i]);
 			HOGcell.release();
 		} // x

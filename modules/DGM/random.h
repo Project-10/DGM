@@ -76,7 +76,7 @@ namespace DirectGraphicalModels
 		* @param max The upper boundary
 		* @return A matrix of floating-point numbers in range between [\b min and \b max)
 		*/
-		inline Mat U(CvSize size, int type, double min = 0, double max = 1)
+		inline Mat U(cv::Size size, int type, double min = 0, double max = 1)
 		{
 			static thread_local RNG rng(static_cast<unsigned int>(clock() + std::hash<std::thread::id>()(std::this_thread::get_id())));
 			Mat res(size, type);
@@ -91,7 +91,7 @@ namespace DirectGraphicalModels
 		* @param sigma The standard deviation \f$\sigma\f$
 		* @return A matrix of floating-point numbers with normal distribution
 		*/
-		inline Mat N(CvSize size, int type, double mu = 0, double sigma = 1)
+		inline Mat N(cv::Size size, int type, double mu = 0, double sigma = 1)
 		{
 			static thread_local RNG rng(static_cast<unsigned int>(clock() + std::hash<std::thread::id>()(std::this_thread::get_id())));
 			Mat res(size, type);

@@ -30,6 +30,6 @@ namespace DirectGraphicalModels { namespace fex
 		* @param weight The weight coefficients, which determine the contribution of each color channel to the resulting intensity.
 		* @return The intesity feature image of type \b CV_8UC1.
 		*/
-		DllExport static Mat	get(const Mat &img, CvScalar weight = CV_RGB(0.333, 0.333, 0.333));
+		DllExport static Mat	get(const Mat &img, cv::Scalar weight = CV_RGB(0.333, 0.333, 0.333));
 	};
 } }

@@ -212,7 +212,7 @@ namespace DirectGraphicalModels
 
 		Mat p;
 		gemm(x.getSigmaInv(), m_sigma, 1.0, Mat(), 0.0, p, 0);		// p = \Sigma^{-1}_{x} * \Sigma
-		CvScalar tr = trace(p);
+		cv::Scalar tr = trace(p);
 		p.release();
 
 		double dst = x.getMahalanobisDistance(m_mu);

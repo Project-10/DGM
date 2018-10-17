@@ -93,11 +93,10 @@ namespace DirectGraphicalModels
 		* @todo: Incorporate the node potential weight into the model parameters
 		* @param featureVector1 Multi-dimensinal point \f$\textbf{f}_1\f$: Mat(size: nFeatures x 1; type: CV_8UC1), corresponding to the first node of the edge
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_8UC1), corresponding to the second node of the edge
-		* @param params Array of control parameters \f$\vec{\theta}\f$, which must consist from \a one parameter, specifying the largest value in the resulting edge potential.
-		* @param params_len The length of the \b params parameter. It must be equal to \a 1.
+		* @param vParams Array of control parameters \f$\vec{\theta}\f$, which must consist from \a one parameter, specifying the largest value in the resulting edge potential.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const 
+		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const 
 		{
 			const float nodePotWeight = 1.0f;
 			m_pConcatenator->concatenate(featureVector1, featureVector2, const_cast<Mat &>(m_featureVector));

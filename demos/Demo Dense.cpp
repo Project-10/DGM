@@ -14,7 +14,7 @@ void print_help(char *argv0)
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize = cvSize(400, 400);
+	const cv::Size		imgSize = cv::Size(400, 400);
 	const int			width = imgSize.width;
 	const int			height = imgSize.height;
 	const unsigned int	nStates = 6;		// {road, traffic island, grass, agriculture, tree, car} 	
@@ -117,11 +117,11 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height - 18), Point(width, height), CV_RGB(0, 0, 0), -1);
-	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imwrite(argv[6], test_img);
 	
 	imshow("Image", test_img);
-	cvWaitKey();
+	cv::waitKey();
 
 	return 0;
 }

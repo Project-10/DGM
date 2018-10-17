@@ -17,7 +17,7 @@ struct USER_DATA {
 void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param)
 {
 	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == CV_EVENT_LBUTTONDOWN) {
+	if (Event == cv::MouseEventTypes::EVENT_LBUTTONDOWN) {
 		Mat			  pot, potImg;
 		size_t		  node_id	= pUserData->imgWidth * y + x;
 
@@ -47,7 +47,7 @@ void print_help(char *argv0)
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
+	const cv::Size		imgSize		= cv::Size(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
@@ -65,8 +65,7 @@ int main(int argc, char *argv[])
 
 	CTrainNodeBayes	        nodeTrainer(nStates, nFeatures);
 	CTrainEdgePottsCS	    edgeTrainer(nStates, nFeatures);
-	float				    params[]		= {400, 0.001f};
-	size_t				    params_len	    = 2;
+	vec_float_t			    vParams	= {400, 0.001f};
 	CGraphPairwise		    graph(nStates);
 	CInferLBP			    decoder(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
@@ -103,12 +102,12 @@ int main(int argc, char *argv[])
 
 			if (x > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
+				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
 				graph.addArc(idx, idx - 1, edgePot);
 			} // if x
 			if (y > 0) {
 				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
+				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
 				graph.addArc(idx, idx - width, edgePot);
 			} // if y
 		} // x
@@ -130,7 +129,7 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(img, solution);
 	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imshow("Solution", img);
 	
 	// Feature distribution histograms
@@ -143,9 +142,9 @@ int main(int argc, char *argv[])
 
 	// Setting up handlers
 	USER_DATA userData(graph, marker, width);
-	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
+	cv::setMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
 
-	cvWaitKey();
+	cv::waitKey();
 
 	return 0;
 }

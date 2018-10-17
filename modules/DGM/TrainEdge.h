@@ -63,12 +63,11 @@ namespace DirectGraphicalModels
 		* the resulting edge potential is powered by parameter \b weight.
 		* @param featureVector1 Multi-dimensinal point \f$\textbf{f}_1\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the first node of the edge
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the second node of the edge
-		* @param params Array of control parameters. Please refer to the concrete model implementation of the calculateEdgePotentials() function for more details
-		* @param params_len The length of the \a params parameter
+		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		* @return %Edge potentials on success: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/	
-		DllExport Mat			getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len, float weight = 1.0f) const; 
+		DllExport Mat			getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams, float weight = 1.0f) const; 
         /**
          * @brief Returns the data-independent edge potentials
          * @details This function returns matrix with diagonal elements equal to the argument \b val, all the other elements are 1's, what imitates the Potts model.
@@ -97,10 +96,9 @@ namespace DirectGraphicalModels
 		* Functions \f$ f \f$ must be implemented in derived classes.
 		* @param featureVector1 Multi-dimensinal point \f$\textbf{f}_1\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the first node of the edge
 		* @param featureVector2 Multi-dimensinal point \f$\textbf{f}_2\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to the second node of the edge
-		* @param params Array of control parameters. Please refere to the concrete model implementation of the calculateEdgePotentials() function for more details
-		* @param params_len The length of the \b params parameter
+		* @param vParams Array of control parameters. Please refere to the concrete model implementation of the calculateEdgePotentials() function for more details
 		* @returns The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/	
-		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, float *params, size_t params_len) const = 0;
+		DllExport virtual Mat	calculateEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams) const = 0;
 	};
 }

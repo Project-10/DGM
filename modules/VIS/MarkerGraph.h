@@ -31,7 +31,7 @@ namespace DirectGraphicalModels {
 	DllExport Mat drawGraph(int								  size, 
 							IGraphPairwise					& graph,
 							std::function<Point2f(size_t)>	  posFunc, 
-							std::function<CvScalar(size_t)>   colorFunc		= nullptr, 
+							std::function<cv::Scalar(size_t)>   colorFunc		= nullptr, 
 							const vec_scalar_t				& groupsColor	= vec_scalar_t());
 
 #ifdef USE_OPENGL
@@ -61,7 +61,7 @@ namespace DirectGraphicalModels {
 	DllExport void showGraph3D(int								 size, 
 							   IGraphPairwise				   & graph,
 							   std::function<Point3f(size_t)>    posFunc, 
-							   std::function<CvScalar(size_t)>   colorFunc	= nullptr,
+							   std::function<cv::Scalar(size_t)>   colorFunc	= nullptr,
 							   const vec_scalar_t			   & groupsColor	= vec_scalar_t());
 #endif
 } }

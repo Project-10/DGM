@@ -24,7 +24,7 @@ void print_help(char *argv0,
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
+	const cv::Size		imgSize		= cv::Size(400, 400);
 	const int			width		= imgSize.width;
 	const int			height		= imgSize.height;
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 	
@@ -72,16 +72,15 @@ int main(int argc, char *argv[])
 	CInfer			    & decoder = factory.getInfer();
 	CMarker				  marker(DEF_PALETTE_6);
 	CCMat				  confMat(nStates);
-	float				  params[]		= {100, 0.01f};						
-	size_t				  params_len;
+	vec_float_t			  vParams = {100, 0.01f};						
 
 	switch(edgeModel) {
-		case 0: params[0] = 1;	// Emulate "No edges"
-		case 1:	params_len = 1; break;
-		case 2:	params_len = 2; break;
-		case 3:	params_len = 2; break;
-		case 4:	params_len = 1; break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0], vRandomModelsNode, vRandomModelsEdge); return 0;
+		case 0: vParams[0] = 1;	// Emulate "No edges"
+		case 1:	vParams.pop_back(); break;
+		case 2:	break;
+		case 3:	break;
+		case 4:	vParams.pop_back(); break;
+		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -123,7 +122,7 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
-	graphExt.fillEdges(edgeTrainer.get(), test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
+	graphExt.fillEdges(edgeTrainer.get(), test_fv, vParams);			// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
@@ -141,11 +140,11 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(test_img, str, Point(width - 155, height - 5), cv::HersheyFonts::FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	cvWaitKey(1000);
+	cv::waitKey(1000);
 
 	return 0;
 }

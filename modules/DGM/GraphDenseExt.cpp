@@ -10,7 +10,7 @@ namespace DirectGraphicalModels
 		m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));
 	}
 
-	void CGraphDenseExt::addGaussianEdgeModel(CvSize graphSize, float sx, float sy, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addGaussianEdgeModel(cv::Size graphSize, float sx, float sy, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
 		Mat features(graphSize.height * graphSize.width, 2, CV_32FC1);
 		int n = 0;
