@@ -236,8 +236,7 @@ TAB_SIZE               = 4
 # will allow you to put the command \sideeffect (or @sideeffect) in the
 # documentation, which will result in a user-defined paragraph with heading
 # "Side Effects:". You can put \n's in the value part of an alias to insert
-# newlines (in the resulting output). You can put ^^ in the value part of an
-# alias to insert a newline as if a physical newline was in the original file.
+# newlines.
 
 ALIASES                = 
 
@@ -1087,7 +1086,7 @@ CLANG_OPTIONS          =
 # path to the compilation database (see:
 # http://clang.llvm.org/docs/HowToSetupToolingForLLVM.html) used when the files
 # were built. This is equivalent to specifying the "-p" option to a clang tool,
-# such as clang-check. These options will then be passed to the parser.
+# such as clang-check. These options will then be pased to the parser.
 # Note: The availability of this option depends on whether or not doxygen was
 # generated with the -Duse-libclang=ON option for CMake.
 # The default value is: 0.
@@ -1566,7 +1565,7 @@ MATHJAX_FORMAT         = HTML-CSS
 # Content Delivery Network so you can quickly see the result without installing
 # MathJax. However, it is strongly recommended to install a local copy of
 # MathJax from https://www.mathjax.org before deployment.
-# The default value is: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/.
+# The default value is: http://cdn.mathjax.org/mathjax/latest.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
 MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
@@ -2407,7 +2406,7 @@ INTERACTIVE_SVG        = NO
 # found. If left blank, it is assumed the dot tool can be found in the path.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_PATH               = /usr/local/bin/dot
+DOT_PATH               = "C:/Program Files (x86)/Graphviz2.38/bin"
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that
 # contain dot files that are included in the documentation (see the \dotfile
