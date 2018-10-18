@@ -29,8 +29,8 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		CTrainLinkNested(byte nStatesBase, byte nStatesOccl, word nFeatures) 
-			: CTrainLink(nStatesBase, nStatesOccl, nFeatures)
-			, CBaseRandomModel(nStatesBase * nStatesOccl)
+			: CBaseRandomModel(nStatesBase * nStatesOccl)
+            , CTrainLink(nStatesBase, nStatesOccl, nFeatures)
 		{
 			word nStates = static_cast<word>(nStatesBase) * static_cast<word>(nStatesOccl);
 			DGM_ASSERT(nStates < 256);

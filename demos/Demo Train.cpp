@@ -29,17 +29,16 @@ int main(int argc, char *argv[])
 	const int			height		= imgSize.height;
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 	
 	const unsigned int	nFeatures	= 3;		
-
     const std::vector<std::pair<std::string, randomModelNode>> vRandomModelsNode = {
         std::make_pair("Bayes", randomModelNode::Bayes),
-        std::make_pair("Gaussian Mixture Model", randomModelNode::Bayes),
-        std::make_pair("OpenCV Gaussian Mixture Model", randomModelNode::Bayes),
-        std::make_pair("Nearest Neighbor", randomModelNode::Bayes),
-        std::make_pair("OpenCV Nearest Neighbor", randomModelNode::Bayes),
-        std::make_pair("OpenCV Random Forest", randomModelNode::Bayes),
-        std::make_pair("MicroSoft Random Forest", randomModelNode::Bayes),
-        std::make_pair("OpenCV Artificial Neural Network", randomModelNode::Bayes),
-        std::make_pair("OpenCV Support Vector Machines", randomModelNode::Bayes)
+        std::make_pair("Gaussian Mixture Model", randomModelNode::GMM),
+        std::make_pair("OpenCV Gaussian Mixture Model", randomModelNode::CvGMM),
+        std::make_pair("Nearest Neighbor", randomModelNode::KNN),
+        std::make_pair("OpenCV Nearest Neighbor", randomModelNode::CvKNN),
+        std::make_pair("OpenCV Random Forest", randomModelNode::CvRF),
+        std::make_pair("MicroSoft Random Forest", randomModelNode::MsRF),
+        std::make_pair("OpenCV Artificial Neural Network", randomModelNode::CvANN),
+        std::make_pair("OpenCV Support Vector Machines", randomModelNode::CvSVM)
     };
     const std::vector<std::pair<std::string, randomModelEdge>> vRandomModelsEdge = {
         std::make_pair("Without Edges", randomModelEdge::Potts),
@@ -63,24 +62,34 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
+    if (nodeModel < 0 || nodeModel >= vRandomModelsNode.size()) {
+        printf("Unknown node training model is given: %d\n", nodeModel);
+        print_help(argv[0], vRandomModelsNode, vRandomModelsEdge);
+        return 0;
+    }
+    if (edgeModel < 0 || edgeModel >= vRandomModelsEdge.size()) {
+        printf("Unknown edge training model is given: %d\n", edgeModel);
+        print_help(argv[0], vRandomModelsNode, vRandomModelsEdge);
+        return 0;
+    }
+    
     general_parameters params1;
     params1["Hello"] = "World";
     auto                  nodeTrainer	= createNodeTrainer(nStates, nFeatures, vRandomModelsNode[nodeModel].second, params1);
-	auto			      edgeTrainer	= createEdgeTrainer(nStates, nFeatures, vRandomModelsEdge[edgeModel].second, randomModelNode::Bayes);
+	auto			      edgeTrainer	= createEdgeTrainer(nStates, nFeatures, vRandomModelsEdge[edgeModel].second, randomModelNode::Bayes, params1);
     CFactoryGraphPairwise factory(nStates);
 	CGraphPairwiseExt	& graphExt = factory.getGraphExt();
-	CInfer			    & decoder = factory.getInfer();
+	CInfer			    & decoder  = factory.getInfer();
 	CMarker				  marker(DEF_PALETTE_6);
 	CCMat				  confMat(nStates);
-	vec_float_t			  vParams = {100, 0.01f};						
-
+	
+    vec_float_t			  vParams = {100, 0.01f};
 	switch(edgeModel) {
-		case 0: vParams[0] = 1;	// Emulate "No edges"
-		case 1:	vParams.pop_back(); break;
-		case 2:	break;
-		case 3:	break;
-		case 4:	vParams.pop_back(); break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
+        case 0: vParams = {1};          break;	// Emulate "No edges"
+		case 1:	vParams = {100};        break;
+        case 2:	vParams = {100, 0.01f}; break;
+        case 3:	vParams = {100, 0.01f}; break;
+		case 4:	vParams = {100};        break;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -148,4 +157,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-

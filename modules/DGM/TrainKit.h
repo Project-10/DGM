@@ -31,6 +31,7 @@ namespace DirectGraphicalModels {
     using general_parameters = std::map<std::string, std::string>;
     
     /**
+     *
      */
     namespace FactoryTrain {
         enum class randomModelNode { Bayes, GM, GMM, CvGM, CvGMM, KNN, CvKNN, CvRF, MsRF, CvANN, CvSVM };
@@ -61,7 +62,7 @@ namespace DirectGraphicalModels {
                 case randomModelNode::CvANN:    return std::make_shared<CTrainNodeCvANN>(nStates, nFeatures);
                 case randomModelNode::CvSVM:    return std::make_shared<CTrainNodeCvSVM>(nStates, nFeatures);
                 default:
-                    DGM_WARNING("Required model is not supported");
+                    DGM_ASSERT_MSG(false, "Required model is not supported");
                     return nullptr;
             }
         }
@@ -105,11 +106,11 @@ namespace DirectGraphicalModels {
                         case randomModelNode::CvSVM:
                             return std::make_shared<CTrainEdgeConcat<CTrainNodeCvSVM, CDiffFeaturesConcatenator>>(nStates, nFeatures);
                         default:
-                            DGM_WARNING("Required model is not supported");
+                            DGM_ASSERT_MSG(false, "Required model is not supported");
                             return nullptr;
                     }
                 default:
-                    DGM_WARNING("Required model is not supported");
+                    DGM_ASSERT_MSG(false, "Required model is not supported");
                     return nullptr;
             }
         }
@@ -117,7 +118,7 @@ namespace DirectGraphicalModels {
         /**
          * @brief Creates a new link trainer
          */
-        std::shared_ptr<CTrainLink> createLinkTrainer(byte nStatesBase, byte nStatesOccl, word nFeatures, randomModelNode nodeTrainer)
+        std::shared_ptr<CTrainLink> createLinkTrainer(byte nStatesBase, byte nStatesOccl, word nFeatures, randomModelNode nodeTrainer, const general_parameters &params = general_parameters())
         {
             switch(nodeTrainer) {
                 case randomModelNode::Bayes:
@@ -148,7 +149,7 @@ namespace DirectGraphicalModels {
                 case randomModelNode::CvSVM:
                     return std::make_shared<CTrainLinkNested<CTrainNodeCvSVM>>(nStatesBase, nStatesOccl, nFeatures);
                 default:
-                    DGM_WARNING("Required model is not supported");
+                    DGM_ASSERT_MSG(false, "Required model is not supported");
                     return nullptr;
             }
         }
