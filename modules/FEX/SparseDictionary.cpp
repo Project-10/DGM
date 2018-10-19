@@ -64,7 +64,7 @@ void CSparseDictionary::train(const Mat &X, word nWords, dword batch, unsigned i
 #ifdef DEBUG_PRINT_INFO	
 		printf("%f\n", cost);
 #endif
-		DGM_ASSERT_MSG(!isnan(cost), "Training is unstable. Try reducing the learning rate for dictionary.");
+		DGM_ASSERT_MSG(!std::isnan(cost), "Training is unstable. Try reducing the learning rate for dictionary.");
 
 		// 2.5 Saving intermediate dictionary
 		if (!fileName.empty()) {

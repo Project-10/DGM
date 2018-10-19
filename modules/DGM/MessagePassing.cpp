@@ -48,7 +48,7 @@ void CMessagePassing::infer(unsigned int nIt)
 		//	for (byte s = 0; s < nStates; s++) {		// states
 		//		node->Pot.at<float>(s, 0) *= SUM_pot / SUM_new_pot;
 		//		//node->Pot.at<float>(s, 0) /= SUM_new_pot;
-		//		DGM_ASSERT_MSG(!isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
+		//		DGM_ASSERT_MSG(!std::isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 				//			SUM_pot = %f\nSUM_new_pot = %f\n", node->id, SUM_pot, SUM_new_pot);
 //	}
 //} // e_f
@@ -70,7 +70,7 @@ void CMessagePassing::infer(unsigned int nIt)
 		for (byte s = 0; s < nStates; s++) {		// states
 			node->Pot.at<float>(s, 0) /= SUM_pot;
 			//node->Pot.at<float>(s, 0) /= SUM_new_pot;
-			DGM_ASSERT_MSG(!isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
+			DGM_ASSERT_MSG(!std::isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 					SUM_pot = %f\n", node->id, SUM_pot);
 		}
 	});

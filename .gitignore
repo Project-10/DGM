@@ -11,3 +11,11 @@ include/types.h
 
 # Ignore generated documentation
 doc/html
+
+# VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+./vscode
