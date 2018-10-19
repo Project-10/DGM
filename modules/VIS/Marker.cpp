@@ -277,12 +277,12 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 	bool procent = (textProp & TP_PERCENT) == TP_PERCENT;
 
 	if (procent) {
-		if (isnan(val))								sprintf(str, "N A N");	
+		if (std::isnan(val))								sprintf(str, "N A N");	
 		else if (val == 0)							sprintf(str, "O");	
 		else if (val < 0.01f)						sprintf(str, "0.00");
 		else										sprintf(str, "%3.2f", val);	
 	} else {
-		if (isnan(val))								sprintf(str, "N A N");	
+		if (std::isnan(val))								sprintf(str, "N A N");	
 		else if (val == 0)							sprintf(str, "O");	
 		else if ((val < 0.01f) || (val > 9999.99f))	sprintf(str, "%1.1E", val);
 		else										sprintf(str, "%4.2f", val);
@@ -290,7 +290,7 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 
 	drawRectangle(img, pt1, pt2, color, str, 0.65, textProp);
 
-	if (isnan(val)) {
+	if (std::isnan(val)) {
 		line(img, pt1,  pt2, CV_RGB(127, 127, 127), 1, cv::LineTypes::LINE_AA);
 		line(img, Point(pt2.x, pt1.y),  Point(pt1.x, pt2.y), CV_RGB(127, 127, 127), 1, cv::LineTypes::LINE_AA);
 	}
