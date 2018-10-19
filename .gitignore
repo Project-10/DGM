@@ -8,3 +8,6 @@ include/types.h
 
 # Ignore install directories (if in same dir)
 [Ii]nstall
+
+# Ignore generated documentation
+doc/html
