@@ -9,7 +9,10 @@ include/types.h
 # Ignore install directories (if in same dir)
 [Ii]nstall
 
-### VisualStudioCode ###
+# Ignore generated documentation
+doc/html
+
+# VisualStudioCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

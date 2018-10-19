@@ -31,7 +31,7 @@ void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 	m_pLattice->compute(src, temp);
 
 	for (int n = 0; n < src.rows; n++) {	// nodes
-		if (m_function) m_function(temp.row(n), temp.row(n));		// With the SemiMetric function
+		if (m_function) m_function(temp.row(n), lvalue_cast(temp.row(n)));		// With the SemiMetric function
 
 		float *pDst = dst.ptr<float>(n);
 		float *pTemp = temp.ptr<float>(n);
