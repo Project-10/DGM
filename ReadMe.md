@@ -39,11 +39,22 @@ Framework development discussions and thorough bug reports are collected on [Iss
 DGM is released under the [BSD 3-Clause license](https://github.com/Project-10/DGM/blob/master/License.txt).
 The Project-X reference models are released for unrestricted use.
 
-Please cite DGM in your publications if it helps your research:
+If the DGM library helps you in your research, please cite it in your publications:
 
     @MISC{DGM,
     	author = {Kosov, Sergey},
-    	title = {Direct Graphical Models C++ library},
+    	title = {Direct Graphical Models {C++ library},
     	year = {2013},
-    	howpublished={http://research.project-10.de/dgm/}
+        howpublished={http://research.project-10.de/dgm/}
+    }
+
+and / or the PhD thesis, wich describes all the theory lying behind the DGM library:
+
+    @phdthesis{KosovPhD,
+        author = {Kosov, Sergey},
+        title = {Multi-Layer Conditional Random Fields for Revealing Unobserved Eentities},
+        school = {Siegen University},
+        year = {2018},
+        URN = {urn:nbn:de:hbz:467-13434},
+        URL = {http://dokumentix.ub.uni-siegen.de/opus/volltexte/2018/1343},
     }
