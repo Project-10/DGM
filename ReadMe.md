@@ -50,11 +50,12 @@ If the DGM library helps you in your research, please cite it in your publicatio
 
 and / or the PhD thesis, wich describes all the theory lying behind the DGM library:
 
-    @phdthesis{KosovPhD,
+    @PHDTHESIS{KosovPhdThesis,
         author = {Kosov, Sergey},
         title = {Multi-Layer Conditional Random Fields for Revealing Unobserved Eentities},
         school = {Siegen University},
         year = {2018},
-        URN = {urn:nbn:de:hbz:467-13434},
-        URL = {http://dokumentix.ub.uni-siegen.de/opus/volltexte/2018/1343},
+        doi = {10.13140/RG.2.2.12409.31844},
+        urn = {urn:nbn:de:hbz:467-13434},
+        url = {http://dokumentix.ub.uni-siegen.de/opus/volltexte/2018/1343}
     }
