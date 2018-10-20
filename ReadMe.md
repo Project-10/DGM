@@ -43,7 +43,7 @@ If the DGM library helps you in your research, please cite it in your publicatio
 
     @MISC{DGM,
     	author = {Kosov, Sergey},
-    	title = {Direct Graphical Models {C++ library},
+    	title = {Direct Graphical Models {C++} library},
     	year = {2013},
     	howpublished={http://research.project-10.de/dgm/}
     }
