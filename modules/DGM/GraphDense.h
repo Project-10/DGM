@@ -3,11 +3,12 @@
 #pragma once
 
 #include "Graph.h"
-#include "densecrf/edgePotentialPotts.h"
+
+class CEdgePotential;
 
 namespace DirectGraphicalModels 
 {
-	// ================================ Graph Interface Class ================================
+    // ================================ Graph Interface Class ================================
 	/**
 	* @brief Fully-connected (dense) graph class
 	* @ingroup moduleGraph
@@ -56,7 +57,7 @@ namespace DirectGraphicalModels
          * @details One edge model applies itself to all the edges in the graph
          * @return The container with edge models: vector of size: number of used edge models
          */
-        std::vector<std::unique_ptr<CEdgePotential>> & getEdgeModels(void) const { return m_vpEdgeModels; }
+        std::vector<CEdgePotential*> & getEdgeModels(void) const { return m_vpEdgeModels; }
         
         
 	private:
@@ -64,10 +65,10 @@ namespace DirectGraphicalModels
 		* The container for the node potentials. 
 		* Every row is a node potential vector. Thus the size of the matrix is width: nStates; height: nNodes
 		*/
-		Mat												        m_nodePotentials;
+		Mat										m_nodePotentials;
 		/**
 		* The set of edge models
 		*/
-		mutable std::vector<std::unique_ptr<CEdgePotential>>	m_vpEdgeModels;
+		mutable std::vector<CEdgePotential*>    m_vpEdgeModels;
 	};
 }
