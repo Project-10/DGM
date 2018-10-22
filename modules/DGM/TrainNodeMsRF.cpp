@@ -78,7 +78,7 @@ void CTrainNodeMsRF::train(bool doClean)
 #endif
 	// Filling <pData>
 	sw::DataPointCollection * pData = new sw::DataPointCollection();
-	pData->m_dimension = m_nFeatures;
+	pData->m_dimension = getNumFeatures();
 
 	for (byte s = 0; s < m_nStates; s++) {						// states
 		int nSamples = m_pSamplesAcc->getNumSamples(s);
@@ -86,7 +86,7 @@ void CTrainNodeMsRF::train(bool doClean)
 		printf("State[%d] - %d of %d samples\n", s, nSamples, m_pSamplesAcc->getNumInputSamples(s));
 #endif
 		for (int smp = 0; smp < nSamples; smp++) {
-			for (word f = 0; f < m_nFeatures; f++) {			// features
+			for (word f = 0; f < getNumFeatures(); f++) {			// features
 				byte fval = m_pSamplesAcc->getSamplesContainer(s).at<byte>(smp, f);
 				pData->m_vData.push_back(fval);
 			} // f
@@ -98,7 +98,7 @@ void CTrainNodeMsRF::train(bool doClean)
 
 	// Training
 	sw::Random random;
-	sw::ClassificationTrainingContext classificationContext(m_nStates, m_nFeatures);
+	sw::ClassificationTrainingContext classificationContext(m_nStates, getNumFeatures());
 #ifdef ENABLE_PPL
 	// Use this function with cautions - it is not verifiied!
 	m_pRF = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *pData);
@@ -112,8 +112,8 @@ void CTrainNodeMsRF::train(bool doClean)
 void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 {
 	std::auto_ptr<sw::DataPointCollection> testData = std::auto_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
-	testData->m_dimension = m_nFeatures;
-	for (word f = 0; f < m_nFeatures; f++) {
+	testData->m_dimension = getNumFeatures();
+	for (word f = 0; f < getNumFeatures(); f++) {
 		float feature = static_cast<float>(featureVector.ptr<byte>(f)[0]);
 		testData->m_vData.push_back(feature);
 	}
