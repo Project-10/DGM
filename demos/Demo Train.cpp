@@ -5,7 +5,7 @@
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
-using namespace DirectGraphicalModels::FactoryTrain;
+using namespace DirectGraphicalModels::TrainKit;
 
 void print_help(char *argv0,
                 const std::vector<std::pair<std::string, randomModelNode>> &vRandomModelsNode,
@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
     }
     
     general_parameters params1;
-    params1["Hello"] = "World";
+    params1["maxGausses"] = "1";
+	params1["numGausses"] = "1";
     auto                  nodeTrainer	= createNodeTrainer(nStates, nFeatures, vRandomModelsNode[nodeModel].second, params1);
 	auto			      edgeTrainer	= createEdgeTrainer(nStates, nFeatures, vRandomModelsEdge[edgeModel].second, randomModelNode::Bayes, params1);
     CFactoryGraphPairwise factory(nStates);
