@@ -27,26 +27,6 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CTrainEdge(void) {}
 
 		/**
-		* @brief Adds a block of new feature vectors
-		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts 
-		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure, 
-		* provided via \b pGraph
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		* @param gt Matrix, each element of which is a ground-truth state (class)
-		* @param graph The extended graph, which defines the structure of the graph
-		*/
-		DllExport void			addFeatureVecs(const Mat &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
-		/**
-		* @brief Adds a block of new feature vectors
-		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
-		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
-		* provided via \b pGraph
-		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
-		* @param gt Matrix, each element of which is a ground-truth state (class)
-		* @param graph The extended graph, which defines the structure of the graph
-		*/
-		DllExport void			addFeatureVecs(const vec_mat_t &featureVectors, const Mat &gt, const CGraphPairwiseExt &graph);
-		/**
 		* @brief Adds a pair of feature vectors
 		* @details Used to add \b featureVector1 and \b featureVector2, corresponding to the ground-truth states (classes) \b gt1 and \b gt2 for training.
 		* Here the couple \b {featureVector1, \b gt1} corresponds to the first node of the edge, and the couple \b {featureVector2, \b gt2} - to the second node.

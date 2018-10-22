@@ -15,13 +15,13 @@ namespace DirectGraphicalModels
 	{
 		m_pPDF = new IPDF**[m_nStates];
 		for (byte s = 0; s < m_nStates; s++) {
-			m_pPDF[s] = new IPDF*[m_nFeatures];
-			for (word f = 0; f < m_nFeatures; f++)
+			m_pPDF[s] = new IPDF*[getNumFeatures()];
+			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f] = new CPDFHistogram();
 	//			m_pPDF[s][f] = new CPDFGaussian();
 		} // s
 
-		if (m_nFeatures == 2) {
+		if (getNumFeatures() == 2) {
 			m_pPDF2D = new IPDF*[m_nStates];
 			for (byte s = 0; s < m_nStates; s++)
 				m_pPDF2D[s] = new CPDFHistogram2D();
@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 	{
 		if (!m_prior.empty()) m_prior.release();
 		for (byte s = 0; s < m_nStates; s++) {
-			for (word f = 0; f < m_nFeatures; f++)
+			for (word f = 0; f < getNumFeatures(); f++)
 				delete m_pPDF[s][f];
 			delete m_pPDF[s];
 		} // s
@@ -52,7 +52,7 @@ namespace DirectGraphicalModels
 		if (!m_prior.empty()) m_prior.release();		// resetting the prior
 
 		for (byte s = 0; s < m_nStates; s++)
-			for (word f = 0; f < m_nFeatures; f++)
+			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->reset();
 		
 		if (m_pPDF2D)
@@ -68,7 +68,7 @@ namespace DirectGraphicalModels
 		
 		addNodeGroundTruth(gt);
 
-		for (word f = 0; f < m_nFeatures; f++) {
+		for (word f = 0; f < getNumFeatures(); f++) {
 	//		byte feature = featureVector.ptr<byte>(f)[0];
 			byte feature = featureVector.at<byte>(f, 0);
 			m_pPDF[gt][f]->addPoint(feature);
@@ -90,7 +90,7 @@ namespace DirectGraphicalModels
 	{
 		if (typeid(*** m_pPDF) != typeid(CPDFHistogram)) return;
 		for (byte s = 0; s < m_nStates; s++)
-			for (word f = 0; f < m_nFeatures; f++)
+			for (word f = 0; f < getNumFeatures(); f++)
 				dynamic_cast<CPDFHistogram *>(m_pPDF[s][f])->smooth(nIt);
 		if (m_pPDF2D)
 			for (byte s = 0; s < m_nStates; s++)
@@ -102,7 +102,7 @@ namespace DirectGraphicalModels
 		CPriorNode::saveFile(pFile);
 
 		for (byte s = 0; s < m_nStates; s++)
-			for (word f = 0; f < m_nFeatures; f++)
+			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->saveFile(pFile);
 		if (m_pPDF2D)
 			for (byte s = 0; s < m_nStates; s++)
@@ -115,7 +115,7 @@ namespace DirectGraphicalModels
 		m_prior = getPrior(FLT_MAX);		// loads m_prior from the CPriorNode class
 
 		for (byte s = 0; s < m_nStates; s++)
-			for (word f = 0; f < m_nFeatures; f++)
+			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->loadFile(pFile);
 		if (m_pPDF2D)
 			for (byte s = 0; s < m_nStates; s++)
@@ -128,7 +128,7 @@ namespace DirectGraphicalModels
 		for (byte s = 0; s < m_nStates; s++) {				// state
 			float	* pPot	= potential.ptr<float>(s);
 			byte	* pMask	= mask.ptr<byte>(s);
-			for (word f = 0; f < m_nFeatures; f++) {		// feature
+			for (word f = 0; f < getNumFeatures(); f++) {		// feature
 				byte feature = featureVector.ptr<byte>(f)[0];
 				if (m_pPDF[s][f]->isEstimated()) 
 					pPot[0] *= static_cast<float>(m_pPDF[s][f]->getDensity(feature));	

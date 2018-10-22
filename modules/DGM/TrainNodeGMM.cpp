@@ -212,10 +212,10 @@ namespace DirectGraphicalModels
 				Mat		sigma	= gauss.getSigma();
 
 				fwrite(&nPoints, sizeof(long), 1, pFile);
-				for (word y = 0; y < m_nFeatures; y++)
+				for (word y = 0; y < getNumFeatures(); y++)
 					fwrite(&mu.at<double>(y, 0), sizeof(double), 1, pFile);
-				for (word y = 0; y < m_nFeatures; y++)
-					for (word x = 0; x < m_nFeatures; x++)
+				for (word y = 0; y < getNumFeatures(); y++)
+					for (word x = 0; x < getNumFeatures(); x++)
 						fwrite(&sigma.at<double>(y, x), sizeof(double), 1, pFile);
 				mu.release();
 				sigma.release();
@@ -239,17 +239,17 @@ namespace DirectGraphicalModels
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {				// state
 			word nGausses;
 			fread(&nGausses, sizeof(word), 1, pFile);
-			gaussianMixture.assign(nGausses, CKDGauss(m_nFeatures));
+			gaussianMixture.assign(nGausses, CKDGauss(getNumFeatures()));
 			for (CKDGauss &gauss : gaussianMixture) {
 				long nPoints;
-				Mat mu(m_nFeatures, 1, CV_64FC1);
-				Mat sigma(m_nFeatures, m_nFeatures, CV_64FC1);
+				Mat mu(getNumFeatures(), 1, CV_64FC1);
+				Mat sigma(getNumFeatures(), getNumFeatures(), CV_64FC1);
 
 				fread(&nPoints, sizeof(long), 1, pFile);
-				for (word y = 0; y < m_nFeatures; y++)
+				for (word y = 0; y < getNumFeatures(); y++)
 					fread(&mu.at<double>(y, 0), sizeof(double), 1, pFile);
-				for (word y = 0; y < m_nFeatures; y++)
-					for (word x = 0; x < m_nFeatures; x++)
+				for (word y = 0; y < getNumFeatures(); y++)
+					for (word x = 0; x < getNumFeatures(); x++)
 						fread(&sigma.at<double>(y, x), sizeof(double), 1, pFile);
 
 				gauss.setMu(mu);

@@ -56,6 +56,26 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void setNodes(const Mat &potBase, const Mat &potOccl);
 		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
+		* provided via \b pGraph
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		*/
+		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const Mat &featureVectors, const Mat &gt);
+		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
+		* provided via \b pGraph
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		*/
+		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt);
+		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
 		* and fills with them the graph edges
@@ -109,9 +129,9 @@ namespace DirectGraphicalModels
 
 
 	private:
-		CGraphPairwise	& m_graph;			///< The graph
-		word			  m_nLayers;		///< Number of layers
-		byte			  m_gType;			///< Graph type (Ref. @ref graphType)
-		cv::Size			  m_size;			///< Size of the graph
+		CGraphPairwise&	m_graph;		///< The graph
+		word			m_nLayers;		///< Number of layers
+		byte			m_gType;		///< Graph type (Ref. @ref graphType)
+		Size			m_size;			///< Size of the graph
 	};
 }
