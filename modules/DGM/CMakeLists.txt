@@ -33,28 +33,18 @@ source_group("Source Files\\Common\\Utilities" FILES "timer.h")
 source_group("Source Files\\Common\\Utilities" FILES "serialize.h")
 source_group("Source Files\\Decoding" 		   FILES "Decode.h" "Decode.cpp")												
 source_group("Source Files\\Decoding\\Exact"   FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp")
-source_group("Source Files\\Graph\\Dense" 	   FILES 
-											"GraphDense.h" 
-											"GraphDense.cpp"
-											"GraphDenseExt.h" 
-											"GraphDenseExt.cpp"
-									)
-source_group("Source Files\\Graph\\Pairwise"   FILES	
-											"IGraphPairwise.h"
-											"IGraphPairwise.cpp"
+source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp" "GraphExt.h")
+source_group("Source Files\\Graph\\Dense" 	   FILES "GraphDense.h" "GraphDense.cpp")
+source_group("Source Files\\Graph\\Dense\\Ext" FILES "GraphDenseExt.h" "GraphDenseExt.cpp")
+source_group("Source Files\\Graph\\Pairwise"   FILES "IGraphPairwise.h" "IGraphPairwise.cpp")
+source_group("Source Files\\Graph\\Pairwise\\pairwise"	FILES "GraphPairwise.h" "GraphPairwise.cpp")
+source_group("Source Files\\Graph\\Pairwise\\Ext" FILES									
 											"GraphPairwiseExt.h"
 											"GraphLayered.h"
 											"GraphLayered.cpp"
 									)
-source_group("Source Files\\Graph\\Pairwise\\Impl"   FILES
-											"GraphPairwise.h"
-											"GraphPairwise.cpp"											
-											"GraphWeiss.h"
-											"GraphWeiss.cpp"
-											"Graph3.h"
-											"Graph3.cpp"
-									)
+source_group("Source Files\\Graph\\Pairwise\\Weiss"	FILES "GraphWeiss.h" "GraphWeiss.cpp")
+source_group("Source Files\\Graph\\Pairwise\\Triplet"	FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Graph\\Triplet" FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")
 source_group("Source Files\\Inference\\Exact" FILES "InferExact.h" "InferExact.cpp")
