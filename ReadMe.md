@@ -52,7 +52,7 @@ and / or the PhD thesis, wich describes all the theory lying behind the DGM libr
 
     @PHDTHESIS{KosovPhdThesis,
     	author = {Kosov, Sergey},
-    	title = {Multi-Layer Conditional Random Fields for Revealing Unobserved Eentities},
+    	title = {Multi-Layer Conditional Random Fields for Revealing Unobserved Entities},
     	school = {Siegen University},
     	year = {2018},
     	doi = {10.13140/RG.2.2.12409.31844},
