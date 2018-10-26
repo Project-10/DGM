@@ -4,15 +4,18 @@
 
 #include "Graph.h"
 #include "GraphDense.h"
-#include "GraphDenseExt.h"
 #include "GraphPairwise.h"
-#include "GraphPairwiseExt.h"
+
 #include "Infer.h"
 #include "InferDense.h"
 #include "MessagePassing.h"
 #include "InferLBP.h"
 #include "InferTRW.h"
 #include "InferViterbi.h"
+
+#include "GraphExt.h"
+#include "GraphDenseExt.h"
+#include "GraphPairwiseExt.h"
 
 
 namespace DirectGraphicalModels
@@ -33,6 +36,9 @@ namespace DirectGraphicalModels
          * @param graph The graph
          */
         virtual CInfer& getInfer() = 0;
+        /**
+         */
+        virtual CGraphExt& getGraphExt() = 0;
     };
     
     
@@ -55,11 +61,9 @@ namespace DirectGraphicalModels
                 case infer::viterbi: m_pInfer = std::make_unique<CInferViterbi>(m_graph); break;
             }
         }
-        virtual CGraph& getGraph() { return m_graph; }
-        virtual CInfer& getInfer() { return *m_pInfer; }
-        /**
-         */
-        virtual CGraphPairwiseExt& getGraphExt() { return m_ext; }
+        virtual CGraph&     getGraph() { return m_graph; }
+        virtual CInfer&     getInfer() { return *m_pInfer; }
+        virtual CGraphExt&  getGraphExt() { return m_ext; }
         
         
     private:
@@ -85,9 +89,7 @@ namespace DirectGraphicalModels
         {}
         virtual CGraph&         getGraph() { return m_graph; }
         virtual CInfer&         getInfer() { return m_infer; }
-        /**
-         */
-        virtual CGraphDenseExt& getGraphExt() { return m_ext; }
+        virtual CGraphExt&      getGraphExt() { return m_ext; }
         
         
     private:

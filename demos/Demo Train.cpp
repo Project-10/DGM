@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     auto                  nodeTrainer	= createNodeTrainer(nStates, nFeatures, vRandomModelsNode[nodeModel].second, params1);
 	auto			      edgeTrainer	= createEdgeTrainer(nStates, nFeatures, vRandomModelsEdge[edgeModel].second, randomModelNode::Bayes, params1);
     CFactoryGraphPairwise factory(nStates);
-	CGraphPairwiseExt	& graphExt = factory.getGraphExt();
+	CGraphExt	        & graphExt = factory.getGraphExt();
 	CInfer			    & decoder  = factory.getInfer();
 	CMarker				  marker(DEF_PALETTE_6);
 	CCMat				  confMat(nStates);
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
-	graphExt.fillEdges(edgeTrainer.get(), test_fv, vParams);			// Filling-in the graph edges with pairwise potentials
+	dynamic_cast<CGraphPairwiseExt&>(graphExt).fillEdges(edgeTrainer.get(), test_fv, vParams);			// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================

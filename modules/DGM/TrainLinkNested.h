@@ -75,7 +75,7 @@ namespace DirectGraphicalModels
 		virtual void	train(bool doClean = false)
 		{ 
 			// Fill holes in trainig
-			Mat fv(m_nFeatures, 1, CV_8UC1, Scalar(0));
+			Mat fv(getNumFeatures(), 1, CV_8UC1, Scalar(0));
 			Mat priors = m_pPrior->getPrior();
 			for (byte i = 0; i < priors.rows; i++)
 				if (priors.at<float>(i, 0) == 0)
