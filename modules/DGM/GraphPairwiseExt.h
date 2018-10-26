@@ -2,7 +2,7 @@
 // Written by Sergey Kosov in 2016 for Project X
 #pragma once
 
-#include "types.h"
+#include "GraphExt.h"
 #include "GraphLayered.h"
 
 namespace DirectGraphicalModels 
@@ -14,7 +14,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphPairwiseExt
+	class CGraphPairwiseExt : public CGraphExt
 	{
 	public:
 		/**
@@ -23,14 +23,14 @@ namespace DirectGraphicalModels
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
 		DllExport CGraphPairwiseExt(CGraphPairwise &graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
-		DllExport ~CGraphPairwiseExt(void) {}
+		DllExport virtual ~CGraphPairwiseExt(void) {}
 
         /**
          * @brief Builds a graph, which fits the image resolution
          * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
          * @param graphSize The size of the graph
          */
-        DllExport void addNodes(cv::Size graphSize)
+        DllExport virtual void addNodes(cv::Size graphSize)
         {
             m_pGraphML->addNodes(graphSize);
         }
@@ -40,9 +40,35 @@ namespace DirectGraphicalModels
 		* > This function supports PPL
 		* @param pots A block of potentials: Mat(type: CV_32FC(nStates))
 		*/
-		DllExport void setNodes(const Mat &pots)
+		DllExport virtual void setNodes(const Mat &pots)
 		{
 			m_pGraphML->setNodes(pots, Mat());
+		}
+		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
+		* provided via \b pGraph
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		*/
+		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const Mat &featureVectors, const Mat &gt)
+		{
+			m_pGraphML->addFeatureVecs(edgeTrainer, featureVectors, gt);
+		}
+		/**
+		* @brief Adds a block of new feature vectors
+		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
+		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
+		* provided via \b pGraph
+		* @param edgeTrainer A pointer to the edge trainer
+		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+		* @param gt Matrix, each element of which is a ground-truth state (class)
+		*/
+		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
+		{
+			m_pGraphML->addFeatureVecs(edgeTrainer, featureVectors, gt);
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -101,12 +127,7 @@ namespace DirectGraphicalModels
         {
             return m_pGraphML->getType();
         }
-        /**
-         * @brief Returns the size of the graph
-         * @return The size of the Graph
-         */
-        DllExport cv::Size getSize(void) const
-        {
+        DllExport virtual Size getSize(void) const {
             return m_pGraphML->getSize();
         }
         

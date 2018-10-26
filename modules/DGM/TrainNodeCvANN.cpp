@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 	
 		if (params.numLayers < 2) params.numLayers = 2;
 		std::vector<int> vLayers(params.numLayers);
-		vLayers[0] = m_nFeatures;
+		vLayers[0] = getNumFeatures();
 		for (int i = 1; i < params.numLayers - 1; i++)
 			vLayers[i] = m_nStates * 1 << (params.numLayers - i);
 		vLayers[params.numLayers - 1] = m_nStates;

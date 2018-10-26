@@ -1,4 +1,5 @@
 #include "InferDense.h"
+#include "densecrf/edgepotential.h"
 
 namespace DirectGraphicalModels
 {

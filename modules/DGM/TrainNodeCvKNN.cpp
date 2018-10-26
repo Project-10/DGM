@@ -77,8 +77,8 @@ namespace DirectGraphicalModels
 		samples.convertTo(samples, CV_32FC1);
 
 		// Filling <var_type>
-		Mat var_type(m_nFeatures + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
-		var_type.at<byte>(m_nFeatures, 0) = ml::VAR_CATEGORICAL;
+		Mat var_type(getNumFeatures() + 1, 1, CV_8UC1, Scalar(ml::VAR_NUMERICAL));		// all inputs are numerical
+		var_type.at<byte>(getNumFeatures(), 0) = ml::VAR_CATEGORICAL;
 
 		// Training
 		try {

@@ -2,9 +2,7 @@
 // Written by Sergey Kosov in 2018 for Project X
 #pragma once
 
-#include "types.h"
-
-class SemiMetricFunction;
+#include "GraphExt.h"
 
 namespace DirectGraphicalModels 
 {
@@ -16,7 +14,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphDenseExt 
+	class CGraphDenseExt : public CGraphExt
 	{
 	public:
 		/**
@@ -28,8 +26,9 @@ namespace DirectGraphicalModels
         DllExport ~CGraphDenseExt() = default;
         const CGraphDenseExt& operator= (const CGraphDenseExt&) = delete;
 
-		/**
-		* @brief Adds the graph nodes with potentials \b pots
+        DllExport void addNodes(Size graphSize);
+        /**
+		* @brief Fills or adds the graph nodes with potentials \b pots
 		* @details This function builds a 2d graph of size corresponding to the size of the \b pots matrix and fills its nodes with the
 		* potentials from the same \b pots matrix.
 		* @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
@@ -37,31 +36,28 @@ namespace DirectGraphicalModels
 		* CTrainNode::getNodePotentials()
 		* @endcode
 		*/
-		DllExport void addNodes(const Mat &pots);
+		DllExport void setNodes(const Mat &pots);
 		/**
 		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
-		* @param graphSize The size of the graph
-		* @param sx
-		* @param sy
+		* @param s
 		* @param w
 		* @param pFunction
 		*/
-        DllExport void addGaussianEdgeModel(cv::Size graphSize, float sx, float sy, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addGaussianEdgeModel(Vec2f s, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
 		/**
 		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 		* @param img
-		* @param sx 
-		* @param sy
-		* @param sr
-		* @param sg
-		* @param sb
+		* @param s 
+		* @param srgb
 		* @param w
 		* param pFunction
 		*/
-        DllExport void addBilateralEdgeModel(const Mat &img, float sx, float sy, float sr, float sg, float sb, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport Size getSize(void) const { return m_size; }
 
 
 	private:
-		CGraphDense & m_graph;	///< The graph
+        CGraphDense& m_graph;	///< The graph
+        Size         m_size;    ///< Size of the graph
 	};
 }

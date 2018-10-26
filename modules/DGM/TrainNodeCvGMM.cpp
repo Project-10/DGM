@@ -68,7 +68,7 @@ void CTrainNodeCvGMM::load(const std::string &path, const std::string &name, sho
 		}
 	}
 
-	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, m_nFeatures);
+	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, getNumFeatures());
 }
 
 void CTrainNodeCvGMM::addFeatureVec(const Mat &featureVector, byte gt)
@@ -92,7 +92,7 @@ void CTrainNodeCvGMM::train(bool doClean)
 		if (doClean) m_pSamplesAcc->release(s);
 	} // s
 	
-	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, m_nFeatures);
+	m_minCoefficient = std::pow(MIN_COEFFICIENT_BASE, getNumFeatures());
 }
 
 void CTrainNodeCvGMM::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const

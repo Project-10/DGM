@@ -32,12 +32,12 @@ namespace DirectGraphicalModels
 		DllExport virtual void	train(bool doClean = false) = 0;	
 		/**
 		* @brief Returns number of features
-		* @return Number of features @ref m_nFeatures
+		* @return Number of features
 		*/		
 		DllExport word			getNumFeatures(void) const { return m_nFeatures; }
 
 
-	protected:
+	private:
 		word	m_nFeatures;						///< The number of features (length of the feature vector)
 	};
 

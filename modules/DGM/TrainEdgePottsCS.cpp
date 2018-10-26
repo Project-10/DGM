@@ -59,9 +59,9 @@ Mat	CTrainEdgePottsCS::calculateEdgePotentials(const Mat &featureVector1, const 
 	// Assertions:
 	DGM_ASSERT_MSG((featureVector1.type() == CV_8UC1) && (featureVector2.type() == CV_8UC1), 
 		"One (or both) of input feature vectors has either wrong depth or more than one channel");
-	DGM_ASSERT_MSG((featureVector1.size().width == 1) && (featureVector1.size().height == m_nFeatures), 
+	DGM_ASSERT_MSG((featureVector1.size().width == 1) && (featureVector1.size().height == getNumFeatures()), 
 		"The first input feature vector has wrong size:(%d, %d)", featureVector1.size().width, featureVector1.size().height);
-	DGM_ASSERT_MSG((featureVector2.size().width == 1) && (featureVector2.size().height == m_nFeatures), 
+	DGM_ASSERT_MSG((featureVector2.size().width == 1) && (featureVector2.size().height == getNumFeatures()),
 		"The second input feature vector has wrong size:(%d, %d)", featureVector2.size().width, featureVector2.size().height);
 
 	float penalty;
