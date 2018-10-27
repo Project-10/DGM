@@ -33,8 +33,8 @@ namespace DirectGraphicalModels
 		for (int y = 0; y < m_size.height; y++)
 			for (int x = 0; x < m_size.width; x++) {
 				float *pFeature = features.ptr<float>(n++);
-				pFeature[0] = x / s.val[0];
-				pFeature[1] = y / s.val[1];
+                pFeature[0] = x * s.val[0] / m_size.width;
+                pFeature[1] = y * s.val[1] / m_size.height;
 			} // x
 
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, w, SemiMetricFunction));
@@ -49,11 +49,11 @@ namespace DirectGraphicalModels
 			const byte *pImg = img.ptr<byte>(y);
 			for (int x = 0; x < img.cols; x++) {
 				float *pFeature = features.ptr<float>(n++);
-				pFeature[0] = x / s.val[0];
-				pFeature[1] = y / s.val[1];
-				pFeature[2] = pImg[x * 3 + 0] / srgb.val[0];
-				pFeature[3] = pImg[x * 3 + 1] / srgb.val[1];
-				pFeature[4] = pImg[x * 3 + 2] / srgb.val[2];
+				pFeature[0] = x * s.val[0] / m_size.width;
+				pFeature[1] = y * s.val[1] / m_size.height;
+				pFeature[2] = pImg[x * 3 + 0] * srgb.val[0] / 255;
+				pFeature[3] = pImg[x * 3 + 1] * srgb.val[1] / 255;
+				pFeature[4] = pImg[x * 3 + 2] * srgb.val[2] / 255;
 			} // x
 		} // y
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, w, SemiMetricFunction));

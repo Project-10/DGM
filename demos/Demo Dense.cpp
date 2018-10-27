@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
 	
     // TODO:
 	graphExt.setNodes(nodePotentials);
-	graphExt.addGaussianEdgeModel(Vec2f(3, 3), 3);
-	graphExt.addBilateralEdgeModel(test_img, Vec2f(60, 60), Vec3f(20, 20, 20), 10);
+    graphExt.addGaussianEdgeModel(Vec2f::all(100), 3);
+    graphExt.addBilateralEdgeModel(test_img, Vec2f::all(10), Vec3f::all(32), 10);
 	Timer::stop();
 
 
