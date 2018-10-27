@@ -83,24 +83,19 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
-	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
-
-	CGraphDense graph(nStates);
-	CGraphDenseExt graphExt(graph);
-	CInferDense decoder(graph);
+	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
+	CGraphKit &kit = CGraphDenseKit(nStates);
 	
 	
-    // TODO:
-	graphExt.setNodes(nodePotentials);
-    graphExt.addGaussianEdgeModel(Vec2f::all(100), 3);
-    graphExt.addBilateralEdgeModel(test_img, Vec2f::all(10), Vec3f::all(32), 10);
+	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
+	kit.getGraphExt().addDefaultEdgesModel();
+	kit.getGraphExt().addDefaultEdgesModel(test_img);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder.decode(100);
+	vec_byte_t optimalDecoding = kit.getInfer().decode(100);
 	Timer::stop();
 
 

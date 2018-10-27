@@ -4,6 +4,7 @@
 
 #include "GraphExt.h"
 #include "GraphLayered.h"
+#include "macroses.h" // TODO: delete this
 
 namespace DirectGraphicalModels 
 {
@@ -43,6 +44,21 @@ namespace DirectGraphicalModels
 		DllExport virtual void setNodes(const Mat &pots)
 		{
 			m_pGraphML->setNodes(pots, Mat());
+		}
+		/**
+		* @brief Adds default data-independet edge model
+		*/
+		DllExport virtual void addDefaultEdgesModel()
+		{
+			DGM_ASSERT_MSG(false, "Not Implemented");
+		}
+		/**
+		* @brief Adds default contrast-sensitive edge model
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		*/
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors)
+		{
+			DGM_ASSERT_MSG(false, "Not Implemented");
 		}
 		/**
 		* @brief Adds a block of new feature vectors

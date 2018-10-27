@@ -40,6 +40,8 @@
 #include "DGM/TrainLink.h"
 #include "DGM/TrainLinkNested.h"
 
+#include "DGM/GraphKit.h"
+
 #include "DGM/GraphDense.h"
 #include "DGM/GraphDenseExt.h"
 #include "DGM/IGraphPairwise.h"

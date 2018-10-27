@@ -36,6 +36,23 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void setNodes(const Mat &pots);
 		/**
+		* @brief Adds default data-independet edge model
+		*/
+		DllExport virtual void addDefaultEdgesModel()
+		{
+			// TODO: add arguments to the calling function
+			addGaussianEdgeModel(Vec2f::all(133.33f), 3);
+		}
+		/**
+		* @brief Adds default contrast-sensitive edge model
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		*/
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors)
+		{
+			// TODO: featureVectors may have many channels
+			addBilateralEdgeModel(featureVectors, Vec2f::all(6.66f), Vec3f::all(12.75f), 10);
+		}
+		/**
 		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
 		* @param s
 		* @param w
