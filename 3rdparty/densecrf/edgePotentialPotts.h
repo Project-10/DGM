@@ -19,6 +19,6 @@ private:
 	float                           m_w;
 	std::unique_ptr<CPermutohedral> m_pLattice;
 	Mat                             m_norm;
-    const std::function<void(const Mat &src, Mat &dst)> &m_function;
+    std::function<void(const Mat &src, Mat &dst)> m_function;
 };
 
