@@ -192,8 +192,8 @@ void CPermutohedral::init(const Mat &features)
                 n1.at<short>(0, k) = key.at<short>(0, k) - 1;	// TODO
                 n2.at<short>(0, k) = key.at<short>(0, k) + 1;	// TODO
             }
-            n1.at<short>(0, j) = key.at<short>(0, j) + m_featureSize;	// TODO
-            n2.at<short>(0, j) = key.at<short>(0, j) - m_featureSize;	// TODO
+            n1.at<short>(0, j) = key.at<short>(0, std::min(j, m_featureSize - 1)) + m_featureSize;	// TODO
+            n2.at<short>(0, j) = key.at<short>(0, std::min(j, m_featureSize - 1)) - m_featureSize;	// TODO
             
             pBlurNeighbor1[j] = hash_table.find(n1);
             pBlurNeighbor2[j] = hash_table.find(n2);
