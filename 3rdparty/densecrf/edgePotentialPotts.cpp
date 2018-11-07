@@ -4,9 +4,9 @@
 #include "types.h"
 
 // Constructor
-CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction, bool per_pixel_normalization)
+CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction, bool per_pixel_normalization)
 	: CEdgePotential()
-	, m_w(w)
+	, m_weight(weight)
 	, m_pLattice(std::make_unique<CPermutohedral>())
     , m_function(SemiMetricFunction)
 {
@@ -37,6 +37,6 @@ void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
 		float *pTemp = temp.ptr<float>(n);
 			
         for (int s = 0; s < src.cols; s++)	// states
-			pDst[s] += m_w * m_norm.at<float>(n, 0) * pTemp[s];
+			pDst[s] += m_weight * m_norm.at<float>(n, 0) * pTemp[s];
 	}
 }

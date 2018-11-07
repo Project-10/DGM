@@ -38,19 +38,19 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Adds default data-independet edge model
 		*/
-		DllExport virtual void addDefaultEdgesModel()
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
 		{
 			// TODO: add arguments to the calling function
-			addGaussianEdgeModel(Vec2f::all(133.33f), 3);
+			addGaussianEdgeModel(Vec2f::all(val), weight);
 		}
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		*/
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors)
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
 			// TODO: featureVectors may have many channels
-			addBilateralEdgeModel(featureVectors, Vec2f::all(6.66f), Vec3f::all(12.75f), 10);
+			addBilateralEdgeModel(featureVectors, Vec2f::all(val), Vec3f::all(12.75f), weight);
 		}
 		/**
 		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
@@ -58,7 +58,7 @@ namespace DirectGraphicalModels
 		* @param w
 		* @param pFunction
 		*/
-        DllExport void addGaussianEdgeModel(Vec2f s, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addGaussianEdgeModel(Vec2f s, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
 		/**
 		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 		* @param img
@@ -67,7 +67,7 @@ namespace DirectGraphicalModels
 		* @param w
 		* param pFunction
 		*/
-        DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
         DllExport Size getSize(void) const { return m_size; }
 
 

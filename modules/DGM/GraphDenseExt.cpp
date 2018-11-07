@@ -26,7 +26,7 @@ namespace DirectGraphicalModels
         }
 	}
 
-	void CGraphDenseExt::addGaussianEdgeModel(Vec2f s, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addGaussianEdgeModel(Vec2f s, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
         Mat features(m_size.height * m_size.width, 2, CV_32FC1);
 		int n = 0;
@@ -37,10 +37,10 @@ namespace DirectGraphicalModels
                 pFeature[1] = y * s.val[1] / m_size.height;
 			} // x
 
-		m_graph.addEdgeModel(new CEdgePotentialPotts(features, w, SemiMetricFunction));
+		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
 	}
 
-	void CGraphDenseExt::addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float w, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
         DGM_ASSERT_MSG(img.size() == m_size, "Resilution of the train image does not equal to the graph size");
         Mat features(img.rows * img.cols, 5, CV_32FC1);
@@ -56,6 +56,6 @@ namespace DirectGraphicalModels
 				pFeature[4] = pImg[x * 3 + 2] * srgb.val[2] / 255;
 			} // x
 		} // y
-		m_graph.addEdgeModel(new CEdgePotentialPotts(features, w, SemiMetricFunction));
+		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
 	}
 }

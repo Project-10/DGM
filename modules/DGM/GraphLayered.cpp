@@ -9,7 +9,7 @@
 
 namespace DirectGraphicalModels
 {
-	void CGraphLayered::addNodes(cv::Size graphSize)
+	void CGraphLayered::addNodes(Size graphSize)
 	{
 		if (m_graph.getNumNodes() != 0) m_graph.reset();
 		m_size = graphSize;
@@ -59,14 +59,16 @@ namespace DirectGraphicalModels
 	void CGraphLayered::setNodes(const Mat &potBase, const Mat &potOccl)
 	{
 		// Assertions
-		DGM_ASSERT(m_size.height == potBase.rows);
-		DGM_ASSERT(m_size.width == potBase.cols);
+        DGM_ASSERT(!potBase.empty());
 		DGM_ASSERT(CV_32F == potBase.depth());
 		if (!potOccl.empty()) {
 			DGM_ASSERT(potBase.size() == potOccl.size());
 			DGM_ASSERT(CV_32F == potOccl.depth());
 		}
-		DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());
+        if (m_size != potBase.size()) addNodes(potBase.size());     // TODO: check!
+        DGM_ASSERT(m_size.height == potBase.rows);
+        DGM_ASSERT(m_size.width == potBase.cols);
+        DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());
 
 		byte nStatesBase = static_cast<byte>(potBase.channels());
 		byte nStatesOccl = potOccl.empty() ? 0 : static_cast<byte>(potOccl.channels());

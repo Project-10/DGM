@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
 	
 	
 	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
-	kit.getGraphExt().addDefaultEdgesModel();
-	kit.getGraphExt().addDefaultEdgesModel(test_img);
+	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
+	kit.getGraphExt().addDefaultEdgesModel(test_img, 6.66f, 10.0f);
 	Timer::stop();
 
 

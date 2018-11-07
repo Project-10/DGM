@@ -125,7 +125,10 @@ namespace DirectGraphicalModels
 		* @brief Returns the size of the graph
 		* @return The size of the Graph
 		*/
-		DllExport cv::Size getSize(void) const { return m_size; }
+		DllExport Size getSize(void) const { return m_size; }
+		/**
+		*/
+		DllExport CGraphPairwise& getGraph(void) const { return m_graph; }
 
 
 	private:

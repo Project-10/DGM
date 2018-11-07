@@ -16,7 +16,7 @@ public:
 
 	// TODO: try without members
 private:
-	float                           m_w;
+	float                           m_weight;
 	std::unique_ptr<CPermutohedral> m_pLattice;
 	Mat                             m_norm;
     std::function<void(const Mat &src, Mat &dst)> m_function;

@@ -4,6 +4,8 @@
 
 #include "GraphExt.h"
 #include "GraphLayered.h"
+#include "GraphPairwise.h"	
+#include "TrainEdgePottsCS.h"
 #include "macroses.h" // TODO: delete this
 
 namespace DirectGraphicalModels 
@@ -48,17 +50,103 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Adds default data-independet edge model
 		*/
-		DllExport virtual void addDefaultEdgesModel()
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
 		{
-			DGM_ASSERT_MSG(false, "Not Implemented");
+			const byte nStates = m_pGraphML->getGraph().getNumStates();
+
+            // Assertions
+			DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
+
+			Mat ePot = CTrainEdge::getDefaultEdgePotentials(val, nStates);
+#ifdef ENABLE_PPL
+            concurrency::parallel_for(0, m_pGraphML->getSize().height, [&](int y) {
+#else 
+            for (int y = 0; y < m_size.height; y++) {
+#endif
+                for (int x = 0; x < m_pGraphML->getSize().width; x++) {
+                    size_t idx = y * m_pGraphML->getSize().width + x;
+                    if (m_pGraphML->getType() & GRAPH_EDGES_GRID) {
+                        if (x > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1, ePot);
+                        if (y > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1 * m_pGraphML->getSize().width, ePot);
+                    } // edges_grid
+
+                    if (m_pGraphML->getType() & GRAPH_EDGES_DIAG) {
+                        if ((x > 0) && (y > 0))									m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width - 1, ePot);
+                        if ((x < m_pGraphML->getSize().width - 1) && (y > 0))	m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width + 1, ePot);
+                    } // edges_diag
+                } // x
+#ifdef ENABLE_PPL
+            }); // y
+#else
+            } // y
+#endif
 		}
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		*/
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors)
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
-			DGM_ASSERT_MSG(false, "Not Implemented");
+            const byte nStates    = m_pGraphML->getGraph().getNumStates();
+            const word nFeatures = featureVectors.channels();
+
+            // Assertions
+            DGM_ASSERT(m_pGraphML->getSize().height == featureVectors.rows);
+            DGM_ASSERT(m_pGraphML->getSize().width == featureVectors.cols);
+            DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
+
+            CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
+
+#ifdef ENABLE_PPL
+            concurrency::parallel_for(0, m_pGraphML->getSize().height, [&, nFeatures](int y) {
+                Mat featureVector1(nFeatures, 1, CV_8UC1);
+                Mat featureVector2(nFeatures, 1, CV_8UC1);
+                Mat ePot;
+#else 
+            Mat featureVector1(nFeatures, 1, CV_8UC1);
+            Mat featureVector2(nFeatures, 1, CV_8UC1);
+            Mat ePot;
+            for (int y = 0; y < m_pGraphML->getSize().height; y++) {
+#endif
+                const byte *pFv1 = featureVectors.ptr<byte>(y);
+                const byte *pFv2 = (y > 0) ? featureVectors.ptr<byte>(y - 1) : NULL;
+                for (int x = 0; x < m_pGraphML->getSize().width; x++) {
+                    size_t idx = y * m_pGraphML->getSize().width + x;
+                    for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];				// featureVectors[x][y]
+
+                    if (m_pGraphML->getType() & GRAPH_EDGES_GRID) {
+                        if (x > 0) {
+                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVectors[x-1][y]
+                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
+                            m_pGraphML->getGraph().setArc(idx, idx - 1, ePot);
+                        } // if x
+
+                        if (y > 0) {
+                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVectors[x][y-1]
+                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
+                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width, ePot);
+                        } // if y
+                    } // edges_grid
+
+                    if (m_pGraphML->getType() & GRAPH_EDGES_DIAG) {
+                        if ((x > 0) && (y > 0)) {
+                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x - 1) + f];	// featureVectors[x-1][y-1]
+                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
+                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width - 1, ePot);
+                        } // if x, y
+
+                        if ((x < m_pGraphML->getSize().width - 1) && (y > 0)) {
+                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x + 1) + f];	// featureVectors[x+1][y-1]
+                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
+                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width + 1, ePot);
+                        } // x, y
+                    } // edges_diag
+                } // x
+#ifdef ENABLE_PPL
+            }); // y
+#else
+            } // y
+#endif
 		}
 		/**
 		* @brief Adds a block of new feature vectors

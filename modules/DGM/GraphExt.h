@@ -34,13 +34,17 @@ namespace DirectGraphicalModels
         DllExport virtual void setNodes(const Mat& pots) = 0;
         /**
 		* @brief Adds default data-independet edge model
+		* @param val
+        * @param weight The weighting parameter
 		*/
-		DllExport virtual void addDefaultEdgesModel() = 0;
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) = 0;
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+        * @param val
+        * @param weight The weighting parameter
 		*/
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors) = 0;
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) = 0;
 		/**
         * @brief Returns the size of the graph
         * @return The size of the Graph
