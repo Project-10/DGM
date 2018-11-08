@@ -51,7 +51,8 @@ namespace DirectGraphicalModels
 				float *pFeature = features.ptr<float>(n++);
 				pFeature[0] = x * s.val[0] / m_size.width;
 				pFeature[1] = y * s.val[1] / m_size.height;
-				pFeature[2] = pImg[x * 3 + 0] * srgb.val[0] / 255;
+				// TODO: feature vector may have much more channels
+                pFeature[2] = pImg[x * 3 + 0] * srgb.val[0] / 255;
 				pFeature[3] = pImg[x * 3 + 1] * srgb.val[1] / 255;
 				pFeature[4] = pImg[x * 3 + 2] * srgb.val[2] / 255;
 			} // x

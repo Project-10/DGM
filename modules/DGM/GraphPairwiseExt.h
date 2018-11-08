@@ -87,66 +87,10 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
-            const byte nStates    = m_pGraphML->getGraph().getNumStates();
+            const byte nStates = m_pGraphML->getGraph().getNumStates();
             const word nFeatures = featureVectors.channels();
-
-            // Assertions
-            DGM_ASSERT(m_pGraphML->getSize().height == featureVectors.rows);
-            DGM_ASSERT(m_pGraphML->getSize().width == featureVectors.cols);
-            DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
-
-            CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
-
-#ifdef ENABLE_PPL
-            concurrency::parallel_for(0, m_pGraphML->getSize().height, [&, nFeatures](int y) {
-                Mat featureVector1(nFeatures, 1, CV_8UC1);
-                Mat featureVector2(nFeatures, 1, CV_8UC1);
-                Mat ePot;
-#else 
-            Mat featureVector1(nFeatures, 1, CV_8UC1);
-            Mat featureVector2(nFeatures, 1, CV_8UC1);
-            Mat ePot;
-            for (int y = 0; y < m_pGraphML->getSize().height; y++) {
-#endif
-                const byte *pFv1 = featureVectors.ptr<byte>(y);
-                const byte *pFv2 = (y > 0) ? featureVectors.ptr<byte>(y - 1) : NULL;
-                for (int x = 0; x < m_pGraphML->getSize().width; x++) {
-                    size_t idx = y * m_pGraphML->getSize().width + x;
-                    for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];				// featureVectors[x][y]
-
-                    if (m_pGraphML->getType() & GRAPH_EDGES_GRID) {
-                        if (x > 0) {
-                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVectors[x-1][y]
-                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
-                            m_pGraphML->getGraph().setArc(idx, idx - 1, ePot);
-                        } // if x
-
-                        if (y > 0) {
-                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVectors[x][y-1]
-                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
-                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width, ePot);
-                        } // if y
-                    } // edges_grid
-
-                    if (m_pGraphML->getType() & GRAPH_EDGES_DIAG) {
-                        if ((x > 0) && (y > 0)) {
-                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x - 1) + f];	// featureVectors[x-1][y-1]
-                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
-                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width - 1, ePot);
-                        } // if x, y
-
-                        if ((x < m_pGraphML->getSize().width - 1) && (y > 0)) {
-                            for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * (x + 1) + f];	// featureVectors[x+1][y-1]
-                            ePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, { val, 0.01f }, weight);
-                            m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width + 1, ePot);
-                        } // x, y
-                    } // edges_diag
-                } // x
-#ifdef ENABLE_PPL
-            }); // y
-#else
-            } // y
-#endif
+            const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
+            fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
 		}
 		/**
 		* @brief Adds a block of new feature vectors
