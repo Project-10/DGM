@@ -61,7 +61,7 @@ namespace DirectGraphicalModels
 #ifdef ENABLE_PPL
             concurrency::parallel_for(0, m_pGraphML->getSize().height, [&](int y) {
 #else 
-            for (int y = 0; y < m_size.height; y++) {
+            for (int y = 0; y < m_pGraphML->getSize().height; y++) {
 #endif
                 for (int x = 0; x < m_pGraphML->getSize().width; x++) {
                     size_t idx = y * m_pGraphML->getSize().width + x;
