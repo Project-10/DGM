@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
-	CGraphKit &kit = CGraphDenseKit(nStates);
+	CGraphKit &kit = CGraphPairwiseKit(nStates);
 	
 	
 	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes

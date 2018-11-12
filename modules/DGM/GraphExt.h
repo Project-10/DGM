@@ -25,7 +25,12 @@ namespace DirectGraphicalModels
         */
         DllExport virtual void addNodes(Size graphSize) = 0;
         /**
-        * @brief Fills the graph nodes with potentials
+        * @brief Fills the existing graph nodes with potentials or adds new nodes with potentials
+        * @details
+        * If the graph was not build beforehand, this function calls first
+        * @code
+        * addNodes(pots.size())
+        * @endcode
         * @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
         * @code
         * CTrainNode::getNodePotentials()
@@ -34,18 +39,25 @@ namespace DirectGraphicalModels
         DllExport virtual void setNodes(const Mat& pots) = 0;
         /**
 		* @brief Adds default data-independet edge model
-		* @param val
+		* @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
 		*/
 		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) = 0;
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-        * @param val
+        * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
 		*/
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) = 0;
 		/**
+        * @brief Adds default contrast-sensitive edge model
+        * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+        * @param val Value, specifying the smoothness strength
+        * @param weight The weighting parameter
+        */
+        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) = 0;
+        /**
         * @brief Returns the size of the graph
         * @return The size of the Graph
         */

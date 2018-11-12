@@ -50,6 +50,10 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
+        * If the graph was not build beforehand, this function calls first 
+        * @code
+        * addNodes(potBase.size())
+        * @endcode
 		* > This function supports PPL
 		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
 		* @param potOccl A block of potentials for the occlusion layer: Mat(type: CV_32FC(nStatesOccl))

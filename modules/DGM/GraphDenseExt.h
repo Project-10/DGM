@@ -24,38 +24,26 @@ namespace DirectGraphicalModels
 		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
 		DllExport ~CGraphDenseExt(void) {}
 
-        DllExport void addNodes(Size graphSize);
-        /**
-		* @brief Fills or adds the graph nodes with potentials \b pots
-		* @details This function builds a 2d graph of size corresponding to the size of the \b pots matrix and fills its nodes with the
-		* potentials from the same \b pots matrix.
-		* @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
-		* @code
-		* CTrainNode::getNodePotentials()
-		* @endcode
-		*/
-		DllExport void setNodes(const Mat &pots);
-		/**
-		* @brief Adds default data-independet edge model
-		*/
+        DllExport virtual void addNodes(Size graphSize);
+		DllExport virtual void setNodes(const Mat &pots);
 		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
 		{
-			// TODO: add arguments to the calling function
 			addGaussianEdgeModel(Vec2f::all(val), weight);
 		}
-		/**
-		* @brief Adds default contrast-sensitive edge model
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		*/
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
 			// TODO: featureVectors may have many channels
 			addBilateralEdgeModel(featureVectors, Vec2f::all(val), Vec3f::all(12.75f), weight);
 		}
+        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f)
+        {
+            //TODO: implement this function!!
+        }
+
 		/**
 		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
 		* @param s
-		* @param w
+		* @param weight
 		* @param pFunction
 		*/
         DllExport void addGaussianEdgeModel(Vec2f s, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
@@ -64,7 +52,7 @@ namespace DirectGraphicalModels
 		* @param img
 		* @param s 
 		* @param srgb
-		* @param w
+		* @param weight
 		* param pFunction
 		*/
         DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});

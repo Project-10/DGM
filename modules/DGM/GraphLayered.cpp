@@ -65,7 +65,7 @@ namespace DirectGraphicalModels
 			DGM_ASSERT(potBase.size() == potOccl.size());
 			DGM_ASSERT(CV_32F == potOccl.depth());
 		}
-        if (m_size != potBase.size()) addNodes(potBase.size());     // TODO: check!
+        if (m_size != potBase.size()) addNodes(potBase.size());     
         DGM_ASSERT(m_size.height == potBase.rows);
         DGM_ASSERT(m_size.width == potBase.cols);
         DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());

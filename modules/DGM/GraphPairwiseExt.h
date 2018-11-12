@@ -52,7 +52,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
 		{
-			const byte nStates = m_pGraphML->getGraph().getNumStates();
+            const byte nStates = m_pGraphML->getGraph().getNumStates();
 
             // Assertions
 			DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
@@ -81,10 +81,7 @@ namespace DirectGraphicalModels
             } // y
 #endif
 		}
-		/**
-		* @brief Adds default contrast-sensitive edge model
-		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
-		*/
+
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
             const byte nStates = m_pGraphML->getGraph().getNumStates();
@@ -92,6 +89,14 @@ namespace DirectGraphicalModels
             const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
             fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
 		}
+
+        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f)
+        {
+            const byte nStates = m_pGraphML->getGraph().getNumStates();
+            const word nFeatures = static_cast<word>(featureVectors.size());
+            const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
+            fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
+        }
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
