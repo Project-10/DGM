@@ -32,12 +32,11 @@ namespace DirectGraphicalModels
 		}
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
-			// TODO: featureVectors may have many channels
-			addBilateralEdgeModel(featureVectors, Vec2f::all(val), Vec3f::all(12.75f), weight);
+			addBilateralEdgeModel(featureVectors, Vec2f::all(val), 12.75f, weight);
 		}
         DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f)
         {
-            //TODO: implement this function!!
+            addBilateralEdgeModel(featureVectors, Vec2f::all(val), 12.75f, weight);
         }
 
 		/**
@@ -55,7 +54,16 @@ namespace DirectGraphicalModels
 		* @param weight
 		* param pFunction
 		*/
-        DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addBilateralEdgeModel(const Mat &featureVectors, Vec2f s, float srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        /**
+        * @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
+        * @param img
+        * @param s
+        * @param srgb
+        * @param weight
+        * param pFunction
+        */
+        DllExport void addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
         DllExport Size getSize(void) const { return m_size; }
 
 

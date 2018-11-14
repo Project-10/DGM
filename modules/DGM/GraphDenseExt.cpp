@@ -40,23 +40,47 @@ namespace DirectGraphicalModels
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
 	}
 
-	void CGraphDenseExt::addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addBilateralEdgeModel(const Mat &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
-        DGM_ASSERT_MSG(img.size() == m_size, "Resilution of the train image does not equal to the graph size");
-        Mat features(img.rows * img.cols, 5, CV_32FC1);
-		int n = 0;
-		for (int y = 0; y < img.rows; y++) {
-			const byte *pImg = img.ptr<byte>(y);
-			for (int x = 0; x < img.cols; x++) {
-				float *pFeature = features.ptr<float>(n++);
+        const word	nFeatures = featureVectors.channels();
+        
+        DGM_ASSERT_MSG(featureVectors.size() == m_size, "Resilution of the train image does not equal to the graph size");
+        Mat features; 
+        Mat feature(1, 2 + nFeatures, CV_32FC1);
+        float *pFeature = feature.ptr<float>(0);
+        for (int y = 0; y < m_size.height; y++) {
+			const byte *pFv = featureVectors.ptr<byte>(y);
+			for (int x = 0; x < m_size.width; x++) {
 				pFeature[0] = x * s.val[0] / m_size.width;
 				pFeature[1] = y * s.val[1] / m_size.height;
-				// TODO: feature vector may have much more channels
-                pFeature[2] = pImg[x * 3 + 0] * srgb.val[0] / 255;
-				pFeature[3] = pImg[x * 3 + 1] * srgb.val[1] / 255;
-				pFeature[4] = pImg[x * 3 + 2] * srgb.val[2] / 255;
+                for (word f = 0; f < nFeatures; f++)
+                    pFeature[2 + f] = pFv[nFeatures * x + f] * srgb / 255;
+                features.push_back(feature);
 			} // x
 		} // y
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
 	}
+
+    void CGraphDenseExt::addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+    {
+        const word	nFeatures = static_cast<word>(featureVectors.size());
+        
+        DGM_ASSERT_MSG(!featureVectors.empty(), "The train image is empty");
+        DGM_ASSERT_MSG(featureVectors[0].size() == m_size, "Resilution of the train image does not equal to the graph size");
+        Mat features;
+        Mat feature(1, 2 + nFeatures, CV_32FC1);
+        float *pFeature = feature.ptr<float>(0);
+        for (int y = 0; y < m_size.height; y++) {
+            byte const **pFv = new const byte *[nFeatures];
+            for (word f = 0; f < nFeatures; f++) pFv[f] = featureVectors[f].ptr<byte>(y);
+            for (int x = 0; x < m_size.width; x++) {
+                pFeature[0] = x * s.val[0] / m_size.width;
+                pFeature[1] = y * s.val[1] / m_size.height;
+                for (int f = 0; f < nFeatures; f++)
+                    pFeature[2 + f] = pFv[f][x] * srgb / 255;
+                features.push_back(feature);
+            } // x
+        } // y
+        m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
+    }
 }
