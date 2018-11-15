@@ -26,17 +26,18 @@ CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float weight, cons
 	}
 }
 
-void CEdgePotentialPotts::apply(const Mat &src, Mat &dst, Mat &temp) const
+void CEdgePotentialPotts::apply(const Mat &src, Mat &dst) const
 {
-	m_pLattice->compute(src, temp);
+	m_pLattice->compute(src, dst);
 
 	for (int n = 0; n < src.rows; n++) {	// nodes
-		if (m_function) m_function(temp.row(n), lvalue_cast(temp.row(n)));		// With the SemiMetric function
+		if (m_function) m_function(dst.row(n), lvalue_cast(dst.row(n)));		// With the SemiMetric function
 
-		float *pDst = dst.ptr<float>(n);
-		float *pTemp = temp.ptr<float>(n);
+        //dst.row(n) *= m_weight * m_norm.at<float>(n, 0);
+                                                                                
+        float *pDst = dst.ptr<float>(n);
 			
-        for (int s = 0; s < src.cols; s++)	// states
-			pDst[s] += m_weight * m_norm.at<float>(n, 0) * pTemp[s];
+		for (int s = 0; s < src.cols; s++)	// states
+			pDst[s] *= m_weight * m_norm.at<float>(n, 0); 
 	}
 }

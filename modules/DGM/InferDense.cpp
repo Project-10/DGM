@@ -41,14 +41,10 @@ namespace DirectGraphicalModels
 		const int rows = getGraphDense().getNodes().rows;
 		const int cols = getGraphDense().getNodes().cols;
 
-		Mat temp = Mat(2 * rows, cols, CV_32FC1, Scalar(0));
+		Mat tmp;
+		Mat next = Mat(rows, cols, CV_32FC1);
 
-		// TODO: exp is not needed actually
-		// Making log potentials
-		Mat pot_log;
-		log(getGraphDense().getNodes(), pot_log);
-
-		normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
+		Mat nodes0 = getGraphDense().getNodes().clone();
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
@@ -56,16 +52,16 @@ namespace DirectGraphicalModels
             if (i == 0) printf("\n");
             if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
-            // Set the unary potential
-			Mat next = pot_log.clone();																			// next_i = log(pot_0)
-
+			normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());	
+			next.setTo(1);
 			// Add up all pairwise potentials
-			for (auto &edgePotModel : getGraphDense().getEdgeModels())
-				edgePotModel->apply(getGraphDense().getNodes(), next, temp);								// next_i = f(next_i, pot_i)
+            for (auto &edgePotModel : getGraphDense().getEdgeModels()) {
+				edgePotModel->apply(getGraphDense().getNodes(), tmp);					// tmp = f(pot_i)
+				exp(tmp, tmp);
+				multiply(next, tmp, next);												// next *= exp(tmp)
+			}
 
-			// Exponentiate and normalize
-			exp(next, getGraphDense().getNodes());														// pot_i = exp(next_i)
-			normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
+			multiply(nodes0, next, getGraphDense().getNodes());							// pot_(i+1) = pot_0 * next
 		} // iter
 	}
 }

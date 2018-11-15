@@ -201,16 +201,16 @@ void CPermutohedral::init(const Mat &features)
     }
 }
 
-// TODO: dst might be empty
 void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_offset, size_t in_size, size_t out_size) const
 {
 	if (in_size  == 0) in_size  = m_nFeatures - in_offset;
     if (out_size == 0) out_size = m_nFeatures - out_offset;
-    
+	if (dst.empty())   dst		= Mat(out_size, src.cols, CV_32FC1);
+
     // Shift all values by 1 such that -1 -> 0 (used for blurring)
 	Mat values(m_M + 2, src.cols, CV_32FC1, Scalar(0));
     Mat newValues(m_M + 2, src.cols, CV_32FC1, Scalar(0));
-    
+
     // Splatting
     for(int i = 0; i < in_size; i++) {
         const float *pIn			= src.ptr<float>(i);

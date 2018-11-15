@@ -11,7 +11,7 @@ public:
 	CEdgePotentialPotts(const Mat &features, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst) > &SemiMetricFunction = {}, bool per_pixel_normalization = true);
 	virtual ~CEdgePotentialPotts(void) {}
 
-	virtual void apply(const Mat &src, Mat &dst, Mat &temp = EmptyMat) const;
+	virtual void apply(const Mat &src, Mat &dst) const;
 
 
 	// TODO: try without members

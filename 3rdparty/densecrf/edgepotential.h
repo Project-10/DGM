@@ -11,5 +11,5 @@ public:
     virtual ~CEdgePotential(void) = default;
     const CEdgePotential & operator= (const CEdgePotential & rhs) = delete;
     
-	virtual void apply(const Mat &src, Mat &dst, Mat &temp = EmptyMat) const = 0;
+	virtual void apply(const Mat &src, Mat &dst) const = 0;
 };
