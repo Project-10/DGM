@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 				const T *pSrc  = src.ptr<float>(y);
 				T *pDst = dst.ptr<float>(y);
 
-				// Find the max and subtract it so that the exp doesn't explodeh
+				// Find the max and subtract it so that the exp doesn't explode
 				T max = pSrc[0];
 				for (int x = 1; x < src.cols; x++)
 					if (pSrc[x] > max) max = pSrc[x];
@@ -38,30 +38,27 @@ namespace DirectGraphicalModels
 	void CInferDense::infer(unsigned int nIt)
 	{
 		// ====================================== Initialization ======================================
-		const int rows = getGraphDense().getNodes().rows;
-		const int cols = getGraphDense().getNodes().cols;
-
-		Mat tmp;
-		Mat next = Mat(rows, cols, CV_32FC1);
-
-		Mat nodes0 = getGraphDense().getNodes().clone();
+		Mat & nodePotentials	= getGraphDense().getNodes();
+		Mat	  nodePotentials0	= nodePotentials.clone();	
+		Mat	  temp				= Mat(nodePotentials.size(), nodePotentials.type());
+		Mat	  tmp;
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
 #ifdef DEBUG_PRINT_INFO
-            if (i == 0) printf("\n");
-            if (i % 5 == 0) printf("--- It: %d ---\n", i);
+			if (i == 0) printf("\n");
+			if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
-			normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());	
-			next.setTo(1);
+			normalize<float>(nodePotentials, nodePotentials);
+			
 			// Add up all pairwise potentials
-            for (auto &edgePotModel : getGraphDense().getEdgeModels()) {
-				edgePotModel->apply(getGraphDense().getNodes(), tmp);					// tmp = f(pot_i)
-				exp(tmp, tmp);
-				multiply(next, tmp, next);												// next *= exp(tmp)
+			temp.setTo(1);
+			for (auto &edgePotModel : getGraphDense().getEdgeModels()) {
+				edgePotModel->apply(nodePotentials, tmp);					// tmp = f(pot_i)
+				multiply(temp, tmp, temp);									// temp *= exp(tmp)
 			}
 
-			multiply(nodes0, next, getGraphDense().getNodes());							// pot_(i+1) = pot_0 * next
+			multiply(nodePotentials0, temp, nodePotentials);				// pot_(i+1) = pot_0 * next
 		} // iter
 	}
 }

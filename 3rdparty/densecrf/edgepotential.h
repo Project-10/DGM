@@ -11,5 +11,10 @@ public:
     virtual ~CEdgePotential(void) = default;
     const CEdgePotential & operator= (const CEdgePotential & rhs) = delete;
     
-	virtual void apply(const Mat &src, Mat &dst) const = 0;
+	/**
+	* @brief
+	* @param pots The node potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
+	* @param dst
+	*/
+	virtual void apply(const Mat &pots, Mat &dst) const = 0;
 };

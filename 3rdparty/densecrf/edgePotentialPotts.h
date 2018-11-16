@@ -8,17 +8,16 @@
 class CEdgePotentialPotts : public CEdgePotential
 {
 public:
-	CEdgePotentialPotts(const Mat &features, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst) > &SemiMetricFunction = {}, bool per_pixel_normalization = true);
+	CEdgePotentialPotts(const Mat &features, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {}, bool per_pixel_normalization = true);
 	virtual ~CEdgePotentialPotts(void) {}
 
-	virtual void apply(const Mat &src, Mat &dst) const;
+	virtual void apply(const Mat &pots, Mat &dst) const;
 
 
-	// TODO: try without members
 private:
-	float                           m_weight;
-	std::unique_ptr<CPermutohedral> m_pLattice;
-	Mat                             m_norm;
-    std::function<void(const Mat &src, Mat &dst)> m_function;
+	std::unique_ptr<CPermutohedral>					m_pLattice;
+	float											m_weight;
+	Mat												m_norm;
+    std::function<void(const Mat &src, Mat &dst)>	m_function;
 };
 

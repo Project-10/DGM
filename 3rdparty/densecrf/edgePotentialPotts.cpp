@@ -1,5 +1,4 @@
 #include "edgePotentialPotts.h"
-#include "permutohedral.h"
 #include <numeric>
 #include "types.h"
 
@@ -26,18 +25,23 @@ CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float weight, cons
 	}
 }
 
-void CEdgePotentialPotts::apply(const Mat &src, Mat &dst) const
+void CEdgePotentialPotts::apply(const Mat &pots, Mat &dst) const
 {
-	m_pLattice->compute(src, dst);
+	m_pLattice->compute(pots, dst);
 
-	for (int n = 0; n < src.rows; n++) {	// nodes
+#ifdef ENABLE_PPL
+	concurrency::parallel_for(0, dst.rows, [&](int n) {
+#else
+	for (int n = 0; n < dst.rows; n++) {	// nodes
+#endif
 		if (m_function) m_function(dst.row(n), lvalue_cast(dst.row(n)));		// With the SemiMetric function
 
-        //dst.row(n) *= m_weight * m_norm.at<float>(n, 0);
-                                                                                
-        float *pDst = dst.ptr<float>(n);
-			
-		for (int s = 0; s < src.cols; s++)	// states
-			pDst[s] *= m_weight * m_norm.at<float>(n, 0); 
+		float*	pDst = dst.ptr<float>(n);
+		float	k = m_weight * m_norm.at<float>(n, 0);
+		for (int s = 0; s < dst.cols; s++) pDst[s] *= k;
 	}
+#ifdef ENABLE_PPL
+	);
+#endif
+	exp(dst, dst);
 }

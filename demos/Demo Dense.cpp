@@ -33,13 +33,10 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	CTrainEdgePotts	edgeTrainer(nStates, nFeatures);
 //	CGraphExt		* graph = new CGraphExt(nStates);
 //	CInfer			* decoder = new CInferLBP(graph);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
-//	float			params[] = { 100, 0.01f };
-//	size_t			params_len = 1;
 
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -51,42 +48,14 @@ int main(int argc, char *argv[])
 	Timer::start("Training... ");
 	// Node Training (compact notation)
 	nodeTrainer.addFeatureVecs(train_fv, train_gt);
-
-	// Edge Training (comprehensive notation)
-	Mat featureVector1(nFeatures, 1, CV_8UC1);
-	Mat featureVector2(nFeatures, 1, CV_8UC1);
-	for (int y = 1; y < height; y++) {
-		byte *pFv1 = train_fv.ptr<byte>(y);
-		byte *pFv2 = train_fv.ptr<byte>(y - 1);
-		byte *pGt1 = train_gt.ptr<byte>(y);
-		byte *pGt2 = train_gt.ptr<byte>(y - 1);
-		for (int x = 1; x < width; x++) {
-			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
-
-			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-			edgeTrainer.addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt1[x - 1]);
-			edgeTrainer.addFeatureVecs(featureVector2, pGt1[x - 1], featureVector1, pGt1[x]);
-
-			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-			edgeTrainer.addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt2[x]);
-			edgeTrainer.addFeatureVecs(featureVector2, pGt2[x], featureVector1, pGt1[x]);
-		} // x
-	} // y
-
 	nodeTrainer.train();
-	edgeTrainer.train();
 	Timer::stop();
-
-
-	// CTrainEdgePotts::getEdgePotentials(100, nStates); // default Potts edge potential
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);		// Filling-in the graph edges with pairwise potentials
+
 	CGraphKit &kit = CGraphDenseKit(nStates);
-	
-	
 	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
 	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
 	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
@@ -112,8 +81,8 @@ int main(int argc, char *argv[])
 	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imwrite(argv[6], test_img);
 	
-	imshow("Image", test_img);
-	cv::waitKey();
+//	imshow("Image", test_img);
+//	cv::waitKey();
 
 	return 0;
 }
