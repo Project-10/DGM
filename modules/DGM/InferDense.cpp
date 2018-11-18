@@ -38,10 +38,10 @@ namespace DirectGraphicalModels
 	void CInferDense::infer(unsigned int nIt)
 	{
 		// ====================================== Initialization ======================================
-		Mat & nodePotentials	= getGraphDense().getNodes();
-		Mat	  nodePotentials0	= nodePotentials.clone();	
-		Mat	  temp				= Mat(nodePotentials.size(), nodePotentials.type());
-		Mat	  tmp;
+		Mat nodePotentials	= getGraphDense().getNodes();
+		Mat	nodePotentials0	= nodePotentials.clone();
+		Mat	temp			= Mat(nodePotentials.size(), nodePotentials.type());
+		Mat	tmp;
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {

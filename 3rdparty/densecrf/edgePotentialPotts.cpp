@@ -5,8 +5,8 @@
 // Constructor
 CEdgePotentialPotts::CEdgePotentialPotts(const Mat &features, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction, bool per_pixel_normalization)
 	: CEdgePotential()
-	, m_weight(weight)
 	, m_pLattice(std::make_unique<CPermutohedral>())
+    , m_weight(weight)
     , m_function(SemiMetricFunction)
 {
 	m_pLattice->init(features);

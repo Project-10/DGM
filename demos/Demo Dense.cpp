@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 
-	CGraphKit &kit = CGraphDenseKit(nStates);
+	
+    CGraphDenseKit kit(nStates);
 	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
 	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
 	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
