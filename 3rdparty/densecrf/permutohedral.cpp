@@ -25,7 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "permutohedral.h"
-#include "hashtable.h"
+#include <unordered_map>
 #include "macroses.h"
 
 // Copy constructor
@@ -57,13 +57,45 @@ CPermutohedral & CPermutohedral::operator= (const CPermutohedral &rhs)
 	return *this;
 }
 
+struct Key {
+	Mat mat;
+
+	bool operator==(const Key& other) const {
+		if (mat.size() != other.mat.size()) return false;
+		if (mat.type() != other.mat.type()) return false;
+
+		for (int y = 0; y < mat.rows; y++) {
+			const short* pMat = mat.ptr<short>(y);
+			const short* pMatOther = other.mat.ptr<short>(y);
+			for (int x = 0; x < mat.cols; x++)
+				if (pMat[x] != pMatOther[x]) return false;
+		}
+		return true;
+	}
+};
+
+struct hashFunc
+{
+	std::size_t operator()(const Key &key) const
+	{
+		std::size_t res = 0;
+		const short* ptr = key.mat.ptr<short>(0);
+		for (int i = 0; i < key.mat.cols; i++) {
+			res += static_cast<size_t>(ptr[i]);
+			res *= 1664525;
+		}
+		return res;
+	}
+};
+
 void CPermutohedral::init(const Mat &features)
 {
-    // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
+	// Compute the lattice coordinates for each feature [there is going to be a lot of magic here
     m_nFeatures = features.rows;
     m_featureSize = features.cols;
-    CHashTable hash_table(m_featureSize, m_nFeatures * (m_featureSize + 1));    // <============ Hash table
-	//std::unordered_map<Mat, int> hash_table1;
+	std::unordered_map<Key, int, hashFunc> hash_table;
+	hash_table.reserve(m_nFeatures * (m_featureSize + 1));
+	Mat allKeys;
 
     // Allocate the class memory
 	m_offset		= Mat(m_nFeatures, m_featureSize + 1, CV_32SC1); 
@@ -158,10 +190,12 @@ void CPermutohedral::init(const Mat &features)
             for(int i = 0; i < m_featureSize; i++)
                 key.at<short>(0, i) = static_cast<short>(rem0[i] + canonical[ remainder * (m_featureSize + 1) + rank[i]]);		// TODO
 			
-			int val = hash_table.find(key);
+			auto it = hash_table.find({ key(Rect(0, 0, m_featureSize, 1)) });
+			int val = it == hash_table.end() ? -1 : it->second;
 			if (val == -1) {
-				val = hash_table.size();
-				hash_table.insert(key, val);
+				val = static_cast<int>(hash_table.size());
+				hash_table[{ key(Rect(0, 0, m_featureSize, 1)).clone() }] = val;
+				allKeys.push_back(key(Rect(0, 0, m_featureSize, 1)));
 			}
 			pOffset[remainder]		= val;	
 			pBarycentric[remainder]	= barycentric[remainder];		
@@ -170,7 +204,7 @@ void CPermutohedral::init(const Mat &features)
     
     // Find the Neighbors of each lattice point
     // Get the number of vertices in the lattice
-    m_M = hash_table.size();
+	m_M = static_cast<int>(hash_table.size());
     
     // Create the neighborhood structure
 	m_blurNeighbor1 = Mat(m_M, m_featureSize + 1, CV_32SC1);
@@ -184,7 +218,7 @@ void CPermutohedral::init(const Mat &features)
 		int *pBlurNeighbor1 = m_blurNeighbor1.ptr<int>(i);
 		int *pBlurNeighbor2 = m_blurNeighbor2.ptr<int>(i);
 		
-		Mat key = hash_table.getKey(i);
+		Mat key = allKeys.row(i); 
 
 		for(int j = 0; j <= m_featureSize; j++) {
 
@@ -195,8 +229,10 @@ void CPermutohedral::init(const Mat &features)
             n1.at<short>(0, j) = key.at<short>(0, std::min(j, m_featureSize - 1)) + m_featureSize;	// TODO
             n2.at<short>(0, j) = key.at<short>(0, std::min(j, m_featureSize - 1)) - m_featureSize;	// TODO
             
-            pBlurNeighbor1[j] = hash_table.find(n1);
-            pBlurNeighbor2[j] = hash_table.find(n2);
+			auto it = hash_table.find({ n1(Rect(0, 0, m_featureSize, 1)) });
+			pBlurNeighbor1[j] = it == hash_table.end() ? -1 : it->second;
+			it = hash_table.find({ n2(Rect(0, 0, m_featureSize, 1)) });
+			pBlurNeighbor2[j] = it == hash_table.end() ? -1 : it->second;
         }
     }
 }
@@ -205,7 +241,7 @@ void CPermutohedral::compute(const Mat &src, Mat &dst, int in_offset, int out_of
 {
 	if (in_size  == 0) in_size  = m_nFeatures - in_offset;
     if (out_size == 0) out_size = m_nFeatures - out_offset;
-	if (dst.empty())   dst		= Mat(out_size, src.cols, CV_32FC1);
+	if (dst.empty())   dst		= Mat(static_cast<int>(out_size), src.cols, CV_32FC1);
 
     // Shift all values by 1 such that -1 -> 0 (used for blurring)
 	Mat values(m_M + 2, src.cols, CV_32FC1, Scalar(0));
