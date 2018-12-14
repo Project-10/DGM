@@ -28,7 +28,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void setNodes(const Mat &pots);
 		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
 		{
-			addGaussianEdgeModel(Vec2f::all(val), weight);
+			addGaussianEdgeModel(Vec2f::all(val * 0.03f), weight);
 		}
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
 		{
@@ -40,12 +40,12 @@ namespace DirectGraphicalModels
         }
 
 		/**
-		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
-		* @param s
+		* @brief Add a Gaussian potential model with standard deviation \b sigma
+		* @param sigma The spatial standard deviation of the 2D-gaussian filter 
 		* @param weight
 		* @param pFunction
 		*/
-        DllExport void addGaussianEdgeModel(Vec2f s, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+        DllExport void addGaussianEdgeModel(Vec2f sigma, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
 		/**
 		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
 		* @param img

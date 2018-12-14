@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.1)
 
-project (DGM)
+project (HKI)
 
 # The version number
 set (DGM_VERSION_MAJOR 1)

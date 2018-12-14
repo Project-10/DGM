@@ -4,12 +4,12 @@
 
 #include "GraphExt.h"
 #include "GraphLayered.h"
-#include "GraphPairwise.h"	
-#include "TrainEdgePottsCS.h"
-#include "macroses.h" // TODO: delete this
 
 namespace DirectGraphicalModels 
 {
+	class CGraphLayered;
+	class CGraphPairwise;
+	
 	// ================================ Extended Pairwise Graph Class ================================
 	/**
 	* @brief Extended Pairwise graph class
@@ -25,78 +25,57 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(CGraphPairwise &graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
-		DllExport virtual ~CGraphPairwiseExt(void) {}
+		DllExport CGraphPairwiseExt(CGraphPairwise &graph, byte gType = GRAPH_EDGES_GRID);
+		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
         /**
-         * @brief Builds a graph, which fits the image resolution
+         * @brief Builds a 2D graph of size corresponding to the image resolution
          * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
          * @param graphSize The size of the graph
          */
-        DllExport virtual void addNodes(cv::Size graphSize)
-        {
-            m_pGraphML->addNodes(graphSize);
-        }
+		DllExport virtual void addNodes(Size graphSize) override;
         /**
-		* @brief Fills the graph nodes with potentials
-		* @details
+        * @brief Fills the existing graph nodes with potentials or adds new nodes with potentials
+        * @details
+        * If the graph was not build beforehand, this function calls first
+        * @code
+        * addNodes(pots.size())
+        * @endcode
 		* > This function supports PPL
-		* @param pots A block of potentials: Mat(type: CV_32FC(nStates))
-		*/
-		DllExport virtual void setNodes(const Mat &pots)
-		{
-			m_pGraphML->setNodes(pots, Mat());
-		}
-		/**
+        * @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
+        * @code
+        * CTrainNode::getNodePotentials()
+        * @endcode
+        */       
+		DllExport virtual void setNodes(const Mat& pots) override;
+        /**
 		* @brief Adds default data-independet edge model
+		* @param val Value, specifying the smoothness strength 
+        * @param weight The weighting parameter
+		*/		
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override;
+		/**
+		* @brief Adds default contrast-sensitive edge model
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+        * @param val Value, specifying the smoothness strength
+        * @param weight The weighting parameter
 		*/
-		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
-		{
-            const byte nStates = m_pGraphML->getGraph().getNumStates();
+		DllExport virtual void addDefaultEdgesModel(const Mat& featureVectors, float val, float weight = 1.0f) override;
+		/**
+        * @brief Adds default contrast-sensitive edge model
+        * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+        * @param val Value, specifying the smoothness strength
+        * @param weight The weighting parameter
+        */		
+		DllExport virtual void addDefaultEdgesModel(const vec_mat_t& featureVectors, float val, float weight = 1.0f) override;
 
-            // Assertions
-			DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
+		DllExport virtual Size getSize(void) const override;		
+		
+		
 
-			Mat ePot = CTrainEdge::getDefaultEdgePotentials(val, nStates);
-#ifdef ENABLE_PPL
-            concurrency::parallel_for(0, m_pGraphML->getSize().height, [&](int y) {
-#else 
-            for (int y = 0; y < m_pGraphML->getSize().height; y++) {
-#endif
-                for (int x = 0; x < m_pGraphML->getSize().width; x++) {
-                    size_t idx = y * m_pGraphML->getSize().width + x;
-                    if (m_pGraphML->getType() & GRAPH_EDGES_GRID) {
-                        if (x > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1, ePot);
-                        if (y > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1 * m_pGraphML->getSize().width, ePot);
-                    } // edges_grid
 
-                    if (m_pGraphML->getType() & GRAPH_EDGES_DIAG) {
-                        if ((x > 0) && (y > 0))									m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width - 1, ePot);
-                        if ((x < m_pGraphML->getSize().width - 1) && (y > 0))	m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width + 1, ePot);
-                    } // edges_diag
-                } // x
-#ifdef ENABLE_PPL
-            }); // y
-#else
-            } // y
-#endif
-		}
 
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
-		{
-            const byte nStates = m_pGraphML->getGraph().getNumStates();
-            const word nFeatures = featureVectors.channels();
-            const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
-            fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
-		}
 
-        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f)
-        {
-            const byte nStates = m_pGraphML->getGraph().getNumStates();
-            const word nFeatures = static_cast<word>(featureVectors.size());
-            const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
-            fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
-        }
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
@@ -133,7 +112,7 @@ namespace DirectGraphicalModels
 		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const Mat &featureVectors, const vec_float_t &vParams, float weight = 1.0f)
+		DllExport void fillEdges(const CTrainEdge& edgeTrainer, const Mat& featureVectors, const vec_float_t& vParams, float weight = 1.0f)
 		{
 			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
@@ -147,7 +126,7 @@ namespace DirectGraphicalModels
 		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float weight = 1.0f)
+		DllExport void fillEdges(const CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float weight = 1.0f)
 		{
 			m_pGraphML->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
@@ -180,12 +159,9 @@ namespace DirectGraphicalModels
         {
             return m_pGraphML->getType();
         }
-        DllExport virtual Size getSize(void) const {
-            return m_pGraphML->getSize();
-        }
         
         
-    private:
-        std::unique_ptr<CGraphLayered> m_pGraphML;          ///< Enclosure of the multi-layer graph
+    protected:
+		std::unique_ptr<CGraphLayered> m_pGraphML;          ///< Enclosure of the multi-layer graph
 	};
 }

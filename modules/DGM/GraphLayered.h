@@ -39,14 +39,14 @@ namespace DirectGraphicalModels
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
 		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cv::Size(0, 0)) {}
-		DllExport ~CGraphLayered(void) {}
+		DllExport ~CGraphLayered(void) = default;
 
 		/**
 		* @brief Builds a graph, which fits the image resolution
 		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
 		* @param graphSize The size of the graph
 		*/
-		DllExport void addNodes(cv::Size graphSize);
+		DllExport void addNodes(Size graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
@@ -68,7 +68,7 @@ namespace DirectGraphicalModels
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const Mat &featureVectors, const Mat &gt);
+		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt);
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
@@ -78,7 +78,7 @@ namespace DirectGraphicalModels
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt);
+		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
@@ -91,7 +91,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges 
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
@@ -104,7 +104,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport void fillEdges(const CTrainEdge *edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Assign the edges, which cross the given line to the grop \b group.
 		* @details The line is given by the equation: <b>A</b>x + <b>B</b>y + <b>C</b> = 0. \b A and \b B are not both equal to zero.
@@ -137,8 +137,8 @@ namespace DirectGraphicalModels
 
 	private:
 		CGraphPairwise&	m_graph;		///< The graph
-		word			m_nLayers;		///< Number of layers
-		byte			m_gType;		///< Graph type (Ref. @ref graphType)
+		const word		m_nLayers;		///< Number of layers
+		const byte		m_gType;		///< Graph type (Ref. @ref graphType)
 		Size			m_size;			///< Size of the graph
 	};
 }

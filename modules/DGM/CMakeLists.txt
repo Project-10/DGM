@@ -40,6 +40,7 @@ source_group("Source Files\\Graph\\Pairwise"   	FILES "IGraphPairwise.h" "IGraph
 source_group("Source Files\\Graph\\Pairwise\\pairwise"	FILES "GraphPairwise.h" "GraphPairwise.cpp")
 source_group("Source Files\\Graph\\Pairwise\\Ext" FILES									
 											"GraphPairwiseExt.h"
+											"GraphPairwiseExt.cpp"
 											"GraphLayered.h"
 											"GraphLayered.cpp"
 									)

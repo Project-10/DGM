@@ -33,8 +33,7 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-//	CGraphExt		* graph = new CGraphExt(nStates);
-//	CInfer			* decoder = new CInferLBP(graph);
+	CGraphDenseKit	kit(nStates);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
 
@@ -54,12 +53,11 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	Serialize::to("D:\\npot.dat", nodePotentials);
 
-	
-    CGraphDenseKit kit(nStates);
 	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
-	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
-	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
+	kit.getGraphExt().addDefaultEdgesModel(8366.67f, 3.0f);
+//	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
 	Timer::stop();
 
 
@@ -82,8 +80,8 @@ int main(int argc, char *argv[])
 	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imwrite(argv[6], test_img);
 	
-//	imshow("Image", test_img);
-//	cv::waitKey();
+	imshow("Image", test_img);
+	cv::waitKey();
 
 	return 0;
 }
