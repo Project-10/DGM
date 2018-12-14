@@ -26,15 +26,15 @@ namespace DirectGraphicalModels
         }
 	}
 
-	void CGraphDenseExt::addGaussianEdgeModel(Vec2f s, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addGaussianEdgeModel(Vec2f sigma, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
 	{
         Mat features(m_size.height * m_size.width, 2, CV_32FC1);
 		int n = 0;
 		for (int y = 0; y < m_size.height; y++)
 			for (int x = 0; x < m_size.width; x++) {
 				float *pFeature = features.ptr<float>(n++);
-                pFeature[0] = x * s.val[0] / m_size.width;
-                pFeature[1] = y * s.val[1] / m_size.height;
+                pFeature[0] = x / sigma.val[0];
+				pFeature[1] = y / sigma.val[1];
 			} // x
 
 		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
