@@ -22,22 +22,21 @@ namespace DirectGraphicalModels
 		* @param nStates the number of States (classes)
 		*/
 		DllExport CGraphDense(byte nStates) : CGraph(nStates), m_nodePotentials(EmptyMat) {}
-		DllExport virtual ~CGraphDense(void) {}
+		DllExport virtual ~CGraphDense(void) = default;
 
 		// CGraph
-		DllExport virtual void		reset(void) { m_nodePotentials.release(); m_vpEdgeModels.clear(); }
+		DllExport virtual void		reset(void) override { m_nodePotentials.release(); m_vpEdgeModels.clear(); }
 		
-		DllExport virtual size_t	addNode(void);
-		DllExport virtual size_t	addNode(const Mat &pot);
-		DllExport virtual void		addNodes(const Mat &pots);
+		DllExport virtual size_t	addNode(const Mat &pot = EmptyMat) override;
+		DllExport virtual void		addNodes(const Mat &pots) override;
 
-		DllExport virtual void		setNode(size_t node, const Mat &pot);
-		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0);
+		DllExport virtual void		setNode(size_t node, const Mat &pot) override;
+		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0) override;
 		
-		DllExport virtual void		getNode(size_t node, Mat &pot) const;
+		DllExport virtual void		getNode(size_t node, Mat &pot) const override;
 		
-		DllExport virtual size_t	getNumNodes(void) const { return static_cast<size_t>(m_nodePotentials.rows); }
-		DllExport virtual size_t	getNumEdges(void) const { return getNumNodes() * (getNumNodes() - 1) / 2; }
+		DllExport virtual size_t	getNumNodes(void) const override { return static_cast<size_t>(m_nodePotentials.rows); }
+		DllExport virtual size_t	getNumEdges(void) const override { return getNumNodes() * (getNumNodes() - 1) / 2; }
 
 		// Own
         /**
@@ -57,7 +56,7 @@ namespace DirectGraphicalModels
          * @details One edge model applies itself to all the edges in the graph
          * @return The container with edge models: vector of size: number of used edge models
          */
-        std::vector<CEdgePotential*> & getEdgeModels(void) const { return m_vpEdgeModels; }
+        std::vector<CEdgePotential*>& getEdgeModels(void) const { return m_vpEdgeModels; }
         
         
 	private:

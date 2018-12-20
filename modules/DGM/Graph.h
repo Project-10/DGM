@@ -19,7 +19,10 @@ namespace DirectGraphicalModels {
 		* @param nStates the number of States (classes)
 		*/
 		DllExport CGraph(byte nStates) : m_nStates(nStates) {};
-		DllExport virtual ~CGraph(void) {};
+		DllExport CGraph(const CGraph&) = delete;
+		DllExport virtual ~CGraph(void) = default;
+
+		const CGraph& operator= (const CGraph&) = delete;
 
 		/**
 		* @brief Resets the graph
@@ -28,16 +31,11 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		reset(void) = 0;
 		/**
-		* @brief Adds an additional node
-		* @return the node's ID
-		*/
-		DllExport virtual size_t	addNode(void) = 0;
-		/**
-		* @brief Adds an additional node with specified potentional
+		* @brief Adds an additional node (with specified potentional)
 		* @param pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
 		* @return the node's ID
 		*/
-		DllExport virtual size_t	addNode(const Mat &pot) = 0;
+		DllExport virtual size_t	addNode(const Mat &pot = EmptyMat) = 0;
 		/**
         * @brief Adds the graph nodes with potentials
         * @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
@@ -82,11 +80,5 @@ namespace DirectGraphicalModels {
 	
 	private:
 		byte m_nStates;		///< The number of states (classes)
-
-
-	private:
-		// Copy semantics are disabled
-		CGraph(const CGraph &rhs) {}
-		const CGraph & operator= (const CGraph & rhs) { return *this; }
 	};
 }

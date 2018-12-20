@@ -4,19 +4,11 @@
 
 namespace DirectGraphicalModels 
 {
-	// Add a new node to the graph
-	size_t CGraphDense::addNode(void)
-	{
-		size_t res = getNumNodes();
-		m_nodePotentials.push_back(Mat(1, getNumStates(), CV_32FC1, Scalar(1.0f / getNumStates())));
-		return res;
-	}
-	
 	// Add a new node to the graph with specified potentional
 	size_t CGraphDense::addNode(const Mat &pot)
 	{
 		size_t res = getNumNodes();
-		m_nodePotentials.push_back(pot.t());
+		m_nodePotentials.push_back(pot.empty() ? Mat(1, getNumStates(), CV_32FC1, Scalar(1.0f / getNumStates())) : pot.t());
 		return res;
 	}
 

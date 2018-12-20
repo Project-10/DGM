@@ -4,8 +4,10 @@
 namespace DirectGraphicalModels
 {
 // Constructor
-CGraphWeiss::CGraphWeiss(byte nStates) : IGraphPairwise(nStates), m_IDx(0), m_nStates(nStates)
-{ }
+CGraphWeiss::CGraphWeiss(byte nStates) 
+	: IGraphPairwise(nStates)
+	, m_IDx(0)
+{}
 
 // Destructor: clean up the Node objects
 CGraphWeiss::~CGraphWeiss(void)
@@ -25,21 +27,11 @@ void CGraphWeiss::reset(void)
 	m_IDx = 0;
 }
 
-// Add a new node to the graph
-size_t CGraphWeiss::addNode(void)
-{
-	Node *n = new Node();
-	n->id = m_IDx;
-	m_vpNodes.push_back(n);
-	return m_IDx++;
-}
-
 // Add a new node to the graph with specified potentional
 size_t CGraphWeiss::addNode(const Mat &pot)
 {
-	Node *n = new Node();
+	Node *n = new Node(pot);
 	n->id = m_IDx;
-	pot.copyTo(n->Pot);
 	m_vpNodes.push_back(n);
 	return m_IDx++;
 }
@@ -163,14 +155,14 @@ void CGraphWeiss::getEdge(size_t srcNode, size_t dstNode, Mat &pot) const
 }
 
 // Add a new (undirected edge) ark to the graph
-void CGraphWeiss::addArk(size_t Node1, size_t Node2)
+void CGraphWeiss::addArc(size_t Node1, size_t Node2)
 {
 	addEdge(Node1, Node2);
 	addEdge(Node2, Node1);
 }
 
 // Add a new (undirected edge) ark to the graph with specified potentional
-void CGraphWeiss::addArk(size_t Node1, size_t Node2, const Mat &pot)
+void CGraphWeiss::addArc(size_t Node1, size_t Node2, const Mat &pot)
 {
 	Mat Pot;
 	pot.copyTo(Pot);
@@ -188,7 +180,7 @@ void CGraphWeiss::addArk(size_t Node1, size_t Node2, const Mat &pot)
 }
 
 // Add a new (undirected edge) ark to the graph with specified potentional
-void CGraphWeiss::setArk(size_t Node1, size_t Node2, const Mat &pot)
+void CGraphWeiss::setArc(size_t Node1, size_t Node2, const Mat &pot)
 {
 	Mat Pot;
 	pot.copyTo(Pot);
@@ -205,5 +197,3 @@ void CGraphWeiss::setArk(size_t Node1, size_t Node2, const Mat &pot)
 	Pot.release();
 }
 }
-
-
