@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
-	graphExt.fillEdges(edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
+	graphExt.fillEdges(*edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
