@@ -19,7 +19,7 @@ namespace DirectGraphicalModels
 	{
         m_size = pots.size();
 
-        if (m_graph.getNumNodes() == pots.cols * pots.rows) m_graph.setNodes(pots.clone().reshape(1, pots.cols * pots.rows));
+        if (m_graph.getNumNodes() == pots.cols * pots.rows) m_graph.setNodes(0, pots.clone().reshape(1, pots.cols * pots.rows));
         else {
             if (m_graph.getNumNodes() != 0) m_graph.reset();
             m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));

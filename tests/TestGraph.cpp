@@ -16,19 +16,22 @@ void testGraphBuilding(CGraph *pGraph, byte nStates)
 	ASSERT_EQ(nNodes + 2, pGraph->getNumNodes());
 	pGraph->setNode(0, pots1.row(0).t());
 
-	Mat pot0, pot1;
+	Mat pot0, pot1, pot2;
 	pGraph->getNode(0, pot0);
 	pGraph->getNode(1, pot1);
+	pGraph->getNodes(0, 10, pot2);
 
 	float *pPot0 = pots1.ptr<float>(0);
 	float *pPot1 = pots1.ptr<float>(1);
 	for (byte s = 0; s < nStates; s++) {
 		ASSERT_EQ(pot0.at<float>(s, 0), pPot0[s]);
 		ASSERT_EQ(pot1.at<float>(s, 0), pPot1[s]);
+		ASSERT_EQ(pot2.at<float>(0, s), pPot0[s]);
+		ASSERT_EQ(pot2.at<float>(1, s), pPot1[s]);
 	}
 
 	Mat pots2 = random::U(Size(nStates, static_cast<int>(pGraph->getNumNodes()) - 10), CV_32FC1, 0.0, 100.0);
-	pGraph->setNodes(pots2, 2);
+	pGraph->setNodes(2, pots2);
 	Mat pot;
 	for (size_t n = 2; n < pGraph->getNumNodes(); n++) {
 		pGraph->getNode(n, pot);
