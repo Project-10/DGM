@@ -91,7 +91,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges 
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink *linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink* linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Fills the graph edges with potentials
 		* @details This function uses \b edgeTrainer class in oerder to achieve edge potentials from feature vectors, stored in \b featureVectors
@@ -104,7 +104,7 @@ namespace DirectGraphicalModels
 		* @param edgeWeight The weighting parameter for (within-layer) edges
 		* @param linkWeight The weighting parameter for (inter-layer) edges, \a i.e. links
 		*/
-		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink *linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+		DllExport void fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink* linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
 		/**
 		* @brief Assign the edges, which cross the given line to the grop \b group.
 		* @details The line is given by the equation: <b>A</b>x + <b>B</b>y + <b>C</b> = 0. \b A and \b B are not both equal to zero.

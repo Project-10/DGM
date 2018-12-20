@@ -2,23 +2,7 @@
 
 namespace DirectGraphicalModels 
 {
-	// Constructor	
-	CGraphPairwiseExt::CGraphPairwiseExt(CGraphPairwise &graph, byte gType) 
-		: CGraphExt()
-		, m_pGraphML(new CGraphLayered(graph, 1, gType)) 
-	{}
-
-	void CGraphPairwiseExt::addNodes(Size graphSize)
-    {
-        m_pGraphML->addNodes(graphSize);
-    }
-
-	void CGraphPairwiseExt::setNodes(const Mat &pots)
-	{
-		m_pGraphML->setNodes(pots, Mat());
-	}
-
-	void CGraphPairwiseExt::addDefaultEdgesModel(float val, float weight = 1.0f)
+	void CGraphPairwiseExt::addDefaultEdgesModel(float val, float weight)
 	{
 //        const byte nStates = m_pGraphML->getGraph().getNumStates();
 //
@@ -65,10 +49,4 @@ namespace DirectGraphicalModels
         //const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
         //fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
     }
-
-	Size CGraphPairwiseExt::getSize(void) const 
-	{
-        return m_pGraphML->getSize();
-    }
-
 }

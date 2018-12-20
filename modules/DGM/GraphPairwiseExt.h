@@ -25,7 +25,7 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(CGraphPairwise &graph, byte gType = GRAPH_EDGES_GRID);
+		DllExport CGraphPairwiseExt(CGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
         /**
@@ -33,7 +33,10 @@ namespace DirectGraphicalModels
          * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
          * @param graphSize The size of the graph
          */
-		DllExport virtual void addNodes(Size graphSize) override;
+		DllExport virtual void addNodes(Size graphSize) override
+		{
+			m_pGraphML->addNodes(graphSize);
+		}
         /**
         * @brief Fills the existing graph nodes with potentials or adds new nodes with potentials
         * @details
@@ -47,7 +50,10 @@ namespace DirectGraphicalModels
         * CTrainNode::getNodePotentials()
         * @endcode
         */       
-		DllExport virtual void setNodes(const Mat& pots) override;
+		DllExport virtual void setNodes(const Mat& pots) override
+		{
+			m_pGraphML->setNodes(pots, Mat());
+		}
         /**
 		* @brief Adds default data-independet edge model
 		* @param val Value, specifying the smoothness strength 
@@ -69,7 +75,11 @@ namespace DirectGraphicalModels
         */		
 		DllExport virtual void addDefaultEdgesModel(const vec_mat_t& featureVectors, float val, float weight = 1.0f) override;
 
-		DllExport virtual Size getSize(void) const override;		
+		DllExport virtual Size getSize(void) const override
+		{
+	        return m_pGraphML->getSize();
+	    }
+
 		
 		
 
@@ -85,7 +95,7 @@ namespace DirectGraphicalModels
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const Mat &featureVectors, const Mat &gt)
+		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt)
 		{
 			m_pGraphML->addFeatureVecs(edgeTrainer, featureVectors, gt);
 		}
@@ -98,7 +108,7 @@ namespace DirectGraphicalModels
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-		DllExport void addFeatureVecs(CTrainEdge *edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
+		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
 		{
 			m_pGraphML->addFeatureVecs(edgeTrainer, featureVectors, gt);
 		}
