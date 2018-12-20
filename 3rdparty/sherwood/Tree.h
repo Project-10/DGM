@@ -1,3 +1,4 @@
+// C++17 support by Sergey Kosov in 2018 for Project X
 #pragma once
 
 // This file defines the Tree class, which is used to represent decision trees.

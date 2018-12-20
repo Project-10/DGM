@@ -1,5 +1,6 @@
 // This file declares the Forest class, which is used to represent forests of decisions trees.
 // Bug fixing by Sergey Kosov in 2016 for Project X
+// C++17 support by Sergey Kosov in 2018 for Project X
 #pragma once
 
 #include <memory>

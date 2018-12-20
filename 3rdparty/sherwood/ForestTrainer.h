@@ -1,6 +1,7 @@
 // This file defines the ForestTraininer and TreeTrainer classes, which are
 // responsible for creating new DecisionForest instances by learning from
 // training data. Please see also ParallelForestTrainer.h.
+// C++17 support by Sergey Kosov in 2018 for Project X
 #pragma once
 
 #include <assert.h>
