@@ -10,13 +10,6 @@ namespace DirectGraphicalModels
 		m_IDx = 0;
 	}
 
-	// Add a new node to the graph
-	size_t CGraphPairwise::addNode(void)
-	{
-		m_vNodes.push_back(ptr_node_t(new Node(m_IDx))); 
-		return m_IDx++;
-	}
-
 	// Add a new node to the graph with specified potentional
 	size_t CGraphPairwise::addNode(const Mat &pot)
 	{
