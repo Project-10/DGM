@@ -31,7 +31,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void		addNodes(const Mat &pots) override;
 
 		DllExport virtual void		setNode(size_t node, const Mat &pot) override;
-		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0) override;
+		DllExport virtual void		setNodes(size_t start_node, const Mat &pots) override;
 		
 		DllExport virtual void		getNode(size_t node, Mat &pot) const override;
 		

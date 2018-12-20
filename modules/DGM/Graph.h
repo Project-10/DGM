@@ -51,16 +51,25 @@ namespace DirectGraphicalModels {
         * @brief Fills the graph nodes with new potentials
         * @details
         * > This function supports PPL
-        * @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
 		* @param start_node The index of the node, starting from which the potentials should be set
+		* @param pots A block of potentials: Mat(size: nNodes x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void		setNodes(const Mat &pots, size_t start_node = 0);
+		DllExport virtual void		setNodes(size_t start_node, const Mat &pots);
 		/**
 		* @brief Returns the node potential
 		* @param[in] node node index
 		* @param[out] pot node potential vector: Mat(size: nStates x 1; type: CV_32FC1)
 		*/
 		DllExport virtual void		getNode(size_t node, Mat &pot) const = 0;
+		/**
+		* @brief Returns the node potentials
+        * @details
+        * > This function supports PPL
+		* @param[in] start_node The index of the node, starting from which the potentials should be got
+		* @param[in] num_nodes The number of nodes potentials to acquire. \b 0 means - read nodes from \b start_node till the last one.
+		* @param[out] pots A block of potentials: Mat(size: num_nodes x nStates; type: CV_32FC1)
+		*/
+		DllExport virtual void		getNodes(size_t start_node, size_t num_nodes, Mat &pots) const;
 		/**
 		* @brief Returns the number of nodes in the graph
 		* @returns number of nodes

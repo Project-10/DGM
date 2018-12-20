@@ -26,7 +26,7 @@ namespace DirectGraphicalModels
 		m_nodePotentials.row(static_cast<int>(node)) = pot.t();
 	}
 
-	void CGraphDense::setNodes(const Mat &pots, size_t start_node)
+	void CGraphDense::setNodes(size_t start_node, const Mat &pots)
 	{
 		DGM_ASSERT_MSG(start_node + pots.rows < getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
 		DGM_ASSERT_MSG(pots.cols == getNumStates(), "Potential size (%d) does not match (%d)", pots.cols, getNumStates());
