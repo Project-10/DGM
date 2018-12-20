@@ -39,7 +39,7 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 		* @brief Add another tree to the forest
 		* @param tree The tree
 		*/
-		void AddTree(std::auto_ptr<Tree<F,S> > tree)
+		void AddTree(std::unique_ptr<Tree<F,S> > tree)
 		{
 			tree->CheckValid();
 			trees_.push_back(tree.get());
@@ -50,7 +50,7 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 		* @param path The file path
 		* @returns The forest
 		*/
-		static std::auto_ptr<Forest<F, S> > Deserialize(const std::string& path)
+		static std::unique_ptr<Forest<F, S> > Deserialize(const std::string& path)
 		{ 
 			std::ifstream i(path.c_str(), std::ios_base::binary);
 			return Forest<F,S>::Deserialize(i);
@@ -60,9 +60,9 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 		* @param i The stream
 		* @returns
 		*/
-		static std::auto_ptr<Forest<F, S> > Deserialize(std::istream& i)
+		static std::unique_ptr<Forest<F, S> > Deserialize(std::istream& i)
 		{
-			std::auto_ptr<Forest<F, S> > forest = std::auto_ptr<Forest<F, S> >(new Forest<F,S>());
+			std::unique_ptr<Forest<F, S> > forest = std::unique_ptr<Forest<F, S> >(new Forest<F,S>());
 
 			std::vector<char> buffer(strlen(binaryFileHeader_) + 1);
 			i.read(&buffer[0], strlen(binaryFileHeader_));
@@ -82,7 +82,7 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 				i.read((char *) (&treeCount), sizeof(treeCount));
 
 				for(size_t t = 0; t < treeCount; t++) {
-					std::auto_ptr<Tree<F,S> > tree = Tree<F, S>::Deserialize(i);
+					std::unique_ptr<Tree<F,S> > tree = Tree<F, S>::Deserialize(i);
 					forest->trees_.push_back(tree.get());
 					tree.release();
 				}

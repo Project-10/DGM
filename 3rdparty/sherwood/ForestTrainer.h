@@ -213,14 +213,14 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 		* @param data The training data.
 		* @returns A new decision tree.
 		*/
-		static std::auto_ptr<Tree<F, S> > TrainTree(Random &random, ITrainingContext<F, S> &context, const TrainingParameters &parameters, const IDataPointCollection &data, ProgressStream *progress = nullptr)
+		static std::unique_ptr<Tree<F, S> > TrainTree(Random &random, ITrainingContext<F, S> &context, const TrainingParameters &parameters, const IDataPointCollection &data, ProgressStream *progress = nullptr)
 		{
 			ProgressStream defaultProgress(std::cout, parameters.Verbose ? Verbose : Interest);
 			if (progress == 0) progress = &defaultProgress;
 
 			TreeTrainingOperation<F, S> trainingOperation(random, context, parameters, data, *progress);
 
-			std::auto_ptr<Tree<F, S> > tree = std::auto_ptr<Tree<F, S>>(new Tree<F,S>(parameters.MaxDecisionLevels));
+			std::unique_ptr<Tree<F, S> > tree = std::unique_ptr<Tree<F, S>>(new Tree<F,S>(parameters.MaxDecisionLevels));
 
 			(*progress)[Verbose] << std::endl;
 
@@ -251,18 +251,18 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 		* @param progress The progress.
 		* @returns A new decision forest.
 		*/
-		static std::auto_ptr<Forest<F,S> > TrainForest(Random &random, const TrainingParameters &parameters, ITrainingContext<F,S> &context, const IDataPointCollection &data, ProgressStream *progress = nullptr)
+		static std::unique_ptr<Forest<F,S> > TrainForest(Random &random, const TrainingParameters &parameters, ITrainingContext<F,S> &context, const IDataPointCollection &data, ProgressStream *progress = nullptr)
 		{
 			ProgressStream defaultProgress(std::cout, parameters.Verbose ? Verbose : Interest);
 			if(progress == 0)	progress=&defaultProgress;
 
-			std::auto_ptr<Forest<F,S> > forest = std::auto_ptr<Forest<F,S> >(new Forest<F,S>());
+			std::unique_ptr<Forest<F,S> > forest = std::unique_ptr<Forest<F,S> >(new Forest<F,S>());
 
 			for (int t = 0; t < parameters.NumberOfTrees; t++) {
 				(*progress)[Interest] << "\rTraining tree "<< t << "...";
 
-				std::auto_ptr<Tree<F, S> > tree = TreeTrainer<F, S>::TrainTree(random, context, parameters, data, progress);
-				forest->AddTree(tree);
+				std::unique_ptr<Tree<F, S> > tree = TreeTrainer<F, S>::TrainTree(random, context, parameters, data, progress);
+                forest->AddTree(std::move(tree));
 			}
 
 			(*progress)[Interest] << "\rTrained " << parameters.NumberOfTrees << " trees.         " << std::endl;
