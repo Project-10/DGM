@@ -9,7 +9,7 @@
 
 namespace DirectGraphicalModels
 {
-	void CGraphLayered::addNodes(Size graphSize)
+	void CGraphLayered::buildGraph(Size graphSize)
 	{
 		if (m_graph.getNumNodes() != 0) m_graph.reset();
 		m_size = graphSize;
@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
 		} // if DIAG
 	}
 
-	void CGraphLayered::setNodes(const Mat &potBase, const Mat &potOccl)
+	void CGraphLayered::setGraph(const Mat &potBase, const Mat &potOccl)
 	{
 		// Assertions
         DGM_ASSERT(!potBase.empty());
@@ -65,7 +65,7 @@ namespace DirectGraphicalModels
 			DGM_ASSERT(potBase.size() == potOccl.size());
 			DGM_ASSERT(CV_32F == potOccl.depth());
 		}
-        if (m_size != potBase.size()) addNodes(potBase.size());     
+        if (m_size != potBase.size()) buildGraph(potBase.size());     
         DGM_ASSERT(m_size.height == potBase.rows);
         DGM_ASSERT(m_size.width == potBase.cols);
         DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());
@@ -423,7 +423,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::setGroupPot(byte group, const Mat &pot)
+	void CGraphLayered::setGroupPot(const Mat &pot, byte group)
 	{
 		if (false) {
 			for (int y = 0; y < m_size.height; y++) {

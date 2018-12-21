@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");
-	graphExt.addNodes(imgSize);
+	graphExt.buildGraph(imgSize);
 	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
+	graphExt.setGraph(nodePotentials);									// Filling-in the graph nodes
 	graphExt.fillEdges(*edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 

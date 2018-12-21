@@ -5,23 +5,25 @@
 
 namespace DirectGraphicalModels 
 {
-    void CGraphDenseExt::addNodes(Size graphSize)
+    void CGraphDenseExt::buildGraph(Size graphSize)
     {
-        if (m_graph.getNumNodes() != 0) m_graph.reset();
         m_size = graphSize;
-
-        Mat pots(graphSize, CV_32FC1, Scalar(1.0f / m_graph.getNumStates()));
+		
+		if (m_graph.getNumNodes()) m_graph.reset();
         
+		// 2D default potentials
+		Mat pots(graphSize, CV_32FC1, Scalar(1.0f / m_graph.getNumStates()));
         m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));
     }
     
-    void CGraphDenseExt::setNodes(const Mat &pots)
+    void CGraphDenseExt::setGraph(const Mat &pots)
 	{
         m_size = pots.size();
 
-        if (m_graph.getNumNodes() == pots.cols * pots.rows) m_graph.setNodes(0, pots.clone().reshape(1, pots.cols * pots.rows));
+        if (m_graph.getNumNodes() == pots.cols * pots.rows) 
+			m_graph.setNodes(0, pots.clone().reshape(1, pots.cols * pots.rows));
         else {
-            if (m_graph.getNumNodes() != 0) m_graph.reset();
+            if (m_graph.getNumNodes()) m_graph.reset();
             m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));
         }
 	}

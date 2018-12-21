@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 		// Assertions
 		DGM_ASSERT_MSG(start_node + num_nodes <= getNumNodes(), "The given ranges exceed the number of nodes(%zu)", getNumNodes());
 
-		if ((pots.cols != m_nStates) || (pots.rows != num_nodes))
+		if (pots.empty() || pots.cols != m_nStates || pots.rows != num_nodes)
 			pots = Mat(static_cast<int>(num_nodes), m_nStates, CV_32FC1);
 		
 		transpose(pots, pots);

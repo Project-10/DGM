@@ -34,6 +34,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void		setNodes(size_t start_node, const Mat &pots) override;
 		
 		DllExport virtual void		getNode(size_t node, Mat &pot) const override;
+		DllExport virtual void		getNodes(size_t start_node, size_t num_nodes, Mat &pots) const override;
 		
 		DllExport virtual size_t	getNumNodes(void) const override { return static_cast<size_t>(m_nodePotentials.rows); }
 		DllExport virtual size_t	getNumEdges(void) const override { return getNumNodes() * (getNumNodes() - 1) / 2; }

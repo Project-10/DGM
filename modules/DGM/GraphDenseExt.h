@@ -22,19 +22,19 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		*/
 		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
-		DllExport ~CGraphDenseExt(void) {}
+		DllExport ~CGraphDenseExt(void) = default;
 
-        DllExport virtual void addNodes(Size graphSize);
-		DllExport virtual void setNodes(const Mat &pots);
-		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f)
+        DllExport virtual void buildGraph(Size graphSize) override;
+		DllExport virtual void setGraph(const Mat &pots)  override;
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override
 		{
 			addGaussianEdgeModel(Vec2f::all(val * 0.03f), weight);
 		}
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f)
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) override
 		{
 			addBilateralEdgeModel(featureVectors, Vec2f::all(val), 12.75f, weight);
 		}
-        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f)
+        DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override
         {
             addBilateralEdgeModel(featureVectors, Vec2f::all(val), 12.75f, weight);
         }
@@ -64,7 +64,7 @@ namespace DirectGraphicalModels
         * param pFunction
         */
         DllExport void addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
-        DllExport Size getSize(void) const { return m_size; }
+        DllExport Size getSize(void) const  override { return m_size; }
 
 
 	private:
