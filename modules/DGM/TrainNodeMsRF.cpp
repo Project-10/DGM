@@ -1,5 +1,4 @@
 #include "TrainNodeMsRF.h"
-#include "SamplesAccumulator.h"
 
 #ifdef USE_SHERWOOD
 
@@ -32,8 +31,8 @@ namespace DirectGraphicalModels
 
 void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 {
-	m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
-	m_pParams		= std::auto_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
+    m_pSamplesAcc	= std::unique_ptr<CSamplesAccumulator>(new CSamplesAccumulator(m_nStates, params.maxSamples));
+	m_pParams		= std::unique_ptr<sw::TrainingParameters>(new sw::TrainingParameters());
 	// Some default parameters
 	m_pParams->MaxDecisionLevels						= params.max_decision_levels - 1;
 	m_pParams->NumberOfCandidateFeatures				= params.num_of_candidate_features;
@@ -44,9 +43,7 @@ void CTrainNodeMsRF::init(TrainNodeMsRFParams params)
 
 // Destructor
 CTrainNodeMsRF::~CTrainNodeMsRF(void)
-{ 
-	delete m_pSamplesAcc;
-}
+{}
 
 void CTrainNodeMsRF::reset(void) 
 {
@@ -63,7 +60,7 @@ void CTrainNodeMsRF::save(const std::string &path, const std::string &name, shor
 void CTrainNodeMsRF::load(const std::string &path, const std::string &name, short idx)
 {
 	std::string fileName = generateFileName(path, name.empty() ?  "TrainNodeMsRF" : name, idx);
-	m_pRF = sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>::Deserialize(fileName);
+    m_pRF = sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>::Deserialize(fileName);
 }
 
 void CTrainNodeMsRF::addFeatureVec(const Mat &featureVector, byte gt)
@@ -111,7 +108,7 @@ void CTrainNodeMsRF::train(bool doClean)
 
 void CTrainNodeMsRF::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const
 {
-	std::auto_ptr<sw::DataPointCollection> testData = std::auto_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
+	std::unique_ptr<sw::DataPointCollection> testData = std::unique_ptr<sw::DataPointCollection>(new sw::DataPointCollection());
 	testData->m_dimension = getNumFeatures();
 	for (word f = 0; f < getNumFeatures(); f++) {
 		float feature = static_cast<float>(featureVector.ptr<byte>(f)[0]);
