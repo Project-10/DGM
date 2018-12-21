@@ -84,13 +84,17 @@ namespace DirectGraphicalModels
 		DllExport CGraphPairwise(byte nStates) : IGraphPairwise(nStates), m_IDx(0) {}
 		DllExport virtual ~CGraphPairwise(void) {}
 
+		// CGraph
 		DllExport virtual void		reset(void) override;
 		DllExport virtual size_t	addNode		  (const Mat &pot = EmptyMat) override;
 		DllExport virtual void		setNode       (size_t node, const Mat &pot) override;
 		DllExport virtual void		getNode       (size_t node, Mat &pot) const override;
 		DllExport virtual void		getChildNodes (size_t node, vec_size_t &vNodes) const override;
 		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
- //     DllExport virtual void      marginalize(const vec_size_t &nodes);
+		DllExport virtual size_t	getNumNodes(void) const override { return m_vNodes.size(); }
+		DllExport virtual size_t	getNumEdges(void) const override { return m_vEdges.size(); } 
+		
+//     DllExport virtual void      marginalize(const vec_size_t &nodes);
 		
 		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
@@ -104,9 +108,6 @@ namespace DirectGraphicalModels
 		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) override;
 		DllExport virtual void		removeArc  (size_t Node1, size_t Node2) override;
 		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const override;
-		
-		DllExport virtual size_t	getNumNodes(void) const override { return m_vNodes.size(); }
-		DllExport virtual size_t	getNumEdges(void) const override { return m_vEdges.size(); }
 
 
 	private:

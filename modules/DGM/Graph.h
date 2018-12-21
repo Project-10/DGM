@@ -71,6 +71,18 @@ namespace DirectGraphicalModels {
 		*/
 		DllExport virtual void		getNodes(size_t start_node, size_t num_nodes, Mat &pots) const;
 		/**
+		* @brief Returns the set of IDs of the child nodes of the argument node
+		* @param[in] node node index
+		* @param[out] vNodes vector with the child node's ID
+		*/
+		DllExport virtual void      getChildNodes(size_t node, vec_size_t &vNodes) const = 0;
+		/**
+		* @brief Returns the set of IDs of the parent nodes of the argument node
+		* @param[in] node node index
+		* @param[out] vNodes vector with the parent node's ID
+		*/
+		DllExport virtual void      getParentNodes(size_t node, vec_size_t &vNodes) const = 0;		
+		/**
 		* @brief Returns the number of nodes in the graph
 		* @returns number of nodes
 		*/
