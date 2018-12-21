@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 	// Return child nodes ID's
 	void CGraphPairwise::getChildNodes(size_t node, vec_size_t &vNodes) const
 	{
-		DGM_ASSERT_MSG(node < m_vNodes.size(), "Node %zu is out of range %zu", node, m_vNodes.size());
+		DGM_ASSERT_MSG(node < getNumNodes(), "Node %zu is out of range %zu", node, getNumNodes());
 		if (!vNodes.empty()) vNodes.clear();
 		for (size_t e: m_vNodes[node]->to) { vNodes.push_back(m_vEdges[e]->node2); }
 	}
@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 	// Return parent nodes ID's
 	void CGraphPairwise::getParentNodes(size_t node, vec_size_t &vNodes) const
 	{
-		DGM_ASSERT_MSG(node < m_vNodes.size(), "Node %zu is out of range %zu", node, m_vNodes.size());
+		DGM_ASSERT_MSG(node < getNumNodes(), "Node %zu is out of range %zu", node, getNumNodes());
 		if (!vNodes.empty()) vNodes.clear();
 		for (size_t e: m_vNodes[node]->from) { vNodes.push_back(m_vEdges[e]->node1); }
 	}

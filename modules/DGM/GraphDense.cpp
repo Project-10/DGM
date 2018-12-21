@@ -58,4 +58,13 @@ namespace DirectGraphicalModels
 //			pots = Mat(static_cast<int>(num_nodes), getNumStates(), CV_32FC1);
 		m_nodePotentials(Rect(0, static_cast<int>(start_node), getNumStates(), static_cast<int>(num_nodes))).copyTo(pots);
 	}
+
+	void CGraphDense::getChildNodes(size_t node, vec_size_t &vNodes) const
+	{
+		DGM_ASSERT_MSG(node < getNumNodes(), "Node %zu is out of range %zu", node, getNumNodes());
+		if (!vNodes.empty()) vNodes.clear();
+		for (size_t i = 0; i < getNumNodes(); i++)
+			if (i != node)
+				vNodes.push_back(i);
+	}
 }
