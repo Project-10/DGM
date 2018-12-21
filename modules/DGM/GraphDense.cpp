@@ -56,6 +56,6 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(start_node + num_nodes <= getNumNodes(), "The given ranges exceed the number of nodes(%zu)", getNumNodes());
 //		if (pots.empty() || pots.cols != getNumStates() || pots.rows != num_nodes || pots.type() != CV_32FC1)
 //			pots = Mat(static_cast<int>(num_nodes), getNumStates(), CV_32FC1);
-		m_nodePotentials(Rect(0, start_node, getNumStates(), num_nodes)).copyTo(pots);
+		m_nodePotentials(Rect(0, static_cast<int>(start_node), getNumStates(), static_cast<int>(num_nodes))).copyTo(pots);
 	}
 }

@@ -18,6 +18,7 @@ namespace DirectGraphicalModels
 		vec_size_t	to;		///< Array of edge ids, pointing to the Child vertices
 		vec_size_t	from;	///< Array of edge ids, coming from the Parent vertices
 
+		Node(void) = delete;
 		Node(size_t _id, const Mat &p = EmptyMat) : id(_id), Pot(p.empty() ? Mat() : p.clone()), sol(0) {}
 	};
 	using ptr_node_t = std::unique_ptr<Node>;
@@ -37,11 +38,8 @@ namespace DirectGraphicalModels
 		byte	  group_id;		///< ID of the group, to which the edge belongs
 		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
-		Edge(void) : Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
-
-		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
-
-		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
+		Edge(void) = delete;
+		Edge(size_t n1, size_t n2, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
 
 		~Edge(void) {
 			if (msg)	  delete msg;
@@ -94,8 +92,7 @@ namespace DirectGraphicalModels
 		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
  //     DllExport virtual void      marginalize(const vec_size_t &nodes);
 		
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode) override;
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
+		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
 		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
 		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) override;
@@ -104,9 +101,6 @@ namespace DirectGraphicalModels
 		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
 		DllExport virtual bool		isEdgeArc	(size_t srcNode, size_t dstNode) const override;
 
-		DllExport virtual void		addArc     (size_t Node1, size_t Node2) override;
-		DllExport virtual void		addArc     (size_t Node1, size_t Node2, const Mat &pot) override;
-		DllExport virtual void		setArc	   (size_t Node1, size_t Node2, const Mat &pot) override;
 		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) override;
 		DllExport virtual void		removeArc  (size_t Node1, size_t Node2) override;
 		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const override;

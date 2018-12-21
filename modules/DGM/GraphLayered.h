@@ -3,6 +3,7 @@
 #pragma once
 
 #include "types.h"
+#include <optional>
 
 namespace DirectGraphicalModels
 {
@@ -119,7 +120,7 @@ namespace DirectGraphicalModels
 		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		* @param group The edge group ID
 		*/
-		DllExport void setGroupPot(const Mat &pot, byte group );
+		DllExport void setGroupPot(const Mat &pot, std::optional<byte> group);
 		/**
 		* @brief Returns the type of the graph
 		* @returns The type of the graph (Ref. @ref graphType)

@@ -89,14 +89,9 @@ namespace DirectGraphicalModels
 		DllExport virtual void		getChildNodes(size_t node, vec_size_t &vNodes) const override;
 		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
 
-		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode) override;
-		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode, const Mat &pot) override;
+		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
 		DllExport virtual void		setEdge(size_t srcNode, size_t dstNode, const Mat &pot) override;
 		DllExport virtual void		getEdge(size_t srcNode, size_t dstNode, Mat &pot) const override;
-
-		DllExport virtual void		addArc(size_t Node1, size_t Node2) override;
-		DllExport virtual void		addArc(size_t Node1, size_t Node2, const Mat &pot) override;
-		DllExport virtual void		setArc(size_t Node1, size_t Node2, const Mat &pot) override;
 
 		DllExport virtual size_t	getNumNodes(void) const override { return m_vpNodes.size(); }
 
