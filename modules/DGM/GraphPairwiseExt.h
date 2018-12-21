@@ -7,7 +7,6 @@
 
 namespace DirectGraphicalModels 
 {
-	class CGraphLayered;
 	class CGraphPairwise;
 	
 	// ================================ Extended Pairwise Graph Class ================================
@@ -28,31 +27,14 @@ namespace DirectGraphicalModels
 		DllExport CGraphPairwiseExt(CGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
-        /**
-         * @brief Builds a 2D graph of size corresponding to the image resolution
-         * @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
-         * @param graphSize The size of the graph
-         */
-		DllExport virtual void addNodes(Size graphSize) override
+
+		DllExport virtual void buildGraph(Size graphSize) override
 		{
-			m_pGraphML->addNodes(graphSize);
+			m_pGraphML->buildGraph(graphSize);
 		}
-        /**
-        * @brief Fills the existing graph nodes with potentials or adds new nodes with potentials
-        * @details
-        * If the graph was not build beforehand, this function calls first
-        * @code
-        * addNodes(pots.size())
-        * @endcode
-		* > This function supports PPL
-        * @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
-        * @code
-        * CTrainNode::getNodePotentials()
-        * @endcode
-        */       
-		DllExport virtual void setNodes(const Mat& pots) override
+		DllExport virtual void setGraph(const Mat& pots) override
 		{
-			m_pGraphML->setNodes(pots, Mat());
+			m_pGraphML->setGraph(pots, Mat());
 		}
         /**
 		* @brief Adds default data-independet edge model
@@ -157,9 +139,9 @@ namespace DirectGraphicalModels
          * @param group The edge group ID
          * @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
          */
-        DllExport void setGroupPot(byte group, const Mat &pot)
+        DllExport void setGroupPot(const Mat &pot, byte group)
         {
-            m_pGraphML->setGroupPot(group, pot);
+            m_pGraphML->setGroupPot(pot, group);
         }
         /**
          * @brief Returns the type of the graph

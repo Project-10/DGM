@@ -23,22 +23,23 @@ namespace DirectGraphicalModels
 
         /**
         * @brief Builds a 2D graph of size corresponding to the image resolution
-        * @param graphSize The size of the graph
+		* @details When called multiple times, previouse graph structure is always replaced
+        * @param graphSize The size of the graph (image resolution)
         */
-        DllExport virtual void addNodes(Size graphSize) = 0;
+        DllExport virtual void buildGraph(Size graphSize) = 0;
         /**
-        * @brief Fills the existing graph nodes with potentials or adds new nodes with potentials
+        * @brief Fills an existing 2D graph with potentials or builds a new 2D graph of size corresponding to \b pots.size() with potentials
         * @details
-        * If the graph was not build beforehand, this function calls first
+        * If the graph was not build beforehand, or the size of existing graph does not correspond to \b pots.size() this function calls first
         * @code
-        * addNodes(pots.size())
+        * buildGraph(pots.size())
         * @endcode
-        * @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
+        * @param pots A block of node potentials: Mat(size: image width x image height; type: CV_32FC(nStates)). It may be obtained by:
         * @code
         * CTrainNode::getNodePotentials()
         * @endcode
         */
-        DllExport virtual void setNodes(const Mat& pots) = 0;
+        DllExport virtual void setGraph(const Mat& pots) = 0;
         /**
 		* @brief Adds default data-independet edge model
 		* @param val Value, specifying the smoothness strength 

@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	Serialize::to("D:\\npot.dat", nodePotentials);
 
-	kit.getGraphExt().setNodes(nodePotentials);							// Filling-in the graph nodes
+	kit.getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
 	kit.getGraphExt().addDefaultEdgesModel(8366.67f, 3.0f);
 //	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
 	Timer::stop();

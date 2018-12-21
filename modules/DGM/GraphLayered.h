@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
 		* @param graphSize The size of the graph
 		*/
-		DllExport void addNodes(Size graphSize);
+		DllExport void buildGraph(Size graphSize);
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
@@ -58,7 +58,7 @@ namespace DirectGraphicalModels
 		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
 		* @param potOccl A block of potentials for the occlusion layer: Mat(type: CV_32FC(nStatesOccl))
 		*/
-		DllExport void setNodes(const Mat &potBase, const Mat &potOccl);
+		DllExport void setGraph(const Mat &potBase, const Mat &potOccl);
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
@@ -116,10 +116,10 @@ namespace DirectGraphicalModels
 		DllExport void defineEdgeGroup(float A, float B, float C, byte group);
 		/**
 		* @brief Sets potential \b pot to all edges in the group \b group
-		* @param group The edge group ID
 		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		* @param group The edge group ID
 		*/
-		DllExport void setGroupPot(byte group, const Mat &pot);
+		DllExport void setGroupPot(const Mat &pot, byte group );
 		/**
 		* @brief Returns the type of the graph
 		* @returns The type of the graph (Ref. @ref graphType)
