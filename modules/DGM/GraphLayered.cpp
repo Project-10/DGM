@@ -423,7 +423,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::setGroupPot(const Mat &pot, byte group)
+	void CGraphLayered::setGroupPot(const Mat &pot, std::optional<byte> group)
 	{
 		if (false) {
 			for (int y = 0; y < m_size.height; y++) {
@@ -458,7 +458,7 @@ namespace DirectGraphicalModels
 				vec_size_t vChilds;
 				m_graph.getChildNodes(n, vChilds);
 				for (size_t c : vChilds) {
-					if (m_graph.getEdgeGroup(n, c) == group)
+					if (!group || m_graph.getEdgeGroup(n, c) == group.value())
 						m_graph.setEdge(n, c, pot);
 				}
 			}

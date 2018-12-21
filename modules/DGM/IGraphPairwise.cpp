@@ -2,7 +2,31 @@
 
 namespace DirectGraphicalModels
 {
-    void IGraphPairwise::marginalize(const vec_size_t &nodes)
+	// Add a new (undirected edge) ark to the graph with specified potentional
+	void IGraphPairwise::addArc(size_t Node1, size_t Node2, const Mat &pot)
+	{
+		if (pot.empty()) {
+			addEdge(Node1, Node2);
+			addEdge(Node2, Node1);
+		}
+		else {
+			Mat Pot;
+			sqrt(pot, Pot);
+			addEdge(Node1, Node2, Pot);
+			addEdge(Node2, Node1, Pot.t());
+		}
+	}
+
+	// Add a new (undirected edge) arc to the graph with specified potentional
+	void IGraphPairwise::setArc(size_t Node1, size_t Node2, const Mat &pot)
+	{
+		Mat Pot;
+		sqrt(pot, Pot);
+		setEdge(Node1, Node2, Pot);
+		setEdge(Node2, Node1, Pot.t());
+	}
+	
+	void IGraphPairwise::marginalize(const vec_size_t &nodes)
     {
         Mat pot, pot1, pot2;
         
