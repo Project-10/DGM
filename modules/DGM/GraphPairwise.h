@@ -98,6 +98,7 @@ namespace DirectGraphicalModels
 		
 		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
+		DllExport virtual void		setEdges	(std::optional<byte> group, const Mat& pot) override;
 		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
 		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) override;
 		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const override;

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	CGraphDenseKit	kit(nStates);
+	CGraphPairwiseKit kit(nStates);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
 
