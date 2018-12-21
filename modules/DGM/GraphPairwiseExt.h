@@ -139,9 +139,9 @@ namespace DirectGraphicalModels
          * @param group The edge group ID
          * @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
          */
-        DllExport void setGroupPot(const Mat &pot, byte group)
+        DllExport void setEdges(std::optional<byte> group, const Mat &pot)
         {
-            m_pGraphML->setGroupPot(pot, group);
+            m_pGraphML->setEdges(group, pot);
         }
         /**
          * @brief Returns the type of the graph

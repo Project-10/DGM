@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Graph.h"
+#include <optional>
 
 namespace DirectGraphicalModels {
 	// ================================ Graph Interface Class ================================
@@ -34,16 +35,24 @@ namespace DirectGraphicalModels {
 		* @brief Adds an additional directed edge with specified potentional
 		* @param srcNode index of the source node
 		* @param dstNode index of the destination node
-		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) = 0;
 		/**
 		* @brief Sets or changes the potentional of directed edge
 		* @param srcNode index of the source node
 		* @param dstNode index of the destination node
-		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
 		DllExport virtual void		setEdge(size_t srcNode, size_t dstNode, const Mat &pot) = 0;
+		/**
+		* @brief Sets the potential \b pot to all edges belonging to group \b group
+		* @details This function assigns the same potential matrix to all the edges in graph with group property equal to \b group.
+		* By default all edges have group 0. This mightbe changes with functon @ref setEdgeGroup()
+		* @param group The edge group ID. This argument is optional, and if it is not set, this function will set potential to all existing edges
+		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+		*/
+		DllExport virtual void		setEdges(std::optional<byte> group, const Mat& pot) = 0;
 		/**
 		* @brief Returns the edge potential
 		* @param[in] srcNode index of the source node

@@ -1,52 +1,33 @@
 #include "GraphPairwiseExt.h"
+#include "GraphPairwise.h"
+#include "TrainEdge.h"
+#include "TrainEdgePottsCS.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels 
 {
 	void CGraphPairwiseExt::addDefaultEdgesModel(float val, float weight)
 	{
-//        const byte nStates = m_pGraphML->getGraph().getNumStates();
-//
-//        // Assertions
-//		DGM_ASSERT(m_pGraphML->getSize().width * m_pGraphML->getSize().height == m_pGraphML->getGraph().getNumNodes());
-//
-//		Mat ePot = CTrainEdge::getDefaultEdgePotentials(val, nStates);
-//#ifdef ENABLE_PPL
-//        concurrency::parallel_for(0, m_pGraphML->getSize().height, [&](int y) {
-//#else 
-//        for (int y = 0; y < m_pGraphML->getSize().height; y++) {
-//#endif
-//            for (int x = 0; x < m_pGraphML->getSize().width; x++) {
-//                size_t idx = y * m_pGraphML->getSize().width + x;
-//                if (m_pGraphML->getType() & GRAPH_EDGES_GRID) {
-//                    if (x > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1, ePot);
-//                    if (y > 0)												m_pGraphML->getGraph().setArc(idx, idx - 1 * m_pGraphML->getSize().width, ePot);
-//                } // edges_grid
-//
-//                if (m_pGraphML->getType() & GRAPH_EDGES_DIAG) {
-//                    if ((x > 0) && (y > 0))									m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width - 1, ePot);
-//                    if ((x < m_pGraphML->getSize().width - 1) && (y > 0))	m_pGraphML->getGraph().setArc(idx, idx - m_pGraphML->getSize().width + 1, ePot);
-//                } // edges_diag
-//            } // x
-//#ifdef ENABLE_PPL
-//        }); // y
-//#else
-//        } // y
-//#endif	
+        const byte	nStates = m_pGraphML->getGraph().getNumStates();
+		const Mat	pot	= CTrainEdge::getDefaultEdgePotentials(sqrtf(val), nStates);
+		m_pGraphML->getGraph().setEdges({}, pot);
 	}
 
+	// TODO:
 	void CGraphPairwiseExt::addDefaultEdgesModel(const Mat &featureVectors, float val, float weight)
 	{
-        //const byte nStates = m_pGraphML->getGraph().getNumStates();
-        //const word nFeatures = featureVectors.channels();
-        //const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
-        //fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
+        const byte nStates = m_pGraphML->getGraph().getNumStates();
+        const word nFeatures = featureVectors.channels();
+        const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
+        fillEdges(edgeTrainer, featureVectors, { val, 0.01f }, weight);
 	}
 
+	// TODO:
     void CGraphPairwiseExt::addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight)
     {
-        //const byte nStates = m_pGraphML->getGraph().getNumStates();
-        //const word nFeatures = static_cast<word>(featureVectors.size());
-        //const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
-        //fillEdges(&edgeTrainer, featureVectors, { val, 0.01f }, weight);
+        const byte nStates = m_pGraphML->getGraph().getNumStates();
+        const word nFeatures = static_cast<word>(featureVectors.size());
+        const CTrainEdge &edgeTrainer = CTrainEdgePottsCS(nStates, nFeatures);
+        fillEdges(edgeTrainer, featureVectors, { val, 0.01f }, weight);
     }
 }

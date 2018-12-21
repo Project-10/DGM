@@ -80,8 +80,14 @@ namespace DirectGraphicalModels
 		vec_size_t::const_iterator e_t = std::find_if(m_vNodes[srcNode]->to.cbegin(), m_vNodes[srcNode]->to.cend(), [&](size_t e) { return (m_vEdges[e]->node2 == dstNode); });
 		DGM_ASSERT_MSG(e_t != m_vNodes[srcNode]->to.end(), "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
 
-		if (!m_vEdges[*e_t]->Pot.empty()) m_vEdges[*e_t]->Pot.release();
 		pot.copyTo(m_vEdges[*e_t]->Pot);
+	}
+
+	void CGraphPairwise::setEdges(std::optional<byte> group, const Mat& pot)
+	{
+		for (ptr_edge_t& pEdge : m_vEdges)
+			if(!group || pEdge->group_id == group.value())
+				pot.copyTo(pEdge->Pot);
 	}
 
 	// Return edge potential matrix
