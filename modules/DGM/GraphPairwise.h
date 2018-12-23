@@ -104,11 +104,6 @@ namespace DirectGraphicalModels
 		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const override;
 		DllExport virtual void		removeEdge	(size_t srcNode, size_t dstNode) override;
 		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
-		DllExport virtual bool		isEdgeArc	(size_t srcNode, size_t dstNode) const override;
-
-		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) override;
-		DllExport virtual void		removeArc  (size_t Node1, size_t Node2) override;
-		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const override;
 
 
 	private:

@@ -20,7 +20,7 @@ namespace DirectGraphicalModels {
 		* @param nStates the number of States (classes)
 		*/
 		DllExport IGraphPairwise(byte nStates) : CGraph(nStates) {}
-		DllExport virtual ~IGraphPairwise(void) {}
+        DllExport virtual ~IGraphPairwise(void) = default;
 
         /**
          * @brief Marginalizes a set of nodes
@@ -96,7 +96,7 @@ namespace DirectGraphicalModels {
 		* @retval true if the edge is a part of an arc
 		* @retval false otherwise
 		*/
-		DllExport virtual bool		isEdgeArc(size_t srcNode, size_t dstNode) const = 0;
+		DllExport virtual bool		isEdgeArc(size_t srcNode, size_t dstNode) const;
 		/**
 		* @brief Adds an additional udirected edge (arc) with specified potentional
 		* @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
@@ -127,13 +127,13 @@ namespace DirectGraphicalModels {
 		* @param Node2 index of the destination node
 		* @param group The edge group ID
 		*/
-		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group) = 0;
+		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group);
 		/**
 		* @brief Removes the specified arc
 		* @param Node1 index of the first node
 		* @param Node2 index of the second node
 		*/
-		DllExport virtual void		removeArc(size_t Node1, size_t Node2) = 0;
+		DllExport virtual void		removeArc(size_t Node1, size_t Node2);
 		/**
 		* @brief Checks whether the arc exists
 		* @param Node1 index of the first node
@@ -141,6 +141,6 @@ namespace DirectGraphicalModels {
 		* @retval true if the arc exists
 		* @retval false otherwise
 		*/
-		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const = 0;
+		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const;
 	};
 }  

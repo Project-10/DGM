@@ -2,7 +2,12 @@
 
 namespace DirectGraphicalModels
 {
-	// Add a new (undirected edge) ark to the graph with specified potentional
+    bool IGraphPairwise::isEdgeArc(size_t srcNode, size_t dstNode) const
+    {
+        return isEdgeExists(dstNode, srcNode);
+    }
+    
+    // Add a new (undirected edge) ark to the graph with specified potentional
 	void IGraphPairwise::addArc(size_t Node1, size_t Node2, const Mat &pot)
 	{
 		if (pot.empty()) {
@@ -25,6 +30,23 @@ namespace DirectGraphicalModels
 		setEdge(Node1, Node2, Pot);
 		setEdge(Node2, Node1, Pot.t());
 	}
+    
+    void IGraphPairwise::setArcGroup(size_t Node1, size_t Node2, byte group)
+    {
+        setEdgeGroup(Node1, Node2, group);
+        setEdgeGroup(Node2, Node1, group);
+    }
+    
+    void IGraphPairwise::removeArc(size_t Node1, size_t Node2)
+    {
+        removeEdge(Node1, Node2);
+        removeEdge(Node2, Node1);
+    }
+    
+    bool IGraphPairwise::isArcExists(size_t Node1, size_t Node2) const
+    {
+        return (isEdgeExists(Node1, Node2) && isEdgeExists(Node2, Node1));
+    }
 	
 	void IGraphPairwise::marginalize(const vec_size_t &nodes)
     {
