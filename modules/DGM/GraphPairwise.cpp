@@ -148,29 +148,8 @@ namespace DirectGraphicalModels
 		else									return true;
 	}
 
-	bool CGraphPairwise::isEdgeArc(size_t srcNode, size_t dstNode) const
-	{
-		return isEdgeExists(dstNode, srcNode);
-	}
 
-	void CGraphPairwise::setArcGroup(size_t Node1, size_t Node2, byte group)
-	{
-		setEdgeGroup(Node1, Node2, group);
-		setEdgeGroup(Node2, Node1, group);
-	}
-	
-	void CGraphPairwise::removeArc(size_t Node1, size_t Node2)
-	{
-		removeEdge(Node1, Node2);
-		removeEdge(Node2, Node1);
-	}
-
-	bool CGraphPairwise::isArcExists(size_t Node1, size_t Node2) const
-	{
-		return (isEdgeExists(Node1, Node2) && isEdgeExists(Node2, Node1));
-	}
-
-	// ------------------------------ PRIVATE ------------------------------
+    // ------------------------------ PRIVATE ------------------------------
 	///@todo Optimize the edge removement
 	void CGraphPairwise::removeEdge(size_t edge)
 	{
