@@ -7,7 +7,7 @@
 
 namespace DirectGraphicalModels
 {
-	class CGraphPairwise;
+	class IGraphPairwise;
 	class CTrainEdge;
 	class CTrainLink;
 
@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphLayered
+	class CGraphLayered 
 	{
 	public:
 		/**
@@ -39,7 +39,7 @@ namespace DirectGraphicalModels
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(CGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cv::Size(0, 0)) {}
+		DllExport CGraphLayered(IGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cv::Size(0, 0)) {}
 		DllExport ~CGraphLayered(void) = default;
 
 		/**
@@ -133,11 +133,11 @@ namespace DirectGraphicalModels
 		DllExport Size getSize(void) const { return m_size; }
 		/**
 		*/
-		DllExport CGraphPairwise& getGraph(void) const { return m_graph; }
+		DllExport IGraphPairwise& getGraph(void) const { return m_graph; }
 
 
 	private:
-		CGraphPairwise&	m_graph;		///< The graph
+		IGraphPairwise&	m_graph;		///< The graph
 		const word		m_nLayers;		///< Number of layers
 		const byte		m_gType;		///< Graph type (Ref. @ref graphType)
 		Size			m_size;			///< Size of the graph
