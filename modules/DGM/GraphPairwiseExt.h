@@ -7,7 +7,7 @@
 
 namespace DirectGraphicalModels 
 {
-	class CGraphPairwise;
+	class IGraphPairwise;
 	
 	// ================================ Extended Pairwise Graph Class ================================
 	/**
@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(CGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
+		DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
 
