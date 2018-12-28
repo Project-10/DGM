@@ -56,7 +56,7 @@ namespace DirectGraphicalModels
          * @brief Returns the container with node potentials
          * @return the container with node potentials: Mat(nNodes, nStates, CV_32FC1)
          */
-        Mat                         getNodes(void) const { return m_nodePotentials; }
+        Mat                         getNodePotentials(void) const { return m_nodePotentials; }
         /**
          * @brief Returns the contener with edge models
          * @details One edge model applies itself to all the edges in the graph
