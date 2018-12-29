@@ -65,17 +65,13 @@ namespace DirectGraphicalModels
 	{
 		friend class CMessagePassing;
 
-		friend class CInferExact;
 		friend class CInferChain;
 		friend class CInferTree;
 		friend class CInferLBP;
 		friend class CInferViterbi;
 		friend class CInferTRW;
-		friend class CInferTRW_S;
 
-		friend class CDecodeExact;
-
-
+        
 	public:
 		/**
 		* @brief Constructor
