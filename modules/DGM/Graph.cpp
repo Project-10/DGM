@@ -45,7 +45,7 @@ namespace DirectGraphicalModels
 		//printf("Processors: %d\n", concurrency::GetProcessorCount());
 		concurrency::parallel_for(0, size, rangeSize, [start_node, size, rangeSize, &pots, this](int i) {
 			Mat pot;
-			for (int j = 0; (j < rangeSize) && (i + j < size); j++) 
+			for (int j = 0; (j  < rangeSize) && (i + j < size); j++)
 				getNode(start_node + i + j, lvalue_cast(pots.col(i + j)));
 		});
 #else

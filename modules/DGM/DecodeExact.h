@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Decode.h"
-#include "GraphPairwise.h"
+#include "IGraphPairwise.h"
 
 namespace DirectGraphicalModels
 {
@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/		
-		DllExport CDecodeExact(CGraphPairwise &graph) : CDecode(graph) {}
+		DllExport CDecodeExact(IGraphPairwise &graph) : CDecode(graph) {}
 		DllExport virtual ~CDecodeExact(void) {}
 
 		/**
@@ -37,7 +37,7 @@ namespace DirectGraphicalModels
 		* @brief Returns the graph
 		* @return The graph
 		*/
-		CGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise &>(CDecode::getGraph()); }
+		IGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<IGraphPairwise &>(CDecode::getGraph()); }
 		/**
 		* @brief Sets the \a state according to the configuration index \a configuration
 		* @details This function is used in exact inference / decoding

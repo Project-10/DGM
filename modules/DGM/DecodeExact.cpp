@@ -66,9 +66,23 @@ namespace DirectGraphicalModels
 		res.resize(nConfigurations, 1.0f);
 
 		setState(state, 0);
-		for (float &p : res) {
-			for (ptr_node_t &node : getGraphPairwise().m_vNodes) p *= node->Pot.at<float>(state[node->id], 0);
-			for (ptr_edge_t &edge : getGraphPairwise().m_vEdges) p *= edge->Pot.at<float>(state[edge->node1], state[edge->node2]);
+        Mat nPot, ePot;
+        vec_size_t vChildNodes;
+		for (float &p: res) {
+            for (size_t n = 0; n < nNodes; n++) {
+                getGraph().getNode(n, nPot);
+                p *= nPot.at<float>(state[n], 0);
+                vec_size_t vChilds;
+                getGraph().getChildNodes(n, vChilds);
+                for (size_t c: vChilds) {
+                    getGraphPairwise().getEdge(n, c, ePot);
+                    p *= ePot.at<float>(state[n], state[c]);
+                }
+            }
+            
+            // Old implementation with direct access to CGraphPairwise private member variables
+            // for (ptr_node_t &node : getGraphPairwise().m_vNodes) p *= node->Pot.at<float>(state[node->id], 0);
+            // for (ptr_edge_t &edge : getGraphPairwise().m_vEdges) p *= edge->Pot.at<float>(state[edge->node1], state[edge->node2]);
 			incState(state);
 		}
 
