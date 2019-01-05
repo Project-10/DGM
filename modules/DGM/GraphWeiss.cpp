@@ -30,8 +30,7 @@ namespace DirectGraphicalModels
 	// Add a new node to the graph with specified potentional
 	size_t CGraphWeiss::addNode(const Mat &pot)
 	{
-		Node *n = new Node(pot);
-		n->id = m_IDx;
+		Node *n = new Node(m_IDx, pot);
 		m_vpNodes.push_back(n);
 		return m_IDx++;
 	}
@@ -76,6 +75,14 @@ namespace DirectGraphicalModels
 			vNodes.push_back(m_vpNodes.at(node)->from.at(e_f)->node1->id);
 	}
 
+	size_t CGraphWeiss::getNumEdges(void) const 
+	{ 
+		size_t res = 0;
+		for (const Node* n : m_vpNodes) 
+			res += n->to.size();
+		return res;
+	} 
+
 	// Add a new (directed) edge to the graph with specified potentional
 	void CGraphWeiss::addEdge(size_t srcNode, size_t dstNode, const Mat &pot)
 	{
@@ -90,10 +97,7 @@ namespace DirectGraphicalModels
 		} // e_t
 		
 		// Else: create a new one
-		Edge *e = new Edge();
-		e->node1 = m_vpNodes.at(srcNode);
-		e->node2 = m_vpNodes.at(dstNode);
-		if (!pot.empty()) pot.copyTo(e->Pot);
+		Edge *e = new Edge(m_vpNodes.at(srcNode), m_vpNodes.at(dstNode), pot);
 		m_vpNodes.at(srcNode)->to.push_back(e);
 		m_vpNodes.at(dstNode)->from.push_back(e);
 	}
@@ -105,18 +109,19 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
 		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
 
-		bool res = false;
-		for(size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
-			Edge *edge_to = m_vpNodes.at(srcNode)->to.at(e_t);
-			if (edge_to->node2->id == dstNode) {
-				if (!edge_to->Pot.empty()) edge_to->Pot.release();
-				pot.copyTo(edge_to->Pot);
-				res = true;
-				break;
-			}
-		} // e_t
+		Edge* e = findEdge(srcNode, dstNode);
+		DGM_ASSERT_MSG(e, "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
 
-		DGM_ASSERT_MSG(res, "The edge is not set: destination node is not found");
+		pot.copyTo(e->Pot);
+	}
+
+	void CGraphWeiss::setEdges(std::optional<byte> group, const Mat& pot)
+	{
+		for (Node* n : m_vpNodes)
+			for (Edge* e : n->to)
+				if (!group || e->group_id == group.value())
+					pot.copyTo(e->Pot);
+		
 	}
 
 	// Return edge potential matrix
@@ -126,17 +131,72 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
 		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
 
-		bool res = false;
-		for(size_t e_t = 0; e_t < m_vpNodes.at(srcNode)->to.size(); e_t++) {
-			Edge *edge_to = m_vpNodes.at(srcNode)->to.at(e_t);
-			if (edge_to->node2->id == dstNode) {
-				if (edge_to->Pot.empty()) break;
-				edge_to->Pot.copyTo(pot);
-				res = true;
-				break;
-			}
-		} // e_t
+		Edge* e = findEdge(srcNode, dstNode);
+		DGM_ASSERT_MSG(e, "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
 
-		DGM_ASSERT_MSG(res, "The requiered edge is not found");
+		e->Pot.copyTo(pot);
+	}
+
+	void CGraphWeiss::setEdgeGroup(size_t srcNode, size_t dstNode, byte group)
+	{
+		// Assertions
+		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
+
+		Edge* e = findEdge(srcNode, dstNode);
+		DGM_ASSERT_MSG(e, "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
+
+		e->group_id = group;
+	}
+
+	byte CGraphWeiss::getEdgeGroup(size_t srcNode, size_t dstNode) const
+	{
+		// Assertions
+		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
+
+		Edge* e = findEdge(srcNode, dstNode);
+		DGM_ASSERT_MSG(e, "The edge (%zu)->(%zu) is not found", srcNode, dstNode);
+		
+		return e->group_id;
+	}
+
+	void CGraphWeiss::removeEdge(size_t srcNode, size_t dstNode)
+	{
+		// Assertions
+		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
+
+		Edge* e = findEdge(srcNode, dstNode);
+		if (!e) {
+			DGM_WARNING("The edge (%zu)->(%zu) is not found", srcNode, dstNode);
+			return;
+		}
+
+		auto it = std::find(m_vpNodes[srcNode]->to.begin(), m_vpNodes[srcNode]->to.end(), e);
+		m_vpNodes[srcNode]->to.erase(it);
+
+		it = std::find(m_vpNodes[dstNode]->from.begin(), m_vpNodes[dstNode]->from.end(), e);
+		m_vpNodes[dstNode]->from.erase(it);
+
+		delete e;
+	}
+
+	bool CGraphWeiss::isEdgeExists(size_t srcNode, size_t dstNode) const
+	{
+		// Assertions
+		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
+		DGM_ASSERT_MSG(dstNode < m_vpNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vpNodes.size());
+		
+		return findEdge(srcNode, dstNode) ? true : false;
+	}
+
+	CGraphWeiss::Edge* CGraphWeiss::findEdge(size_t srcNode, size_t dstNode) const
+	{
+		for (Edge *edge_to : m_vpNodes[srcNode]->to)
+			if (edge_to->node2->id == dstNode)
+				return edge_to;
+		return NULL;
+
 	}
 }

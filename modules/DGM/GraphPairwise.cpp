@@ -145,7 +145,7 @@ namespace DirectGraphicalModels
 		auto e_t = std::find_if(m_vNodes[srcNode]->to.cbegin(), m_vNodes[srcNode]->to.cend(), [&](size_t e) { return (m_vEdges[e]->node2 == dstNode); });
 
 		if (e_t == m_vNodes[srcNode]->to.cend()) return false;
-		else									return true;
+		else									 return true;
 	}
 
 
