@@ -1,4 +1,4 @@
-#include "GraphLayered.h"
+#include "GraphLayeredExt.h"
 #include "GraphPairwise.h"
 
 #include "TrainNode.h"
@@ -10,7 +10,7 @@
 
 namespace DirectGraphicalModels
 {
-	void CGraphLayered::buildGraph(Size graphSize)
+	void CGraphLayeredExt::buildGraph(Size graphSize)
 	{
 		if (m_graph.getNumNodes() != 0) m_graph.reset();
 		m_size = graphSize;
@@ -58,20 +58,20 @@ namespace DirectGraphicalModels
 		} // if DIAG
 	}
 
-	void CGraphLayered::setGraph(const Mat& pots) 
+	void CGraphLayeredExt::setGraph(const Mat& pots) 
 	{
 		DGM_ASSERT_MSG(m_nLayers == 1, "When more than 1 layer is present, use CGraphLayeredExt::setGraph(const Mat&, const Mat&) function instead.");
 		setGraph(pots, Mat());
 	}
 
-	void CGraphLayered::addDefaultEdgesModel(float val, float weight) 
+	void CGraphLayeredExt::addDefaultEdgesModel(float val, float weight) 
 	{
         const byte	nStates = m_graph.getNumStates();
 		m_graph.setEdges(0, CTrainEdge::getDefaultEdgePotentials(sqrtf(val), nStates));
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 
-	void CGraphLayered::addDefaultEdgesModel(const Mat &featureVectors, float val, float weight)
+	void CGraphLayeredExt::addDefaultEdgesModel(const Mat &featureVectors, float val, float weight)
 	{
         const byte nStates = m_graph.getNumStates();
         const word nFeatures = featureVectors.channels();
@@ -80,7 +80,7 @@ namespace DirectGraphicalModels
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 
-	void CGraphLayered::addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight)
+	void CGraphLayeredExt::addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight)
 	{
         const byte nStates = m_graph.getNumStates();
         const word nFeatures = static_cast<word>(featureVectors.size());
@@ -89,7 +89,7 @@ namespace DirectGraphicalModels
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 
-	void CGraphLayered::setGraph(const Mat &potBase, const Mat &potOccl)
+	void CGraphLayeredExt::setGraph(const Mat &potBase, const Mat &potOccl)
 	{
 		// Assertions
         DGM_ASSERT(!potBase.empty());
@@ -147,7 +147,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt)
+	void CGraphLayeredExt::addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(featureVectors.size() == gt.size(), "The size of <featureVectors> does not correspond to the size of <gt>");
@@ -196,7 +196,7 @@ namespace DirectGraphicalModels
 		} // y
 	}
 
-	void CGraphLayered::addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
+	void CGraphLayeredExt::addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(featureVectors[0].size() == gt.size(), "The size of <featureVectors> does not correspond to the size of <gt>");
@@ -249,7 +249,7 @@ namespace DirectGraphicalModels
 		} // y
 	}
 
-	void CGraphLayered::fillEdges(const CTrainEdge& edgeTrainer, const CTrainLink* linkTrainer, const Mat& featureVectors, const vec_float_t& vParams, float edgeWeight, float linkWeight)
+	void CGraphLayeredExt::fillEdges(const CTrainEdge& edgeTrainer, const CTrainLink* linkTrainer, const Mat& featureVectors, const vec_float_t& vParams, float edgeWeight, float linkWeight)
 	{
 		const word	nFeatures	= featureVectors.channels();
 
@@ -324,7 +324,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::fillEdges(const CTrainEdge& edgeTrainer, const CTrainLink* linkTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float edgeWeight, float linkWeight)
+	void CGraphLayeredExt::fillEdges(const CTrainEdge& edgeTrainer, const CTrainLink* linkTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float edgeWeight, float linkWeight)
 	{
 		const word	nFeatures	=static_cast<word>(featureVectors.size());
 
@@ -406,7 +406,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::defineEdgeGroup(float A, float B, float C, byte group)
+	void CGraphLayeredExt::defineEdgeGroup(float A, float B, float C, byte group)
 	{
 		// Assertion
 		DGM_ASSERT_MSG(A != 0 || B != 0, "Wrong arguments");
@@ -456,7 +456,7 @@ namespace DirectGraphicalModels
 #endif
 	}
 
-	void CGraphLayered::setEdges(std::optional<byte> group, const Mat &pot)
+	void CGraphLayeredExt::setEdges(std::optional<byte> group, const Mat &pot)
 	{
 		if (false) {
 			for (int y = 0; y < m_size.height; y++) {

@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphLayered : public CGraphExt
+	class CGraphLayeredExt : public CGraphExt
 	{
 	public:
 		/**
@@ -39,8 +39,8 @@ namespace DirectGraphicalModels
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(IGraphPairwise& graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(Size(0, 0)) {}
-		DllExport ~CGraphLayered(void) = default;
+		DllExport CGraphLayeredExt(IGraphPairwise& graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(Size(0, 0)) {}
+		DllExport ~CGraphLayeredExt(void) = default;
 
 		// From CGraphExt
 		DllExport virtual void buildGraph(Size graphSize) override;
