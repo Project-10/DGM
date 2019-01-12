@@ -2,7 +2,7 @@
 // Written by Sergey Kosov in 2016 for Project X
 #pragma once
 
-#include "types.h"
+#include "GraphExt.h"
 #include <optional>
 
 namespace DirectGraphicalModels
@@ -30,7 +30,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphLayered 
+	class CGraphLayered : public CGraphExt
 	{
 	public:
 		/**
@@ -39,15 +39,17 @@ namespace DirectGraphicalModels
 		* @param nLayers The number of layers
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphLayered(IGraphPairwise &graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(cv::Size(0, 0)) {}
+		DllExport CGraphLayered(IGraphPairwise& graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(Size(0, 0)) {}
 		DllExport ~CGraphLayered(void) = default;
 
-		/**
-		* @brief Builds a graph, which fits the image resolution
-		* @details The graph is built under the assumption that each graph node is connected with arcs to its direct four neighbours.
-		* @param graphSize The size of the graph
-		*/
-		DllExport void buildGraph(Size graphSize);
+		// From CGraphExt
+		DllExport virtual void buildGraph(Size graphSize) override;
+		DllExport virtual void setGraph(const Mat& pots) override;
+		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override;
+		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) override;
+		DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override;
+		DllExport virtual Size getSize() const override { return m_size; }
+
 		/**
 		* @brief Fills the graph nodes with potentials
 		* @details
@@ -127,11 +129,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport byte getType(void) const { return m_gType; }
 		/**
-		* @brief Returns the size of the graph
-		* @return The size of the Graph
-		*/
-		DllExport Size getSize(void) const { return m_size; }
-		/**
+		TODO: delete this
 		*/
 		DllExport IGraphPairwise& getGraph(void) const { return m_graph; }
 
