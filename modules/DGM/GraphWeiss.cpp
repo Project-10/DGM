@@ -84,7 +84,7 @@ namespace DirectGraphicalModels
 	} 
 
 	// Add a new (directed) edge to the graph with specified potentional
-	void CGraphWeiss::addEdge(size_t srcNode, size_t dstNode, const Mat &pot)
+	void CGraphWeiss::addEdge(size_t srcNode, size_t dstNode, byte group, const Mat &pot)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(srcNode < m_vpNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vpNodes.size());
@@ -97,7 +97,7 @@ namespace DirectGraphicalModels
 		} // e_t
 		
 		// Else: create a new one
-		Edge *e = new Edge(m_vpNodes.at(srcNode), m_vpNodes.at(dstNode), pot);
+		Edge *e = new Edge(m_vpNodes.at(srcNode), m_vpNodes.at(dstNode), group, pot);
 		m_vpNodes.at(srcNode)->to.push_back(e);
 		m_vpNodes.at(dstNode)->from.push_back(e);
 	}

@@ -34,7 +34,7 @@ namespace DirectGraphicalModels
 			byte	  group_id;		///< ID of the group, to which the edge belongs
 			
 			Edge(void) = delete;
-			Edge(Node* n1, Node* n2, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(0) {}
+			Edge(Node* n1, Node* n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group) {}
 			
 			~Edge(void) {
 				if (msg)		delete[] msg;		msg = NULL;
@@ -92,7 +92,7 @@ namespace DirectGraphicalModels
 		DllExport virtual size_t	getNumNodes(void) const override { return m_vpNodes.size(); }
 		DllExport virtual size_t	getNumEdges(void) const override;
 
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
+		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, byte group, const Mat &pot) override;
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
 		DllExport virtual void		setEdges	(std::optional<byte> group, const Mat& pot) override;
 		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;

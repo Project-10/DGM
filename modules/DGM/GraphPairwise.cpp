@@ -53,7 +53,7 @@ namespace DirectGraphicalModels
 
 
 	// Add a new (directed) edge to the graph with specified potentional
-	void CGraphPairwise::addEdge(size_t srcNode, size_t dstNode, const Mat &pot)
+	void CGraphPairwise::addEdge(size_t srcNode, size_t dstNode, byte group, const Mat &pot)
 	{
 		DGM_ASSERT_MSG(srcNode < m_vNodes.size(), "The source node index %zu is out of range %zu", srcNode, m_vNodes.size());
 		DGM_ASSERT_MSG(dstNode < m_vNodes.size(), "The destination node index %zu is out of range %zu", dstNode, m_vNodes.size());
@@ -66,7 +66,7 @@ namespace DirectGraphicalModels
 
 		// Else: create a new one
 		size_t e = m_vEdges.size();
-		m_vEdges.push_back(ptr_edge_t(new Edge(srcNode, dstNode, pot))); 
+		m_vEdges.push_back(ptr_edge_t(new Edge(srcNode, dstNode, group, pot)));
 		m_vNodes[srcNode]->to.push_back(e);
 		m_vNodes[dstNode]->from.push_back(e);
 	}

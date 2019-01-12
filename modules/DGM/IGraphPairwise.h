@@ -31,13 +31,21 @@ namespace DirectGraphicalModels {
          * @param nodes Set of nodes to be marginalized out from the graph
          */
         DllExport void              marginalize(const vec_size_t &nodes);
-		/**
+        /**
+        * @brief Adds an additional directed edge with specified potentional
+        * @param srcNode index of the source node
+        * @param dstNode index of the destination node
+        * @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+        */
+        DllExport void              addEdge(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat);
+        /**
 		* @brief Adds an additional directed edge with specified potentional
 		* @param srcNode index of the source node
 		* @param dstNode index of the destination node
+        * @param group The edge group ID
 		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) = 0;
+		DllExport virtual void		addEdge(size_t srcNode, size_t dstNode, byte group, const Mat &pot) = 0;
 		/**
 		* @brief Sets or changes the potentional of directed edge
 		* @param srcNode index of the source node
@@ -97,7 +105,19 @@ namespace DirectGraphicalModels {
 		* @retval false otherwise
 		*/
 		DllExport virtual bool		isEdgeArc(size_t srcNode, size_t dstNode) const;
-		/**
+        /**
+         * @brief Adds an additional udirected edge (arc) with specified potentional
+         * @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
+         * @code
+         * addEdge(Node1, Node2, sqrt(pot));
+         * addEdge(Node2, Node1, sqrt(pot));
+         * @endcode
+         * @param Node1 index of the first node
+         * @param Node2 index of the second node
+         * @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
+         */
+        DllExport void              addArc(size_t Node1, size_t Node2, const Mat &pot = EmptyMat);
+        /**
 		* @brief Adds an additional udirected edge (arc) with specified potentional
 		* @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
 		* @code
@@ -106,9 +126,10 @@ namespace DirectGraphicalModels {
 		* @endcode
 		* @param Node1 index of the first node
 		* @param Node2 index of the second node
+        * @param group The edge group ID
 		* @param pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-		DllExport virtual void		addArc(size_t Node1, size_t Node2, const Mat &pot = EmptyMat);
+		DllExport virtual void		addArc(size_t Node1, size_t Node2, byte group, const Mat &pot);
 		/**
 		* @brief Sets or changes the potentional of udirected edge (arc)
 		* @details The arc is emulated by adding two directed edges. For sake of consistency the pot matrix here is squarerooted:
