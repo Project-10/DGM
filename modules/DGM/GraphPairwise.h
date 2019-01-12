@@ -8,15 +8,15 @@ namespace DirectGraphicalModels
 {
 	// =============================== Node Structure ==============================
 	/**
-	@brief %Node structure
-	@details Basic info for each node.
+	* @brief %Node structure
+	* @details Basic info for each node.
 	*/
 	struct Node {
-		size_t		id;		///< %Node ID
-		Mat			Pot;	///< %Node potentials: Mat(size: nStates x 1; type: CV_32FC1)
+		size_t		id;		    ///< %Node ID
+		Mat			Pot;	    ///< %Node potentials: Mat(size: nStates x 1; type: CV_32FC1)
 		byte		sol;
-		vec_size_t	to;		///< Array of edge ids, pointing to the Child vertices
-		vec_size_t	from;	///< Array of edge ids, coming from the Parent vertices
+		vec_size_t	to;		    ///< Array of edge ids, pointing to the Child vertices
+		vec_size_t	from;	    ///< Array of edge ids, coming from the Parent vertices
 
 		Node(void) = delete;
 		Node(size_t _id, const Mat &p = EmptyMat) : id(_id), Pot(p.empty() ? Mat() : p.clone()), sol(0) {}
@@ -39,7 +39,7 @@ namespace DirectGraphicalModels
 		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
 		Edge(void) = delete;
-		Edge(size_t n1, size_t n2, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
+		Edge(size_t n1, size_t n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group), suspend(false) {}
 
 		~Edge(void) {
 			if (msg)	  delete msg;
@@ -64,7 +64,6 @@ namespace DirectGraphicalModels
 	class CGraphPairwise : public IGraphPairwise
 	{
 		friend class CMessagePassing;
-
 		friend class CInferChain;
 		friend class CInferTree;
 		friend class CInferLBP;
@@ -78,7 +77,7 @@ namespace DirectGraphicalModels
 		* @param nStates the number of States (classes)
 		*/
 		DllExport CGraphPairwise(byte nStates) : IGraphPairwise(nStates), m_IDx(0) {}
-		DllExport virtual ~CGraphPairwise(void) {}
+        DllExport virtual ~CGraphPairwise(void) = default;
 
 		// CGraph
 		DllExport virtual void		reset(void) override;
@@ -92,7 +91,7 @@ namespace DirectGraphicalModels
 		
 //     DllExport virtual void      marginalize(const vec_size_t &nodes);
 		
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot = EmptyMat) override;
+		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, byte group, const Mat &pot) override;
 		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
 		DllExport virtual void		setEdges	(std::optional<byte> group, const Mat& pot) override;
 		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
