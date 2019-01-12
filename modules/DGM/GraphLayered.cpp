@@ -5,6 +5,7 @@
 #include "TrainEdge.h"
 #include "TrainEdgePotts.h"
 #include "TrainLink.h"
+#include "TrainEdgePottsCS.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
@@ -21,11 +22,12 @@ namespace DirectGraphicalModels
 				size_t idx = m_graph.addNode();
 				for (l = 1; l < m_nLayers; l++) m_graph.addNode();
 
+				// All links have group_id = 1
 				if (m_gType & GRAPH_EDGES_LINK) {
 					if (m_nLayers >= 2)
-						m_graph.addArc(idx, idx + 1);
+						m_graph.addArc(idx, idx + 1, 1, Mat());
 					for (l = 2; l < m_nLayers; l++)
-						m_graph.addEdge(idx + l - 1, idx + l);
+						m_graph.addEdge(idx + l - 1, idx + l, 1, Mat());
 				} // if LINK
 
 				if (m_gType & GRAPH_EDGES_GRID) {
@@ -54,6 +56,37 @@ namespace DirectGraphicalModels
 				} // x
 			} // y
 		} // if DIAG
+	}
+
+	void CGraphLayered::setGraph(const Mat& pots) 
+	{
+		DGM_ASSERT_MSG(m_nLayers == 1, "When more than 1 layer is present, use CGraphLayeredExt::setGraph(const Mat&, const Mat&) function instead.");
+		setGraph(pots, Mat());
+	}
+
+	void CGraphLayered::addDefaultEdgesModel(float val, float weight) 
+	{
+        const byte	nStates = m_graph.getNumStates();
+		m_graph.setEdges(0, CTrainEdge::getDefaultEdgePotentials(sqrtf(val), nStates));
+		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
+	}
+
+	void CGraphLayered::addDefaultEdgesModel(const Mat &featureVectors, float val, float weight)
+	{
+        const byte nStates = m_graph.getNumStates();
+        const word nFeatures = featureVectors.channels();
+		const CTrainEdgePottsCS edgeTrainer(nStates, nFeatures);
+        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.01f }, weight);
+		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
+	}
+
+	void CGraphLayered::addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight)
+	{
+        const byte nStates = m_graph.getNumStates();
+        const word nFeatures = static_cast<word>(featureVectors.size());
+        const CTrainEdgePottsCS edgeTrainer(nStates, nFeatures);
+        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.01f }, weight);
+		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 
 	void CGraphLayered::setGraph(const Mat &potBase, const Mat &potOccl)
