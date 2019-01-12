@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GraphExt.h"
-#include "GraphLayered.h"
+#include "GraphLayeredExt.h"
 
 namespace DirectGraphicalModels 
 {
@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayered(graph, 1, gType)) {}
+		DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : m_pGraphML(new CGraphLayeredExt(graph, 1, gType)) {}
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
 
@@ -154,6 +154,6 @@ namespace DirectGraphicalModels
         
         
     protected:
-		std::unique_ptr<CGraphLayered> m_pGraphML;          ///< Enclosure of the multi-layer graph
+		std::unique_ptr<CGraphLayeredExt> m_pGraphML;          ///< Enclosure of the multi-layer graph
 	};
 }

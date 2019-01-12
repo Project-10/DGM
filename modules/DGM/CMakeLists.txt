@@ -41,7 +41,7 @@ source_group("Source Files\\Graph\\Graph\\Pairwise\\Weiss"		FILES "GraphWeiss.h"
 source_group("Source Files\\Graph\\Graph\\Triplet"				FILES "Graph3.h" "Graph3.cpp")
 source_group("Source Files\\Graph\\Extension"					FILES "GraphExt.h")
 source_group("Source Files\\Graph\\Extension\\Dense"			FILES "GraphDenseExt.h" "GraphDenseExt.cpp")
-source_group("Source Files\\Graph\\Extension\\Pairwise"			FILES "GraphPairwiseExt.h" "GraphPairwiseExt.cpp" "GraphLayered.h" "GraphLayered.cpp")
+source_group("Source Files\\Graph\\Extension\\Pairwise"			FILES "GraphPairwiseExt.h" "GraphPairwiseExt.cpp" "GraphLayeredExt.h" "GraphLayeredExt.cpp")
 source_group("Source Files\\Graph\\Kit"							FILES "GraphKit.h")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")
 source_group("Source Files\\Inference\\Exact" FILES "InferExact.h" "InferExact.cpp")
