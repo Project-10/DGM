@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 	}
 
 	// Reading parameters and images
-	Mat		  imgL			= imread(argv[1], 0);	if (imgL.empty()) printf("Can' open %s\n", argv[1]);
-	Mat		  imgR			= imread(argv[2], 0);	if (imgR.empty()) printf("Can' open %s\n", argv[2]);
+	Mat		  imgL			= imread(argv[1], 0);	if (imgL.empty()) printf("Can't open %s\n", argv[1]);
+	Mat		  imgR			= imread(argv[2], 0);	if (imgR.empty()) printf("Can't open %s\n", argv[2]);
 	int		  minDisparity	= atoi(argv[3]);
 	int		  maxDisparity	= atoi(argv[4]);
 	int		  width			= imgL.cols;

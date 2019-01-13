@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
 	const unsigned int	nStates = 2;			// { true; false }
 
 	// Reading parameters and images
-	Mat		  img		= imread(argv[1], 0);	if (img.empty())   printf("Can' open %s\n", argv[1]);
-	Mat		  noise		= imread(argv[2], 0);	if (noise.empty()) printf("Can' open %s\n", argv[2]);
+	Mat		  img		= imread(argv[1], 0);	if (img.empty())   printf("Can't open %s\n", argv[1]);
+	Mat		  noise		= imread(argv[2], 0);	if (noise.empty()) printf("Can't open %s\n", argv[2]);
 	
 	CGraphPairwise		graph(nStates);
 	CGraphPairwiseExt	graphExt(graph, GRAPH_EDGES_GRID | GRAPH_EDGES_DIAG);

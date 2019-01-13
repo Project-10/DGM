@@ -27,11 +27,11 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
 		// From CGraphExt
-		DllExport virtual void buildGraph(Size graphSize) override
+		DllExport void buildGraph(Size graphSize) override
 		{
 			CGraphLayeredExt::buildGraph(graphSize);
 		}
-		DllExport virtual void setGraph(const Mat& pots) override
+		DllExport void setGraph(const Mat& pots) override
 		{
 			CGraphLayeredExt::setGraph(pots, Mat());
 		}
@@ -40,22 +40,22 @@ namespace DirectGraphicalModels
 		* @param val Value, specifying the smoothness strength 
         * @param weight The weighting parameter
 		*/
-		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override;
+		DllExport void addDefaultEdgesModel(float val, float weight = 1.0f) override;
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
 		*/			
-		DllExport virtual void addDefaultEdgesModel(const Mat& featureVectors, float val, float weight = 1.0f) override;
+		DllExport void addDefaultEdgesModel(const Mat& featureVectors, float val, float weight = 1.0f) override;
 		/**
         * @brief Adds default contrast-sensitive edge model
         * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
         */			
-		DllExport virtual void addDefaultEdgesModel(const vec_mat_t& featureVectors, float val, float weight = 1.0f) override;
-		DllExport virtual Size getSize() const override 
+		DllExport void addDefaultEdgesModel(const vec_mat_t& featureVectors, float val, float weight = 1.0f) override;
+		DllExport Size getSize() const override 
 		{ 
 			return CGraphLayeredExt::getSize();
 		}
@@ -143,6 +143,5 @@ namespace DirectGraphicalModels
 		{ 
 			return CGraphLayeredExt::getType();
 		}
-
 	};
 }
