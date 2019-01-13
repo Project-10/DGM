@@ -160,3 +160,51 @@ TEST_F(CTestGraph, IGP_weiss_building)
 	CGraphWeiss graph(nStates);
 	testGraphPairwiseBuilding(graph, nStates);
 }
+ 
+
+// ======================================== Graph Extensions ========================================
+void testGraphExtension(CGraphExt& graphExt, CGraph& graph)
+{
+	const byte nStates = graph.getNumStates();
+	
+	Size graphSize = Size(random::u<int>(100, 1000), random::u<int>(100, 1000));
+	graphExt.buildGraph(graphSize);
+	ASSERT_EQ(graphSize, graphExt.getSize());
+	ASSERT_EQ(graphSize.width * graphSize.height, graph.getNumNodes());
+
+	graphSize = Size(random::u<int>(100, 1000), random::u<int>(100, 1000));
+	Mat pots = random::U(graphSize, CV_32FC(nStates));
+	graphExt.setGraph(pots);
+	ASSERT_EQ(graphSize, graphExt.getSize());
+	
+	Mat test_pots;
+	graph.getNodes(0, 0, test_pots);
+	test_pots = test_pots.clone().reshape(graph.getNumStates(), graphSize.height);
+	for (int y = 0; y < pots.rows; y++) {
+		float *pPots		= pots.ptr<float>(y);
+		float *pTestPots	= test_pots.ptr<float>(y);
+		for (int x = 0; x < pots.cols; x++) 
+			for (int c = 0; c < pots.channels(); c++)
+				ASSERT_EQ(pPots[x * nStates + c], pTestPots[x * nStates + c]);
+	}
+	
+//	void addDefaultEdgesModel(float val, float weight = 1.0f);
+//	void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight);
+//	void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight);
+}
+
+TEST_F(CTestGraph, CG_dense_extension)
+{
+	const byte nStates = static_cast<byte>(random::u(10, 255));
+	CGraphDense	graph(nStates);
+	CGraphDenseExt graphExt(graph);
+	testGraphExtension(graphExt, graph);
+}
+
+TEST_F(CTestGraph, CG_pairwise_extension)
+{
+	const byte nStates = static_cast<byte>(random::u(10, 255));
+	CGraphPairwise graph(nStates);
+	CGraphPairwiseExt graphExt(graph);
+	testGraphExtension(graphExt, graph);
+}
