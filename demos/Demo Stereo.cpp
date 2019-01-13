@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 	}
 
 	// Reading parameters and images
-	Mat		  imgL			= imread(argv[1], 0);
-	Mat		  imgR			= imread(argv[2], 0);
+	Mat		  imgL			= imread(argv[1], 0);	if (imgL.empty()) printf("Can' open %s\n", argv[1]);
+	Mat		  imgR			= imread(argv[2], 0);	if (imgR.empty()) printf("Can' open %s\n", argv[2]);
 	int		  minDisparity	= atoi(argv[3]);
 	int		  maxDisparity	= atoi(argv[4]);
 	int		  width			= imgL.cols;
@@ -26,19 +26,17 @@ int main(int argc, char *argv[])
 	unsigned int nStates	= maxDisparity - minDisparity;
 
 	CGraphPairwise graph(nStates);
+	CGraphPairwiseExt graphExt(graph);
 	CInferTRW decoder(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
-	Mat edgePot(nStates, nStates, CV_32FC1);								// edge Potential	
 
 	// No training
-	// Defynig the edge potential
-	edgePot = CTrainEdge::getDefaultEdgePotentials(1.175f, nStates);
-	// equivalent to:
-	// ePot.at<float>(0, 0) = 1.175;	ePot.at<float>(0, 1) = 1;
-	// ePot.at<float>(1, 0) = 1;		ePot.at<float>(1, 1) = 1.175;
+	graphExt.buildGraph(imgL.size());
+	graphExt.addDefaultEdgesModel(1.175f);
 
 	// ==================== Building and filling the graph ====================
+	size_t idx = 0;
 	for (int y = 0; y < height; y++) {
 		byte * pImgL	= imgL.ptr<byte>(y);
 		byte * pImgR	= imgR.ptr<byte>(y);
@@ -51,11 +49,10 @@ int main(int argc, char *argv[])
 				nodePot.at<float>(s, 0) = p * p;
 			}
 
-			size_t idx = graph.addNode(nodePot);
-			if (x > 0) graph.addArc(idx, idx - 1, edgePot);
-			if (y > 0) graph.addArc(idx, idx - width, edgePot);
+			graph.setNode(idx++, nodePot);
 		} // x
 	} // y
+
 
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
@@ -69,7 +66,7 @@ int main(int argc, char *argv[])
 
 	imshow("Disparity", disparity);
 
-	cv::waitKey();
+	waitKey();
 
 	return 0;
 }

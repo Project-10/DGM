@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height - 18), Point(width, height), CV_RGB(0, 0, 0), -1);
-	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, LineTypes::LINE_AA);
 	imwrite(argv[6], test_img);
 	
 	imshow("Image", test_img);

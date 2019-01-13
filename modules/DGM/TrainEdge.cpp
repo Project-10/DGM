@@ -7,7 +7,7 @@ namespace DirectGraphicalModels
 	Mat CTrainEdge::getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams, float weight) const
 	{
 		Mat res = calculateEdgePotentials(featureVector1, featureVector2, vParams);
-		if (weight != 1.0) pow(res, weight, res);
+		if (weight != 1.0f) pow(res, weight, res);
 
 		// Normalization
 		for (byte y = 0; y < m_nStates; y++) {
