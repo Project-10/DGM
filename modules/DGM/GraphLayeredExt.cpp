@@ -66,7 +66,8 @@ namespace DirectGraphicalModels
 
 	void CGraphLayeredExt::addDefaultEdgesModel(float val, float weight) 
 	{
-        const byte	nStates = m_graph.getNumStates();
+		if (weight != 1.0f) val = powf(val, weight);
+		const byte	nStates = m_graph.getNumStates();
 		m_graph.setEdges(0, CTrainEdge::getDefaultEdgePotentials(sqrtf(val), nStates));
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
@@ -76,7 +77,7 @@ namespace DirectGraphicalModels
         const byte nStates = m_graph.getNumStates();
         const word nFeatures = featureVectors.channels();
 		const CTrainEdgePottsCS edgeTrainer(nStates, nFeatures);
-        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.01f }, weight);
+        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.001f }, weight);
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 
@@ -85,7 +86,7 @@ namespace DirectGraphicalModels
         const byte nStates = m_graph.getNumStates();
         const word nFeatures = static_cast<word>(featureVectors.size());
         const CTrainEdgePottsCS edgeTrainer(nStates, nFeatures);
-        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.01f }, weight);
+        fillEdges(edgeTrainer, NULL, featureVectors, { val, 0.001f }, weight);
 		m_graph.setEdges(1, CTrainEdge::getDefaultEdgePotentials(1.0f, nStates));
 	}
 

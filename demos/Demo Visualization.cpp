@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
 	CTrainEdgePottsCS	    edgeTrainer(nStates, nFeatures);
 	vec_float_t			    vParams	= {400, 0.001f};
 	CGraphPairwise		    graph(nStates);
+	CGraphPairwiseExt		graphExt(graph);
 	CInferLBP			    decoder(graph);
 	// Define custom colors in RGB format for our classes (for visualization)
 	vec_nColor_t		  palette;
@@ -89,29 +90,8 @@ int main(int argc, char *argv[])
 
 	// ==================== Building and filling the graph =====================
 	Timer::start("Filling the Graph... ");
-	Mat featureVector1(nFeatures, 1, CV_8UC1); 
-	Mat featureVector2(nFeatures, 1, CV_8UC1); 
-	Mat nodePot, edgePot;
-	for (int y = 0; y < height; y++) {
-		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
-		for (int x = 0; x < width; x++) {
-			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
-			nodePot = nodeTrainer.getNodePotentials(featureVector1, 1.0f);											// node potential
-			size_t idx = graph.addNode(nodePot);
-
-			if (x > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
-				graph.addArc(idx, idx - 1, edgePot);
-			} // if x
-			if (y > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-				edgePot = edgeTrainer.getEdgePotentials(featureVector1, featureVector2, vParams);					// edge potential
-				graph.addArc(idx, idx - width, edgePot);
-			} // if y
-		} // x
-	} // y
+	graphExt.setGraph(nodeTrainer.getNodePotentials(fv));
+	graphExt.addDefaultEdgesModel(fv, 400);
 	Timer::stop();
 
 	// ========================= Decoding =========================
