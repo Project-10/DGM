@@ -167,12 +167,12 @@ void testGraphExtension(CGraphExt& graphExt, CGraph& graph)
 {
 	const byte nStates = graph.getNumStates();
 	
-	Size graphSize = Size(random::u<int>(100, 1000), random::u<int>(100, 1000));
+	Size graphSize = Size(random::u<int>(10, 100), random::u<int>(10, 100));
 	graphExt.buildGraph(graphSize);
 	ASSERT_EQ(graphSize, graphExt.getSize());
 	ASSERT_EQ(graphSize.width * graphSize.height, graph.getNumNodes());
 
-	graphSize = Size(random::u<int>(100, 1000), random::u<int>(100, 1000));
+	graphSize = Size(random::u<int>(10, 100), random::u<int>(10, 100));
 	Mat pots = random::U(graphSize, CV_32FC(nStates));
 	graphExt.setGraph(pots);
 	ASSERT_EQ(graphSize, graphExt.getSize());
@@ -180,11 +180,12 @@ void testGraphExtension(CGraphExt& graphExt, CGraph& graph)
 	Mat test_pots;
 	graph.getNodes(0, 0, test_pots);
 	test_pots = test_pots.clone().reshape(graph.getNumStates(), graphSize.height);
-	for (int y = 0; y < pots.rows; y++) {
+	ASSERT_EQ(pots.rows, test_pots.rows);
+	for (int y = 0; y < test_pots.rows; y++) {
 		float *pPots		= pots.ptr<float>(y);
 		float *pTestPots	= test_pots.ptr<float>(y);
-		for (int x = 0; x < pots.cols; x++) 
-			for (int c = 0; c < pots.channels(); c++)
+		for (int x = 0; x < test_pots.cols; x++) 
+			for (int c = 0; c < test_pots.channels(); c++)
 				ASSERT_EQ(pPots[x * nStates + c], pTestPots[x * nStates + c]);
 	}
 	
@@ -207,4 +208,56 @@ TEST_F(CTestGraph, CG_pairwise_extension)
 	CGraphPairwise graph(nStates);
 	CGraphPairwiseExt graphExt(graph);
 	testGraphExtension(graphExt, graph);
+}
+
+TEST_F(CTestGraph, CG_pairwise_layered) 
+{
+	const byte nStatesBase = static_cast<byte>(random::u(5, 127));
+	const byte nStatesOccl = static_cast<byte>(random::u(5, 127));
+	const byte nStates = nStatesBase + nStatesOccl;
+	const byte nLayers = static_cast<byte>(random::u(4, 16));
+	const Size graphSize = Size(random::u<int>(10, 100), random::u<int>(10, 100));
+
+	CGraphPairwise graph(nStates);
+	CGraphLayeredExt graphExt(graph, nLayers, GRAPH_EDGES_GRID | GRAPH_EDGES_LINK);
+
+	graphExt.buildGraph(graphSize);
+	ASSERT_EQ(GRAPH_EDGES_GRID | GRAPH_EDGES_LINK, graphExt.getType());
+	ASSERT_EQ(graphSize, graphExt.getSize());
+	ASSERT_EQ(graphSize.width * graphSize.height * nLayers, graph.getNumNodes());
+	ASSERT_EQ(1, graph.getEdgeGroup(0, 1));
+	ASSERT_EQ(0, graph.getEdgeGroup(0, nLayers));
+
+	Mat potBase = random::U(graphSize, CV_32FC(nStatesBase));
+	Mat potOccl = random::U(graphSize, CV_32FC(nStatesOccl));
+	graphExt.setGraph(potBase, potOccl);
+
+	Mat test_pots;
+	graph.getNodes(0, 0, test_pots);
+	for (int n = 0; n < test_pots.rows; n++) {
+		float *pTestPots = test_pots.ptr<float>(n);
+		int N = n / nLayers;	// node index
+		int y = N / graphSize.width;
+		int x = N % graphSize.width;
+
+		if (n % nLayers == 0) {					// bottom - base layer
+			for (int i = 0; i < nStatesBase; i++)
+				ASSERT_EQ(pTestPots[i], potBase.at<float>(y, x * nStatesBase + i));
+		}
+		else if (n % nLayers == 1) {			// top occlusion layer
+			for (int i = 0; i < nStatesOccl; i++)
+				ASSERT_EQ(pTestPots[nStatesBase + i], potOccl.at<float>(y, x * nStatesOccl + i));
+		}
+		else {									// intermedete occlusion layer
+			for (int i = 0; i < nStatesOccl; i++)
+				ASSERT_EQ(pTestPots[nStatesBase + i], 100.0f / nStatesOccl);
+		}
+	}
+
+	// addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt);
+	// addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt);
+	// fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink* linkTrainer, const Mat &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+	// fillEdges(const CTrainEdge &edgeTrainer, const CTrainLink* linkTrainer, const vec_mat_t &featureVectors, const vec_float_t &vParams, float edgeWeight = 1.0f, float linkWeight = 1.0f);
+	// defineEdgeGroup(float A, float B, float C, byte group);
+	// setEdges(std::optional<byte> group, const Mat &pot);
 }
