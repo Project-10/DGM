@@ -85,9 +85,24 @@ namespace DirectGraphicalModels
 
 	void CGraphPairwise::setEdges(std::optional<byte> group, const Mat& pot)
 	{
-		for (ptr_edge_t& pEdge : m_vEdges)
+#ifdef ENABLE_PPL
+		size_t size = m_vEdges.size();
+		size_t rangeSize = size / (concurrency::GetProcessorCount() * 10);
+		rangeSize = MAX(1, rangeSize);
+		//printf("Processors: %d\n", concurrency::GetProcessorCount());
+		concurrency::parallel_for(size_t(0), size, rangeSize, [group, &pot, size, rangeSize, this](size_t i) {
+			for (int j = 0; (j < rangeSize) && (i + j < size); j++) {
+				ptr_edge_t& pEdge = m_vEdges[i + j];
+				if (!group || pEdge->group_id == group.value())
+					pot.copyTo(pEdge->Pot);
+			}
+		});
+#else 			
+		for (ptr_edge_t& pEdge : m_vEdges) {
 			if(!group || pEdge->group_id == group.value())
-				pot.copyTo(pEdge->Pot);
+					pot.copyTo(pEdge->Pot);	
+		}
+#endif
 	}
 
 	// Return edge potential matrix
