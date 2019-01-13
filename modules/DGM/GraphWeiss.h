@@ -83,23 +83,23 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphWeiss(void);
 		
 
-		DllExport virtual void		reset(void) override;
-		DllExport virtual size_t	addNode(const Mat &pot = EmptyMat) override;
-		DllExport virtual void		setNode(size_t node, const Mat &pot) override;
-		DllExport virtual void		getNode(size_t node, Mat &pot) const override;
-		DllExport virtual void		getChildNodes(size_t node, vec_size_t &vNodes) const override;
-		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
-		DllExport virtual size_t	getNumNodes(void) const override { return m_vpNodes.size(); }
-		DllExport virtual size_t	getNumEdges(void) const override;
+		DllExport void		reset(void) override;
+		DllExport size_t	addNode(const Mat &pot = EmptyMat) override;
+		DllExport void		setNode(size_t node, const Mat &pot) override;
+		DllExport void		getNode(size_t node, Mat &pot) const override;
+		DllExport void		getChildNodes(size_t node, vec_size_t &vNodes) const override;
+		DllExport void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
+		DllExport size_t	getNumNodes(void) const override { return m_vpNodes.size(); }
+		DllExport size_t	getNumEdges(void) const override;
 
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, byte group, const Mat &pot) override;
-		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
-		DllExport virtual void		setEdges	(std::optional<byte> group, const Mat& pot) override;
-		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
-		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) override;
-		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const override;
-		DllExport virtual void		removeEdge	(size_t srcNode, size_t dstNode) override;
-		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
+		DllExport void		addEdge		(size_t srcNode, size_t dstNode, byte group, const Mat &pot) override;
+		DllExport void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
+		DllExport void		setEdges	(std::optional<byte> group, const Mat& pot) override;
+		DllExport void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
+		DllExport void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) override;
+		DllExport byte		getEdgeGroup(size_t srcNode, size_t dstNode) const override;
+		DllExport void		removeEdge	(size_t srcNode, size_t dstNode) override;
+		DllExport bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
 
 
 	protected:

@@ -121,7 +121,6 @@ namespace DirectGraphicalModels
 			for (Edge* e : n->to)
 				if (!group || e->group_id == group.value())
 					pot.copyTo(e->Pot);
-		
 	}
 
 	// Return edge potential matrix
@@ -197,6 +196,5 @@ namespace DirectGraphicalModels
 			if (edge_to->node2->id == dstNode)
 				return edge_to;
 		return NULL;
-
 	}
 }
