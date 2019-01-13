@@ -45,8 +45,25 @@ namespace DirectGraphicalModels
 		// From CGraphExt
 		DllExport virtual void buildGraph(Size graphSize) override;
 		DllExport virtual void setGraph(const Mat& pots) override;
+        /**
+		* @brief Adds default data-independet edge model
+		* @param val Value, specifying the smoothness strength 
+        * @param weight The weighting parameter
+		*/				
 		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override;
+		/**
+		* @brief Adds default contrast-sensitive edge model
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+        * @param val Value, specifying the smoothness strength
+        * @param weight The weighting parameter
+		*/		
 		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) override;
+		/**
+        * @brief Adds default contrast-sensitive edge model
+        * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+        * @param val Value, specifying the smoothness strength
+        * @param weight The weighting parameter
+        */		
 		DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override;
 		DllExport virtual Size getSize() const override { return m_size; }
 
@@ -55,7 +72,7 @@ namespace DirectGraphicalModels
 		* @details
         * If the graph was not build beforehand, this function calls first 
         * @code
-        * addNodes(potBase.size())
+        * buildGraph(potBase.size())
         * @endcode
 		* > This function supports PPL
 		* @param potBase A block of potentials for the base layer: Mat(type: CV_32FC(nStatesBase))
@@ -128,8 +145,12 @@ namespace DirectGraphicalModels
 		* @returns The type of the graph (Ref. @ref graphType)
 		*/
 		DllExport byte getType(void) const { return m_gType; }
+	
+	
+	protected:
 		/**
-		TODO: delete this
+		* @brief Returns the reference to the graph
+		* @return The reference to the graph
 		*/
 		DllExport IGraphPairwise& getGraph(void) const { return m_graph; }
 
