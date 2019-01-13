@@ -43,29 +43,29 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphLayeredExt(void) = default;
 
 		// From CGraphExt
-		DllExport virtual void buildGraph(Size graphSize) override;
-		DllExport virtual void setGraph(const Mat& pots) override;
+		DllExport void buildGraph(Size graphSize) override;
+		DllExport void setGraph(const Mat& pots) override;
         /**
 		* @brief Adds default data-independet edge model
 		* @param val Value, specifying the smoothness strength 
         * @param weight The weighting parameter
 		*/				
-		DllExport virtual void addDefaultEdgesModel(float val, float weight = 1.0f) override;
+		DllExport void addDefaultEdgesModel(float val, float weight = 1.0f) override;
 		/**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
 		*/		
-		DllExport virtual void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) override;
+		DllExport void addDefaultEdgesModel(const Mat &featureVectors, float val, float weight = 1.0f) override;
 		/**
         * @brief Adds default contrast-sensitive edge model
         * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
         */		
-		DllExport virtual void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override;
-		DllExport virtual Size getSize() const override { return m_size; }
+		DllExport void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override;
+		DllExport Size getSize() const override { return m_size; }
 
 		/**
 		* @brief Fills the graph nodes with potentials

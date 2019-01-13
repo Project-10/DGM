@@ -25,22 +25,22 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphDense(void) = default;
 
 		// CGraph
-		DllExport virtual void		reset(void) override { m_nodePotentials.release(); m_vpEdgeModels.clear(); }
+		DllExport void		reset(void) override { m_nodePotentials.release(); m_vpEdgeModels.clear(); }
 
-		DllExport virtual size_t	addNode(const Mat &pot = EmptyMat) override;
-		DllExport virtual void		addNodes(const Mat &pots) override;
+		DllExport size_t	addNode(const Mat &pot = EmptyMat) override;
+		DllExport void		addNodes(const Mat &pots) override;
 
-		DllExport virtual void		setNode(size_t node, const Mat &pot) override;
-		DllExport virtual void		setNodes(size_t start_node, const Mat &pots) override;
+		DllExport void		setNode(size_t node, const Mat &pot) override;
+		DllExport void		setNodes(size_t start_node, const Mat &pots) override;
 		
-		DllExport virtual void		getNode(size_t node, Mat &pot) const override;
-		DllExport virtual void		getNodes(size_t start_node, size_t num_nodes, Mat &pots) const override;
+		DllExport void		getNode(size_t node, Mat &pot) const override;
+		DllExport void		getNodes(size_t start_node, size_t num_nodes, Mat &pots) const override;
 		
-		DllExport virtual void		getChildNodes (size_t node, vec_size_t &vNodes) const override;
-		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const override { getChildNodes(node, vNodes); }
+		DllExport void		getChildNodes (size_t node, vec_size_t &vNodes) const override;
+		DllExport void		getParentNodes(size_t node, vec_size_t &vNodes) const override { getChildNodes(node, vNodes); }
 
-		DllExport virtual size_t	getNumNodes(void) const override { return static_cast<size_t>(m_nodePotentials.rows); }
-		DllExport virtual size_t	getNumEdges(void) const override { return getNumNodes() * (getNumNodes() - 1) / 2; }
+		DllExport size_t	getNumNodes(void) const override { return static_cast<size_t>(m_nodePotentials.rows); }
+		DllExport size_t	getNumEdges(void) const override { return getNumNodes() * (getNumNodes() - 1) / 2; }
 
 
 
