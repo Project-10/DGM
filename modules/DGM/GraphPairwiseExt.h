@@ -2,6 +2,7 @@
 // Written by Sergey Kosov in 2016 for Project X
 #pragma once
 
+#include "GraphExt.h"
 #include "GraphLayeredExt.h"
 
 namespace DirectGraphicalModels 
@@ -15,7 +16,7 @@ namespace DirectGraphicalModels
 	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
-	class CGraphPairwiseExt : public CGraphExt, private CGraphLayeredExt
+	class CGraphPairwiseExt : public CGraphExt
 	{
 	public:
 		/**
@@ -23,17 +24,19 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphType)
 		*/
-		DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID) : CGraphLayeredExt(graph, 1, gType) {}
+        DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID)
+            : m_pGraphLayeredExt(std::make_unique<CGraphLayeredExt>(graph, 1, gType))
+        {}
 		DllExport virtual ~CGraphPairwiseExt(void) = default;
 
 		// From CGraphExt
 		DllExport void buildGraph(Size graphSize) override
 		{
-			CGraphLayeredExt::buildGraph(graphSize);
+			m_pGraphLayeredExt->buildGraph(graphSize);
 		}
 		DllExport void setGraph(const Mat& pots) override
 		{
-			CGraphLayeredExt::setGraph(pots, Mat());
+			m_pGraphLayeredExt->setGraph(pots, Mat());
 		}
 		/**
 		* @brief Adds default data-independet edge model
@@ -57,7 +60,7 @@ namespace DirectGraphicalModels
 		DllExport void addDefaultEdgesModel(const vec_mat_t& featureVectors, float val, float weight = 1.0f) override;
 		DllExport Size getSize() const override 
 		{ 
-			return CGraphLayeredExt::getSize();
+			return m_pGraphLayeredExt->getSize();
 		}
 
 		/**
@@ -71,7 +74,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const Mat &featureVectors, const Mat &gt)
 		{
-			CGraphLayeredExt::addFeatureVecs(edgeTrainer, featureVectors, gt);
+			m_pGraphLayeredExt->addFeatureVecs(edgeTrainer, featureVectors, gt);
 		}
 		/**
 		* @brief Adds a block of new feature vectors
@@ -84,7 +87,7 @@ namespace DirectGraphicalModels
 		*/		
 		DllExport void addFeatureVecs(CTrainEdge &edgeTrainer, const vec_mat_t &featureVectors, const Mat &gt)
 		{
-			CGraphLayeredExt::addFeatureVecs(edgeTrainer, featureVectors, gt);
+			m_pGraphLayeredExt->addFeatureVecs(edgeTrainer, featureVectors, gt);
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -98,7 +101,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void fillEdges(const CTrainEdge& edgeTrainer, const Mat& featureVectors, const vec_float_t& vParams, float weight = 1.0f)
 		{
-			CGraphLayeredExt::fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
+			m_pGraphLayeredExt->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
 		/**
 		* @brief Fills the graph edges with potentials
@@ -112,7 +115,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void fillEdges(const CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float weight = 1.0f)
 		{
-			CGraphLayeredExt::fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
+			m_pGraphLayeredExt->fillEdges(edgeTrainer, NULL, featureVectors, vParams, weight);
 		}
 		/**
 		* @brief Assign the edges, which cross the given line to the grop \b group.
@@ -124,7 +127,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void defineEdgeGroup(float A, float B, float C, byte group)
 		{
-			CGraphLayeredExt::defineEdgeGroup(A, B, C, group);
+			m_pGraphLayeredExt->defineEdgeGroup(A, B, C, group);
 		}
 		/**
 		* @brief Sets potential \b pot to all edges in the group \b group
@@ -133,7 +136,7 @@ namespace DirectGraphicalModels
 		*/
 		DllExport void setEdges(std::optional<byte> group, const Mat &pot)
 		{
-			CGraphLayeredExt::setEdges(group, pot);
+			m_pGraphLayeredExt->setEdges(group, pot);
 		}
 		/**
 		* @brief Returns the type of the graph
@@ -141,7 +144,11 @@ namespace DirectGraphicalModels
 		*/
 		DllExport byte getType(void) const 
 		{ 
-			return CGraphLayeredExt::getType();
+			return m_pGraphLayeredExt->getType();
 		}
+        
+        
+    private:
+        std::unique_ptr<CGraphLayeredExt>   m_pGraphLayeredExt;
 	};
 }

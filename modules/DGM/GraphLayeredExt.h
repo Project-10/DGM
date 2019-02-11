@@ -145,9 +145,6 @@ namespace DirectGraphicalModels
 		* @returns The type of the graph (Ref. @ref graphType)
 		*/
 		DllExport byte getType(void) const { return m_gType; }
-	
-	
-	protected:
 		/**
 		* @brief Returns the reference to the graph
 		* @return The reference to the graph
