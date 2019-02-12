@@ -5,12 +5,12 @@ file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
 
-file(GLOB_RECURSE 3RD_DENSECRF_SOURCES  "${PROJECT_SOURCE_DIR}/3rdparty/densecrf/*.h"
-										"${PROJECT_SOURCE_DIR}/3rdparty/densecrf/*.cpp"
+file(GLOB_RECURSE 3RD_PERMUTOHEDRAL_SOURCES "${PROJECT_SOURCE_DIR}/3rdparty/permutohedral/*.h"
+											"${PROJECT_SOURCE_DIR}/3rdparty/permutohedral/*.cpp"
 									)					
 if (USE_SHERWOOD)
-file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
-										"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
+file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES		"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
+											"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
 									)
 endif()
  
@@ -18,7 +18,7 @@ endif()
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${DGM_INCLUDE})
 source_group("" FILES ${DGM_SOURCES} ${DGM_HEADERS})
-source_group("3rdparty\\densecrf" FILES ${3RD_DENSECRF_SOURCES})
+source_group("3rdparty\\permutohedral" FILES ${3RD_PERMUTOHEDRAL_SOURCES})
 source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
@@ -35,6 +35,8 @@ source_group("Source Files\\Decoding"			FILES "Decode.h" "Decode.cpp")
 source_group("Source Files\\Decoding\\Exact"	FILES "DecodeExact.h" "DecodeExact.cpp")												
 source_group("Source Files\\Graph\\Graph"						FILES "Graph.h" "Graph.cpp")
 source_group("Source Files\\Graph\\Graph\\Dense" 				FILES "GraphDense.h" "GraphDense.cpp")
+source_group("Source Files\\Graph\\Graph\\Dense\\Edge Models" 	FILES "IEdgeModel.h")
+source_group("Source Files\\Graph\\Graph\\Dense\\Edge Models" 	FILES "EdgeModelPotts.h" "EdgeModelPotts.cpp")
 source_group("Source Files\\Graph\\Graph\\Pairwise"   			FILES "IGraphPairwise.h" "IGraphPairwise.cpp")
 source_group("Source Files\\Graph\\Graph\\Pairwise\\Pairwise"	FILES "GraphPairwise.h" "GraphPairwise.cpp")
 source_group("Source Files\\Graph\\Graph\\Pairwise\\Weiss"		FILES "GraphWeiss.h" "GraphWeiss.cpp")
@@ -100,7 +102,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 				)
  
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)
-add_library(DGM SHARED ${DGM_INCLUDE} ${DGM_SOURCES} ${DGM_HEADERS} ${3RD_DENSECRF_SOURCES})
+add_library(DGM SHARED ${DGM_INCLUDE} ${DGM_SOURCES} ${DGM_HEADERS} ${3RD_PERMUTOHEDRAL_SOURCES})
  
 # Properties -> Linker -> Input -> Additional Dependencies
 target_link_libraries(DGM ${OpenCV_LIBS})
@@ -118,7 +120,7 @@ install(FILES ${DGM_INCLUDE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 install(FILES ${DGM_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/DGM)
 	
 # 3rdparty code
-#target_sources(DGM PUBLIC	${3RD_DENSECRF_SOURCES})
+#target_sources(DGM PUBLIC	${3RD_PERMUTOHEDRAL_SOURCES})
 target_sources(DGM PRIVATE	${3RD_SHERWOOD_SOURCES})
  
 # Creates folder "Modules" and adds target project 

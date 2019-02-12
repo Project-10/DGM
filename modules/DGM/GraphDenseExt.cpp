@@ -1,7 +1,7 @@
 #include "GraphDenseExt.h"
 #include "GraphDense.h"
+#include "EdgeModelPotts.h"
 #include "macroses.h"
-#include "densecrf/edgePotentialPotts.h"
 
 namespace DirectGraphicalModels 
 {
@@ -39,7 +39,7 @@ namespace DirectGraphicalModels
 				pFeature[1] = y / sigma.val[1];
 			} // x
 
-		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
+		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
 	}
 
 	void CGraphDenseExt::addBilateralEdgeModel(const Mat &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
@@ -60,7 +60,7 @@ namespace DirectGraphicalModels
                 features.push_back(feature);
 			} // x
 		} // y
-		m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
+		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
 	}
 
     void CGraphDenseExt::addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
@@ -83,6 +83,6 @@ namespace DirectGraphicalModels
                 features.push_back(feature);
             } // x
         } // y
-        m_graph.addEdgeModel(new CEdgePotentialPotts(features, weight, SemiMetricFunction));
+        m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
     }
 }

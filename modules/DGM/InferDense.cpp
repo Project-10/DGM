@@ -1,5 +1,5 @@
 #include "InferDense.h"
-#include "densecrf/edgepotential.h"
+#include "IEdgeModel.h"
 
 namespace DirectGraphicalModels
 {

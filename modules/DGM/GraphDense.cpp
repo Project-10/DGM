@@ -1,6 +1,5 @@
 #include "GraphDense.h"
 #include "macroses.h"
-#include "densecrf/edgePotentialPotts.h"
 
 namespace DirectGraphicalModels 
 {

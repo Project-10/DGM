@@ -24,7 +24,8 @@ namespace DirectGraphicalModels
 		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
 		DllExport ~CGraphDenseExt(void) = default;
 
-        DllExport void buildGraph(Size graphSize) override;
+        // From CGraphExt
+		DllExport void buildGraph(Size graphSize) override;
 		DllExport void setGraph(const Mat &pots)  override;
 		DllExport void addDefaultEdgesModel(float val, float weight = 1.0f) override
 		{
@@ -38,6 +39,9 @@ namespace DirectGraphicalModels
         {
             addBilateralEdgeModel(featureVectors, Vec2f::all(val), 12.75f, weight);
         }
+		DllExport Size getSize(void) const override { 
+			return m_size; 
+		}
 
 		/**
 		* @brief Add a Gaussian potential model with standard deviation \b sigma
@@ -64,7 +68,6 @@ namespace DirectGraphicalModels
         * param pFunction
         */
         DllExport void addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
-        DllExport Size getSize(void) const override { return m_size; }
 
 
 	private:

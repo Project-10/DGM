@@ -43,6 +43,12 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CGraphLayeredExt(void) = default;
 
 		// From CGraphExt
+        /**
+        * @brief Builds a 2D graph of size corresponding to the image resolution
+		* @details All edges in graph will have group id 0 except the edges connecting different layers (links), which will have group id 1.
+		* When called multiple times, previouse graph structure is always replaced.
+        * @param graphSize The size of the graph (image resolution)
+        */
 		DllExport void buildGraph(Size graphSize) override;
 		DllExport void setGraph(const Mat& pots) override;
         /**
@@ -83,7 +89,7 @@ namespace DirectGraphicalModels
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
 		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
-		* provided via \b pGraph
+		* provided during the class construction via \b gType argument
 		* @param edgeTrainer A pointer to the edge trainer
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
@@ -93,7 +99,7 @@ namespace DirectGraphicalModels
 		* @brief Adds a block of new feature vectors
 		* @details This function may be used only for basic graphical models, built with the CGraphExt::build() method. It extracts
 		* pairs of feature vectors with corresponding ground-truth values from blocks \b featureVectors and \b gt, according to the graph structure,
-		* provided via \b pGraph
+		* provided during the class construction via \b gType argument
 		* @param edgeTrainer A pointer to the edge trainer
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
@@ -149,7 +155,7 @@ namespace DirectGraphicalModels
 		* @brief Returns the reference to the graph
 		* @return The reference to the graph
 		*/
-		DllExport IGraphPairwise& getGraph(void) const { return m_graph; }
+		IGraphPairwise& getGraph(void) const { return m_graph; }
 
 
 	private:

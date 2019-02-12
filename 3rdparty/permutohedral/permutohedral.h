@@ -1,3 +1,5 @@
+// This code was deeply revised by Sergey Kosov in 2018 - 2019 for Project X
+// to support OpenCV and moderm C++11 standard
 /*
     Copyright (c) 2011, Philipp Krähenbühl
     All rights reserved.
@@ -24,47 +26,33 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "filter.h"
-#include "permutohedral.h"
-#include "macroses.h"
 
-// Constructor
-CFilter::CFilter(const Mat &src_features, const Mat &dst_features)
-    : m_n1(src_features.rows)
-    , m_o1(0)
-    , m_n2(dst_features.rows)
-    , m_o2(src_features.rows)
-{
-	// Assertions
-	DGM_ASSERT(src_features.cols == dst_features.cols);
-	
-	m_pPermutohedral = new CPermutohedral();
-	
-	Mat features(src_features.rows + dst_features.rows, src_features.cols, CV_32FC1);
-	src_features.copyTo(features(Rect(0, 0, src_features.cols, src_features.rows)));
-	dst_features.copyTo(features(Rect(0, src_features.rows, dst_features.cols, dst_features.rows)));
-	
-    m_pPermutohedral->init(features);
-}
+#pragma once
 
-// Constructor
-CFilter::CFilter(const Mat &features)
-    : m_n1(features.rows)
-    , m_o1(0)
-    , m_n2(features.rows)
-    , m_o2(0)
-{
-    m_pPermutohedral = new CPermutohedral();
-    m_pPermutohedral->init(features);
-}
+#include "types.h"
 
-// Destructor
-CFilter::~CFilter(void)
+/************************************************/
+/***          Permutohedral Lattice           ***/
+/************************************************/
+class CPermutohedral
 {
-    delete m_pPermutohedral;
-}
+public:
+    CPermutohedral(void) = default;
+    CPermutohedral(const CPermutohedral& rhs);
+    CPermutohedral& operator= (const CPermutohedral& rhs);
+	~CPermutohedral(void) = default;
 
-void CFilter::filter(const Mat &src, Mat &dst)
-{
-    m_pPermutohedral->compute(src, dst, m_o1, m_o2, m_n1, m_n2);
-}
+    void init(const Mat& features);
+    void compute(const Mat& src, Mat& dst, int in_offset = 0, int out_offset = 0, size_t in_size = 0, size_t out_size = 0) const;
+
+    
+private:
+    int	m_nFeatures         = 0;        // Number of elements
+    int	m_M                 = 0;        // Size of sparse discretized space
+    int m_featureSize       = 0;        // Dimension of features
+    
+    Mat m_offset			= Mat();
+    Mat	m_barycentric       = Mat();
+    Mat	m_blurNeighbor1		= Mat();
+	Mat	m_blurNeighbor2		= Mat();
+};

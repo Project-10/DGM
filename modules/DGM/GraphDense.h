@@ -4,8 +4,6 @@
 
 #include "Graph.h"
 
-class CEdgePotential;
-
 namespace DirectGraphicalModels 
 {
     // ================================ Graph Interface Class ================================
@@ -49,7 +47,7 @@ namespace DirectGraphicalModels
 		 * @brief Adds an edge model
 		 * @param pEdgeModel Poiter to an dense edge model
 		 */
-		DllExport void				addEdgeModel(CEdgePotential *pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
+		DllExport void				addEdgeModel(const ptr_edgeModel_t pEdgeModel) { m_vpEdgeModels.emplace_back(pEdgeModel); }
         
         // For internal use
         /**
@@ -62,7 +60,7 @@ namespace DirectGraphicalModels
          * @details One edge model applies itself to all the edges in the graph
          * @return The container with edge models: vector of size: number of used edge models
          */
-        std::vector<CEdgePotential*>& getEdgeModels(void) const { return m_vpEdgeModels; }
+        std::vector<ptr_edgeModel_t>& getEdgeModels(void) const { return m_vpEdgeModels; }
         
         
 	private:
@@ -74,6 +72,6 @@ namespace DirectGraphicalModels
 		/**
 		* The set of edge models
 		*/
-		mutable std::vector<CEdgePotential*>    m_vpEdgeModels;
+		mutable std::vector<ptr_edgeModel_t>    m_vpEdgeModels;
 	};
 }

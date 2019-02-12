@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	CGraphPairwiseKit kit(nStates);
+	CGraphDenseKit	kit(nStates);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
 
@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
 	Serialize::to("D:\\npot.dat", nodePotentials);
 
 	kit.getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
-	kit.getGraphExt().addDefaultEdgesModel(8366.67f, 3.0f);
-//	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
+	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
+	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
 	Timer::stop();
 
 
