@@ -11,11 +11,6 @@ namespace DirectGraphicalModels
 		return res;
 	}
 
-	void CGraphDense::addNodes(const Mat &pots)
-	{
-		m_nodePotentials.push_back(pots);
-	}
-
 	// Set or change the potential of node idx
 	void CGraphDense::setNode(size_t node, const Mat &pot)
 	{
