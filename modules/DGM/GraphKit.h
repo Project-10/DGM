@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 	// ================================ Graph Kit Abstract Factory Class ===============================
 	/**
 	* @brief Abstract Kit class for constructing Graph objects
-	* @ingroup moduleGraph
+	* @ingroup moduleGraphKit
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphKit {
@@ -52,7 +52,7 @@ namespace DirectGraphicalModels
 	// ================================ Pairwise Graph Kit Class ===============================
 	/**
 	* @brief Kit class for constructing Pairwise Graph objects
-	* @ingroup moduleGraph
+	* @ingroup moduleGraphKit
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphPairwiseKit : public CGraphKit {
@@ -92,7 +92,7 @@ namespace DirectGraphicalModels
 	// ================================ Dense Graph Kit Class ===============================
 	/**
 	* @brief Kit class for constructing Dense Graph objects
-	* @ingroup moduleGraph
+	* @ingroup moduleGraphKit
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphDenseKit : public CGraphKit {

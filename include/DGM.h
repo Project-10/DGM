@@ -67,8 +67,8 @@
 /**
 @mainpage Introduction
 @section sec_main Direct Graphical Models (DGM)
-is a C++ dynamic link library implementing various tasks in <a href="https://en.wikipedia.org/wiki/Graphical_model">probabilistic graphical models</a> with pairwise dependencies. 
-The library aims to be used for the <a href="https://en.wikipedia.org/wiki/Markov_random_field">Markov-</a> and 
+is a C++ dynamic link library implementing various tasks in <a href="https://en.wikipedia.org/wiki/Graphical_model">probabilistic graphical models</a> with pairwise dependencies as well as 
+<a href="https://en.wikipedia.org/wiki/Complete_graph">complete (dense) graphs</a>. The library aims to be used for the <a href="https://en.wikipedia.org/wiki/Markov_random_field">Markov-</a> and 
 <a href="https://en.wikipedia.org/wiki/Conditional_random_field">Conditional Random Fields</a> (MRF / CRF), 
 <a href="https://en.wikipedia.org/wiki/Markov_chain">Markov Chains</a>, <a href="https://en.wikipedia.org/?title=Bayesian_network">Bayesian Networks</a>, @a etc. 
 DGM library consists of three modules: 
@@ -163,24 +163,48 @@ Please refer to the @ref moduleVIS documentation
 
 	@defgroup moduleTrain Training
 	@ingroup moduleDGM
+	@brief Sub-module containing classes for training (learning) probabilistic models.
 	
 		@defgroup moduleTrainNode Unary Potentials Training
 		@ingroup moduleTrain
+		@brief A set of methods for training and using unary classifiers for graph nodes.
 
 		@defgroup moduleTrainEdge Pairwise Potentials Training
 		@ingroup moduleTrain
+		@brief A set of methods for training and using pairwise classifiers for pairwise graph edges.
 
 	@defgroup moduleGraph Graph Building
 	@ingroup moduleDGM
+	@brief Sub-module containing methods for building arbitrary pairwise and dense graphical models.
+	@details The underlying probability distributions of probabilistic models for sake of simplicity and flexibility of modeling are usually represented in a graphical form (this is why they are
+	often called \a probabilistic \a graphical \a models). A probabilistic graphical model is a diagrammatic representation of a probability distribution. In such a graph there is a node for each 
+	random variable and relations between these variables are represented via graph edges.
+
+		@defgroup moduleGraphExt Graph Extensions
+		@ingroup moduleGraph
+		@brief A set of wrappers for building graphical models for 2D image classifaction.
+		@details For simplifying the application of the DGM library to the classification of the images, this sub-module provides a set of additional classes which extend the functionality 
+		of the @ref moduleGraph module. A graph representing an image usually has 2D grid structure with the standard edge pattern (in case of pairwise graphs). The base class 
+		@ref DirectGraphicalModels::CGraphExt provides a set of wrappers for building and filling with potentials such graphs. It also has wrappers for initializing default edge interaction 
+		models, which are \a training-data-independent. This is enough for solving a large variety of pattern recognition and machine vision problems. For adding \a training-data-dependent 
+		edge models one can use the derived from @ref DirectGraphicalModels::CGraphExt classes directly.
+
+		@defgroup moduleGraphKit Graph Factory
+		@ingroup moduleGraph
+		@brief bla-bla
+		@details bla-bla
 
 	@defgroup moduleDecode Inference / Decoding
 	@ingroup moduleDGM
+	@brief Sub-module containing classes for performing precise and approximate inference in probabilistic models.
 
 	@defgroup moduleParamEst Parameter Estimation
 	@ingroup moduleDGM
+	@brief Sub-module containing techniques for estimation the probabilistic models' control parameters. 
 
 	@defgroup moduleEva Evaluation
 	@ingroup moduleDGM
+	@brief Sub-module containing classes and methods for evaluation the classification results.
 */
 
 /**

@@ -26,7 +26,7 @@ namespace DirectGraphicalModels
 	// ================================ Extended Graph Class ================================
 	/**
 	* @brief Extended Pairwise Layered graph class
-	* @ingroup moduleGraph
+	* @ingroup moduleGraphExt
 	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
