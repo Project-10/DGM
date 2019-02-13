@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	CGraphDenseKit	kit(nStates);
+	auto			kit = CGraphKit::create(GraphType::dense, nStates);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
 
@@ -53,15 +53,15 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	kit.getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
-	kit.getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
-	kit.getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
+	kit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+	kit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
+	kit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = kit.getInfer().decode(100);
+	vec_byte_t optimalDecoding = kit->getInfer().decode(100);
 	Timer::stop();
 
 

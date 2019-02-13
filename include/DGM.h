@@ -41,6 +41,8 @@
 #include "DGM/TrainLinkNested.h"
 
 #include "DGM/GraphKit.h"
+#include "DGM/GraphDenseKit.h"
+#include "DGM/GraphPairwiseKit.h"
 
 #include "DGM/GraphDense.h"
 #include "DGM/GraphDenseExt.h"

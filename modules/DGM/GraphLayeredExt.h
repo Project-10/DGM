@@ -11,12 +11,11 @@ namespace DirectGraphicalModels
 	class CTrainEdge;
 	class CTrainLink;
 
-
 	/**
-	* @brief Graph types
+	* @brief Graph edges types
 	* @details Define the grid of edges, connecting nodes of the graph
 	*/
-	enum graphType {
+	enum graphEdgesType {
 		GRAPH_EDGES_NONE = 0,		///< No edges
 		GRAPH_EDGES_GRID = 1,		///< Vertical and horizontal edges
 		GRAPH_EDGES_DIAG = 2,		///< Diagonal edges
@@ -37,7 +36,7 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		* @param nLayers The number of layers
-		* @param gType The graph type. (Ref. @ref graphType)
+		* @param gType The graph type. (Ref. @ref graphEdgesType)
 		*/
 		DllExport CGraphLayeredExt(IGraphPairwise& graph, word nLayers, byte gType = GRAPH_EDGES_GRID) : m_graph(graph), m_nLayers(nLayers), m_gType(gType), m_size(Size(0, 0)) {}
 		DllExport virtual ~CGraphLayeredExt(void) = default;
@@ -148,7 +147,7 @@ namespace DirectGraphicalModels
 		DllExport void setEdges(std::optional<byte> group, const Mat &pot);
 		/**
 		* @brief Returns the type of the graph
-		* @returns The type of the graph (Ref. @ref graphType)
+		* @returns The type of the graph (Ref. @ref graphEdgesType)
 		*/
 		DllExport byte getType(void) const { return m_gType; }
 		/**
@@ -161,7 +160,7 @@ namespace DirectGraphicalModels
 	private:
 		IGraphPairwise&	m_graph;		///< The graph
 		const word		m_nLayers;		///< Number of layers
-		const byte		m_gType;		///< Graph type (Ref. @ref graphType)
+		const byte		m_gType;		///< Graph type (Ref. @ref graphEdgesType)
 		Size			m_size;			///< Size of the graph
 	};
 }

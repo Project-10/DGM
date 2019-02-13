@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Constructor
 		* @param graph The graph
-		* @param gType The graph type. (Ref. @ref graphType)
+		* @param gType The graph type. (Ref. @ref graphEdgesType)
 		*/
         DllExport CGraphPairwiseExt(IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID)
             : m_pGraphLayeredExt(std::make_unique<CGraphLayeredExt>(graph, 1, gType))
@@ -140,7 +140,7 @@ namespace DirectGraphicalModels
 		}
 		/**
 		* @brief Returns the type of the graph
-		* @returns The type of the graph (Ref. @ref graphType)
+		* @returns The type of the graph (Ref. @ref graphEdgesType)
 		*/
 		DllExport byte getType(void) const 
 		{ 
