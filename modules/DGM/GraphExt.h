@@ -8,9 +8,9 @@ namespace DirectGraphicalModels
 {
     // ================================ Extended Graph Class ================================
     /**
-    * @brief Extended graph abstract class
+    * @brief Extended graph abstract class for 2D image classifaction
     * @ingroup moduleGraph
-    * @details This class provides wrapper functions for simplifying operations with graphs, when they are used for 2d image classification
+    * @details This class provides wrapper functions for simplifying operations with graphs, when they are used for 2D image classification
     * @author Sergey G. Kosov, sergey.kosov@project-10.de
     */
     class CGraphExt

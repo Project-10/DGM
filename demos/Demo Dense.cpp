@@ -53,11 +53,9 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	Serialize::to("D:\\npot.dat", nodePotentials);
-
 	kit.getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
-	kit.getGraphExt().addDefaultEdgesModel(133.33f, 3.0f);
-	kit.getGraphExt().addDefaultEdgesModel(test_fv, 6.66f, 10.0f);
+	kit.getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
+	kit.getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
 
 

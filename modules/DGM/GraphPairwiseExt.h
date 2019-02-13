@@ -11,9 +11,9 @@ namespace DirectGraphicalModels
 	
 	// ================================ Extended Pairwise Graph Class ================================
 	/**
-	* @brief Extended Pairwise graph class
+	* @brief Extended Pairwise graph class for 2D image classifaction
 	* @ingroup moduleGraph
-	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
+	* @details This graph class provides simplified interface and additional functionality, when the graph is used for 2D image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphPairwiseExt : public CGraphExt

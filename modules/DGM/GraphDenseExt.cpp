@@ -28,21 +28,22 @@ namespace DirectGraphicalModels
         }
 	}
 
-	void CGraphDenseExt::addGaussianEdgeModel(Vec2f sigma, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addGaussianEdgeModel(Vec2f sigma, float weight, const std::function<void(const Mat& src, Mat& dst)> &semiMetricFunction)
 	{
-        Mat features(m_size.height * m_size.width, 2, CV_32FC1);
-		int n = 0;
-		for (int y = 0; y < m_size.height; y++)
+		Mat features;
+		Mat feature(1, 2, CV_32FC1);
+		float *pFeature = feature.ptr<float>(0);
+		for (int y = 0; y < m_size.height; y++) 
 			for (int x = 0; x < m_size.width; x++) {
-				float *pFeature = features.ptr<float>(n++);
-                pFeature[0] = x / sigma.val[0];
+				pFeature[0] = x / sigma.val[0];
 				pFeature[1] = y / sigma.val[1];
+				features.push_back(feature);
 			} // x
 
-		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
+		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, semiMetricFunction));
 	}
 
-	void CGraphDenseExt::addBilateralEdgeModel(const Mat &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+	void CGraphDenseExt::addBilateralEdgeModel(const Mat &featureVectors, Vec2f sigma, float sigma_opt, float weight, const std::function<void(const Mat& src, Mat& dst)> &semiMetricFunction)
 	{
         const word	nFeatures = featureVectors.channels();
         
@@ -53,17 +54,17 @@ namespace DirectGraphicalModels
         for (int y = 0; y < m_size.height; y++) {
 			const byte *pFv = featureVectors.ptr<byte>(y);
 			for (int x = 0; x < m_size.width; x++) {
-				pFeature[0] = x * s.val[0] / m_size.width;
-				pFeature[1] = y * s.val[1] / m_size.height;
+				pFeature[0] = x / sigma.val[0];
+				pFeature[1] = y / sigma.val[1];
                 for (word f = 0; f < nFeatures; f++)
-                    pFeature[2 + f] = pFv[nFeatures * x + f] * srgb / 255;
+                    pFeature[2 + f] = pFv[nFeatures * x + f] / sigma_opt;
                 features.push_back(feature);
 			} // x
 		} // y
-		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
+		m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, semiMetricFunction));
 	}
 
-    void CGraphDenseExt::addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f s, float srgb, float weight, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction)
+    void CGraphDenseExt::addBilateralEdgeModel(const vec_mat_t &featureVectors, Vec2f sigma, float sigma_opt, float weight, const std::function<void(const Mat& src, Mat& dst)> &semiMetricFunction)
     {
         const word	nFeatures = static_cast<word>(featureVectors.size());
         
@@ -76,13 +77,13 @@ namespace DirectGraphicalModels
             byte const **pFv = new const byte *[nFeatures];
             for (word f = 0; f < nFeatures; f++) pFv[f] = featureVectors[f].ptr<byte>(y);
             for (int x = 0; x < m_size.width; x++) {
-                pFeature[0] = x * s.val[0] / m_size.width;
-                pFeature[1] = y * s.val[1] / m_size.height;
+                pFeature[0] = x / sigma.val[0];
+                pFeature[1] = y / sigma.val[1];
                 for (int f = 0; f < nFeatures; f++)
-                    pFeature[2 + f] = pFv[f][x] * srgb / 255;
+                    pFeature[2 + f] = pFv[f][x] / sigma_opt;
                 features.push_back(feature);
             } // x
         } // y
-        m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, SemiMetricFunction));
+        m_graph.addEdgeModel(std::make_shared<CEdgeModelPotts>(features, weight, semiMetricFunction));
     }
 }
