@@ -68,6 +68,9 @@ template <class T>  T& lvalue_cast(T&& t) { return t; }
 // DGM lib
 namespace DirectGraphicalModels
 {
+	class IEdgeModel;
+	
 	using   vec_nColor_t	= std::vector<std::pair<Scalar, std::string> >;
+	using 	ptr_edgeModel_t = std::shared_ptr<IEdgeModel>;
 	const	size_t	STR_LEN	= 256; 
 }

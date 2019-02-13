@@ -3,6 +3,7 @@
 #pragma once
 
 #include "TrainNode.h"
+#include "SamplesAccumulator.h"
 
 //#ifdef USE_SHERWOOD
 
@@ -18,9 +19,7 @@ namespace sw = MicrosoftResearch::Cambridge::Sherwood;
 
 namespace DirectGraphicalModels
 {
-	class CSamplesAccumulator;
-	
-	///@brief Microsoft Research Random Forest parameters
+    ///@brief Microsoft Research Random Forest parameters
 	typedef struct TrainNodeMsRFParams {
 		int				max_decision_levels;						///< Maximum number of the decision levels
 		int				num_of_candidate_features;					///< Number of candidate features
@@ -92,17 +91,14 @@ namespace DirectGraphicalModels
 		DllExport void calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const;
 
 
-	protected:
-		std::auto_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>> 	 m_pRF;			///< Random Forest classifier
-		CSamplesAccumulator															   * m_pSamplesAcc;	///< Samples Accumulator
-
-
 	private:
 		void		  init(TrainNodeMsRFParams params);													// This function is called by both constructors
 
 
 	private:
-		std::auto_ptr<sw::TrainingParameters>											m_pParams;
+        std::unique_ptr<sw::Forest<sw::LinearFeatureResponse, sw::HistogramAggregator>>     m_pRF;            ///< Random Forest classifier
+        std::unique_ptr<CSamplesAccumulator>                                                m_pSamplesAcc;    ///< Samples Accumulator
+        std::unique_ptr<sw::TrainingParameters>											    m_pParams;
 	};
 }
 //#endif

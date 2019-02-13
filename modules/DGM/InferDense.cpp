@@ -1,5 +1,5 @@
 #include "InferDense.h"
-#include "densecrf/edgepotential.h"
+#include "IEdgeModel.h"
 
 namespace DirectGraphicalModels
 {
@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 				const T *pSrc  = src.ptr<float>(y);
 				T *pDst = dst.ptr<float>(y);
 
-				// Find the max and subtract it so that the exp doesn't explodeh
+				// Find the max and subtract it so that the exp doesn't explode
 				T max = pSrc[0];
 				for (int x = 1; x < src.cols; x++)
 					if (pSrc[x] > max) max = pSrc[x];
@@ -38,34 +38,27 @@ namespace DirectGraphicalModels
 	void CInferDense::infer(unsigned int nIt)
 	{
 		// ====================================== Initialization ======================================
-		const int rows = getGraphDense().getNodes().rows;
-		const int cols = getGraphDense().getNodes().cols;
-
-		Mat temp = Mat(2 * rows, cols, CV_32FC1, Scalar(0));
-
-		// TODO: exp is not needed actually
-		// Making log potentials
-		Mat pot_log;
-		log(getGraphDense().getNodes(), pot_log);
-
-		normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
+		Mat nodePotentials	= getGraphDense().getNodePotentials();
+		Mat	nodePotentials0	= nodePotentials.clone();
+		Mat	temp			= Mat(nodePotentials.size(), nodePotentials.type());
+		Mat	tmp;
 
 		// =================================== Calculating potentials ==================================	
 		for (unsigned int i = 0; i < nIt; i++) {
 #ifdef DEBUG_PRINT_INFO
-            if (i == 0) printf("\n");
-            if (i % 5 == 0) printf("--- It: %d ---\n", i);
+			if (i == 0) printf("\n");
+			if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
-            // Set the unary potential
-			Mat next = pot_log.clone();																			// next_i = log(pot_0)
-
+			normalize<float>(nodePotentials, nodePotentials);
+			
 			// Add up all pairwise potentials
-			for (auto &edgePotModel : getGraphDense().getEdgeModels())
-				edgePotModel->apply(getGraphDense().getNodes(), next, temp);								// next_i = f(next_i, pot_i)
+			temp.setTo(1);
+			for (auto &edgePotModel : getGraphDense().getEdgeModels()) {
+				edgePotModel->apply(nodePotentials, tmp);					// tmp = f(pot_i)
+				multiply(temp, tmp, temp);									// temp *= exp(tmp)
+			}
 
-			// Exponentiate and normalize
-			exp(next, getGraphDense().getNodes());														// pot_i = exp(next_i)
-			normalize<float>(getGraphDense().getNodes(), getGraphDense().getNodes());
+			multiply(nodePotentials0, temp, nodePotentials);				// pot_(i+1) = pot_0 * next
 		} // iter
 	}
 }

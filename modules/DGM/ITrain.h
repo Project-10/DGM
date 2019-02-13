@@ -21,7 +21,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport ITrain(byte nStates, word nFeatures) : CBaseRandomModel(nStates), m_nFeatures(nFeatures) {}
-		DllExport virtual ~ITrain(void) {}
+		DllExport virtual ~ITrain(void) = default;
 
 		/**
 		* @brief Random model training

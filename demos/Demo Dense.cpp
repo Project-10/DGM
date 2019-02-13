@@ -33,13 +33,9 @@ int main(int argc, char *argv[])
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	CTrainEdgePotts	edgeTrainer(nStates, nFeatures);
-//	CGraphExt		* graph = new CGraphExt(nStates);
-//	CInfer			* decoder = new CInferLBP(graph);
+	auto			kit = CGraphKit::create(GraphType::dense, nStates);
 	CMarker			marker(DEF_PALETTE_6);
 	CCMat			confMat(nStates);
-//	float			params[] = { 100, 0.01f };
-//	size_t			params_len = 1;
 
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -51,59 +47,21 @@ int main(int argc, char *argv[])
 	Timer::start("Training... ");
 	// Node Training (compact notation)
 	nodeTrainer.addFeatureVecs(train_fv, train_gt);
-
-	// Edge Training (comprehensive notation)
-	Mat featureVector1(nFeatures, 1, CV_8UC1);
-	Mat featureVector2(nFeatures, 1, CV_8UC1);
-	for (int y = 1; y < height; y++) {
-		byte *pFv1 = train_fv.ptr<byte>(y);
-		byte *pFv2 = train_fv.ptr<byte>(y - 1);
-		byte *pGt1 = train_gt.ptr<byte>(y);
-		byte *pGt2 = train_gt.ptr<byte>(y - 1);
-		for (int x = 1; x < width; x++) {
-			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];		// featureVector1 = fv[x][y]
-
-			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-			edgeTrainer.addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt1[x - 1]);
-			edgeTrainer.addFeatureVecs(featureVector2, pGt1[x - 1], featureVector1, pGt1[x]);
-
-			for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-			edgeTrainer.addFeatureVecs(featureVector1, pGt1[x], featureVector2, pGt2[x]);
-			edgeTrainer.addFeatureVecs(featureVector2, pGt2[x], featureVector1, pGt1[x]);
-		} // x
-	} // y
-
 	nodeTrainer.train();
-	edgeTrainer.train();
 	Timer::stop();
-
-
-	// CTrainEdgePotts::getEdgePotentials(100, nStates); // default Potts edge potential
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	//graph->setNodes(nodePotentials);									// Filling-in the graph nodes
-	//graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
-
-    CFactoryGraphDense factory(nStates);
-    CGraphExt&      graphExt = factory.getGraphExt();
-    CInfer&         decoder  = factory.getInfer();
-//    CGraphDense graph(nStates);
-//    CInferDense decoder(*dynamic_cast<CGraphDense*>(graph));
-//    CGraphDenseExt graphExt(dynamic_cast<CGraphDense&>(graph));
-
-		
-    // TODO:
-	graphExt.setNodes(nodePotentials);
-	dynamic_cast<CGraphDenseExt&>(graphExt).addGaussianEdgeModel(Vec2f(3, 3), 3);
-	dynamic_cast<CGraphDenseExt&>(graphExt).addBilateralEdgeModel(test_img, Vec2f(60, 60), Vec3f(20, 20, 20), 10);
+	kit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+	kit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
+	kit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder.decode(100);
+	vec_byte_t optimalDecoding = kit->getInfer().decode(100);
 	Timer::stop();
 
 
@@ -117,7 +75,7 @@ int main(int argc, char *argv[])
 	// ====================== Visualization =======================
 	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height - 18), Point(width, height), CV_RGB(0, 0, 0), -1);
-	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, LineTypes::LINE_AA);
 	imwrite(argv[6], test_img);
 	
 	imshow("Image", test_img);

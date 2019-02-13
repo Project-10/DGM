@@ -79,7 +79,7 @@ namespace DirectGraphicalModels
 		* @brief Returns the reference to the graph
 		* @return The reference to the graph
 		*/
-		CGraph & getGraph(void) const { return m_graph; }
+		CGraph& getGraph(void) const { return m_graph; }
 
         
 	private:

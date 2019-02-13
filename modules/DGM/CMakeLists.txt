@@ -5,12 +5,12 @@ file(GLOB DGM_INCLUDE	${PROJECT_SOURCE_DIR}/include/DGM.h
 file(GLOB DGM_SOURCES	"*.cpp")
 file(GLOB DGM_HEADERS	"*.h")
 
-file(GLOB_RECURSE 3RD_DENSECRF_SOURCES  "${PROJECT_SOURCE_DIR}/3rdparty/densecrf/*.h"
-										"${PROJECT_SOURCE_DIR}/3rdparty/densecrf/*.cpp"
+file(GLOB_RECURSE 3RD_PERMUTOHEDRAL_SOURCES "${PROJECT_SOURCE_DIR}/3rdparty/permutohedral/*.h"
+											"${PROJECT_SOURCE_DIR}/3rdparty/permutohedral/*.cpp"
 									)					
 if (USE_SHERWOOD)
-file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES	"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
-										"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
+file(GLOB_RECURSE 3RD_SHERWOOD_SOURCES		"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.h"
+											"${PROJECT_SOURCE_DIR}/3rdparty/sherwood/*.cpp"
 									)
 endif()
  
@@ -18,34 +18,34 @@ endif()
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${DGM_INCLUDE})
 source_group("" FILES ${DGM_SOURCES} ${DGM_HEADERS})
-source_group("3rdparty\\densecrf" FILES ${3RD_DENSECRF_SOURCES})
+source_group("3rdparty\\permutohedral" FILES ${3RD_PERMUTOHEDRAL_SOURCES})
 source_group("3rdparty\\sherwood" FILES ${3RD_SHERWOOD_SOURCES})
 source_group("Source Files\\Common\\Confusion Matrix" FILES "CMat.h" "CMat.cpp")
 source_group("Source Files\\Common\\Features Concatenator" FILES "FeaturesConcatenator.h")
 source_group("Source Files\\Common\\Average Precision" FILES "AveragePrecision.h" "AveragePrecision.cpp")
-source_group("Source Files\\Common\\KDGauss" FILES "KDGauss.h" "KDGauss.cpp")
-source_group("Source Files\\Common\\KDTree" FILES "KDTree.h" "KDTree.cpp" "KDNode.h" "KDNode.cpp")
+source_group("Source Files\\Common\\KDGauss"	FILES "KDGauss.h" "KDGauss.cpp")
+source_group("Source Files\\Common\\KDTree"	FILES "KDTree.h" "KDTree.cpp" "KDNode.h" "KDNode.cpp")
 source_group("Source Files\\Common\\Samples Accumulator" FILES "SamplesAccumulator.h" "SamplesAccumulator.cpp")
-source_group("Source Files\\Common\\Utilities" FILES "mathop.h")
-source_group("Source Files\\Common\\Utilities" FILES "parallel.h")
-source_group("Source Files\\Common\\Utilities" FILES "random.h")
-source_group("Source Files\\Common\\Utilities" FILES "timer.h")
-source_group("Source Files\\Common\\Utilities" FILES "serialize.h")
-source_group("Source Files\\Decoding" 		   FILES "Decode.h" "Decode.cpp")												
-source_group("Source Files\\Decoding\\Exact"   FILES "DecodeExact.h" "DecodeExact.cpp")												
-source_group("Source Files\\Graph" 			   FILES "Graph.h" "Graph.cpp" "GraphExt.h" "FactoryGraph.h")
-source_group("Source Files\\Graph\\Dense" 	   FILES "GraphDense.h" "GraphDense.cpp")
-source_group("Source Files\\Graph\\Dense\\Ext" FILES "GraphDenseExt.h" "GraphDenseExt.cpp")
-source_group("Source Files\\Graph\\Pairwise"   FILES "IGraphPairwise.h" "IGraphPairwise.cpp")
-source_group("Source Files\\Graph\\Pairwise\\pairwise"	FILES "GraphPairwise.h" "GraphPairwise.cpp")
-source_group("Source Files\\Graph\\Pairwise\\Ext" FILES									
-											"GraphPairwiseExt.h"
-											"GraphLayered.h"
-											"GraphLayered.cpp"
-									)
-source_group("Source Files\\Graph\\Pairwise\\Weiss"	FILES "GraphWeiss.h" "GraphWeiss.cpp")
-source_group("Source Files\\Graph\\Pairwise\\Triplet"	FILES "Graph3.h" "Graph3.cpp")
-source_group("Source Files\\Graph\\Triplet" FILES "Graph3.h" "Graph3.cpp")
+source_group("Source Files\\Common\\Utilities"	FILES "mathop.h")
+source_group("Source Files\\Common\\Utilities"	FILES "parallel.h")
+source_group("Source Files\\Common\\Utilities"	FILES "random.h")
+source_group("Source Files\\Common\\Utilities"	FILES "timer.h")
+source_group("Source Files\\Common\\Utilities"	FILES "serialize.h")
+source_group("Source Files\\Decoding"			FILES "Decode.h" "Decode.cpp")												
+source_group("Source Files\\Decoding\\Exact"	FILES "DecodeExact.h" "DecodeExact.cpp")												
+source_group("Source Files\\Graph\\Graph"						FILES "Graph.h" "Graph.cpp")
+source_group("Source Files\\Graph\\Graph\\Dense" 				FILES "GraphDense.h" "GraphDense.cpp")
+source_group("Source Files\\Graph\\Graph\\Dense\\Edge Models" 	FILES "IEdgeModel.h" "EdgeModelPotts.h" "EdgeModelPotts.cpp")
+source_group("Source Files\\Graph\\Graph\\Pairwise"   			FILES "IGraphPairwise.h" "IGraphPairwise.cpp")
+source_group("Source Files\\Graph\\Graph\\Pairwise\\Pairwise"	FILES "GraphPairwise.h" "GraphPairwise.cpp")
+source_group("Source Files\\Graph\\Graph\\Pairwise\\Weiss"		FILES "GraphWeiss.h" "GraphWeiss.cpp")
+source_group("Source Files\\Graph\\Graph\\Triplet"				FILES "Graph3.h" "Graph3.cpp")
+source_group("Source Files\\Graph\\Extension"					FILES "GraphExt.h")
+source_group("Source Files\\Graph\\Extension\\Dense"			FILES "GraphDenseExt.h" "GraphDenseExt.cpp")
+source_group("Source Files\\Graph\\Extension\\Pairwise"			FILES "GraphPairwiseExt.h" "GraphPairwiseExt.cpp" "GraphLayeredExt.h" "GraphLayeredExt.cpp")
+source_group("Source Files\\Graph\\Kit"							FILES "GraphKit.h" "GraphKit.cpp")
+source_group("Source Files\\Graph\\Kit\\Dense"					FILES "GraphDenseKit.h")
+source_group("Source Files\\Graph\\Kit\\Pairwise"				FILES "GraphPairwiseKit.h")
 source_group("Source Files\\Inference" FILES "Infer.h" "Infer.cpp")
 source_group("Source Files\\Inference\\Exact" FILES "InferExact.h" "InferExact.cpp")
 source_group("Source Files\\Inference\\Dense" FILES "InferDense.h" "InferDense.cpp")
@@ -65,7 +65,7 @@ source_group("Source Files\\Random Model\\Prior" FILES "Prior.h" "Prior.cpp")
 source_group("Source Files\\Random Model\\Prior\\Edge" FILES "PriorEdge.h" "PriorEdge.cpp")
 source_group("Source Files\\Random Model\\Prior\\Node" FILES "PriorNode.h" "PriorNode.cpp")
 source_group("Source Files\\Random Model\\Prior\\Triplet" FILES "PriorTriplet.h" "PriorTriplet.cpp")
-source_group("Source Files\\Random Model\\Training" FILES "ITrain.h" "TrainKit.h")
+source_group("Source Files\\Random Model\\Training" FILES "ITrain.h")
 source_group("Source Files\\Random Model\\Training\\Edge" FILES "TrainEdge.h" "TrainEdge.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Contrast Sensitive" FILES "TrainEdgePottsCS.h" "TrainEdgePottsCS.cpp")
 source_group("Source Files\\Random Model\\Training\\Edge\\Data Dependent" FILES "TrainEdgePrior.h" "TrainEdgePrior.cpp" "TrainEdgeConcat.h")
@@ -103,7 +103,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 				)
  
 # Set Properties -> General -> Configuration Type to Dynamic Library(.dll)
-add_library(DGM SHARED ${DGM_INCLUDE} ${DGM_SOURCES} ${DGM_HEADERS} ${3RD_DENSECRF_SOURCES})
+add_library(DGM SHARED ${DGM_INCLUDE} ${DGM_SOURCES} ${DGM_HEADERS} ${3RD_PERMUTOHEDRAL_SOURCES})
  
 # Properties -> Linker -> Input -> Additional Dependencies
 target_link_libraries(DGM ${OpenCV_LIBS})
@@ -121,7 +121,7 @@ install(FILES ${DGM_INCLUDE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 install(FILES ${DGM_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/DGM)
 	
 # 3rdparty code
-#target_sources(DGM PUBLIC	${3RD_DENSECRF_SOURCES})
+#target_sources(DGM PUBLIC	${3RD_PERMUTOHEDRAL_SOURCES})
 target_sources(DGM PRIVATE	${3RD_SHERWOOD_SOURCES})
  
 # Creates folder "Modules" and adds target project 

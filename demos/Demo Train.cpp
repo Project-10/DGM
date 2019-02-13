@@ -5,21 +5,29 @@
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
-using namespace DirectGraphicalModels::TrainKit;
 
-void print_help(char *argv0,
-                const std::vector<std::pair<std::string, randomModelNode>> &vRandomModelsNode,
-                const std::vector<std::pair<std::string, randomModelEdge>> &vRandomModelsEdge)
+void print_help(char *argv0)
 {
 	printf("Usage: %s node_training_model edge_training_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image output_image\n", argv0);
 
 	printf("\nNode training models:\n");
-    for (size_t i = 0; i < vRandomModelsNode.size(); i++)
-        printf("%zu: %s\n", i, vRandomModelsNode[i].first.c_str());
-    
+	printf("0: Bayes\n");
+	printf("1: Gaussian Mixture Model\n");
+	printf("2: OpenCV Gaussian Mixture Model\n");
+	printf("3: Nearest Neighbor\n");
+	printf("4: OpenCV Nearest Neighbor\n");
+	printf("5: OpenCV Random Forest\n");
+	printf("6: MicroSoft Random Forest\n");
+	printf("7: OpenCV Artificial Neural Network\n");
+	printf("8: OpenCV Support Vector Machines\n");
+
+	
 	printf("\nEdge training models:\n");
-    for (size_t i = 0; i < vRandomModelsEdge.size(); i++)
-        printf("%zu: %s\n", i, vRandomModelsEdge[i].first.c_str());
+	printf("0: Without Edges\n");
+	printf("1: Potts Model\n");
+	printf("2: Contrast-Sensitive Potts Model\n");
+	printf("3: Contrast-Sensitive Potts Model with Prior\n");
+	printf("4: Concatenated Model\n");
 }
 
 int main(int argc, char *argv[])
@@ -29,27 +37,9 @@ int main(int argc, char *argv[])
 	const int			height		= imgSize.height;
 	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 	
 	const unsigned int	nFeatures	= 3;		
-    const std::vector<std::pair<std::string, randomModelNode>> vRandomModelsNode = {
-        std::make_pair("Bayes", randomModelNode::Bayes),
-        std::make_pair("Gaussian Mixture Model", randomModelNode::GMM),
-        std::make_pair("OpenCV Gaussian Mixture Model", randomModelNode::CvGMM),
-        std::make_pair("Nearest Neighbor", randomModelNode::KNN),
-        std::make_pair("OpenCV Nearest Neighbor", randomModelNode::CvKNN),
-        std::make_pair("OpenCV Random Forest", randomModelNode::CvRF),
-        std::make_pair("MicroSoft Random Forest", randomModelNode::MsRF),
-        std::make_pair("OpenCV Artificial Neural Network", randomModelNode::CvANN),
-        std::make_pair("OpenCV Support Vector Machines", randomModelNode::CvSVM)
-    };
-    const std::vector<std::pair<std::string, randomModelEdge>> vRandomModelsEdge = {
-        std::make_pair("Without Edges", randomModelEdge::Potts),
-        std::make_pair("Potts Model", randomModelEdge::Potts),
-        std::make_pair("Contrast-Sensitive Potts Model", randomModelEdge::PottsCS),
-        std::make_pair("Contrast-Sensitive Potts Model with Prior", randomModelEdge::Prior),
-        std::make_pair("Concatenated Model", randomModelEdge::Concat),
-    };
-    
+
 	if (argc != 9) {
-		print_help(argv[0], vRandomModelsNode, vRandomModelsEdge);
+		print_help(argv[0]);
 		return 0;
 	}
 
@@ -62,40 +52,44 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-    if (nodeModel < 0 || nodeModel >= vRandomModelsNode.size()) {
-        printf("Unknown node training model is given: %d\n", nodeModel);
-        print_help(argv[0], vRandomModelsNode, vRandomModelsEdge);
-        return 0;
-    }
-    if (edgeModel < 0 || edgeModel >= vRandomModelsEdge.size()) {
-        printf("Unknown edge training model is given: %d\n", edgeModel);
-        print_help(argv[0], vRandomModelsNode, vRandomModelsEdge);
-        return 0;
-    }
-    
-    general_parameters params1;
-    params1["maxGausses"] = "1";
-	params1["numGausses"] = "1";
-    auto                  nodeTrainer	= createNodeTrainer(nStates, nFeatures, vRandomModelsNode[nodeModel].second, params1);
-	auto			      edgeTrainer	= createEdgeTrainer(nStates, nFeatures, vRandomModelsEdge[edgeModel].second, randomModelNode::Bayes, params1);
-    CFactoryGraphPairwise factory(nStates);
-	CGraphExt	        & graphExt = factory.getGraphExt();
-	CInfer			    & decoder  = factory.getInfer();
+	CTrainNode			* nodeTrainer	= NULL; 
+	CTrainEdge			* edgeTrainer	= NULL;
+	CGraphPairwise		  graph(nStates);
+	CGraphPairwiseExt	  graphExt(graph);
+	CInferLBP			  decoder(graph);
 	CMarker				  marker(DEF_PALETTE_6);
 	CCMat				  confMat(nStates);
-	
-    vec_float_t			  vParams = {100, 0.01f};
+	vec_float_t			  vParams = {100, 0.01f};						
+
+	switch(nodeModel) {
+		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	break;
+		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);	break;
+		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);	break;
+		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);	break;
+		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);	break;
+		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);	break;
+#ifdef USE_SHERWOOD
+		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);	break;
+#endif
+		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);	break;
+		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);	break;
+		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
+	}
 	switch(edgeModel) {
-        case 0: vParams = {1};          break;	// Emulate "No edges"
-		case 1:	vParams = {100};        break;
-        case 2:	vParams = {100, 0.01f}; break;
-        case 3:	vParams = {100, 0.01f}; break;
-		case 4:	vParams = {100};        break;
+		case 0: vParams[0] = 1;	// Emulate "No edges"
+		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		vParams.pop_back(); break;
+		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	break;
+		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		break;
+		case 4:	
+			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
+			vParams.pop_back();
+			break;
+		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
 	}
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");
-	graphExt.addNodes(imgSize);
+	graphExt.buildGraph(imgSize);
 	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
@@ -131,8 +125,8 @@ int main(int argc, char *argv[])
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graphExt.setNodes(nodePotentials);									// Filling-in the graph nodes
-	dynamic_cast<CGraphPairwiseExt&>(graphExt).fillEdges(edgeTrainer.get(), test_fv, vParams);			// Filling-in the graph edges with pairwise potentials
+	graphExt.setGraph(nodePotentials);									// Filling-in the graph nodes
+	graphExt.fillEdges(*edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
@@ -158,3 +152,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+

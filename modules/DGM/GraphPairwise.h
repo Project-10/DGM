@@ -6,25 +6,20 @@
 
 namespace DirectGraphicalModels
 {
-
 	// =============================== Node Structure ==============================
 	/**
-	@brief %Node structure
-	@details Basic info for each node.
+	* @brief %Node structure
+	* @details Basic info for each node.
 	*/
 	struct Node {
-		size_t		id;		///< %Node ID
-		Mat			Pot;	///< %Node potentials: Mat(size: nStates x 1; type: CV_32FC1)
+		size_t		id;		    ///< %Node ID
+		Mat			Pot;	    ///< %Node potentials: Mat(size: nStates x 1; type: CV_32FC1)
 		byte		sol;
-		vec_size_t	to;		///< Array of edge ids, pointing to the Child vertices
-		vec_size_t	from;	///< Array of edge ids, coming from the Parent vertices
+		vec_size_t	to;		    ///< Array of edge ids, pointing to the Child vertices
+		vec_size_t	from;	    ///< Array of edge ids, coming from the Parent vertices
 
-
-		Node(void) : Pot(Mat()), sol(0) {}
-
-		Node(size_t _id) : id(_id), Pot(Mat()), sol(0) {}
-
-		Node(size_t _id, const Mat &p) : id(_id), sol(0) { p.copyTo(Pot); }
+		Node(void) = delete;
+		Node(size_t _id, const Mat &p = EmptyMat) : id(_id), Pot(p.empty() ? Mat() : p.clone()), sol(0) {}
 	};
 	using ptr_node_t = std::unique_ptr<Node>;
 	using vec_node_t = std::vector<ptr_node_t>;
@@ -43,11 +38,8 @@ namespace DirectGraphicalModels
 		byte	  group_id;		///< ID of the group, to which the edge belongs
 		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
-		Edge(void) : Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
-
-		Edge(size_t n1, size_t n2) : node1(n1), node2(n2), Pot(Mat()), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) {}
-
-		Edge(size_t n1, size_t n2, const Mat &p) : node1(n1), node2(n2), msg(NULL), msg_temp(NULL), group_id(0), suspend(false) { p.copyTo(Pot); }
+		Edge(void) = delete;
+		Edge(size_t n1, size_t n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group), suspend(false) {}
 
 		~Edge(void) {
 			if (msg)	  delete msg;
@@ -72,62 +64,49 @@ namespace DirectGraphicalModels
 	class CGraphPairwise : public IGraphPairwise
 	{
 		friend class CMessagePassing;
-
-		friend class CInferExact;
 		friend class CInferChain;
 		friend class CInferTree;
 		friend class CInferLBP;
 		friend class CInferViterbi;
 		friend class CInferTRW;
-		friend class CInferTRW_S;
 
-		friend class CDecodeExact;
-
-
+        
 	public:
 		/**
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
 		DllExport CGraphPairwise(byte nStates) : IGraphPairwise(nStates), m_IDx(0) {}
-		DllExport virtual ~CGraphPairwise(void) {}
+        DllExport virtual ~CGraphPairwise(void) = default;
 
-		DllExport virtual void		reset(void);
-		DllExport virtual size_t	addNode(void);
-		DllExport virtual size_t	addNode(const Mat &pot);
-		DllExport virtual void		setNode       (size_t node, const Mat &pot);
-		DllExport virtual void		getNode       (size_t node, Mat &pot) const;
-		DllExport virtual void		getChildNodes (size_t node, vec_size_t &vNodes) const;
-		DllExport virtual void		getParentNodes(size_t node, vec_size_t &vNodes) const;
- //       DllExport virtual void      marginalize(const vec_size_t &nodes);
+		// CGraph
+		DllExport void		reset(void) override;
+		DllExport size_t	addNode		  (const Mat &pot = EmptyMat) override;
+		DllExport void		setNode       (size_t node, const Mat &pot) override;
+		DllExport void		getNode       (size_t node, Mat &pot) const override;
+		DllExport void		getChildNodes (size_t node, vec_size_t &vNodes) const override;
+		DllExport void		getParentNodes(size_t node, vec_size_t &vNodes) const override;
+		DllExport size_t	getNumNodes(void) const override { return m_vNodes.size(); }
+		DllExport size_t	getNumEdges(void) const override { return m_vEdges.size(); } 
 		
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode);
-		DllExport virtual void		addEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
-		DllExport virtual void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot);
-		DllExport virtual void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const;
-		DllExport virtual void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group);
-		DllExport virtual byte		getEdgeGroup(size_t srcNode, size_t dstNode) const;
-		DllExport virtual void		removeEdge	(size_t srcNode, size_t dstNode);
-		DllExport virtual bool		isEdgeExists(size_t srcNode, size_t dstNode) const;
-		DllExport virtual bool		isEdgeArc	(size_t srcNode, size_t dstNode) const;
-
-		DllExport virtual void		addArc     (size_t Node1, size_t Node2);
-		DllExport virtual void		addArc     (size_t Node1, size_t Node2, const Mat &pot);
-		DllExport virtual void		setArc	   (size_t Node1, size_t Node2, const Mat &pot);
-		DllExport virtual void		setArcGroup(size_t Node1, size_t Node2, byte group);
-		DllExport virtual void		removeArc  (size_t Node1, size_t Node2);
-		DllExport virtual bool		isArcExists(size_t Node1, size_t Node2) const;
+//     DllExport virtual void      marginalize(const vec_size_t &nodes);
 		
-		DllExport virtual size_t	getNumNodes(void) const { return m_vNodes.size(); }
-		DllExport virtual size_t	getNumEdges(void) const { return m_vEdges.size(); }
+		DllExport void		addEdge		(size_t srcNode, size_t dstNode, byte group, const Mat &pot) override;
+		DllExport void		setEdge		(size_t srcNode, size_t dstNode, const Mat &pot) override;
+		DllExport void		setEdges	(std::optional<byte> group, const Mat& pot) override;
+		DllExport void		getEdge		(size_t srcNode, size_t dstNode, Mat &pot) const override;
+		DllExport void		setEdgeGroup(size_t srcNode, size_t dstNode, byte group) override;
+		DllExport byte		getEdgeGroup(size_t srcNode, size_t dstNode) const override;
+		DllExport void		removeEdge	(size_t srcNode, size_t dstNode) override;
+		DllExport bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
 
 
-	protected:
+	private:
 		/**
 		* @brief Removes the specified edge
 		* @param edge index of the edge
 		*/
-		DllExport virtual void		removeEdge(size_t edge);
+		DllExport void				removeEdge(size_t edge);
 
 
 	private:

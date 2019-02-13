@@ -1,3 +1,4 @@
+// C++17 support by Sergey Kosov in 2018 for Project X
 #pragma once
 
 // This file defines the Tree class, which is used to represent decision trees.
@@ -94,9 +95,9 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 			nodes_[n].Serialize(o);
 	}
 
-    static std::auto_ptr<Tree<F,S> > Deserialize(std::istream& i)
+    static std::unique_ptr<Tree<F,S> > Deserialize(std::istream& i)
     {
-      std::auto_ptr<Tree<F,S> > tree;
+      std::unique_ptr<Tree<F,S> > tree;
 
       std::vector<char> buffer(strlen(binaryFileHeader_)+1);
       i.read(&buffer[0], strlen(binaryFileHeader_));
@@ -119,7 +120,7 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
         if(decisionLevels<=0)
           throw std::runtime_error("Invalid data");
 
-        tree = std::auto_ptr<Tree<F,S> >(new Tree<F, S>(decisionLevels));
+        tree = std::unique_ptr<Tree<F,S> >(new Tree<F, S>(decisionLevels));
 
         for(size_t n = 0; n < tree->NodeCount(); n++)
           tree->nodes_[n].Deserialize(i);

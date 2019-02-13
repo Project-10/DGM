@@ -6,6 +6,6 @@
 
 class CTestGraph : public ::testing::Test {
 public:
-	CTestGraph(void) {}
-	~CTestGraph(void) {}
+	CTestGraph(void) = default;
+	~CTestGraph(void) = default;
 };

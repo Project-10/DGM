@@ -9,9 +9,9 @@ namespace DirectGraphicalModels
 	class CGraphDense;
 	// ================================ Extended Dense Graph Class ================================
 	/**
-	* @brief Extended Dense graph class
-	* @ingroup moduleGraph
-	* @details This graph class provides additional functionality, when the graph is used for 2d image classification
+	* @brief Extended Dense graph class for 2D image classifaction
+	* @ingroup moduleGraphExt
+	* @details This graph class provides simplified interface and additional functionality, when the graph is used for 2D image classification
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphDenseExt : public CGraphExt
@@ -21,43 +21,79 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/
-		DllExport CGraphDenseExt(CGraphDense& graph) : m_graph(graph) {}
-        CGraphDenseExt(const CGraphDenseExt&) = delete;
-        DllExport ~CGraphDenseExt() = default;
-        const CGraphDenseExt& operator= (const CGraphDenseExt&) = delete;
+		DllExport CGraphDenseExt(CGraphDense &graph) : m_graph(graph) {}
+		DllExport ~CGraphDenseExt(void) = default;
 
-        DllExport void addNodes(Size graphSize);
+        // From CGraphExt
+		DllExport void buildGraph(Size graphSize) override;
+		DllExport void setGraph(const Mat &pots)  override;
         /**
-		* @brief Fills or adds the graph nodes with potentials \b pots
-		* @details This function builds a 2d graph of size corresponding to the size of the \b pots matrix and fills its nodes with the
-		* potentials from the same \b pots matrix.
-		* @param pots A block of node potentials: Mat(type: CV_32FC(nStates)). It may be obtained by:
-		* @code
-		* CTrainNode::getNodePotentials()
-		* @endcode
-		*/
-		DllExport void setNodes(const Mat &pots);
+		* @brief Adds default data-independet edge model
+		* @details This function adds a Gaussian edge model to the dense CRF model
+		* @param val Value, specifying the smoothness strength - in this case the spatial standard deviation of the 2D-Gaussian filter scaled by 33.(3)
+        * @param weight The weighting parameter
+		*/		
+		DllExport void addDefaultEdgesModel(float val, float weight = 1.0f) override
+		{
+			addGaussianEdgeModel(Vec2f::all(val * 0.03), weight);
+		}
 		/**
-		* @brief Add a Gaussian pairwise potential model with standard deviations \b sx and \b sy
-		* @param s
-		* @param w
-		* @param pFunction
-		*/
-        DllExport void addGaussianEdgeModel(Vec2f s, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
+		* @brief Adds default contrast-sensitive edge model
+		* @details This function adds a Bilateral edge model to the dense CRF model
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+        * @param val Value, specifying the smoothness strength - in this case the spatial standard deviation of the 2D-bilateral filter scaled by 33.(3)
+        * @param weight The weighting parameter
+		*/		
+		DllExport void addDefaultEdgesModel(const Mat& featureVectors, float val, float weight = 1.0f) override
+		{
+			addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03), 20.0f, weight);
+		}
 		/**
-		* @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
-		* @param img
-		* @param s 
-		* @param srgb
-		* @param w
-		* param pFunction
+		* @brief Adds default contrast-sensitive edge model
+		* @details This function adds a Bilateral edge model to the dense CRF model
+		* @param featureVectors  Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
+        * @param val Value, specifying the smoothness strength - in this case the spatial standard deviation of the 2D-bilateral filter scaled by 33.(3)
+        * @param weight The weighting parameter
+		*/	
+		DllExport void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override
+        {
+            addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03), 20.0f, weight);
+        }
+		DllExport Size getSize(void) const override { return m_size; }
+
+		
+		/**
+		* @brief Add a Gaussian potential model with standard deviation \b sigma
+		* @param sigma The spatial standard deviation of the 2D-Gaussian filter 
+		* @param weight The weighting parameter
+		* @param semiMetricFunction Reference to a semi-metric function, which arguments \b src and \b dst are: Mat(size: 1 x nFeatures; type: CV_32FC1). 
+		* For more details refere to @ref CEdgeModelPotts.
 		*/
-        DllExport void addBilateralEdgeModel(const Mat &img, Vec2f s, Vec3f srgb, float w = 1.0f, const std::function<void(const Mat &src, Mat &dst)> &SemiMetricFunction = {});
-        DllExport Size getSize(void) const { return m_size; }
+        DllExport void addGaussianEdgeModel(Vec2f sigma, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {});
+		/**
+		* @brief Add a Bilateral pairwise potential with spacial standard deviations \b sigma and color standard deviations sr,sg,sb
+		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+		* @param sigma The spatial standard deviation of the 2D-bilateral filter 
+		* @param sigma_opt The standard deviation for \b featureVectors
+		* @param weight The weighting parameter
+		* @param semiMetricFunction Reference to a semi-metric function, which arguments \b src and \b dst are: Mat(size: 1 x nFeatures; type: CV_32FC1). 
+		* For more details refere to @ref CEdgeModelPotts.
+		*/
+        DllExport void addBilateralEdgeModel(const Mat& featureVectors, Vec2f sigma, float sigma_opt = 1.0f, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {});
+        /**
+        * @brief Add a Bilateral pairwise potential with spacial standard deviations sx, sy and color standard deviations sr,sg,sb
+        * @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
+        * @param sigma The spatial standard deviation of the 2D-bilateral filter 
+        * @param sigma_opt The standard deviation for \b featureVectors
+        * @param weight The weighting parameter
+		* @param semiMetricFunction Reference to a semi-metric function, which arguments \b src and \b dst are: Mat(size: 1 x nFeatures; type: CV_32FC1). 
+		* For more details refere to @ref CEdgeModelPotts.
+        */
+        DllExport void addBilateralEdgeModel(const vec_mat_t& featureVectors, Vec2f sigma, float sigma_opt = 1.0f, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {});
 
 
 	private:
         CGraphDense& m_graph;	///< The graph
-        Size         m_size;    ///< Size of the graph
+        Size         m_size;    ///< Size of the 2D graph
 	};
 }

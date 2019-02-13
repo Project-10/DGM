@@ -2,7 +2,64 @@
 
 namespace DirectGraphicalModels
 {
-    void IGraphPairwise::marginalize(const vec_size_t &nodes)
+    void IGraphPairwise::addEdge(size_t srcNode, size_t dstNode, const Mat &pot)
+    {
+        addEdge(srcNode, dstNode, 0, pot);
+    }
+    
+    bool IGraphPairwise::isEdgeArc(size_t srcNode, size_t dstNode) const
+    {
+        return isEdgeExists(dstNode, srcNode);
+    }
+   
+    // Add a new (undirected edge) ark to the graph with specified potentional
+    void IGraphPairwise::addArc(size_t Node1, size_t Node2, const Mat &pot)
+    {
+        addArc(Node1, Node2, 0, pot);
+    }
+    
+    // Add a new (undirected edge) ark to the graph with specified potentional
+	void IGraphPairwise::addArc(size_t Node1, size_t Node2, byte group, const Mat &pot)
+	{
+		if (pot.empty()) {
+			addEdge(Node1, Node2, group, Mat());
+			addEdge(Node2, Node1, group, Mat());
+		}
+		else {
+			Mat Pot;
+			sqrt(pot, Pot);
+			addEdge(Node1, Node2, group, Pot);
+			addEdge(Node2, Node1, group, Pot.t());
+		}
+	}
+
+	// Add a new (undirected edge) arc to the graph with specified potentional
+	void IGraphPairwise::setArc(size_t Node1, size_t Node2, const Mat &pot)
+	{
+		Mat Pot;
+		sqrt(pot, Pot);
+		setEdge(Node1, Node2, Pot);
+		setEdge(Node2, Node1, Pot.t());
+	}
+    
+    void IGraphPairwise::setArcGroup(size_t Node1, size_t Node2, byte group)
+    {
+        setEdgeGroup(Node1, Node2, group);
+        setEdgeGroup(Node2, Node1, group);
+    }
+    
+    void IGraphPairwise::removeArc(size_t Node1, size_t Node2)
+    {
+        removeEdge(Node1, Node2);
+        removeEdge(Node2, Node1);
+    }
+    
+    bool IGraphPairwise::isArcExists(size_t Node1, size_t Node2) const
+    {
+        return (isEdgeExists(Node1, Node2) && isEdgeExists(Node2, Node1));
+    }
+	
+	void IGraphPairwise::marginalize(const vec_size_t &nodes)
     {
         Mat pot, pot1, pot2;
         

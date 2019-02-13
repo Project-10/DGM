@@ -10,7 +10,9 @@ namespace DirectGraphicalModels
 	/**
 	* @ingroup moduleTrainEdge
 	* @brief Base abstract class for link (inter-layer edge) potentials training
-	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	* @details The link potentials (or \a occlusion potentials) are used in the multi-layer CRF model. Refer to  
+	* <a href="https://link.springer.com/article/10.1007%2Fs11042-018-6298-5">Labeling of Partially Occluded Regions via the Multi-Layer CRF</a> paper for more details. 
+	* @author Dr. Sergey Kosov, sergey.kosov@project-10.de
 	*/
 	class CTrainLink : public ITrain
 	{
@@ -27,7 +29,7 @@ namespace DirectGraphicalModels
 			, m_nStatesBase(nStatesBase)
 			, m_nStatesOccl(nStatesOccl)
 		{}
-		DllExport virtual ~CTrainLink(void) {}
+		DllExport virtual ~CTrainLink(void) = default;
 
 		
 		/**
@@ -82,7 +84,7 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		byte m_nStatesBase;
-		byte m_nStatesOccl;
+		byte m_nStatesBase;		///< Number of states (classes) at the base layer of ML-CRF
+		byte m_nStatesOccl;		///< Number of states (classes) at the occlusion layerts of ML-CRF
 	};
 }

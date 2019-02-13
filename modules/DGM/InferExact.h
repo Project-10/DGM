@@ -21,8 +21,8 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/
-		DllExport CInferExact(CGraphPairwise &graph) : CInfer(graph), CDecodeExact(graph) {}
-		DllExport virtual ~CInferExact(void) {}
+		DllExport CInferExact(IGraphPairwise &graph) : CInfer(graph), CDecodeExact(graph) {}
+        DllExport virtual ~CInferExact(void) = default;
 
 		/**
 		* @brief Exact inference
