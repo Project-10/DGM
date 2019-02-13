@@ -26,8 +26,9 @@ namespace DirectGraphicalModels
 	/**
 	* @brief Extended Pairwise Layered graph class
 	* @ingroup moduleGraphExt
-	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2d image classification
-	* @author Sergey G. Kosov, sergey.kosov@project-10.de
+	* @details This graph class provides additional functionality, when the multi-layer graph is used for 2D image classification. The implementation is based on 
+	* <a href="https://link.springer.com/article/10.1007%2Fs11042-018-6298-5">Labeling of Partially Occluded Regions via the Multi-Layer CRF</a> paper. 
+	* @author Dr. Sergey Kosov, sergey.kosov@project-10.de
 	*/
 	class CGraphLayeredExt : public CGraphExt
 	{

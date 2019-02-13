@@ -191,10 +191,13 @@ Please refer to the @ref moduleVIS documentation
 		models, which are \a training-data-independent. This is enough for solving a large variety of pattern recognition and machine vision problems. For adding \a training-data-dependent 
 		edge models one can use the derived from @ref DirectGraphicalModels::CGraphExt classes directly.
 
-		@defgroup moduleGraphKit Graph Factory
+		@defgroup moduleGraphKit Graph Kit
 		@ingroup moduleGraph
-		@brief bla-bla
-		@details bla-bla
+		@brief Kit (factory) for constructing Graph-related objects
+		@details The aim of the classes gathered here is to wrap the code responsible for creating new graph-related objects such as @ref moduleGraphExt and @ref moduleDecode objects and to
+		simplify work with these objects. The classes derived from the base class \ref DirectGraphicalModels::CGraphKit serve as containers for all objects needed for graph building and inference. 
+		These objects are created with default parameters. Using the derived kit classes directly may give more control over the parameters.
+
 
 	@defgroup moduleDecode Inference / Decoding
 	@ingroup moduleDGM
