@@ -1,4 +1,4 @@
-1f exist ..\Data\001_img.jpg if exist ..\Data\001_gt.bmp if exist ..\Data\002_img.jpg if exist ..\Data\002_gt.bmp (
+if exist ..\Data\001_img.jpg if exist ..\Data\001_gt.bmp if exist ..\Data\002_img.jpg if exist ..\Data\002_gt.bmp (
 	if not exist ..\Data\001_fv.jpg (
 		"Demo Feature Extraction.exe" ..\Data\001_img.jpg ..\Data\001_fv.jpg
 	)

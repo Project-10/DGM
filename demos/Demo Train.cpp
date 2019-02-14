@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	vec_float_t			vParams = {100, 0.01f};	
-	if (edgeModel == 1 || edgeModel == 4) vParams.pop_back();	// Potts and Concat models need ony 1 parameter
+	if (edgeModel <= 1 || edgeModel == 4) vParams.pop_back();	// Potts and Concat models need ony 1 parameter
 	if (edgeModel == 0) vParams[0] = 1;							// Emulate "No edges"
 	else edgeModel--;
 	
