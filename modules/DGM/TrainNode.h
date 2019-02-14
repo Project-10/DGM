@@ -6,6 +6,22 @@
 
 namespace DirectGraphicalModels
 {
+	/// Types of the node potential finction 
+	enum NodeRandomModel : byte { 
+		Bayes = 0,				///< Bayes Model
+		GMM, 					///< Gaussian Mixture Model
+		CvGMM, 					///< OpenCV Gaussian Mixture Model
+		KNN, 					///< Nearest Neighbor
+		CvKNN, 					///< OpenCV Nearest Neighbor
+		CvRF, 					///< OpenCV Random Forest
+		MsRF, 					///< MicroSoft Random Forest
+		CvANN, 					///< OpenCV Artificial Neural Network
+		CvSVM, 					///< OpenCV Support Vector Machines
+
+		GM, 					///< Gaussian Model
+		CvGM, 					///< OpenCV Gaussian Model
+	 };
+
 	// ============================= Node Train Class =============================
 	/**
 	* @ingroup moduleTrainNode
@@ -36,9 +52,22 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-		DllExport CTrainNode(byte nStates, word nFeatures);
-		DllExport virtual ~CTrainNode(void);
+		DllExport CTrainNode(byte nStates, word nFeatures)
+			    : CBaseRandomModel(nStates)
+				, ITrain(nStates, nFeatures)
+				, m_mask(nStates, 1, CV_8UC1)
+		{}
+		DllExport virtual ~CTrainNode(void) = default;
 	
+		/**
+		* @brief Factory method returning node trainer object 
+		* @note The resulting node trainer object is created with default parameters
+		* @param nodeRandomModel Type of desired random model (Ref. @ref NodeRandomModel)
+		* @param nStates Number of states (classes)
+		* @param nFeatures Number of features
+		* @return Tne pointer to the concrete implementation of the node trainer class
+		*/
+		DllExport static std::shared_ptr<CTrainNode> create(byte nodeRandomModel, byte nStates, word nFeatures);
 		/**
 		* @brief Adds a block of new feature vectors
 		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gt for training

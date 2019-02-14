@@ -33,6 +33,7 @@ namespace DirectGraphicalModels
 
 		/**
 		* @brief Factory method returning graph kit object
+		* @note The resulting graph kit object is created with default parameters
 		* @param graphType Type of the desired graphical model (Ref. @ref GraphType)
 		* @param nStates The number of States (classes)
 		* @return Tne pointer to the concrete implementation of the graph kit class

@@ -6,8 +6,14 @@
 
 namespace DirectGraphicalModels
 {
-	class CGraphPairwiseExt;
-	
+	/// Types of the edge potential finction 
+	enum EdgeRandomModel : byte { 
+		Potts = 0,		///< Potts Model
+		PottsCS, 		///< Contrast-Sensitive Potts Model
+		Prior, 			///< Contrast-Sensitive Potts Model with Prior
+		Concat 			///< Concatenated Model
+	};
+
 	// ============================= Edge Train Class =============================
 	/**
 	* @ingroup moduleTrainEdge
@@ -24,8 +30,17 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainEdge(byte nStates, word nFeatures) : CBaseRandomModel(nStates), ITrain(nStates, nFeatures) {}
-		DllExport virtual ~CTrainEdge(void) {}
+		DllExport virtual ~CTrainEdge(void) = default;
 
+		/**
+		* @brief Factory method returning edge trainer object 
+		* @note The resulting edge trainer object is created with default parameters
+		* @param edgeRandomModel Type of desired random model (Ref. @ref EdgeRandomModel)
+		* @param nStates Number of states (classes)
+		* @param nFeatures Number of features
+		* @return Tne pointer to the concrete implementation of the edge trainer class
+		*/
+		DllExport static std::shared_ptr<CTrainEdge> create(byte edgeRandomModel, byte nStates, word nFeatures);
 		/**
 		* @brief Adds a pair of feature vectors
 		* @details Used to add \b featureVector1 and \b featureVector2, corresponding to the ground-truth states (classes) \b gt1 and \b gt2 for training.
