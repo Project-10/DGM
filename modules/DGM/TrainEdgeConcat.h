@@ -3,6 +3,7 @@
 #pragma once
 
 #include "TrainEdge.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels
 {

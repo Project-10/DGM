@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 		m_vGaussianMixtures.resize(nStates);
 		for (auto &gaussianMixture : m_vGaussianMixtures)
 			gaussianMixture.reserve(m_params.maxGausses);
-		if (m_params.min_samples < MIN_SAMPLES) m_params.min_samples = MIN_SAMPLES;
+		if (m_params.minSamples < MIN_SAMPLES) m_params.minSamples = MIN_SAMPLES;
 	}
 
 	// Constructor
@@ -80,7 +80,7 @@ namespace DirectGraphicalModels
 		if (gaussianMixture.empty()) 
 			gaussianMixture.emplace_back(point);			// NEW GAUSS
 		else {
-			std::vector<double> dist = getDistance(point, gaussianMixture, m_params.min_samples, m_params.dist_Etreshold, m_params.dist_Mtreshold);					// Calculate distances all existing Gaussians in the mixture to the point
+			std::vector<double> dist = getDistance(point, gaussianMixture, m_params.minSamples, m_params.dist_Etreshold, m_params.dist_Mtreshold);					// Calculate distances all existing Gaussians in the mixture to the point
 
 			// Find the smallest distance
 			auto it = std::min_element(dist.begin(), dist.end());
@@ -97,9 +97,9 @@ namespace DirectGraphicalModels
 				updGauss += point;											// update the nearest Gauss
 
 				// Chech the updated Gauss function if after update it became too close to another Gauss function
-				if ((m_params.div_KLtreshold > 0) && (updGauss.getNumPoints() >= m_params.min_samples)) {
+				if ((m_params.div_KLtreshold > 0) && (updGauss.getNumPoints() >= m_params.minSamples)) {
 					// Calculate divergences between updGauss and all other gausses
-					std::vector<double> div = getDivergence(updGauss, gaussianMixture, m_params.min_samples);
+					std::vector<double> div = getDivergence(updGauss, gaussianMixture, m_params.minSamples);
 					div[updIdx] = DBL_MAX;									// divergence to itself
 
 					// Find the smallest divergence
@@ -157,10 +157,10 @@ namespace DirectGraphicalModels
 		for (GaussianMixture &gaussianMixture : m_vGaussianMixtures) {			// state
 			for (auto it = gaussianMixture.begin(); it != gaussianMixture.end(); it++) {
 				size_t nPoints = it->getNumPoints();
-				if (nPoints < m_params.min_samples) {				// if Gaussian is not full
+				if (nPoints < m_params.minSamples) {				// if Gaussian is not full
 					if (nPoints >= MIN_SAMPLES) {
 						size_t g = std::distance(gaussianMixture.begin(), it);
-						std::vector<double> div = getDivergence(*it, gaussianMixture, m_params.min_samples);
+						std::vector<double> div = getDivergence(*it, gaussianMixture, m_params.minSamples);
 						div[g] = DBL_MAX;							// distance to itself (redundant here)
 
 						// Finding the smallest divergence
@@ -197,7 +197,7 @@ namespace DirectGraphicalModels
 	{
 		// m_params
 		fwrite(&m_params.maxGausses, sizeof(word), 1, pFile);
-		fwrite(&m_params.min_samples, sizeof(size_t), 1, pFile);
+		fwrite(&m_params.minSamples, sizeof(size_t), 1, pFile);
 		fwrite(&m_params.dist_Etreshold, sizeof(double), 1, pFile);
 		fwrite(&m_params.dist_Mtreshold, sizeof(double), 1, pFile);
 		fwrite(&m_params.div_KLtreshold, sizeof(double), 1, pFile);
@@ -229,7 +229,7 @@ namespace DirectGraphicalModels
 	{
 		// m_params
 		fread(&m_params.maxGausses, sizeof(word), 1, pFile);
-		fread(&m_params.min_samples, sizeof(size_t), 1, pFile);
+		fread(&m_params.minSamples, sizeof(size_t), 1, pFile);
 		fread(&m_params.dist_Etreshold, sizeof(double), 1, pFile);
 		fread(&m_params.dist_Mtreshold, sizeof(double), 1, pFile);
 		fread(&m_params.div_KLtreshold, sizeof(double), 1, pFile);

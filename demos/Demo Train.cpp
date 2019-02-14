@@ -52,40 +52,18 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-	CTrainNode			* nodeTrainer	= NULL; 
-	CTrainEdge			* edgeTrainer	= NULL;
-	CGraphPairwise		  graph(nStates);
-	CGraphPairwiseExt	  graphExt(graph);
-	CInferLBP			  decoder(graph);
-	CMarker				  marker(DEF_PALETTE_6);
-	CCMat				  confMat(nStates);
-	vec_float_t			  vParams = {100, 0.01f};						
-
-	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);	break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);	break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);	break;
-		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);	break;
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);	break;
-#ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);	break;
-#endif
-		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);	break;
-		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);	break;
-		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
-	}
-	switch(edgeModel) {
-		case 0: vParams[0] = 1;	// Emulate "No edges"
-		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		vParams.pop_back(); break;
-		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	break;
-		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		break;
-		case 4:	
-			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
-			vParams.pop_back();
-			break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
-	}
+	vec_float_t			vParams = {100, 0.01f};	
+	if (edgeModel <= 1 || edgeModel == 4) vParams.pop_back();	// Potts and Concat models need ony 1 parameter
+	if (edgeModel == 0) vParams[0] = 1;							// Emulate "No edges"
+	else edgeModel--;
+	
+	auto				nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
+	auto				edgeTrainer = CTrainEdge::create(edgeModel, nStates, nFeatures);
+	CGraphPairwise		graph(nStates);
+	CGraphPairwiseExt	graphExt(graph);
+	CInferLBP			decoder(graph);
+	CMarker				marker(DEF_PALETTE_6);
+	CCMat				confMat(nStates);
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");

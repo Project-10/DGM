@@ -11,13 +11,13 @@ namespace DirectGraphicalModels
 	///@brief Gaussian Mixture Model parameters
 	typedef struct TrainNodeGMMParams {
 		word	maxGausses;					///< The maximal number of Gauss functions for approximation
-		size_t	min_samples;				///< Minimum number of sapmles to approximate a Gauss function
+		size_t	minSamples;					///< Minimum number of sapmles to approximate a Gauss function
 		double	dist_Etreshold;				///< Minimum Euclidean distance between Gauss functions
 		double	dist_Mtreshold;				///< Minimum Mahalanobis distance between Gauss functions. If this parameter is negative, the Euclidean distance is used
 		double	div_KLtreshold;				///< Minimum Kullback-Leiber divergence between Gauss functions. If this parameter is negative, the merging of Gaussians in addFeatureVec() function will be disabled
 
 		TrainNodeGMMParams() {}
-		TrainNodeGMMParams(word _maxGausses, size_t _min_samples, double _dist_Etreshold, double _dist_Mtreshold, double _div_KLtreshold) : maxGausses(_maxGausses), min_samples(_min_samples), dist_Etreshold(_dist_Etreshold), dist_Mtreshold(_dist_Mtreshold), div_KLtreshold(_div_KLtreshold) {}
+		TrainNodeGMMParams(word _maxGausses, size_t _minSamples, double _dist_Etreshold, double _dist_Mtreshold, double _div_KLtreshold) : maxGausses(_maxGausses), minSamples(_minSamples), dist_Etreshold(_dist_Etreshold), dist_Mtreshold(_dist_Mtreshold), div_KLtreshold(_div_KLtreshold) {}
 	} TrainNodeGMMParams;
 
 	const TrainNodeGMMParams TRAIN_NODE_GMM_PARAMS_DEFAULT = TrainNodeGMMParams(

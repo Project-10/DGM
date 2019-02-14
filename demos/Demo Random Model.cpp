@@ -59,22 +59,11 @@ int main(int argc, char *argv[])
 	Mat gt			= imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
 	gt				= shrinkStateImage(gt, nStates);										// reduce the number of classes in gt to nStates
 
-	float Z;																				// the value of partition function
-	CTrainNode	* nodeTrainer = NULL;
-	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	Z = 2e34f; break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);	Z = 1.0f; break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);	Z = 1.0f; break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);	Z = 1.0f; break;
-		case 4: nodeTrainer = new CTrainNodeCvKNN(nStates, nFeatures);	Z = 1.0f; break;
-		case 5: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);	Z = 1.0f; break;
-#ifdef USE_SHERWOOD
-		case 6: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);	Z = 0.0f; break;
-#endif
-		case 7: nodeTrainer = new CTrainNodeCvANN(nStates, nFeatures);	Z = 0.0f; break;
-		case 8: nodeTrainer = new CTrainNodeCvSVM(nStates, nFeatures);	Z = 1.0f; break;
-		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
-	}
+	float Z =  1.0f;																		// the value of partition function
+	if (nodeModel == 0)						Z = 2e34f;										// for Bayes model
+	if (nodeModel == 6 || nodeModel == 7)	Z = 0.0f;										// for MicroSoft Random Forest and OpenCV Artificial Neural Network
+
+	std::shared_ptr<CTrainNode> nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
 	CMarkerHistogram marker(*nodeTrainer, DEF_PALETTE_3);
 
 	//	---------- Features Extraction ----------

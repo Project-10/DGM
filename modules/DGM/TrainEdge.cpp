@@ -1,9 +1,31 @@
 #include "TrainEdge.h"
-#include "GraphPairwiseExt.h"
+
+#include "TrainEdgePotts.h"
+#include "TrainEdgePottsCS.h"
+#include "TrainEdgePrior.h"
+#include "TrainEdgeConcat.h"
+
+#include "TrainNodeNaiveBayes.h"
+#include "FeaturesConcatenator.h"
+
 #include "macroses.h"
 
 namespace DirectGraphicalModels
 {
+	// Factory method
+	std::shared_ptr<CTrainEdge> CTrainEdge::create(byte edgeRandomModel, byte nStates, word nFeatures)
+	{
+		switch (edgeRandomModel)
+		{
+		case EdgeRandomModel::Potts:	return std::make_shared<CTrainEdgePotts>(nStates, nFeatures);
+		case EdgeRandomModel::PottsCS: 	return std::make_shared<CTrainEdgePottsCS>(nStates, nFeatures);	
+		case EdgeRandomModel::Prior:	return std::make_shared<CTrainEdgePrior>(nStates, nFeatures);		
+		case EdgeRandomModel::Concat:	return std::make_shared<CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>>(nStates, nFeatures);		
+		default:
+			DGM_ASSERT_MSG(false, "Unknown type of the edge random model");
+		}
+	}
+	
 	Mat CTrainEdge::getEdgePotentials(const Mat &featureVector1, const Mat &featureVector2, const vec_float_t &vParams, float weight) const
 	{
 		Mat res = calculateEdgePotentials(featureVector1, featureVector2, vParams);
