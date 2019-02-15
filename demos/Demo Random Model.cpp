@@ -44,9 +44,9 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 
 int main(int argc, char *argv[])
 {
-	const cv::Size		imgSize		= cv::Size(400, 400);
-	const unsigned int	nStates		= 3;	 		
-	const unsigned int	nFeatures	= 2;		// {ndvi, saturation}
+	const Size	imgSize		= Size(400, 400);
+	const byte	nStates		= 3;	 		
+	const word	nFeatures	= 2;				// {ndvi, saturation}
 
 	if (argc != 5) {
 		print_help(argv[0]);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 	//	---------- Features Extraction ----------
 	vec_mat_t featureVector;
-	fex::CCommonFeatureExtractor fExtractor(img);
+	CCommonFeatureExtractor fExtractor(img);
 	featureVector.push_back(fExtractor.getNDVI(0).autoContrast().get());
 	featureVector.push_back(fExtractor.getSaturation().invert().get());
 
@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
 	imwrite(argv[4], classMap);
 
 	imshow("class map 2d", classMap);
-	cv::waitKey(1000);
+	
+	waitKey(1000);
 
 	return 0;
 }

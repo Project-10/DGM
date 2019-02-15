@@ -14,11 +14,11 @@ void print_help(char *argv0)
 
 int main(int argc, char *argv[])
 {
-	const cv::Size		imgSize = cv::Size(400, 400);
-	const int			width = imgSize.width;
-	const int			height = imgSize.height;
-	const unsigned int	nStates = 6;		// {road, traffic island, grass, agriculture, tree, car} 	
-	const unsigned int	nFeatures = 3;
+	const Size	imgSize		= Size(400, 400);
+	const int	width		= imgSize.width;
+	const int	height		= imgSize.height;
+	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
+	const word	nFeatures	= 3;
 
 	if (argc != 7) {
 		print_help(argv[0]);
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 	Mat test_gt  = imread(argv[4], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-	CTrainNodeBayes nodeTrainer(nStates, nFeatures);
-	auto			kit = CGraphKit::create(GraphType::dense, nStates);
-	CMarker			marker(DEF_PALETTE_6);
-	CCMat			confMat(nStates);
+	auto	nodeTrainer = CTrainNode::create(Bayes, nStates, nFeatures);
+	auto	graphKit	= CGraphKit::create(GraphType::dense, nStates);
+	CMarker	marker(DEF_PALETTE_6);
+	CCMat	confMat(nStates);
 
 
 	// ==================== STAGE 1: Building the graph ====================
@@ -46,22 +46,22 @@ int main(int argc, char *argv[])
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
 	// Node Training (compact notation)
-	nodeTrainer.addFeatureVecs(train_fv, train_gt);
-	nodeTrainer.train();
+	nodeTrainer->addFeatureVecs(train_fv, train_gt);
+	nodeTrainer->train();
 	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
-	Mat nodePotentials = nodeTrainer.getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	kit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
-	kit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
-	kit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+	graphKit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
+	graphKit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
 
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = kit->getInfer().decode(100);
+	vec_byte_t optimalDecoding = graphKit->getInfer().decode(100);
 	Timer::stop();
 
 
@@ -79,7 +79,8 @@ int main(int argc, char *argv[])
 	imwrite(argv[6], test_img);
 	
 	imshow("Image", test_img);
-	cv::waitKey();
+	
+	waitKey();
 
 	return 0;
 }
