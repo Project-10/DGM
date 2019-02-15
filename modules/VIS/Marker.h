@@ -155,8 +155,8 @@ namespace DirectGraphicalModels { namespace vis
 
 	private:
 		// Copy semantics are disabled
-		CMarker(const CMarker &rhs) {}
-		const CMarker & operator= (const CMarker & rhs) { return *this; }
+		CMarker(const CMarker&) = delete;
+		const CMarker& operator=(const CMarker&) = delete;
 	};
 
 

@@ -4,10 +4,11 @@
 
 #include "Marker.h"
 
-namespace DirectGraphicalModels { 
+namespace DirectGraphicalModels 
+{ 
 	class CTrainNode;
 	namespace vis
-{
+	{
 	
 	// ================================ Histogram Marker Class ================================
 	/**
@@ -26,8 +27,11 @@ namespace DirectGraphicalModels {
 		* @param vFeatureNames Optional list of feature names. 
 		* For optimal performance, each feature name should have maximal 17 symbols.
 		*/
-		DllExport CMarkerHistogram(const CTrainNode &nodeTrainer, default_pallete palette = DEF_PALETTE_12, vec_string_t vFeatureNames = vec_string_t())
-            : CMarker(palette), m_nodeTrainer(nodeTrainer), m_vFeatureNames(vFeatureNames) {}
+		DllExport CMarkerHistogram(const CTrainNode& nodeTrainer, default_pallete palette = DEF_PALETTE_12, vec_string_t vFeatureNames = vec_string_t())
+            : CMarker(palette)
+			, m_nodeTrainer(nodeTrainer)
+			, m_vFeatureNames(vFeatureNames) 
+		{}
 		/**
 		* @brief Constructor with custom palette
 		* @param nodeTrainer Pointer to the CTrainNode class.
@@ -36,9 +40,12 @@ namespace DirectGraphicalModels {
 		* @param vFeatureNames Optional list of feature names.
 		* For optimal performance, each feature name should have maximal 17 symbols.
 		*/
-		DllExport CMarkerHistogram(const CTrainNode &nodeTrainer, const vec_nColor_t &vPalette, vec_string_t vFeatureNames = vec_string_t())
-			: CMarker(vPalette), m_nodeTrainer(nodeTrainer), m_vFeatureNames(vFeatureNames) {}
-		DllExport virtual ~CMarkerHistogram(void) {}
+		DllExport CMarkerHistogram(const CTrainNode& nodeTrainer, const vec_nColor_t& vPalette, vec_string_t vFeatureNames = vec_string_t())
+			: CMarker(vPalette)
+			, m_nodeTrainer(nodeTrainer)
+			, m_vFeatureNames(vFeatureNames) 
+		{}
+		DllExport virtual ~CMarkerHistogram(void) = default;
 
 		/**
 		* @brief Draws a figure with the visualization of feature densitiy distributions.
@@ -120,11 +127,11 @@ namespace DirectGraphicalModels {
 	
 
 	protected:
-		const CTrainNode			      & m_nodeTrainer;		///< The node trainer
+		const CTrainNode&			m_nodeTrainer;		///< The node trainer
 
 
 	private:
-		static const cv::Size			margin;
+		static const Size			margin;
 		static const byte			bkgIntencity;
 		static const double			frgWeight;
 		static const std::string	wndName;

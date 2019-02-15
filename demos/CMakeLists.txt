@@ -96,6 +96,20 @@ target_link_libraries(Demo_Dense ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
 
 #install
 install(TARGETS Demo_Dense RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+# ========================================= DEMO PARAM ESTIMATION ===========================================
+add_executable(Demo_ParamEstimation "Demo Param Estimation.cpp")
+add_dependencies(Demo_ParamEstimation DGM VIS)
+
+set_target_properties(Demo_ParamEstimation PROPERTIES PROJECT_LABEL "Demo Param Estimation")					# in Visual Studio
+set_target_properties(Demo_ParamEstimation PROPERTIES OUTPUT_NAME "Demo Param Estimation")
+set_target_properties(Demo_ParamEstimation PROPERTIES FOLDER "Demos")
+
+# Properties->Linker->Input->Additional Dependencies
+target_link_libraries(Demo_ParamEstimation ${OpenCV_LIBS} ${DGM_LIB} ${VIS_LIB})
+
+#install
+install(TARGETS Demo_ParamEstimation RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	
 # =========================================== DEMO VISUALIZATION ============================================
 add_executable(Demo_Vis "Demo Visualization.cpp")

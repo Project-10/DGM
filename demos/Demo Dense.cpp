@@ -2,7 +2,6 @@
 #include "DGM.h"
 #include "VIS.h"
 #include "DGM/timer.h"
-#include "DGM/serialize.h"
 
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;

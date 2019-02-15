@@ -277,6 +277,8 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
   - @ref demo1d_tree : This demo shows how to construct a tree-structured graphical model, for which also an exact message-passing inference algorithm exists. 
 - @subpage demo2d : An example of more complicated graphical models, containing loops and built upon a binary 2-dimentional image. This example also shows the application of DGM to
 					unsupervised segmentation.
+- @subpage demodense : An introduction to the complete (dense) graphical models. The application of regular edge potentials used for pairwise graphs makes the inference practically impossible, 
+						thus special edge models for dense graphs should be applied.
 - @subpage demostereo : An example of CRFs application to the problem of disparity estimation between a pair of stereo images.
 - @subpage demofex : An introduction to the feature extraction, needed mainly for supervised learning.
 - @subpage demotrain : An introdiction to the random model learning (training) in case when the training data is available.
@@ -284,6 +286,7 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
 
 ### Advanced Tutorials
 - @subpage demorandommodel : An advanced tutorial to the unary potentials training.
+- @subpage demoparamestimation : bla bla 
 */
 
 /**
@@ -378,6 +381,94 @@ int main(int argc, char *argv[])
 	imshow("image", noise);	
 
 	cvWaitKey();
+
+	return 0;
+}
+@endcode
+*/
+
+/**
+@page demodense Demo Dense
+This demo give a short introduction in using the DGM library for working with \a complete (dense) graphical models. A <a href="https://en.wikipedia.org/wiki/Complete_graph">complete graph</a> 
+is a simple undirected graph in which every pair of distinct vertices is connected by a unique edge. The application of regular edge potentials used for pairwise graphs makes the inference 
+practically impossible, thus special edge models for dense graphs should be applied.
+
+@code
+#include "DGM.h"
+#include "VIS.h"
+#include "DGM/timer.h"
+using namespace DirectGraphicalModels;
+using namespace DirectGraphicalModels::vis;
+
+int main(int argc, char *argv[])
+{
+	const Size	imgSize		= Size(400, 400);
+	const int	width		= imgSize.width;
+	const int	height		= imgSize.height;
+	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
+	const word	nFeatures	= 3;
+
+	if (argc != 7) {
+		print_help(argv[0]);
+		return 0;
+	}
+
+	// Reading parameters and images
+    Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
+	Mat test_fv  = imread(argv[3], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt  = imread(argv[4], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
+	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+
+	auto	nodeTrainer = CTrainNode::create(Bayes, nStates, nFeatures);
+	auto	graphKit	= CGraphKit::create(GraphType::dense, nStates);
+	CMarker	marker(DEF_PALETTE_6);
+	CCMat	confMat(nStates);
+
+
+	// ==================== STAGE 1: Building the graph ====================
+//	Timer::start("Building the Graph... ");
+//	graph->build(imgSize);
+//	Timer::stop();
+
+	// ========================= STAGE 2: Training =========================
+	Timer::start("Training... ");
+	// Node Training (compact notation)
+	nodeTrainer->addFeatureVecs(train_fv, train_gt);
+	nodeTrainer->train();
+	Timer::stop();
+
+	// ==================== STAGE 3: Filling the Graph =====================
+	Timer::start("Filling the Graph... ");
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+	graphKit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
+	graphKit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
+	Timer::stop();
+
+
+	// ========================= STAGE 4: Decoding =========================
+	Timer::start("Decoding... ");
+	vec_byte_t optimalDecoding = graphKit->getInfer().decode(100);
+	Timer::stop();
+
+
+	// ====================== Evaluation =======================
+	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
+	confMat.estimate(test_gt, solution);
+	char str[255];
+	sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());
+	printf("%s\n", str);
+
+	// ====================== Visualization =======================
+	marker.markClasses(test_img, solution);
+	rectangle(test_img, Point(width - 160, height - 18), Point(width, height), CV_RGB(0, 0, 0), -1);
+	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, LineTypes::LINE_AA);
+	imwrite(argv[6], test_img);
+	
+	imshow("Image", test_img);
+	
+	waitKey();
 
 	return 0;
 }
