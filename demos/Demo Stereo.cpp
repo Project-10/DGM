@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		byte * pImgR	= imgR.ptr<byte>(y);
 		for (int x = 0; x < width; x++) {
 			float imgL_value = static_cast<float>(pImgL[x]);
-			for (unsigned int s = 0; s < nStates; s++) {						// state
+			for (unsigned int s = 0; s < nStates; s++) {					// state
 				int disparity = minDisparity + s;
 				float imgR_value = (x + disparity < width) ? static_cast<float>(pImgR[x + disparity]) : imgL_value;
 				float p = 1.0f - fabs(imgL_value - imgR_value) / 255.0f;

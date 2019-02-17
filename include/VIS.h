@@ -52,19 +52,20 @@ For user interaction capacity we define additional functions for handling the mo
 using namespace DirectGraphicalModels;
 using namespace DirectGraphicalModels::vis;
 
-typedef struct {
-	CGraphPairwise				* pGraph;
-	CMarkerHistogram	* pMarker;
+struct USER_DATA {
+	CGraphPairwise		& graph;
+	CMarkerHistogram	& marker;
 	int					  imgWidth;
-} USER_DATA;
+    USER_DATA(CGraph &_graph, CMarkerHistogram &_marker, int _imgWidth) : graph(static_cast<CGraphPairwise&>(_graph)), marker(_marker), imgWidth(_imgWidth) {}
+};
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
-	const int			width		= imgSize.width;
-	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 		
-	const unsigned int	nFeatures	= 3;		
+	const Size	imgSize		= Size(400, 400);
+	const int	width		= imgSize.width;
+	const int	height		= imgSize.height;
+	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 		
+	const word	nFeatures	= 3;		
 
 	if (argc != 4) {
 		print_help(argv[0]);
@@ -72,16 +73,15 @@ int main(int argc, char *argv[])
 	}
 
 	// Reading parameters and images
-	Mat img			= imread(argv[1], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
-	Mat fv			= imread(argv[2], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
-	Mat gt			= imread(argv[3], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
+	Mat img	= imread(argv[1], 1); resize(img, img, imgSize, 0, 0, INTER_LANCZOS4);		// image
+	Mat fv	= imread(argv[2], 1); resize(fv,  fv,  imgSize, 0, 0, INTER_LANCZOS4);		// feature vector
+	Mat gt	= imread(argv[3], 0); resize(gt,  gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth
 
-	CTrainNode			* nodeTrainer	 = new CTrainNodeBayes(nStates, nFeatures); 
-	CTrainEdge			* edgeTrainer	 = new CTrainEdgePottsCS(nStates, nFeatures);
-	float				  params[]		 = {400, 0.001f};						
-	size_t				  params_len	 = 2;
-	CGraphPairwise				* graph			 = new CGraphPairwise(nStates); 
-	CInfer				* decoder		 = new CInferLBP(graph);
+	CTrainNodeBayes	        nodeTrainer(nStates, nFeatures);
+	CTrainEdgePottsCS	    edgeTrainer(nStates, nFeatures);
+	vec_float_t			    vParams	= {400, 0.001f};
+	auto					graphKit = CGraphKit::create(GraphType::pairwise, nStates);
+
 	// Define custom colors in RGB format for our classes (for visualization)
 	vec_nColor_t		  palette;
 	palette.push_back(std::make_pair(CV_RGB(64,  64,   64), "road"));
@@ -91,77 +91,53 @@ int main(int argc, char *argv[])
 	palette.push_back(std::make_pair(CV_RGB(64,  128,   0), "tree"));
 	palette.push_back(std::make_pair(CV_RGB(255,   0,   0), "car"));
 	// Define feature names for visualization
-	vec_string_t		  featureNames	= {"NDVI", "Var. Int.", "Saturation"};	
-	CMarkerHistogram	* marker		= new CMarkerHistogram(nodeTrainer, palette, featureNames);
-	CCMat				* confMat		= new CCMat(nStates);
+	vec_string_t		featureNames	= {"NDVI", "Var. Int.", "Saturation"};
+	CMarkerHistogram	marker(nodeTrainer, palette, featureNames);
+	CCMat				confMat(nStates);
 
 	// =============================== Training ================================
 	Timer::start("Training... ");
-	nodeTrainer->addFeatureVec(fv, gt);										// Only Node Training 		
-	nodeTrainer->train();													// Contrast-Sensitive Edge Model requires no training
+	nodeTrainer.addFeatureVecs(fv, gt);										// Only Node Training
+	nodeTrainer.train();													// Contrast-Sensitive Edge Model requires no training
 	Timer::stop();
 
 	// ==================== Building and filling the graph =====================
 	Timer::start("Filling the Graph... ");
-	Mat featureVector1(nFeatures, 1, CV_8UC1); 
-	Mat featureVector2(nFeatures, 1, CV_8UC1); 
-	Mat nodePot, edgePot;
-	for (int y = 0; y < height; y++) {
-		byte *pFv1 = fv.ptr<byte>(y);
-		byte *pFv2 = (y > 0) ? fv.ptr<byte>(y - 1) : NULL;	
-		for (int x = 0; x < width; x++) {
-			for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];			// featureVector1 = fv[x][y]
-			nodePot = nodeTrainer->getNodePotentials(featureVector1, 1.0f);											// node potential
-			size_t idx = graph->addNode(nodePot);
-
-			if (x > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv1[nFeatures * (x - 1) + f];	// featureVector2 = fv[x-1][y]
-				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->addArc(idx, idx - 1, edgePot);
-			} // if x
-			if (y > 0) {
-				for (word f = 0; f < nFeatures; f++) featureVector2.at<byte>(f, 0) = pFv2[nFeatures * x + f];		// featureVector2 = fv[x][y-1]
-				edgePot = edgeTrainer->getEdgePotentials(featureVector1, featureVector2, params, params_len);		// edge potential
-				graph->addArc(idx, idx - width, edgePot);
-			} // if y
-		} // x
-	} // y
+	graphKit->getGraphExt().setGraph(nodeTrainer.getNodePotentials(fv));
+	graphKit->getGraphExt().addDefaultEdgesModel(fv, 400);
 	Timer::stop();
 
 	// ========================= Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(10);
+	vec_byte_t optimalDecoding = graphKit->getInfer().decode(10);
 	Timer::stop();
 
 	// ======================== Evaluation ========================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(gt, solution);																				// compare solution with the groundtruth
+	confMat.estimate(gt, solution);											// compare solution with the groundtruth
 	char str[255];
-	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
+	sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());
 	printf("%s\n", str);
 
 	// ====================== Visualization =======================
-	marker->markClasses(img, solution);
+	marker.markClasses(img, solution);
 	rectangle(img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, LineTypes::LINE_AA);
 	imshow("Solution", img);
 	
 	// Feature distribution histograms
-	marker->showHistogram();
+	marker.showHistogram();
 
 	// Confusion matrix
-	Mat cMat	= confMat->getConfusionMatrix();
-	Mat cMatImg	= marker->drawConfusionMatrix(cMat, MARK_BW);
+	Mat cMat	= confMat.getConfusionMatrix();
+	Mat cMatImg	= marker.drawConfusionMatrix(cMat, MARK_BW);
 	imshow("Confusion Matrix", cMatImg);
 
 	// Setting up handlers
-	USER_DATA userData;
-	userData.pGraph		= graph;
-	userData.pMarker	= marker;
-	userData.imgWidth	= width;
-	cvSetMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
+	USER_DATA userData(graphKit->getGraph(), marker, width);
+	setMouseCallback("Solution",  solutiontWindowMouseHandler, &userData);
 
-	cvWaitKey();
+	waitKey();
 
 	return 0;
 }
@@ -176,21 +152,21 @@ corresponding to one of these four edge potentials. The visualization of the nod
 void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param)
 {
 	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == CV_EVENT_LBUTTONDOWN) {
+	if (Event == MouseEventTypes::EVENT_LBUTTONDOWN) {
 		Mat			  pot, potImg;
 		size_t		  node_id	= pUserData->imgWidth * y + x;
 
 		// Node potential
-		pUserData->pGraph->getNode(node_id, pot);
-		potImg = pUserData->pMarker->drawPotentials(pot, MARK_BW);
+		pUserData->graph.getNode(node_id, pot);
+		potImg = pUserData->marker.drawPotentials(pot, MARK_BW);
 		imshow("Node Potential", potImg);
 
 		// Edge potential
 		vec_size_t child_nodes;
-		pUserData->pGraph->getChildNodes(node_id, child_nodes);
+		pUserData->graph.getChildNodes(node_id, child_nodes);
 		if (child_nodes.size() > 0) {
-			pUserData->pGraph->getEdge(node_id, child_nodes.at(0), pot);
-			potImg = pUserData->pMarker->drawPotentials(pot, MARK_BW);
+			pUserData->graph.getEdge(node_id, child_nodes.at(0), pot);
+			potImg = pUserData->marker.drawPotentials(pot, MARK_BW);
 			imshow("Edge Potential", potImg);
 		}
 

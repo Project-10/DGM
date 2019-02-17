@@ -35,10 +35,10 @@ every graph node will have 2 states:
 	const byte   nStates = 2;												// {false, true}
 	const size_t nNodes  = 4;												// four students
 	
-	CGraphPairwise *graph = new CGraphPairwise(nStates);
+	CGraphPairwise graph(nStates);
 
-	for (size_t i = 0; i < nNodes; i++)     graph->addNode();				// add nodes
-	for (size_t i = 0; i < nNodes - 1; i++) graph->addArc(i, i + 1);		// add arcs
+	for (size_t i = 0; i < nNodes; i++)     graph.addNode();				// add nodes
+	for (size_t i = 0; i < nNodes - 1; i++) graph.addArc(i, i + 1);			// add arcs
 @endcode
 
 Next we fill the potentials of nodes and arcs of the graph. We assume that four studens are sitting in a row, and even studens have 25% chance to answer right,
@@ -57,7 +57,7 @@ by hand in the \b fillGraph() function:
 			nodePot.at<float>(0, 0) = 0.75f;								// nodePot = (0.75; 0.25)^T
 			nodePot.at<float>(1, 0) = 0.25f; 	
 		}
-		graph->setNode(i, nodePot);
+		graph.setNode(i, nodePot);
 	}
 
 	// Defying the edge potential matrix
@@ -66,7 +66,7 @@ by hand in the \b fillGraph() function:
 
 	// Setting the edge potentials
 	for (size_t i = 0; i < nNodes - 1; i++) 
-		graph->setArc(i, i + 1, edgePot);
+		graph.setArc(i, i + 1, edgePot);
 @endcode
 
 We end up with the followiung graphical model:
@@ -86,9 +86,9 @@ associated with the graph nodes. In DGM decoding returns the most likely configu
 @code
 	using namespace DirectGraphicalModels;
 
-	CDecode *decoderExcact = new CDecodeExact(graph);
+	CDecodeExact decoderExcact(graph);
 
-	byte *decoding_decoderExcact = decoderExcact->decode();
+	vec_byte_t decoding_decoderExcact = decoderExcact.decode();
 @endcode
 
 Inference
@@ -100,16 +100,16 @@ node potentials vectors.
 @code
 	using namespace DirectGraphicalModels;
 
-	CInfer *infererExact = new CInferExact(graph);
+	CInferExact infererExact(graph);
 
-	infererExact->infer();										// changes the node potentials
+	infererExact.infer();											// changes the node potentials
 @endcode
 
 Each inference class has \b decode() function and could be used for approximate decoding. This function returns the configuration, which maximases the marginals, and this 
 configuration in general is not the same as the configuration corresponding to the highest joint probability, \a i.e 
 DirectGraphicalModels::CDecodeExact::decode() \f$\neq\f$ DirectGraphicalModels::CInferExact::decode():
 @code
-	byte *decoding_infererExcact = infererExact->decode();		// approximate decoding from inferer
+	vec_byte_t decoding_infererExcact = infererExact.decode();		// approximate decoding from inferer
 @endcode
 
 Results
@@ -122,4 +122,3 @@ upon marginals from the table INFERENCE:
 <img src="res_demo1d_exact.gif">
 
 */
-

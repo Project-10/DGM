@@ -44,7 +44,8 @@ Function \b srand(0) assures that the graph structure remains the same during mu
 	const size_t nSources = 1;						// number of sources
 
 	srand(0);
-	CGraphPairwise	*graph = buildTree();					// Returns a tree with default potentials
+    CGraphPairwise graph(nStates);
+    buildTree(graph);					            // Returns a tree with default potentials
 @endcode
 
 Next, we separate all the nodes into 3 types and assigne them the following labels: 
@@ -58,7 +59,7 @@ Next, we separate all the nodes into 3 types and assigne them the following labe
 	std::vector<std::string> labels(nNodes);
 	
 	for (size_t n = 0; n < nNodes; n++) {
-		graph->getParentNodes(n, vParents);
+		graph.getParentNodes(n, vParents);
 		if (vParents.size() <= 1) {					// if the node is a leaf
 			if (sources.size() < nSources) {
 				labels[n] = "Source";				// => it is either a source
@@ -77,7 +78,7 @@ returned with function \b getNodePot():
 	Mat nodePot = getNodePot();
 
 	for(size_t n: sources)  
-		graph->setNode(n, nodePot); 
+		graph.setNode(n, nodePot); 
 @endcode
 
 The edge potential matrix is represented here as a transition matrix:
@@ -110,10 +111,10 @@ DirectGraphicalModels::CGraphPairwise::setArc(size_t src, size_t dst, const Mat&
 	while (!sourceQueue.empty()) {
 		size_t n1 = sourceQueue.front();			// pop the front index of a source node
 		sourceQueue.pop_front();
-		graph->getChildNodes(n1, vChilds);
+		graph.getChildNodes(n1, vChilds);
 		for(size_t n2: vChilds) {
 			if (!ifSource[n2]) {					// if the connected node is not a source
-				graph->setArc(n1, n2, edgePot);		// set the potential,
+				graph.setArc(n1, n2, edgePot);		// set the potential,
 				ifSource[n2] = true;				// mark it as a source
 				sourceQueue.push_back(n2);			// and add it to the queue
 			}
@@ -129,9 +130,9 @@ probabilities for all of these configurations. Nevertheless, DGM has an efficien
 @code
 	using namespace DirectGraphicalModels;
 
-	CInfer  *inferer = new CInferTree(graph);
+	CInferTree inferer(graph);
 
-	inferer->infer();
+	inferer.infer();
 @endcode
 
 Please note, that in case of a single source, its marginal probability is equal to the initial probability.

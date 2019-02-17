@@ -17,7 +17,7 @@ struct USER_DATA {
 void solutiontWindowMouseHandler(int Event, int x, int y, int flags, void *param)
 {
 	USER_DATA	* pUserData	= static_cast<USER_DATA *>(param);
-	if (Event == cv::MouseEventTypes::EVENT_LBUTTONDOWN) {
+	if (Event == MouseEventTypes::EVENT_LBUTTONDOWN) {
 		Mat			  pot, potImg;
 		size_t		  node_id	= pUserData->imgWidth * y + x;
 

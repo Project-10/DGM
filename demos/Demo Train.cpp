@@ -32,11 +32,11 @@ void print_help(char *argv0)
 
 int main(int argc, char *argv[])
 {
-	const cv::Size		imgSize		= cv::Size(400, 400);
-	const int			width		= imgSize.width;
-	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car} 	
-	const unsigned int	nFeatures	= 3;		
+	const Size	imgSize		= Size(400, 400);
+	const int	width		= imgSize.width;
+	const int	height		= imgSize.height;
+	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
+	const word	nFeatures	= 3;		
 
 	if (argc != 9) {
 		print_help(argv[0]);
@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
+	// Preparing parameters for edge trainers
 	vec_float_t			vParams = {100, 0.01f};	
 	if (edgeModel <= 1 || edgeModel == 4) vParams.pop_back();	// Potts and Concat models need ony 1 parameter
 	if (edgeModel == 0) vParams[0] = 1;							// Emulate "No edges"
@@ -126,7 +127,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	cv::waitKey(1000);
+	waitKey(1000);
 
 	return 0;
 }

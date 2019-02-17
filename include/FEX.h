@@ -109,8 +109,15 @@ using namespace DirectGraphicalModels;
 
 int main()
 {
-	Mat img = imread("Original Image.jpg", 1);
+	if (argc != 3) {
+		print_help(argv[0]);
+		return 0;
+	}
+
+	Mat img = imread(argv[1], 1);
 	fex::CCommonFeatureExtractor fExtractor(img);
+
+	Mat coord = fex::CCoordinate::get(img);
 
 	// Extracting 3 features
 	Mat ndvi		= fExtractor.getNDVI(10).get();											// NDVI feature
@@ -125,8 +132,7 @@ int main()
 	channels.push_back(saturation);		// red channel
 	merge(channels, featureImg);
 
-	imshow("Feature Vector", featureImg);
-	cvWaitKey();
+	imwrite(argv[2], featureImg);
 	return 0;
 }
 @endcode

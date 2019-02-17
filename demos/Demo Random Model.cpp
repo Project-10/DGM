@@ -30,10 +30,9 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 	// assertions
 	if (gt.type() != CV_8UC1) return Mat();
 
-	Mat res;
-	gt.copyTo(res);
+	Mat res = gt.clone();
 
-	for (byte &val : static_cast<Mat_<byte>>(res)) 
+	for (byte& val: static_cast<Mat_<byte>>(res)) 
 		if (val < 3)		val = 0;
 		else if (val < 4)	val = 1;
 		else				val = 2;
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
 	if (nodeModel == 0)						Z = 2e34f;										// for Bayes model
 	if (nodeModel == 6 || nodeModel == 7)	Z = 0.0f;										// for MicroSoft Random Forest and OpenCV Artificial Neural Network
 
-	std::shared_ptr<CTrainNode> nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
+	auto nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
 	CMarkerHistogram marker(*nodeTrainer, DEF_PALETTE_3);
 
 	//	---------- Features Extraction ----------

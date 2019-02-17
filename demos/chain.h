@@ -38,17 +38,17 @@ with undirected arcs:
 	const byte	 nStates = 7;				// {grad scool, industry, video games, industry (with PhD), academia, video games (with PhD), deceased}
 	const size_t nNodes = 60;				// sixty years
 
-	CGraphPairwise *graph = new CGraphPairwise(nStates);
+	CGraphPairwise	graph(nStates);
 
 	Mat nodePot = getNodePot();
-	graph->addNode(nodePot);				// add the first node
+	graph.addNode(nodePot);					// add the first node
 	nodePot.setTo(1.0f  / nStates);			// uniform distribution
 	for (size_t i = 1; i < nNodes; i++) 
-		graph->addNode(nodePot);			// add nodes
+		graph.addNode(nodePot);				// add nodes
 
 	Mat edgePot = getEdgePot();
 	for (size_t i = 0; i < nNodes - 1; i++) 
-		graph->addArc(i, i + 1, edgePot);	// add arcs
+		graph.addArc(i, i + 1, edgePot);	// add arcs
 @endcode
 
 The edge potential matrix is represented here as a transition matrix:
@@ -73,9 +73,9 @@ Nevertheless, DGM has exact inference method for chains @ref DirectGraphicalMode
 @code
 	using namespace DirectGraphicalModels;
 
-	CInfer  *inferer = new CInferChain(graph);
+	CInferChain inferer(graph);
 
-	inferer->infer();
+	inferer.infer();
 @endcode
 
 

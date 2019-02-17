@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	
 	imshow("image", noise);	
 
-	cv::waitKey();
+	waitKey();
 
 	return 0;
 }

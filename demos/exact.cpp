@@ -42,14 +42,14 @@ void CExact::printMarginals(const CGraphPairwise &graph, const std::string &str)
 
 void CExact::Main(void)
 {
-	size_t	        i;
+	size_t			i;
 	CGraphPairwise	graph(nStates);
-	CDecodeExact    decoderExcact(graph);
-	CInferExact     infererExact(graph);
-	CInferChain     infererChain(graph);
-	CInferTree      infererTree(graph);
-	CInferLBP       infererLBP(graph);
-	CInferViterbi   infererViterbi(graph);
+	CDecodeExact	decoderExcact(graph);
+	CInferExact		infererExact(graph);
+	CInferChain		infererChain(graph);
+	CInferTree		infererTree(graph);
+	CInferLBP		infererLBP(graph);
+	CInferViterbi	infererViterbi(graph);
 
 	// Building the graph
 	for (i = 0; i < nNodes; i++)		graph.addNode();
@@ -66,7 +66,7 @@ void CExact::Main(void)
 	vec_byte_t decoding_decoderExcact = decoderExcact.decode();	    // Exact decoding from decode
 
 	infererExact.infer();											// Exact inference
-	vec_byte_t decoding_infererExcact = infererExact.decode();	// Exact decoding from inferer
+	vec_byte_t decoding_infererExcact = infererExact.decode();		// Exact decoding from inferer
 	printMarginals(graph, "Exact");
 
 	fillGraph(graph);

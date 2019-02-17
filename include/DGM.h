@@ -315,7 +315,7 @@ comparing the restored image with the original one.
 </tr>
 </table>
 
-This example copies the idea from the <a href="http://www.cs.ubc.ca/~schmidtm/Software/UGM/graphCuts.html">GraphCuts UGM Demo</a>
+This example copies the idea from the <a href="http://www.cs.ubc.ca/~schmidtm/Software/UGM/graphCuts.html" target="blank">GraphCuts UGM Demo</a>
 @code
 #include "DGM.h"
 using namespace DirectGraphicalModels;
@@ -327,60 +327,46 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	const unsigned int	nStates = 2;			// {true; false}
+	const unsigned int	nStates = 2;			// { true; false }
 
 	// Reading parameters and images
-	Mat		  img		= imread(argv[1], 0);
-	Mat		  noise		= imread(argv[2], 0);
-	int		  width		= img.cols;
-	int		  height	= img.rows;
+	Mat		  img		= imread(argv[1], 0);	if (img.empty())   printf("Can't open %s\n", argv[1]);
+	Mat		  noise		= imread(argv[2], 0);	if (noise.empty()) printf("Can't open %s\n", argv[2]);
 	
-	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
-	CInfer  * decoder	= new CInferViterbi(graph);
-
-	Mat nodePot(nStates, 1, CV_32FC1);						// node Potential (column-vector)
-	Mat edgePot(nStates, nStates, CV_32FC1);				// edge Potential	
+	CGraphPairwise		graph(nStates);
+	CGraphPairwiseExt	graphExt(graph, GRAPH_EDGES_GRID | GRAPH_EDGES_DIAG);
+	CInferViterbi		decoder(graph);
 	
-	// No training
-	// Defynig the edge potential
-	edgePot = CTrainEdgePotts::getEdgePotentials(10000, nStates);
-	// equivalent to:
-	// ePot.at<float>(0, 0) = 1000;	ePot.at<float>(0, 1) = 1;
-	// ePot.at<float>(1, 0) = 1;	ePot.at<float>(1, 1) = 1000;
+	// no training
+	vec_mat_t p(nStates);
+	noise.convertTo(p[0], CV_32FC1, -1.0 / 255, 1.0);	// p_true  = 1 - noise / 255
+	noise.convertTo(p[1], CV_32FC1, 1.0 / 255);			// p_false = noise / 255
+	Mat nodePot;
+	merge(p, nodePot);
 
 	// ==================== Building and filling the graph ====================
-	for (int y = 0; y < height; y++)
-		for (int x = 0; x < width; x++) {
-			float p = 1.0f - static_cast<float>(noise.at<byte>(y,x)) / 255.0f;
-			nodePot.at<float>(0, 0) = p;
-			nodePot.at<float>(1, 0) = 1.0f - p;
-			size_t idx = graph->addNode(nodePot);
-			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (y > 0) graph->addArc(idx, idx - width, edgePot);
-			if ((x > 0) && (y > 0)) graph->addArc(idx, idx - width - 1, edgePot);	
-			if ((x < width - 1) && (y > 0)) graph->addArc(idx, idx - width + 1, edgePot);											
-		} // x
+	graphExt.setGraph(nodePot);
+	graphExt.addDefaultEdgesModel(10000, 3);
 
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
-
 	
 	// ====================== Evaluation / Visualization ======================
 	noise = Mat(noise.size(), CV_8UC1, optimalDecoding.data()) * 255;
 	medianBlur(noise, noise, 3);
 
 	float error = 0;
-	for (int y = 0; y < height; y++)
-		for (int x = 0; x < width; x++)
+	for (int y = 0; y < img.rows; y++)
+		for (int x = 0; x < img.cols; x++)
 			if (noise.at<byte>(y,x) != img.at<byte>(y,x)) error++;
 
-	printf("Accuracy  = %.2f%%\n", 100 - 100 * error / (width * height));
+	printf("Accuracy  = %.2f%%\n", 100 - 100 * error / (img.cols * img.rows));
 	
 	imshow("image", noise);	
 
-	cvWaitKey();
+	waitKey();
 
 	return 0;
 }
@@ -533,11 +519,11 @@ using namespace DirectGraphicalModels::vis;
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
-	const int			width		= imgSize.width;
-	const int			height		= imgSize.height;
-	const unsigned int	nStates		= 6;		// {road, traffic island, grass, agriculture, tree, car}
-	const unsigned int	nFeatures	= 3;
+	const Size	imgSize		= Size(400, 400);
+	const int	width		= imgSize.width;
+	const int	height		= imgSize.height;
+	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
+	const word	nFeatures	= 3;		
 
 	if (argc != 9) {
 		print_help(argv[0]);
@@ -553,51 +539,33 @@ int main(int argc, char *argv[])
 	Mat test_gt		= imread(argv[6], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);		// groundtruth for evaluation
 	Mat test_img	= imread(argv[7], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
-	CTrainNode		* nodeTrainer	= NULL;
-	CTrainEdge		* edgeTrainer	= NULL;
-	CGraphExt		* graph			= new CGraphExt(nStates);
-	CInfer			* decoder		= new CInferLBP(graph);
-	CMarker			* marker		= new CMarker(DEF_PALETTE_6);
-	CCMat			* confMat		= new CCMat(nStates);
-	float			  params[]		= {100, 0.01f};
-	size_t			  params_len;
-
-	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	    break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		break;
-		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		break;
-#ifdef USE_SHERWOOD
-		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		break;
-#endif
-		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
-	}
-	switch(edgeModel) {
-		case 0: params[0] = 1;	// Emulate "No edges"
-		case 1:	edgeTrainer = new CTrainEdgePotts(nStates, nFeatures);		params_len = 1; break;
-		case 2:	edgeTrainer = new CTrainEdgePottsCS(nStates, nFeatures);	params_len = 2; break;
-		case 3:	edgeTrainer = new CTrainEdgePrior(nStates, nFeatures);		params_len = 2; break;
-		case 4:
-			edgeTrainer = new CTrainEdgeConcat<CTrainNodeBayes, CDiffFeaturesConcatenator>(nStates, nFeatures);
-			params_len = 1;
-			break;
-		default: printf("Unknown edge_training_model is given\n"); print_help(argv[0]); return 0;
-	}
+	// Preparing parameters for edge trainers
+	vec_float_t			vParams = {100, 0.01f};	
+	if (edgeModel <= 1 || edgeModel == 4) vParams.pop_back();	// Potts and Concat models need ony 1 parameter
+	if (edgeModel == 0) vParams[0] = 1;							// Emulate "No edges"
+	else edgeModel--;
+	
+	auto				nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
+	auto				edgeTrainer = CTrainEdge::create(edgeModel, nStates, nFeatures);
+	CGraphPairwise		graph(nStates);
+	CGraphPairwiseExt	graphExt(graph);
+	CInferLBP			decoder(graph);
+	CMarker				marker(DEF_PALETTE_6);
+	CCMat				confMat(nStates);
 
 	// ==================== STAGE 1: Building the graph ====================
 	Timer::start("Building the Graph... ");
-	graph->build(imgSize);
+	graphExt.buildGraph(imgSize);
 	Timer::stop();
 
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
 	// Node Training (compact notation)
-	nodeTrainer->addFeatureVec(train_fv, train_gt);
+	nodeTrainer->addFeatureVecs(train_fv, train_gt);					
 
 	// Edge Training (comprehensive notation)
-	Mat featureVector1(nFeatures, 1, CV_8UC1);
-	Mat featureVector2(nFeatures, 1, CV_8UC1);
+	Mat featureVector1(nFeatures, 1, CV_8UC1); 
+	Mat featureVector2(nFeatures, 1, CV_8UC1); 	
 	for (int y = 1; y < height; y++) {
 		byte *pFv1 = train_fv.ptr<byte>(y);
 		byte *pFv2 = train_fv.ptr<byte>(y - 1);
@@ -616,37 +584,37 @@ int main(int argc, char *argv[])
 		} // x
 	} // y
 
-	nodeTrainer->train();
-	edgeTrainer->train();
+	nodeTrainer->train(); 
+	edgeTrainer->train(); 
 	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
 	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graph->setNodes(nodePotentials);									// Filling-in the graph nodes
-	graph->fillEdges(edgeTrainer, test_fv, params, params_len);			// Filling-in the graph edges with pairwise potentials
+	graphExt.setGraph(nodePotentials);									// Filling-in the graph nodes
+	graphExt.fillEdges(*edgeTrainer, test_fv, vParams);					// Filling-in the graph edges with pairwise potentials
 	Timer::stop();
 
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
 
-	// ====================== Evaluation =======================
+	// ====================== Evaluation =======================	
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
-	confMat->estimate(test_gt, solution);								// compare solution with the groundtruth
+	confMat.estimate(test_gt, solution);								// compare solution with the groundtruth
 	char str[255];
-	sprintf(str, "Accuracy = %.2f%%", confMat->getAccuracy());
+	sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());
 	printf("%s\n", str);
 
 	// ====================== Visualization =======================
-	marker->markClasses(test_img, solution);
+	marker.markClasses(test_img, solution);
 	rectangle(test_img, Point(width - 160, height- 18), Point(width, height), CV_RGB(0,0,0), -1);
-	putText(test_img, str, Point(width - 155, height - 5), FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, CV_AA);
+	putText(test_img, str, Point(width - 155, height - 5), cv::HersheyFonts::FONT_HERSHEY_SIMPLEX, 0.45, CV_RGB(225, 240, 255), 1, cv::LineTypes::LINE_AA);
 	imwrite(argv[8], test_img);
-
+	
 	imshow("Image", test_img);
-	cvWaitKey(0 * 1000);
+	waitKey(1000);
 
 	return 0;
 }
@@ -678,9 +646,9 @@ using namespace DirectGraphicalModels::fex;
 
 int main(int argc, char *argv[])
 {
-	const CvSize		imgSize		= cvSize(400, 400);
-	const unsigned int	nStates		= 3;	 		
-	const unsigned int	nFeatures	= 2;		// {ndvi, saturation}
+	const Size	imgSize		= Size(400, 400);
+	const byte	nStates		= 3;	 		
+	const word	nFeatures	= 2;				// {ndvi, saturation}
 
 	if (argc != 5) {
 		print_help(argv[0]);
@@ -693,30 +661,35 @@ int main(int argc, char *argv[])
 	Mat gt			= imread(argv[3], 0); resize(gt, gt, imgSize, 0, 0, INTER_NEAREST);	    // groundtruth for training
 	gt				= shrinkStateImage(gt, nStates);										// reduce the number of classes in gt to nStates
 
-	float Z;																				// the value of partition function
-	CTrainNode	* nodeTrainer = NULL;
-	switch(nodeModel) {
-		case 0: nodeTrainer = new CTrainNodeBayes(nStates, nFeatures);	    Z = 2e34f; break;
-		case 1: nodeTrainer = new CTrainNodeGMM(nStates, nFeatures);		Z = 1.0f; break;
-		case 2: nodeTrainer = new CTrainNodeCvGMM(nStates, nFeatures);		Z = 1.0f; break;
-		case 3: nodeTrainer = new CTrainNodeKNN(nStates, nFeatures);		Z = 1.0f; break;
-		case 4: nodeTrainer = new CTrainNodeCvRF(nStates, nFeatures);		Z = 1.0f; break;
-#ifdef USE_SHERWOOD
-		case 5: nodeTrainer = new CTrainNodeMsRF(nStates, nFeatures);		Z = 1.0f; break;
-#endif
-		default: printf("Unknown node_training_model is given\n"); print_help(argv[0]); return 0;
-	}
-	CMarkerHistogram marker(nodeTrainer, DEF_PALETTE_3);
+	float Z =  1.0f;																		// the value of partition function
+	if (nodeModel == 0)						Z = 2e34f;										// for Bayes model
+	if (nodeModel == 6 || nodeModel == 7)	Z = 0.0f;										// for MicroSoft Random Forest and OpenCV Artificial Neural Network
+
+	auto nodeTrainer = CTrainNode::create(nodeModel, nStates, nFeatures);
+	CMarkerHistogram marker(*nodeTrainer, DEF_PALETTE_3);
 
 	//	---------- Features Extraction ----------
 	vec_mat_t featureVector;
-	fex::CCommonFeatureExtractor fExtractor(img);
+	CCommonFeatureExtractor fExtractor(img);
 	featureVector.push_back(fExtractor.getNDVI(0).autoContrast().get());
 	featureVector.push_back(fExtractor.getSaturation().invert().get());
 
+	for (int y = 0; y < gt.rows; y++)
+		for (int x = 0; x < gt.cols; x++)
+			if (gt.at<byte>(y, x) == 1) {
+				float val = (float) featureVector[0].at<byte>(y, x);
+				val = val - 10;
+				featureVector[0].at<byte>(y, x) = (byte) MAX(0.0f, val + 0.5f);
+			}
+			else if (gt.at<byte>(y, x) == 2) {
+				float val = (float) featureVector[1].at<byte>(y, x);
+				val = val + 0;
+				featureVector[1].at<byte>(y, x) = (byte) MAX(0.0f, val + 0.5f);
+			}
+
 	//	---------- Training ----------
 	Timer::start("Training... ");
-	nodeTrainer->addFeatureVec(featureVector, gt);
+	nodeTrainer->addFeatureVecs(featureVector, gt);
 	nodeTrainer->train();
 	Timer::stop();
 
@@ -732,7 +705,8 @@ int main(int argc, char *argv[])
 	imwrite(argv[4], classMap);
 
 	imshow("class map 2d", classMap);
-	cvWaitKey(1000);
+	
+	waitKey(1000);
 
 	return 0;
 }
@@ -742,13 +716,12 @@ The function, which reduces the amount of classes in the training data by mergin
 @code
 Mat shrinkStateImage(const Mat &gt, byte nStates)
 {
-	Mat res;
-	gt.copyTo(res);
+	Mat res = gt.clone();
 
-	for (auto it = res.begin<byte>(); it != res.end<byte>(); it++)
-		if (*it < 3) *it = 0;
-		else if (*it < 4) *it = 1;
-		else *it = 2;
+	for (byte& val: static_cast<Mat_<byte>>(res)) 
+		if (val < 3)		val = 0;
+		else if (val < 4)	val = 1;
+		else				val = 2;
 
 	return res;
 }
@@ -793,49 +766,46 @@ int main(int argc, char *argv[])
 	}
 
 	// Reading parameters and images
-	Mat		  imgL			= imread(argv[1], 0);
-	Mat		  imgR			= imread(argv[2], 0);
+	Mat		  imgL			= imread(argv[1], 0);	if (imgL.empty()) printf("Can't open %s\n", argv[1]);
+	Mat		  imgR			= imread(argv[2], 0);	if (imgR.empty()) printf("Can't open %s\n", argv[2]);
 	int		  minDisparity	= atoi(argv[3]);
 	int		  maxDisparity	= atoi(argv[4]);
 	int		  width			= imgL.cols;
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraphPairwise	* graph		= new CGraphPairwise(nStates);
-	CInfer	* decoder	= new CInferTRW(graph);
+	CGraphPairwise graph(nStates);
+	CGraphPairwiseExt graphExt(graph);
+	CInferTRW decoder(graph);
 
 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
-	Mat edgePot(nStates, nStates, CV_32FC1);								// edge Potential	
 
 	// No training
-	// Defynig the edge potential
-	edgePot = CTrainEdgePotts::getEdgePotentials(1.175f, nStates);
-	// equivalent to:
-	// ePot.at<float>(0, 0) = 1.175;	ePot.at<float>(0, 1) = 1;
-	// ePot.at<float>(1, 0) = 1;		ePot.at<float>(1, 1) = 1.175;
+	graphExt.buildGraph(imgL.size());
+	graphExt.addDefaultEdgesModel(1.175f);
 
 	// ==================== Building and filling the graph ====================
+	size_t idx = 0;
 	for (int y = 0; y < height; y++) {
 		byte * pImgL	= imgL.ptr<byte>(y);
 		byte * pImgR	= imgR.ptr<byte>(y);
 		for (int x = 0; x < width; x++) {
 			float imgL_value = static_cast<float>(pImgL[x]);
-			for (unsigned int s = 0; s < nStates; s++) {						// state
+			for (unsigned int s = 0; s < nStates; s++) {					// state
 				int disparity = minDisparity + s;
 				float imgR_value = (x + disparity < width) ? static_cast<float>(pImgR[x + disparity]) : imgL_value;
 				float p = 1.0f - fabs(imgL_value - imgR_value) / 255.0f;
 				nodePot.at<float>(s, 0) = p * p;
 			}
 
-			size_t idx = graph->addNode(nodePot);
-			if (x > 0) graph->addArc(idx, idx - 1, edgePot);
-			if (y > 0) graph->addArc(idx, idx - width, edgePot);
+			graph.setNode(idx++, nodePot);
 		} // x
 	} // y
 
+
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder->decode(100);
+	vec_byte_t optimalDecoding = decoder.decode(100);
 	Timer::stop();
 	
 	// ============================ Visualization =============================
@@ -845,7 +815,7 @@ int main(int argc, char *argv[])
 
 	imshow("Disparity", disparity);
 
-	cvWaitKey();
+	waitKey();
 
 	return 0;
 }

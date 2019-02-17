@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
 
 	const float* pParam;
-	const vec_float_t vInitParam  = { 100.0f, 10.0f, 100.0f, 10.0f };
-	const vec_float_t vInitDeltas = { 10.0f, 1.0f, 10.0f, 1.0f };
+	const vec_float_t vInitParam  = { 10.0f, 1.0f, 10.0f, 1.0f };
+	const vec_float_t vInitDeltas = { 2.0f, 0.2f, 2.0f, 0.2f };
 	
 	CPowell powell(nParams);
 	powell.setInitParams(vInitParam);
@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
 		char str[255];
 		sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());
 		printf("%s\n", str);
+
+		confMat.reset();
 
 		// ====================== Visualization =======================
 		Mat test_img_temp = test_img.clone();
