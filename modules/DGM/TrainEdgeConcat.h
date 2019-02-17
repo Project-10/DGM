@@ -3,14 +3,14 @@
 #pragma once
 
 #include "TrainEdge.h"
+#include "PriorNode.h"
+#include "TrainNode.h"
+#include "FeaturesConcatenator.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels
 {
-	class CPriorNode;
-	class CTrainNode;
-	class CFeaturesConcatenator;
-	
+
 	// ============================= Concatenated Edge Train Class =============================
 	/**
 	* @ingroup moduleTrainEdge
@@ -36,9 +36,9 @@ namespace DirectGraphicalModels
             , CTrainEdge(nStates, nFeatures)
 		{
 			DGM_ASSERT(nStates < 16);
-			m_pPrior		= new CPriorNode(nStates * nStates);
-			m_pTrainer		= new Trainer(nStates * nStates, nFeatures);
-			m_pConcatenator = new Concatenator(nFeatures);
+			m_pPrior		= std::make_unique<CPriorNode>(nStates * nStates);
+			m_pTrainer		= std::make_unique<Trainer>(nStates * nStates, nFeatures);
+			m_pConcatenator = std::make_unique<Concatenator>(nFeatures);
 			m_featureVector = Mat(m_pConcatenator->getNumFeatures(), 1, CV_8UC1);
 		}
 		/**
@@ -54,19 +54,13 @@ namespace DirectGraphicalModels
 			, CBaseRandomModel(nStates)
 		{
 			DGM_ASSERT(nStates < 16);
-			m_pPrior		= new CPriorNode(nStates * nStates);
-			m_pTrainer		= new Trainer(nStates * nStates, nFeatures, params);
-			m_pConcatenator = new Concatenator(nFeatures);
+			m_pPrior		= std::make_unique<CPriorNode>(nStates * nStates);
+			m_pTrainer		= std::make_unique<Trainer>(nStates * nStates, nFeatures, params);
+			m_pConcatenator = std::make_unique<Concatenator>(nFeatures);
 			m_featureVector = Mat(m_pConcatenator->getNumFeatures(), 1, CV_8UC1);
 		}
+		virtual ~CTrainEdgeConcat(void) = default;
 
-
-		virtual ~CTrainEdgeConcat(void) 
-		{
-			delete m_pPrior;
-			delete m_pTrainer;
-			delete m_pConcatenator;
-		}
 
 		virtual void	reset(void) { m_pPrior->reset(); m_pTrainer->reset(); }
 		void	save(const std::string &path, const std::string &name = std::string(), short idx = -1) const { m_pTrainer->save(path, name.empty() ? "CTrainEdgeConcat" : name, idx); }
@@ -121,9 +115,9 @@ namespace DirectGraphicalModels
 	
 
 	private:
-		CPriorNode				* m_pPrior;				///< %Node prior poobability
-		CTrainNode				* m_pTrainer;			///< %Node trainer
-		CFeaturesConcatenator	* m_pConcatenator;		///< Feature concatenator
-		Mat						  m_featureVector;		///< Feature vector
+        std::unique_ptr<CPriorNode>				m_pPrior;			///< %Node prior poobability
+        std::unique_ptr<CTrainNode>				m_pTrainer;			///< %Node trainer
+        std::unique_ptr<CFeaturesConcatenator>	m_pConcatenator;	///< Feature concatenator
+		Mat										m_featureVector;	///< Feature vector
 	};
 }
