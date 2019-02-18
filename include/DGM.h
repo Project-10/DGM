@@ -379,6 +379,8 @@ This demo give a short introduction in using the DGM library for working with \a
 is a simple undirected graph in which every pair of distinct vertices is connected by a unique edge. The application of regular edge potentials used for pairwise graphs makes the inference 
 practically impossible, thus special edge models for dense graphs should be applied.
 
+We start this demo in the same way as the @ref demotrain where we used pairwise graphical model:
+
 @code
 #include "DGM.h"
 #include "VIS.h"
@@ -405,39 +407,49 @@ int main(int argc, char *argv[])
 	Mat test_fv  = imread(argv[3], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
 	Mat test_gt  = imread(argv[4], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
 	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+@endcode
 
+But here for utilizing complete graphical model we will use @ref DirectGraphicalModels::CGraphKit factory with the parameter DirectGraphicalModels::GraphType::dense.
+> Please note that the same demo could be used with pairwise graphical model. For that please use in factory DirectGraphicalModels::GraphType::pairwise instead. In such case the only difference here with the @ref demotrain will be the use of default edge model, which is \a training-data-independent.
+ 
+@code
 	auto	nodeTrainer = CTrainNode::create(Bayes, nStates, nFeatures);
 	auto	graphKit	= CGraphKit::create(GraphType::dense, nStates);
 	CMarker	marker(DEF_PALETTE_6);
-	CCMat	confMat(nStates);
+ 	CCMat	confMat(nStates);
+@endcode
 
-
-	// ==================== STAGE 1: Building the graph ====================
-//	Timer::start("Building the Graph... ");
-//	graph->build(imgSize);
-//	Timer::stop();
-
+Here we can omit the graph building stage (as we do not train the edges model) and strat direcly with the second stage - training the node potentials:
+ 
+@code
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
-	// Node Training (compact notation)
 	nodeTrainer->addFeatureVecs(train_fv, train_gt);
 	nodeTrainer->train();
 	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
-	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
-	graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);			// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	graphKit->getGraphExt().setGraph(nodePotentials);						// Filling-in the graph nodes
 	graphKit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
 	graphKit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
-
-
+@endcode
+ 
+ Please note that in the third stage we have added two default edges models. For complete graphs we can use multiple edge models, wich will be applied one after another during the iterations of the inference process.
+ 
+ > For pairwise graphs only the last added default edge model will be in use.
+ 
+ > Check the documentation for DirectGraphicalModels::CGraphDenseExt class for information about creating and using more sofisticated edge models for dense graphs.
+ 
+ The decoding and evaluation stages are also the same as in the @ref demotrain project:
+ 
+@code
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = graphKit->getInfer().decode(100);
 	Timer::stop();
-
 
 	// ====================== Evaluation =======================
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());

@@ -36,33 +36,24 @@ int main(int argc, char *argv[])
 	CMarker	marker(DEF_PALETTE_6);
 	CCMat	confMat(nStates);
 
-
-	// ==================== STAGE 1: Building the graph ====================
-//	Timer::start("Building the Graph... ");
-//	graph->build(imgSize);
-//	Timer::stop();
-
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
-	// Node Training (compact notation)
 	nodeTrainer->addFeatureVecs(train_fv, train_gt);
 	nodeTrainer->train();
 	Timer::stop();
 
 	// ==================== STAGE 3: Filling the Graph =====================
 	Timer::start("Filling the Graph... ");
-	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+	Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);				// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 	graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
 	graphKit->getGraphExt().addDefaultEdgesModel(100.0f, 3.0f);
 	graphKit->getGraphExt().addDefaultEdgesModel(test_fv, 300.0f, 10.0f);
 	Timer::stop();
 
-
 	// ========================= STAGE 4: Decoding =========================
 	Timer::start("Decoding... ");
 	vec_byte_t optimalDecoding = graphKit->getInfer().decode(100);
 	Timer::stop();
-
 
 	// ====================== Evaluation =======================
 	Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
