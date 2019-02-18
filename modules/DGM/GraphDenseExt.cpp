@@ -12,7 +12,8 @@ namespace DirectGraphicalModels
 		if (m_graph.getNumNodes()) m_graph.reset();
         
 		// 2D default potentials
-		Mat pots(graphSize, CV_32FC1, Scalar(1.0f / m_graph.getNumStates()));
+		Mat pots(graphSize, CV_32FC(m_graph.getNumStates()));
+		pots.setTo(1.0f / m_graph.getNumStates());
         m_graph.addNodes(pots.clone().reshape(1, pots.cols * pots.rows));
     }
     
