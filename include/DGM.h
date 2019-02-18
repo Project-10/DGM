@@ -214,7 +214,7 @@ Please refer to the @ref moduleVIS documentation
 
 /**
 @page s3 Installation
-DGM is a cross-platform C++ library. The description here was tested on Windows 10 / Visual Studio 2017 and MacOS High Sierra 10.13.6 / Xcode 9.4.1. If you encounter errors after following the steps described below, 
+DGM is a cross-platform C++ library. The description here was tested on Windows 10 / Visual Studio 2017, macOS Majave 10.14.3 / Xcode 10.1 and Ubuntu 18.04 / gcc 7.3.0. If you encounter errors after following the steps described below,
 feel free to contact us via our <a href="http://project-10.de/forum/viewforum.php?f=31">User Q&A forum</a>. We'll do our best to help you out.<br>
 
 DGM has only one dependency: it is based on <a href="https://www.opencv.org/">OpenCV</a> library.
@@ -230,7 +230,8 @@ In order to use the DGM library, the OpenCV library should be also installed.
 - Download either the latest stable DGM version from <a href="http://research.project-10.de/dgm/#downloads" target="_blank">Project X Research</a> 
   or fork the latest snapshot from our <a href="https://github.com/Project-10/DGM" target="_blank">GitHub repository</a>
 - Unpack it to your local folder (for example to disk @b C:\\ for Windows or to @b /Users/username/ for MacOS, so the library path will be @b C:\\DGM\\ or @b /Users/username/DGM/)
-@subsection sec_install_dgm_source Building DGM from Source Using CMake
+@subsection sec_install_dgm_win Installation in Windows and macOS
+@subsubsection sec_install_dgm_win_source  Building DGM from Source Using CMake GUI
 In case you want to build the library (recommended), follow these instructions, otherwise - skip this step and proceed to @ref sec_install_dgm_built. 
 This step also assumes that you have downloaded the sources of the DGM library.
 - Download and install <a href="https://cmake.org/download" target="_blank">CMake</a> for your operating system
@@ -245,13 +246,29 @@ This step also assumes that you have downloaded the sources of the DGM library.
 - Build \b ALL_BUILD and \b INSTALL projects first for \a Debug and then for \a Release configuration. That will copy DGM headers, binaries and demonstration applications to the install folder \b DGM/build/install
 - Windows users may copy the OpenCV binaries into the install folder by executing script \b /DGM/build/install/bin/copyOpenCVDLL.bat
 - (Optionally) you can copy the install folder with the ready-to-use DGM library (\a e.g. \b DGM/build/install) to any other folder
-
-@subsection sec_install_dgm_built Using the Pre-built Libraries
+ 
+@subsubsection sec_install_dgm__win_built Using the Pre-built Libraries
 This step assumes that you have downloaded DGM-package with the pre-build binaries. In such case the type and version of the downloaded binaries should correspond to your C++ compiler. 
 If it is not, please return to the @ref sec_install_dgm_source section and generate the binaries with your compiler. The content of the install folder (\a e.g. \b DGM/build/install) will 
-correspond to the downloaded pre-build DGM package. 
+correspond to the downloaded pre-build DGM package.
+ 
+@subsection sec_install_dgm_linux Installation in Linux
+@subsubsection sec_install_dgm_linux_source Building DGM from Source Using Terminal
+For installing the DGM library for Ubuntu we assume that the OpenCV library was already installed (@ref sec_install_cv), thus GCC, CMake and Git are also installed. In order to download and install the latest version from master input the following commands in terminal:
+ @code{.sh}
+ cd ~/<my_working_directory>
+ git clone https://github.com/Project-10/DGM.git
+ cd DGM
+ mkdir build
+ cd build
+ cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local
+ make
+ make install
+ make clean
+ @endcode
 
-@subsection sec_install_dgm_after After Installation
+
+@section sec_install_dgm_after After Installation
 As soosn as the DGM library is installed, you can launch the demo applications from the \b /bin folder. If you have built the binaries from the sources, you can also start the demo projects directly from your IDE.
 The corresponding description may be found in @ref demo. Do not hesitate to modify these demo projects for your needs or start your own project based on our demo code. 
 
@@ -260,7 +277,7 @@ If you wish to generate a new projects, which will use DGM, or add DGM to an exi
 Alternatively, you can specify the following paths and library in your IDE manually:
 - Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b install_folder/include
 - Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b install_folder/lib for both Release and Debug configurations
-- Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm160.lib, \b fex160.lib, \b vis160.lib and \b dgm160d.lib, \b fex160d.lib, \b vis160d.lib 
+- Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm170.lib, \b fex170.lib, \b vis170.lib and \b dgm170d.lib, \b fex170d.lib, \b vis170d.lib 
   for Release and Debug configurations accordingly
 */
 
