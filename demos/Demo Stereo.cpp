@@ -25,17 +25,14 @@ int main(int argc, char *argv[])
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraphPairwise graph(nStates);
-	CGraphPairwiseExt graphExt(graph);
-	CInferTRW decoder(graph);
-
-	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
+	CGraphPairwiseKit graphKit(nStates, INFER::TRW);
 
 	// No training
-	graphExt.buildGraph(imgL.size());
-	graphExt.addDefaultEdgesModel(1.175f);
+	graphKit.getGraphExt().buildGraph(imgL.size());
+	graphKit.getGraphExt().addDefaultEdgesModel(1.175f);
 
 	// ==================== Building and filling the graph ====================
+	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
 	size_t idx = 0;
 	for (int y = 0; y < height; y++) {
 		byte * pImgL	= imgL.ptr<byte>(y);
@@ -49,14 +46,13 @@ int main(int argc, char *argv[])
 				nodePot.at<float>(s, 0) = p * p;
 			}
 
-			graph.setNode(idx++, nodePot);
+			graphKit.getGraph().setNode(idx++, nodePot);
 		} // x
 	} // y
 
-
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder.decode(100);
+	vec_byte_t optimalDecoding = graphKit.getInfer().decode(0);
 	Timer::stop();
 	
 	// ============================ Visualization =============================

@@ -277,7 +277,7 @@ If you wish to generate a new projects, which will use DGM, or add DGM to an exi
 Alternatively, you can specify the following paths and library in your IDE manually:
 - Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b install_folder/include
 - Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b install_folder/lib for both Release and Debug configurations
-- Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm170.lib, \b fex170.lib, \b vis170.lib and \b dgm170d.lib, \b fex170d.lib, \b vis170d.lib 
+- Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm170.lib, \b fex170.lib, \b vis170.lib and \b dgm170d.lib, \b fex170d.lib, \b vis170d.lib
   for Release and Debug configurations accordingly
 */
 
@@ -760,9 +760,8 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 
 /**
 @page demostereo Demo Stereo
-
-add description here
-
+Estimating the disparity field between two stereo images is a common task in computer vision, \a e.g., to determine a dense depth map. Please refer to the Chapter 1 of the Master Thesis <a href="http://www.project-10.de/Kosov/files/masterthesis.pdf" target="blank">3D Map Reconstruction with Variational Methods</a> for introduction to disparity field estimation. Evaluation and qualitative comparison of a large number of different algorithms for disparity field estimation may be found at <a href="http://vision.middlebury.edu/stereo/" target="blank">vision.middlebury.edu</a> web-site. In this tutorial we show how to develop a probabilistic model for evaluation a high-quality disparity field between two stereo images.
+ 
 <table align="center">
 <tr>
 <td colspan="2"><center><b>Input stereo pair</b></center></td>
@@ -783,6 +782,9 @@ add description here
 </tr>
 </table>
 
+ We start this tutotial in the same way as @ref demotrain or @ref demodense tutorials: with reading the command line arguments and initializing basic DGM classes.
+ Our primary input data here is the couple of stereo images: \b imgL and \b imgR. We also represent disparity as integer \a shift value in pixels: the distance in x-coordinate-direction between the same pixel in left and right images. Every possible diparity value between given \b minDisparity and \b maxDisparity is the class label (state) with its own probability.
+ 
 @code
 #include "DGM.h"
 using namespace DirectGraphicalModels;
@@ -803,17 +805,23 @@ int main(int argc, char *argv[])
 	int		  height		= imgL.rows;
 	unsigned int nStates	= maxDisparity - minDisparity;
 
-	CGraphPairwise graph(nStates);
-	CGraphPairwiseExt graphExt(graph);
-	CInferTRW decoder(graph);
+ 	CGraphPairwiseKit graphKit(nStates, INFER::TRW);
+@endcode
+ 
+> Please note, that in this tutorial we use pairwise graphical model with edges connection every node with its four direct neighbors. You can easily change to complete (dense) graphical model by changing the factory @ref DirectGraphicalModels::CGraphPairwiseKit to @ref DirectGraphicalModels::CGraphDenseKit. The optimal parameters for the dense edge model may be optained using @ref demoparamestimation.
+ 
+Next we build a 2D graph grid and add a default edge model:
+ 
+@code
+ 	graphKit.getGraphExt().buildGraph(imgL.size());
+ 	graphKit.getGraphExt().addDefaultEdgesModel(1.175f);
+@endcode
 
-	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
-
-	// No training
-	graphExt.buildGraph(imgL.size());
-	graphExt.addDefaultEdgesModel(1.175f);
-
-	// ==================== Building and filling the graph ====================
+ The most tricky part of this tutorial is to fill the graph nodes with potentials. We do not train any node potentials model, but estimate the potentials directly from the images using the formula: \f$ p(disp) = 1 - \frac{\left|imgL(x, y) - imgR(x + disp, y)\right|}{255} \f$, where \f$ disp \in \left[minDisp; maxDisp \right) \f$. This will give the highest potentials for those dosparities where the pixel values in left and right images nearly the same.
+ 
+@code
+ 	// ==================== Filling the nodes of the graph ====================
+ 	Mat nodePot(nStates, 1, CV_32FC1);										// node Potential (column-vector)
 	size_t idx = 0;
 	for (int y = 0; y < height; y++) {
 		byte * pImgL	= imgL.ptr<byte>(y);
@@ -827,16 +835,25 @@ int main(int argc, char *argv[])
 				nodePot.at<float>(s, 0) = p * p;
 			}
 
-			graph.setNode(idx++, nodePot);
+			graphKit.getGraph().setNode(idx++, nodePot);
 		} // x
 	} // y
-
-
+@endcode
+ 
+Now to improve the result of stereo estimation we run inference and decoding.
+ 
+> You can check how the results look like without inference. To do so set the number of iterations to zero: \a i.e. use "decode(0)". This will be the resulting disparity field achieved without application of the CRFs.
+ 
+@code
 	// =============================== Decoding ===============================
 	Timer::start("Decoding... ");
-	vec_byte_t optimalDecoding = decoder.decode(100);
-	Timer::stop();
-	
+	vec_byte_t optimalDecoding = graphKit.getInfer().decode(100);
+ 	Timer::stop();
+@endcode
+
+And with some more efforts we convert the decoding results into a disparity field:
+ 
+@code
 	// ============================ Visualization =============================
 	Mat disparity(imgL.size(), CV_8UC1, optimalDecoding.data());
 	disparity = (disparity + minDisparity) * (256 / maxDisparity);
