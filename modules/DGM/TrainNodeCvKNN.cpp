@@ -101,7 +101,7 @@ namespace DirectGraphicalModels
 		//potential += 0.1f;
 
 		Mat result, neighborResponses;
-		m_pKNN->findNearest(fv.t(), m_params.maxNeighbors, result, neighborResponses);
+		m_pKNN->findNearest(fv.t(), static_cast<int>(m_params.maxNeighbors), result, neighborResponses);
 
 		float *pResponse = neighborResponses.ptr<float>(0);
 		int n = neighborResponses.cols;

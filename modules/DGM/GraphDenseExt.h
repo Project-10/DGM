@@ -35,7 +35,7 @@ namespace DirectGraphicalModels
 		*/		
 		DllExport void addDefaultEdgesModel(float val, float weight = 1.0f) override
 		{
-			addGaussianEdgeModel(Vec2f::all(val * 0.03), weight);
+			addGaussianEdgeModel(Vec2f::all(val * 0.03f), weight);
 		}
 		/**
 		* @brief Adds default contrast-sensitive edge model
@@ -46,7 +46,7 @@ namespace DirectGraphicalModels
 		*/		
 		DllExport void addDefaultEdgesModel(const Mat& featureVectors, float val, float weight = 1.0f) override
 		{
-			addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03), 20.0f, weight);
+			addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03f), 20.0f, weight);
 		}
 		/**
 		* @brief Adds default contrast-sensitive edge model
@@ -57,7 +57,7 @@ namespace DirectGraphicalModels
 		*/	
 		DllExport void addDefaultEdgesModel(const vec_mat_t &featureVectors, float val, float weight = 1.0f) override
         {
-            addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03), 20.0f, weight);
+            addBilateralEdgeModel(featureVectors, Vec2f::all(val * 0.03f), 20.0f, weight);
         }
 		DllExport Size getSize(void) const override { return m_size; }
 
