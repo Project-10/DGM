@@ -38,15 +38,13 @@ int main(int argc, char *argv[])
 	CCMat	confMat(nStates);
 
 
-	const float* pParam;
-	vec_float_t vInitParam  = { 10.0f, 1.0f, 10.0f, 1.0f };
-	vec_float_t vInitDeltas = { 2.0f, 0.2f, 2.0f, 0.2f };
-	
-	CPowell powell(nParams);
-	powell.setInitParams(vInitParam.data());
-	powell.setDeltas(vInitDeltas.data());
+	const vec_float_t vInitParams  = { 10.0f, 10.0f, 1.0f, 1.0f };
+	const vec_float_t vInitDeltas = { 2.0f, 2.0f, 0.2f, 0.2f };
+	vec_float_t vParams = vInitParams;
 
-	pParam = vInitParam.data();
+	CPowell powell(nParams);
+	powell.setInitParams(vInitParams);
+	powell.setDeltas(vInitDeltas);
 
 	// ========================= STAGE 2: Training =========================
 	Timer::start("Training... ");
@@ -59,8 +57,8 @@ int main(int argc, char *argv[])
 		Timer::start("Filling the Graph... ");
 		Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);		// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
 		graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
-		graphKit->getGraphExt().addDefaultEdgesModel(pParam[0], pParam[1]);
-		graphKit->getGraphExt().addDefaultEdgesModel(test_fv, pParam[2], pParam[3]);
+		graphKit->getGraphExt().addDefaultEdgesModel(vParams[0], vParams[2]);
+		graphKit->getGraphExt().addDefaultEdgesModel(test_fv, vParams[1], vParams[3]);
 		Timer::stop();
 
 		// ========================= STAGE 4: Decoding =========================
@@ -71,7 +69,7 @@ int main(int argc, char *argv[])
 		// ====================== Evaluation =======================
 		Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
 		confMat.estimate(test_gt, solution);
-		pParam = powell.getParams(confMat.getAccuracy());
+		vParams = powell.getParams(confMat.getAccuracy());
 		graphKit->getGraph().reset();
 		char str[255];
 		sprintf(str, "Accuracy = %.2f%%", confMat.getAccuracy());

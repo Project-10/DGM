@@ -20,18 +20,18 @@ namespace DirectGraphicalModels
 	* const word nParams = 2;
 	*
 	* float	* pParam;
-	* float	  initParam[nParams] = {0.0f, 0.0f};		// coordinates of the initial point for the search algorithm
-	* float	  initDelta[nParams] = {0.1f, 0.1f};		// searching steps along the parameters (arguments)
+	* const vec_float_t	vInitParams = {0.0f, 0.0f};		// coordinates of the initial point for the search algorithm
+	* const vec_float_t	vInitDeltas = {0.1f, 0.1f};		// searching steps along the parameters (arguments)
 
-	* CPowell *powell = new CPowell(nParams);
-	* powell->setInitParams(initParam);
-	* powell->setDeltas(initDelta);
+	* CPowell powell(nParams);
+	* powell.setInitParams(vInitParams);
+	* powell.setDeltas(vInitDeltas);
 
 	* pParam = initParam;
 
-	* while(!powell->isConverged()) {
+	* while(!powell.isConverged()) {
 	* 	float val = objectiveFunction(pParam);		
-	* 	pParam = powell->getParams(val);
+	* 	pParam = powell.getParams(val);
 	* } 
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
@@ -43,8 +43,10 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param nParams Number of parameters (arguments) of the objective function
 		*/		
-		DllExport CPowell(word nParams);
-		DllExport ~CPowell(void);
+		DllExport CPowell(size_t nParams);
+		DllExport CPowell(const CPowell&) = delete;
+		DllExport ~CPowell(void) = default;
+		DllExport const CPowell& operator=(const CPowell&) = delete;
 
 		/**
 		* @brief Resets class variables
@@ -54,30 +56,30 @@ namespace DirectGraphicalModels
 		* @brief Sets the initial parameters (arguments) for the search algorithm
 		* @details 
 		* > Default values are \b 0 for all parameters (arguments)
-		* @param pParam Pointer to an array with the initial values for the search algorithm
+		* @param vParams An array with the initial values for the search algorithm
 		*/
-		DllExport void	  setInitParams(float *pParam);
+		DllExport void	  setInitParams(const vec_float_t& vParams);
 		/**
 		* @brief Sets the searching steps along the parameters (arguments)
 		* @details 
 		* > Default values are \b 0.1 for all parameters (arguments)
-		* @param pDelta Pointer to an array with the offset values for each parameter (argument)
+		* @param vDeltas An array with the offset values for each parameter (argument)
 		*/
-		DllExport void	  setDeltas(float *pDelta);
+		DllExport void	  setDeltas(const vec_float_t& vDeltas);
 		/**
 		* @brief Sets the lower boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$-\infty\f$ for all parameters (arguments)
-		* @param pMinParam Pointer to an array with the minimal parameter (argument) values
+		* @param vMinParam An array with the minimal parameter (argument) values
 		*/
-		DllExport void	  setMinParams(float *pMinParam);
+		DllExport void	  setMinParams(const vec_float_t& vMinParam);
 		/**
 		* @brief Sets the upper boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$+\infty\f$ for all parameters (arguments)
-		* @param pMaxParam Pointer to an array with the maximal parameter (argument) values
+		* @param vMaxParam An array with the maximal parameter (argument) values
 		*/
-		DllExport void	  setMaxParams(float *pMaxParam);
+		DllExport void	  setMaxParams(const vec_float_t& vMaxParam);
 		/**
 		* @brief Sets the acceleration coefficient
 		* @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
@@ -92,7 +94,7 @@ namespace DirectGraphicalModels
 		* @param val The current value of the objective function
 		* @return The pointer to array with the updated parameters
 		*/
-		DllExport float	* getParams(float val);
+		DllExport vec_float_t getParams(float val);
 		/**
 		* @brief Indicates weather the method has converged
 		* @retval true if the method has converged
@@ -102,15 +104,15 @@ namespace DirectGraphicalModels
 
 
 	private:
-		word		m_nParams;		// number of parameters (arguments of the objective function)
-		word		m_paramID;		// index of a currently adjusting argument
-		word		m_nSteps;		// number of adjustments for one argument
+		size_t		m_nParams;		// number of parameters (arguments of the objective function)
+		size_t		m_paramID;		// index of a currently adjusting argument
+		size_t		m_nSteps;		// number of adjustments for one argument
 		float		m_midPoint;		// parameter value for kappa: 0
 		float		m_koeff;		// koefficient for optimized Powell search method
 		float		m_acceleration;	// acceleration of search along one direction
 		
-		ptr_float_t m_pParam;		// array of the parameters
-		ptr_float_t	m_pDelta;		// array of the delta values for each parameter
+		vec_float_t m_vParams;		// array of the parameters
+		vec_float_t	m_vDeltas;		// array of the delta values for each parameter
 		vec_float_t	m_vMin;			// array of minimal parameter values
 		vec_float_t	m_vMax;			// array of maximal parameter values
 		vec_float_t	m_vKappa;		// method's auxilary array 
@@ -118,25 +120,19 @@ namespace DirectGraphicalModels
 
 
 		// Simplified accessors for current argument
-		#define curArg m_pParam[m_paramID]
+		#define curArg m_vParams[m_paramID]
+		#define delta m_vDeltas[m_paramID] 
 		#define minArg m_vMin[m_paramID]
 		#define maxArg m_vMax[m_paramID]
-		#define delta m_pDelta[m_paramID] 
 		#define convArg m_vConverged[m_paramID]
 
 
-	private:
-		// Copy semantics are disabled
-		CPowell(const CPowell &rhs) {}
-		const CPowell & operator= (const CPowell & rhs) {return *this;}
-
-
 	private:		
-		// coordinates of the Kappa function
+		/// coordinates of the Kappa function
 		enum {
-			mD,		// minus Delta
-			oD,		// null Delta (current position)
-			pD		// plus Delta
+			mD,		///< minus Delta
+			oD,		///< null Delta (current position)
+			pD		///< plus Delta
 		};
 	};
 
