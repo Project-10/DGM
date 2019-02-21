@@ -19,19 +19,17 @@ namespace DirectGraphicalModels
 	* 
 	* const word nParams = 2;
 	*
-	* float	* pParam;
 	* const vec_float_t	vInitParams = {0.0f, 0.0f};		// coordinates of the initial point for the search algorithm
 	* const vec_float_t	vInitDeltas = {0.1f, 0.1f};		// searching steps along the parameters (arguments)
+	* vec_float_t vParams = vInitParams;
 
 	* CPowell powell(nParams);
 	* powell.setInitParams(vInitParams);
 	* powell.setDeltas(vInitDeltas);
 
-	* pParam = initParam;
-
 	* while(!powell.isConverged()) {
-	* 	float val = objectiveFunction(pParam);		
-	* 	pParam = powell.getParams(val);
+	* 	float val = objectiveFunction(vParams);
+	* 	vParams = powell.getParams(val);
 	* } 
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de

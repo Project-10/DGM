@@ -231,8 +231,8 @@ In order to use the DGM library, the OpenCV library should be also installed.
   or fork the latest snapshot from our <a href="https://github.com/Project-10/DGM" target="_blank">GitHub repository</a>
 - Unpack it to your local folder (for example to disk @b C:\\ for Windows or to @b /Users/username/ for MacOS, so the library path will be @b C:\\DGM\\ or @b /Users/username/DGM/)
 @subsection sec_install_dgm_win Installation in Windows and macOS
-@subsubsection sec_install_dgm_win_source  Building DGM from Source Using CMake GUI
-In case you want to build the library (recommended), follow these instructions, otherwise - skip this step and proceed to @ref sec_install_dgm_built. 
+@subsubsection sec_install_dgm_win_source Building DGM from Source Using CMake GUI
+In case you want to build the library (recommended), follow these instructions, otherwise - skip this step and proceed to @ref sec_install_dgm_win_built. 
 This step also assumes that you have downloaded the sources of the DGM library.
 - Download and install <a href="https://cmake.org/download" target="_blank">CMake</a> for your operating system
 - Run \b cmake-gui.exe in Windows or \b CMake.app in MacOS
@@ -247,14 +247,15 @@ This step also assumes that you have downloaded the sources of the DGM library.
 - Windows users may copy the OpenCV binaries into the install folder by executing script \b /DGM/build/install/bin/copyOpenCVDLL.bat
 - (Optionally) you can copy the install folder with the ready-to-use DGM library (\a e.g. \b DGM/build/install) to any other folder
  
-@subsubsection sec_install_dgm__win_built Using the Pre-built Libraries
+@subsubsection sec_install_dgm_win_built Using the Pre-built Libraries
 This step assumes that you have downloaded DGM-package with the pre-build binaries. In such case the type and version of the downloaded binaries should correspond to your C++ compiler. 
-If it is not, please return to the @ref sec_install_dgm_source section and generate the binaries with your compiler. The content of the install folder (\a e.g. \b DGM/build/install) will 
+If it is not, please return to the @ref sec_install_dgm_win_source section and generate the binaries with your compiler. The content of the install folder (\a e.g. \b DGM/build/install) will 
 correspond to the downloaded pre-build DGM package.
  
 @subsection sec_install_dgm_linux Installation in Linux
 @subsubsection sec_install_dgm_linux_source Building DGM from Source Using Terminal
-For installing the DGM library for Ubuntu we assume that the OpenCV library was already installed (@ref sec_install_cv), thus GCC, CMake and Git are also installed. In order to download and install the latest version from master input the following commands in terminal:
+For installing the DGM library for Ubuntu we assume that the OpenCV library was already installed (@ref sec_install_cv), thus GCC, CMake and Git are also installed. In order to download and 
+install the latest version from master input the following commands in terminal:
  @code{.sh}
  cd ~/<my_working_directory>
  git clone https://github.com/Project-10/DGM.git
@@ -269,11 +270,13 @@ For installing the DGM library for Ubuntu we assume that the OpenCV library was 
 
 
 @section sec_install_dgm_after After Installation
-As soosn as the DGM library is installed, you can launch the demo applications from the \b /bin folder. If you have built the binaries from the sources, you can also start the demo projects directly from your IDE.
+As soosn as the DGM library is installed, you can launch the demo applications from the \b /bin folder. If you have built the binaries from the sources, you can also start the demo projects 
+directly from your IDE.
 The corresponding description may be found in @ref demo. Do not hesitate to modify these demo projects for your needs or start your own project based on our demo code. 
 
 If you wish to generate a new projects, which will use DGM, or add DGM to an existing project we highly recomend you to use <a href="https://cmake.org" target="_blank">CMake</a> and follow the 
-<a href="http://project-10.de/forum/viewtopic.php?f=31&t=1028&sid=09c4a9156520f7cf81bd474ac278ed51" target="_blank">Using DGM library with CMake</a> guidances, where template \b CMakeLists.txt file is provided.<br>
+<a href="http://project-10.de/forum/viewtopic.php?f=31&t=1028&sid=09c4a9156520f7cf81bd474ac278ed51" target="_blank">Using DGM library with CMake</a> guidances, where template \b CMakeLists.txt 
+file is provided.<br>
 Alternatively, you can specify the following paths and library in your IDE manually:
 - Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b install_folder/include
 - Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b install_folder/lib for both Release and Debug configurations
@@ -303,7 +306,7 @@ The documentation for DGM consists of a series of demos, showing how to use DGM 
 
 ### Advanced Tutorials
 - @subpage demorandommodel : An advanced tutorial to the unary potentials training.
-- @subpage demoparamestimation : bla bla 
+- @subpage demoparamestimation : An example of applying the model parameters estimation to a real problem.
 */
 
 /**
@@ -427,7 +430,8 @@ int main(int argc, char *argv[])
 @endcode
 
 But here for utilizing complete graphical model we will use @ref DirectGraphicalModels::CGraphKit factory with the parameter DirectGraphicalModels::GraphType::dense.
-> Please note that the same demo could be used with pairwise graphical model. For that please use in factory DirectGraphicalModels::GraphType::pairwise instead. In such case the only difference here with the @ref demotrain will be the use of default edge model, which is \a training-data-independent.
+> Please note that the same demo could be used with pairwise graphical model. For that please use in factory DirectGraphicalModels::GraphType::pairwise instead. In such case the only difference 
+here with the @ref demotrain will be the use of default edge model, which is \a training-data-independent.
  
 @code
 	auto	nodeTrainer = CTrainNode::create(Bayes, nStates, nFeatures);
@@ -454,13 +458,14 @@ Here we can omit the graph building stage (as we do not train the edges model) a
 	Timer::stop();
 @endcode
  
- Please note that in the third stage we have added two default edges models. For complete graphs we can use multiple edge models, wich will be applied one after another during the iterations of the inference process.
+Please note that in the third stage we have added two default edges models. For complete graphs we can use multiple edge models, wich will be applied one after another during the iterations of 
+the inference process.
  
- > For pairwise graphs only the last added default edge model will be in use.
+> For pairwise graphs only the last added default edge model will be in use.
  
- > Check the documentation for DirectGraphicalModels::CGraphDenseExt class for information about creating and using more sofisticated edge models for dense graphs.
+> Check the documentation for DirectGraphicalModels::CGraphDenseExt class for information about creating and using more sofisticated edge models for dense graphs.
  
- The decoding and evaluation stages are also the same as in the @ref demotrain project:
+The decoding and evaluation stages are also the same as in the @ref demotrain project:
  
 @code
 	// ========================= STAGE 4: Decoding =========================
@@ -657,11 +662,17 @@ wrappers for nodes / edges classification (used in Stage 3).
 /**
 @page demorandommodel Demo Random Model
 
-This is an advanced tutorial. Be sure to get through @ref demotrain, @ref demofex and read the <a href="http://project-10.de/forum/viewtopic.php?f=31&t=954" target="blank"> Training of a random model</a> article before proceeding with this tutorial. 
+This is an advanced tutorial. Be sure to get through @ref demotrain, @ref demofex and read the <a href="http://project-10.de/forum/viewtopic.php?f=31&t=954" target="blank"> Training of a 
+random model</a> article before proceeding with this tutorial. 
 
-In this tutorial we use only 2 features, in order to be able to visualize the distribution of the training samples at 2-diensional canvas. For sake of simplicity we also limit the number of states (classes) till 3 and show them with pure red, green and blue colors. The real sample distribution, known from the training image, is than approximated with generative and discriminative methods. In order to reconstruct these approximations, we classify a square of 256 x 256 pixels, using one of the unary (node) trainers. Thus the resulting potential map shows us how concrete classifier sees the feature distribution.
+In this tutorial we use only 2 features, in order to be able to visualize the distribution of the training samples at 2-diensional canvas. For sake of simplicity we also limit the number of 
+states (classes) till 3 and show them with pure red, green and blue colors. The real sample distribution, known from the training image, is than approximated with generative and discriminative 
+methods. In order to reconstruct these approximations, we classify a square of 256 x 256 pixels, using one of the unary (node) trainers. Thus the resulting potential map shows us how concrete 
+classifier sees the feature distribution.
 
-Please note, that we use the values of the partition functions, stored in variable Z. Thus, the generative classifiers try to reconstruct the training samples distribution. They do that with the number of inner parameters, which is much less than the number of training samples. The discriminative methods do not aim to reconstruct the training distribution itself, but provide high and normalized potentials for every pixel of the classification area.
+Please note, that we use the values of the partition functions, stored in variable Z. Thus, the generative classifiers try to reconstruct the training samples distribution. They do that with the 
+number of inner parameters, which is much less than the number of training samples. The discriminative methods do not aim to reconstruct the training distribution itself, but provide high and 
+normalized potentials for every pixel of the classification area.
 
 
 @code
@@ -760,7 +771,11 @@ Mat shrinkStateImage(const Mat &gt, byte nStates)
 
 /**
 @page demostereo Demo Stereo
-Estimating the disparity field between two stereo images is a common task in computer vision, \a e.g., to determine a dense depth map. Please refer to the Chapter 1 of the Master Thesis <a href="http://www.project-10.de/Kosov/files/masterthesis.pdf" target="blank">3D Map Reconstruction with Variational Methods</a> for introduction to disparity field estimation. Evaluation and qualitative comparison of a large number of different algorithms for disparity field estimation may be found at <a href="http://vision.middlebury.edu/stereo/" target="blank">vision.middlebury.edu</a> web-site. In this tutorial we show how to develop a probabilistic model for evaluation a high-quality disparity field between two stereo images.
+Estimating the disparity field between two stereo images is a common task in computer vision, \a e.g., to determine a dense depth map. Please refer to the Chapter 1 of the Master Thesis 
+<a href="http://www.project-10.de/Kosov/files/masterthesis.pdf" target="blank">3D Map Reconstruction with Variational Methods</a> for introduction to disparity field estimation. 
+Evaluation and qualitative comparison of a large number of different algorithms for disparity field estimation may be found at 
+<a href="http://vision.middlebury.edu/stereo/" target="blank">vision.middlebury.edu</a> web-site. In this tutorial we show how to develop a probabilistic model for evaluation a high-quality 
+disparity field between two stereo images.
  
 <table align="center">
 <tr>
@@ -783,7 +798,8 @@ Estimating the disparity field between two stereo images is a common task in com
 </table>
 
  We start this tutotial in the same way as @ref demotrain or @ref demodense tutorials: with reading the command line arguments and initializing basic DGM classes.
- Our primary input data here is the couple of stereo images: \b imgL and \b imgR. We also represent disparity as integer \a shift value in pixels: the distance in x-coordinate-direction between the same pixel in left and right images. Every possible diparity value between given \b minDisparity and \b maxDisparity is the class label (state) with its own probability.
+ Our primary input data here is the couple of stereo images: \b imgL and \b imgR. We also represent disparity as integer \a shift value in pixels: the distance in x-coordinate-direction 
+ between the same pixel in left and right images. Every possible diparity value between given \b minDisparity and \b maxDisparity is the class label (state) with its own probability.
  
 @code
 #include "DGM.h"
@@ -808,7 +824,8 @@ int main(int argc, char *argv[])
  	CGraphPairwiseKit graphKit(nStates, INFER::TRW);
 @endcode
  
-> Please note, that in this tutorial we use pairwise graphical model with edges connection every node with its four direct neighbors. You can easily change to complete (dense) graphical model by changing the factory @ref DirectGraphicalModels::CGraphPairwiseKit to @ref DirectGraphicalModels::CGraphDenseKit. The optimal parameters for the dense edge model may be optained using @ref demoparamestimation.
+> Please note, that in this tutorial we use pairwise graphical model with edges connection every node with its four direct neighbors. You can easily change to complete (dense) graphical model 
+by changing the factory @ref DirectGraphicalModels::CGraphPairwiseKit to @ref DirectGraphicalModels::CGraphDenseKit. The optimal parameters for the dense edge model may be optained using @ref demoparamestimation.
  
 Next we build a 2D graph grid and add a default edge model:
  
@@ -817,7 +834,9 @@ Next we build a 2D graph grid and add a default edge model:
  	graphKit.getGraphExt().addDefaultEdgesModel(1.175f);
 @endcode
 
- The most tricky part of this tutorial is to fill the graph nodes with potentials. We do not train any node potentials model, but estimate the potentials directly from the images using the formula: \f$ p(disp) = 1 - \frac{\left|imgL(x, y) - imgR(x + disp, y)\right|}{255} \f$, where \f$ disp \in \left[minDisp; maxDisp \right) \f$. This will give the highest potentials for those dosparities where the pixel values in left and right images nearly the same.
+ The most tricky part of this tutorial is to fill the graph nodes with potentials. We do not train any node potentials model, but estimate the potentials directly from the images using the 
+ formula: \f$ p(disp) = 1 - \frac{\left|imgL(x, y) - imgR(x + disp, y)\right|}{255} \f$, where \f$ disp \in \left[minDisp; maxDisp \right) \f$. This will give the highest potentials for 
+ those dosparities where the pixel values in left and right images nearly the same.
  
 @code
  	// ==================== Filling the nodes of the graph ====================
@@ -842,7 +861,8 @@ Next we build a 2D graph grid and add a default edge model:
  
 Now to improve the result of stereo estimation we run inference and decoding.
  
-> You can check how the results look like without inference. To do so set the number of iterations to zero: \a i.e. use "decode(0)". This will be the resulting disparity field achieved without application of the CRFs.
+> You can check how the results look like without inference. To do so set the number of iterations to zero: \a i.e. use "decode(0)". This will be the resulting disparity field achieved 
+without application of the CRFs.
  
 @code
 	// =============================== Decoding ===============================
@@ -866,4 +886,105 @@ And with some more efforts we convert the decoding results into a disparity fiel
 	return 0;
 }
 @endcode
+*/
+
+/**
+@page demoparamestimation Demo Parameters Estimation
+This is an advanced tutorial. Be sure to get through @ref demotrain, @ref demodense and read Section 2.6 of the PhD Thesis 
+<a href="http://www.project-10.de/Kosov/files/doctoralthesis.pdf" target="blank">Multi-Layer Conditional Random Fields for Revealing Unobserved Entities</a> before proceeding with this tutorial.
+
+In many practical applications, CRFs have lack of expressivity and a groundtruth label map may not be the solution of the CRF model. In order to handle this problem and get more control over 
+the classiﬁcation process with CRFs, we may introduce additional control parameters training. 
+
+As a base for this tutorial we take the code from @ref demodense. The model control parameters there are the numerical arguments to the functions DirectGraphicalModels::CGraphExt::addDefaultEdgesModel(), 
+namely the value specifying the smoothness strength and the weighting parameter. In total @ref demodense code includes 4 control parameters, which were selected empirically. In this
+tutorial we will try to select these parameters automatically in such a way that they will be optimal it terms of the classification accuracy.
+
+<table align="center">
+<tr>
+<td><center><b>Init Parameters</b></center></td>
+<td></td>
+<td><center><b>Resulting Parameters</b></center></td>
+</tr>
+<tr>
+<td><center>{ 100, 300, 3, 10 }</center></td>
+<td></td>
+<td><center>{ 90, 310, 29.5, 7.9 }</center></td>
+</tr>
+<tr>
+<td><img src="002_res_start_small.jpg"></td>
+<td><img src="arrow.png"></td>
+<td><img src="002_res_end_small.jpg"></td>
+</tr>
+<tr>
+<td><center>Class Map with accuracy <b>87.31 %</b></center></td>
+<td></td>
+<td><center>Class Map with accuracy <b>90.07 %</b></center></td>
+</tr>
+</table>
+
+In contrast to the internal parameters of the potential functions, model control parameters are estimated separately, after the potentials are trained. This results in an additional second 
+training phase. We start with gathering all the parameters into one vector \b vParams. We initialize the values of this vector with those values from the original @ref demodense code. 
+The order of the parameters is important: they will be optimized in the same order as they met in the vector \b vParams. So, we put first two values specifying the smoothness strength of 
+both edge models and then the corresponding weighting parameters.
+
+@code{.cpp}
+	const std::vector<float> vInitParams = { 100.0f, 300.0f, 3.0f, 10.0f };
+	const std::vector<float> vInitDeltas = { 10.0f, 10.0f, 1.0f, 1.0f };
+		  std::vector<float> vParams     = vInitParams;							// Actual model parameters
+@endcode
+
+Then we initialize the Powell search class. The vector \b vInitDeltas containes the minimal step values for the search algorithm to change the parameters. The order of these values corresponds 
+to the order of parameters in \b vInitParams. Too small values in \b vInitDeltas may make the search more accurate, but also more slow and increase the probability of stucking in a local extremum. 
+Too large values may lead to oscillation and poor convergence.
+
+@code{.cpp}
+	using namespace DirectGraphicalModels;
+
+	CPowell powell(vParams.size());
+	powell.setInitParams(vInitParams);
+	powell.setDeltas(vInitDeltas);
+@endcode
+
+The parameters are optimized in the mail loop where we gather graph filling, decoding and evaluation phases with the help of DirectGraphicalModels::CPowell::getParams(). 
+This function takes as argument one floating-point number and returns a vector, containing new parameters which should lead to increase of the argument. In this tutorial we use the overall 
+classification accuracy as the measure to maximize. However it might be a weighted sum of per-class accuracies (\a i.e. sum of the diagonal elements of the confusion matrix).
+
+@code{.cpp}
+	// ========================= Training Node Potentials=========================
+	nodeTrainer->addFeatureVecs(train_fv, train_gt);
+	nodeTrainer->train();
+
+	// Main loop of parameters optimization
+	for (int i = 1; ; i++) {
+		// ================= Filling the Graph =====================
+		Mat nodePotentials = nodeTrainer->getNodePotentials(test_fv);				// Classification: CV_32FC(nStates) <- CV_8UC(nFeatures)
+		graphKit->getGraphExt().setGraph(nodePotentials);							// Filling-in the graph nodes
+		graphKit->getGraphExt().addDefaultEdgesModel(vParams[0], vParams[2]);
+		graphKit->getGraphExt().addDefaultEdgesModel(test_fv, vParams[1], vParams[3]);
+
+		// ====================== Decoding =========================
+		vec_byte_t optimalDecoding = graphKit->getInfer().decode(100);
+
+		// ====================== Evaluation =======================
+		Mat solution(imgSize, CV_8UC1, optimalDecoding.data());
+		confMat.estimate(test_gt, solution);
+		
+		printf("Iteration: %d, parameters: { ", i);
+		for (const float& param : vParams) printf("%.1f ", param);
+		printf("}, accuracy: %.2f%%\n", confMat.getAccuracy());
+
+		if (powell.isConverged()) break;
+		vParams = powell.getParams(confMat.getAccuracy());
+		graphKit->getGraph().reset();
+		confMat.reset();
+	}
+
+	vParams = powell.getParams(1);
+	printf("Resulting parameters: {");
+	for (const float& param : vParams) printf("%.1f ", param);
+	printf("}\n");
+@endcode
+
+Please note, that we have to reset both the graph and the confusion matrix after each iteration in the main loop.
 */
