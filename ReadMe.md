@@ -22,8 +22,8 @@ These tasks are optimized for speed, _i.e._ high-efficient calculations. The cod
 Check out the [project site](http://research.project-10.de/dgm/) for all the details like
 
 - [Online documentation](http://research.project-10.de/dgmdoc/)
-- [Installation guide](http://research.project-10.de/dgmdoc/a01010.html)
-- [Tutorials](http://research.project-10.de/dgmdoc/a01011.html)
+- [Installation guide](http://research.project-10.de/dgmdoc/a01843.html)
+- [Tutorials](http://research.project-10.de/dgmdoc/a01844.html)
 
 Please join the [DGM-user Q&A forum](http://project-10.de/forum/viewforum.php?f=31) to ask questions and talk about methods and models.
 Framework development discussions and thorough bug reports are collected on [Issues](https://github.com/Project-10/DGM/issues).
