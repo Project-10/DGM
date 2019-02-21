@@ -133,9 +133,10 @@ namespace DirectGraphicalModels { namespace vis
 	namespace {
 		void LoadShaders(GLuint &NodeProgramID, GLuint &EdgeProgramID)
 		{
+#ifdef DEBUG_MODE
 			GLint	Result			= GL_FALSE;
 			int		InfoLogLength	= 0;
-
+#endif
 			// -------------- Vertex Shader --------------
 			GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 			{  

@@ -10,8 +10,8 @@ namespace DirectGraphicalModels
 		, m_vDeltas(nParams)
 		, m_vMin(nParams)
 		, m_vMax(nParams)
-		, m_vConverged(nParams)
 		, m_vKappa(3)
+		, m_vConverged(nParams)
 	{
 		reset();
 	}

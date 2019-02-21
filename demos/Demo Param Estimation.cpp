@@ -13,8 +13,6 @@ void print_help(char *argv0)
 int main(int argc, char *argv[])
 {
 	const Size	imgSize		= Size(400, 400);
-	const int	width		= imgSize.width;
-	const int	height		= imgSize.height;
 	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
 	const word	nFeatures	= 3;
 
