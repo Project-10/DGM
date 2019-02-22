@@ -214,7 +214,7 @@ Please refer to the @ref moduleVIS documentation
 
 /**
 @page s3 Installation
-DGM is a cross-platform C++ library. The description here was tested on Windows 10 / Visual Studio 2017, macOS Majave 10.14.3 / Xcode 10.1 and Ubuntu 18.04 / gcc 7.3.0. If you encounter errors after following the steps described below,
+DGM is a cross-platform C++ library. The description here was tested on Windows 10 / Visual Studio 2017, macOS Mojave 10.14.3 / Xcode 10.1 and Ubuntu 18.04 / gcc 7.3.0. If you encounter errors after following the steps described below,
 feel free to contact us via our <a href="http://project-10.de/forum/viewforum.php?f=31">User Q&A forum</a>. We'll do our best to help you out.<br>
 
 DGM has only one dependency: it is based on <a href="https://www.opencv.org/">OpenCV</a> library.
@@ -222,7 +222,7 @@ In order to use the DGM library, the OpenCV library should be also installed.
 
 @section sec_install_cv Installing OpenCV
 - Download the latest version of the OpenCV library from <a href="https://www.opencv.org/releases.html" target="_blank">https://www.opencv.org/releases.html</a>
-- Build and install the library. You may follow the following guidances: 
+- Build and install the library. You may follow the following guidance: 
 	- <a href="https://docs.opencv.org/3.4.2/d3/d52/tutorial_windows_install.html" target="_blank">Installation in Windows guide</a> or 
 	- <a href="https://docs.opencv.org/3.4.2/d7/d9f/tutorial_linux_install.html" target="_blank">Installation in Linux guide</a>
 
@@ -236,13 +236,13 @@ In case you want to build the library (recommended), follow these instructions, 
 This step also assumes that you have downloaded the sources of the DGM library.
 - Download and install <a href="https://cmake.org/download" target="_blank">CMake</a> for your operating system
 - Run \b cmake-gui.exe in Windows or \b CMake.app in MacOS
-- In the <i>“Where is the source code”</i> field choose the DGM source directory: \b DGM<br>
-  In the <i>“Where to build the binaries”</i> field choose directory where Visual Studio or Xcode project files will be generated: \a e.g. \b DGM/build
+- In the <i>"Where is the source code"</i> field choose the DGM source directory: \b DGM<br>
+  In the <i>"Where to build the binaries"</i> field choose directory where Visual Studio or Xcode project files will be generated: \a e.g. \b DGM/build
 - Press \a Configure button and choose <i>Visual Studio</i> for using 32-bit compiler, <i>Visual Studio Win64</i> for using 64-bit compiler or <i>Xcode</i> as building environment
 - Be sure that the \a OpenCV_DIR is pointing to the OpenCV installation directory (\a e.g. \b OpenCV/build/install or \b /usr/local/share/OpenCV), where \b OpenCVConfig.cmake file is located
-- (Optioanlly) you can change \a CMAKE_INSTALL_PREFIX to the directory where the DGM binaries will be installed (\a e.g. to \b DGM/build/install)
+- (Optionally) you can change \a CMAKE_INSTALL_PREFIX to the directory where the DGM binaries will be installed (\a e.g. to \b DGM/build/install)
 - Press one more time \a Configure and then \a Generate, so the IDE project files will be generated in the \b DGM/build
-- Open the generated projectd by pressing the \a Open \a Project button or directly by opening file \b DGM/build/DGM.sln or \b DGM/build/DGM.xcodeproj 
+- Open the generated project by pressing the \a Open \a Project button or directly by opening file \b DGM/build/DGM.sln or \b DGM/build/DGM.xcodeproj 
 - Build \b ALL_BUILD and \b INSTALL projects first for \a Debug and then for \a Release configuration. That will copy DGM headers, binaries and demonstration applications to the install folder \b DGM/build/install
 - Windows users may copy the OpenCV binaries into the install folder by executing script \b /DGM/build/install/bin/copyOpenCVDLL.bat
 - (Optionally) you can copy the install folder with the ready-to-use DGM library (\a e.g. \b DGM/build/install) to any other folder
@@ -270,18 +270,18 @@ install the latest version from master input the following commands in terminal:
 
 
 @section sec_install_dgm_after After Installation
-As soosn as the DGM library is installed, you can launch the demo applications from the \b /bin folder. If you have built the binaries from the sources, you can also start the demo projects 
+As soon as the DGM library is installed, you can launch the demo applications from the \b /bin folder. If you have built the binaries from the sources, you can also start the demo projects 
 directly from your IDE.
 The corresponding description may be found in @ref demo. Do not hesitate to modify these demo projects for your needs or start your own project based on our demo code. 
 
-If you wish to generate a new projects, which will use DGM, or add DGM to an existing project we highly recomend you to use <a href="https://cmake.org" target="_blank">CMake</a> and follow the 
-<a href="http://project-10.de/forum/viewtopic.php?f=31&t=1028&sid=09c4a9156520f7cf81bd474ac278ed51" target="_blank">Using DGM library with CMake</a> guidances, where template \b CMakeLists.txt 
+If you wish to generate a new project, which will use DGM, or add DGM to an existing project we highly recommend you to use <a href="https://cmake.org" target="_blank">CMake</a> and follow the 
+<a href="http://project-10.de/forum/viewtopic.php?f=31&t=1028&sid=09c4a9156520f7cf81bd474ac278ed51" target="_blank">Using DGM library with CMake</a> guidance, where template \b CMakeLists.txt 
 file is provided.<br>
 Alternatively, you can specify the following paths and library in your IDE manually:
 - Add to Configuration Properties -> C/C++ -> General -> Additional Include Directories the path \b install_folder/include
 - Add to Configuration Properties -> Linker -> General -> Additional Library Directories the path \b install_folder/lib for both Release and Debug configurations
 - Add to Configuration Properties -> Linker -> Input -> Additional Dependencies the libraries \b dgm170.lib, \b fex170.lib, \b vis170.lib and \b dgm170d.lib, \b fex170d.lib, \b vis170d.lib
-  for Release and Debug configurations accordingly
+  for Release and Debug configurations accordingly.
 */
 
 /**
