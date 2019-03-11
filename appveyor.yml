@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 #  Configuration for continuous integration service at appveyor.com
 #-----------------------------------------------------------------------------
-version: 1.7.0.{build}
+version: 1.7.1.{build}
 
 branches:
   only:
