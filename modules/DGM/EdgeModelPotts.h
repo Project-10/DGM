@@ -28,10 +28,10 @@ namespace DirectGraphicalModels {
 		* will be called for every node potential in the apply() method. 
 		* @param perPixelNormalization Flag indicating whether er-pixel normalization should be used during applying the edge model.
 		*/
-		CEdgeModelPotts(const Mat& features, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {}, bool perPixelNormalization = true);
-		virtual ~CEdgeModelPotts(void) = default;
+		DllExport CEdgeModelPotts(const Mat& features, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {}, bool perPixelNormalization = true);
+		DllExport virtual ~CEdgeModelPotts(void) = default;
 	
-		void apply(const Mat &src, Mat &dst) const override;
+		DllExport void apply(const Mat &src, Mat &dst) const override;
 	
 
 	private:

@@ -44,13 +44,19 @@
 #include "DGM/GraphDenseKit.h"
 #include "DGM/GraphPairwiseKit.h"
 
-#include "DGM/GraphDense.h"
+#include "DGM/GraphExt.h"
 #include "DGM/GraphDenseExt.h"
+#include "DGM/GraphPairwiseExt.h"
+#include "DGM/GraphLayeredExt.h"
+
+#include "DGM/GraphDense.h"
 #include "DGM/IGraphPairwise.h"
 #include "DGM/GraphPairwise.h"
 #include "DGM/GraphWeiss.h"
-#include "DGM/GraphPairwiseExt.h"
 #include "DGM/Graph3.h"
+
+#include "DGM/IEdgeModel.h"
+#include "DGM/EdgeModelPotts.h"
 
 #include "DGM/Infer.h"
 #include "DGM/InferExact.h"
