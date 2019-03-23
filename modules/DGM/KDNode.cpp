@@ -4,15 +4,18 @@
 namespace DirectGraphicalModels
 {
 	// Protected Constructor
-	CKDNode::CKDNode(Mat &key, byte value, pair_mat_t &boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right)
+	CKDNode::CKDNode(std::optional<Mat> key, byte value, std::optional<pair_mat_t> boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right)
 		: m_value(value)
-		, m_boundingBox(boundingBox)
 		, m_splitVal(splitVal)
 		, m_splitDim(splitDim)
 		, m_pLeft(left)
 		, m_pRight(right)
-	{
-		key.copyTo(m_key);
+	{ 
+		if (key) key->copyTo(m_key);
+		if (boundingBox) {
+			boundingBox->first.copyTo(m_boundingBox.first);
+			boundingBox->second.copyTo(m_boundingBox.second);
+		}
 	}
 
 	void CKDNode::save(FILE *pFile) const

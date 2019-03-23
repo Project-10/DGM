@@ -3,6 +3,7 @@
 #pragma once
 
 #include "types.h"
+#include <optional>
 
 namespace DirectGraphicalModels
 {
@@ -22,8 +23,9 @@ namespace DirectGraphicalModels
 		* @param key The node key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
 		* @param value The node value
 		*/
-		DllExport CKDNode(Mat &key, byte value) 
-			: CKDNode(key, value, lvalue_cast(std::make_pair(Mat(), Mat())), 0, 0, nullptr, nullptr) {}
+		DllExport CKDNode(const Mat& key, byte value) 
+			: CKDNode(key, value, std::nullopt, 0, 0, nullptr, nullptr) 
+		{}
 		/**
 		* @brief Branch node constructor
 		* @details All the points with \b key[\b splitDim] < \b splitVal must be assigned to the \b left sub-tree,
@@ -34,12 +36,13 @@ namespace DirectGraphicalModels
 		* @param left The pointer to the root of the \a left sub-tree. 
 		* @param right The pointer to the root of the \a right sub-tree.
 		*/
-		DllExport CKDNode(pair_mat_t &boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right)
-			: CKDNode(EmptyMat, 0, boundingBox, splitVal, splitDim, left, right) {}
+		DllExport CKDNode(const pair_mat_t &boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right)
+			: CKDNode(std::nullopt, 0, boundingBox, splitVal, splitDim, left, right) 
+		{}
 		// Copy constructor
-		DllExport CKDNode(const CKDNode &) = delete;
+		DllExport CKDNode(const CKDNode&) = delete;
 		// Destructor
-		DllExport ~CKDNode(void) {};
+		DllExport ~CKDNode(void) = default;
 		// Assignment operator
 		DllExport bool						operator=(const CKDNode)  = delete;
 
@@ -103,7 +106,7 @@ namespace DirectGraphicalModels
 
 
 	private:
-		DllExport CKDNode(Mat &key, byte value, pair_mat_t &boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right);
+		DllExport CKDNode(std::optional<Mat> key, byte value, std::optional<pair_mat_t> boundingBox, byte splitVal, int splitDim, std::shared_ptr<CKDNode> left, std::shared_ptr<CKDNode> right);
 
 
 	private:
