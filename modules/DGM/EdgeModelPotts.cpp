@@ -1,10 +1,11 @@
 #include "EdgeModelPotts.h"
+#include "permutohedral/permutohedral.h"
 
 namespace DirectGraphicalModels {
 	// Constructor
 	CEdgeModelPotts::CEdgeModelPotts(const Mat& features, float weight, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction, bool perPixelNormalization)
 		: IEdgeModel()
-		, m_pLattice(std::make_unique<CPermutohedral>())
+		, m_pLattice(new CPermutohedral())
 		, m_weight(weight)
 		, m_norm(features.rows, 1, CV_32FC1, Scalar(1))
 		, m_function(semiMetricFunction)
@@ -22,6 +23,12 @@ namespace DirectGraphicalModels {
 			mean_norm = m_norm.rows / mean_norm;
 			m_norm.setTo(mean_norm);
 		}
+	}
+
+	// Destructor
+	CEdgeModelPotts::~CEdgeModelPotts(void)
+	{
+ 		delete m_pLattice;
 	}
 
 	// dst = e^(w * norm * f(Lattice.compute(src)))

@@ -3,7 +3,8 @@
 #pragma once
 
 #include "IEdgeModel.h"
-#include "permutohedral/permutohedral.h"
+
+class CPermutohedral;
 
 namespace DirectGraphicalModels {
 	// ================================ Potts Edge Model ================================
@@ -29,13 +30,13 @@ namespace DirectGraphicalModels {
 		* @param perPixelNormalization Flag indicating whether er-pixel normalization should be used during applying the edge model.
 		*/
 		DllExport CEdgeModelPotts(const Mat& features, float weight = 1.0f, const std::function<void(const Mat& src, Mat& dst)>& semiMetricFunction = {}, bool perPixelNormalization = true);
-		DllExport virtual ~CEdgeModelPotts(void) = default;
+		DllExport virtual ~CEdgeModelPotts(void);
 	
 		DllExport void apply(const Mat &src, Mat &dst) const override;
 	
 
 	private:
-		std::unique_ptr<CPermutohedral>					m_pLattice;		///< Pointer to the permutohedral lattice
+		CPermutohedral								  * m_pLattice;		///< Pointer to the permutohedral lattice
 		float											m_weight;		///< The weighting parameter
 		Mat												m_norm;			///< Array with normalization factors
 		std::function<void(const Mat &src, Mat &dst)>	m_function;		///< The semi-metric function
