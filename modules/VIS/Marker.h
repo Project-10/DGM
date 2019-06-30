@@ -9,7 +9,7 @@
 namespace DirectGraphicalModels { namespace vis
 {
 	// Default paletes
-	const static Scalar colors24[] =  
+	const static vec_scalar_t colors24 =  
 	{ 
 		CV_RGB(255, 0,   0),		// Red
 		CV_RGB(255, 128, 0),		// Orange
@@ -100,8 +100,9 @@ namespace DirectGraphicalModels { namespace vis
 		* For optimal performance, class name should have maximal 10 symbols. 
 		*/
 		DllExport CMarker(const vec_nColor_t &vPalette);
-		DllExport virtual ~CMarker(void);
+		DllExport virtual ~CMarker(void) = default;
 	
+
 		/**
 		* @brief Visualizes the classes.
 		* @details Draws the \a classes image on \a base image. 
@@ -160,7 +161,13 @@ namespace DirectGraphicalModels { namespace vis
 	};
 
 
-
+	/**
+	* @ingroup moduleVIS
+	* @brief Generates a vector with colors according to a default palette \b palette
+	* @param palette One of the default palletes (Ref. @ref default_pallete)
+	* @returns A vector with colors according to a default palette \b palette
+	*/
+	DllExport vec_scalar_t generateDefaultPalette(default_pallete palette = DEF_PALETTE_12);
 	/**
 	* @ingroup moduleVIS
 	* @brief Visualizes a sparse coding dictionary

@@ -13,32 +13,14 @@ const int	CMarker::ds				= 70; // px
 // Constuctor
 CMarker::CMarker(default_pallete palette)
 {
-	switch(palette) {
-		case DEF_PALETTE_3:			for (int h = 0; h < 360; h += 120)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_3_INV:		for (int h = 0; h < 360; h += 120)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_6:			for (int h = 0; h < 360; h += 60)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_6_INV:		for (int h = 0; h < 360; h += 60)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_12:		for (int h = 0; h < 360; h += 30)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_12_INV:	for (int h = 0; h < 360; h += 30)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_24:		for (int h = 0; h < 360; h += 15)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_24_INV:	for (int h = 0; h < 360; h += 15)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_24_M:		for (int i = 0; i < 24; i++)		m_vPalette.push_back(std::make_pair(colors24[i], ""));								  break;
-		case DEF_PALETTE_36:		for (int h = 0; h < 360; h += 10)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_36_INV:	for (int h = 0; h < 360; h += 10)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_72:		for (int h = 0; h < 360; h += 5)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255)), "")); break;
-		case DEF_PALETTE_72_INV:	for (int h = 0; h < 360; h += 5)	m_vPalette.push_back(std::make_pair(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255)), "")); break;
-	}	
+	vec_scalar_t defPalette = generateDefaultPalette(palette);
+	for (Scalar &s : defPalette)
+		m_vPalette.push_back(std::make_pair(s, ""));
 }
 
 // Constuctor
 CMarker::CMarker(const vec_nColor_t &vPalette) : m_vPalette(vPalette)
 {}
-
-// Destructor:
-CMarker::~CMarker(void)
-{
-	m_vPalette.clear();
-}
 
 void CMarker::markClasses(Mat &base, const Mat &classes, byte flag) const
 {
@@ -320,6 +302,27 @@ void CMarker::drawRectangle(Mat &img, Point pt1, Point pt2, const Scalar &color,
 }
 
 // ======================================== Non-Member ========================================
+
+vec_scalar_t generateDefaultPalette(default_pallete palette)
+{
+	vec_scalar_t res;
+	switch (palette) {
+	case DEF_PALETTE_3:			for (int h = 0; h < 360; h += 120)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_3_INV:		for (int h = 0; h < 360; h += 120)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_6:			for (int h = 0; h < 360; h += 60)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_6_INV:		for (int h = 0; h < 360; h += 60)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_12:		for (int h = 0; h < 360; h += 30)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_12_INV:	for (int h = 0; h < 360; h += 30)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_24:		for (int h = 0; h < 360; h += 15)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_24_INV:	for (int h = 0; h < 360; h += 15)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_24_M:		return colors24;
+	case DEF_PALETTE_36:		for (int h = 0; h < 360; h += 10)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_36_INV:	for (int h = 0; h < 360; h += 10)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_72:		for (int h = 0; h < 360; h += 5)	res.push_back(colorspaces::hsv2rgb(DGM_HSV(h, 255, 255))); break;
+	case DEF_PALETTE_72_INV:	for (int h = 0; h < 360; h += 5)	res.push_back(colorspaces::hsv2bgr(DGM_HSV(h, 255, 255))); break;
+	}
+	return res;
+}
 
 Mat drawDictionary(const Mat &dictionary, double m)
 {

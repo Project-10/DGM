@@ -25,13 +25,14 @@ namespace DirectGraphicalModels {
 	* });
 	* @endcode
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
-	* @param groupsColor The list of colors for graph edge groups.
+	* @param groupsColor The list of colors for graph edge groups. May be achieved with the function:
+	* \ref vis::generateDefaultPalette() or generated manually.
 	* @return Image \b size x \b size pixels with visualized graph.
 	*/
 	DllExport Mat drawGraph(int								  size, 
 							IGraphPairwise					& graph,
 							std::function<Point2f(size_t)>	  posFunc, 
-							std::function<cv::Scalar(size_t)>   colorFunc		= nullptr, 
+							std::function<Scalar(size_t)>	  colorFunc	= nullptr, 
 							const vec_scalar_t				& groupsColor	= vec_scalar_t());
 
 #ifdef USE_OPENGL
@@ -56,7 +57,8 @@ namespace DirectGraphicalModels {
 	* });
 	* @endcode
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
-	* @param groupsColor The list of colors for graph edge groups.                                 
+	* @param groupsColor The list of colors for graph edge groups. May be achieved with the function:
+	* \ref vis::generateDefaultPalette() or generated manually.                                 
 	*/
 	DllExport void showGraph3D(int								 size, 
 							   IGraphPairwise				   & graph,
