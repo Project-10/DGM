@@ -75,7 +75,6 @@ void CMessagePassing::infer(unsigned int nIt)
 }
 
 // dst: usually edge_to->msg or edge_to->msg_temp
-// TODO: if reference is OK, merge with other frm TRW
 void CMessagePassing::calculateMessage(const Edge& edge_to, float *temp, float *dst, bool maxSum)
 {
 	byte		  s;															// state indexes
