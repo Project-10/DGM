@@ -100,6 +100,14 @@ namespace DirectGraphicalModels
 		DllExport void		removeEdge	(size_t srcNode, size_t dstNode) override;
 		DllExport bool		isEdgeExists(size_t srcNode, size_t dstNode) const override;
 
+#ifdef DEBUG_MODE
+		/**
+		* @brief Returns the edge container
+		* @warning Using this function is not safe. It is added exclusively for the debugging purposes.
+		* @return The edge container.
+		*/
+		DllExport vec_edge_t* getEdgesContainer(void) { return &m_vEdges; }
+#endif
 
 	private:
 		/**

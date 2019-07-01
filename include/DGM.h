@@ -181,12 +181,12 @@ Please refer to the @ref moduleVIS documentation
 		@ingroup moduleTrain
 		@brief A set of methods for training and using pairwise classifiers for pairwise graph edges.
 
-	@defgroup moduleGraph Graph Building
-	@ingroup moduleDGM
-	@brief Sub-module containing methods for building arbitrary pairwise and dense graphical models.
-	@details The underlying probability distributions of probabilistic models for sake of simplicity and flexibility of modeling are usually represented in a graphical form (this is why they are
-	often called \a probabilistic \a graphical \a models). A probabilistic graphical model is a diagrammatic representation of a probability distribution. In such a graph there is a node for each 
-	random variable and relations between these variables are represented via graph edges.
+@defgroup moduleGraph Graph Building
+@ingroup moduleDGM
+@brief Sub-module containing methods for building arbitrary pairwise and dense graphical models.
+@details The underlying probability distributions of probabilistic models for sake of simplicity and flexibility of modeling are usually represented in a graphical form (this is why they are
+often called \a probabilistic \a graphical \a models). A probabilistic graphical model is a diagrammatic representation of a probability distribution. In such a graph there is a node for each 
+random variable and relations between these variables are represented via graph edges.
 
 		@defgroup moduleGraphExt Graph Extensions
 		@ingroup moduleGraph
@@ -213,9 +213,9 @@ Please refer to the @ref moduleVIS documentation
 	@ingroup moduleDGM
 	@brief Sub-module containing techniques for estimation the probabilistic models' control parameters. 
 
-	@defgroup moduleEva Evaluation
-	@ingroup moduleDGM
-	@brief Sub-module containing classes and methods for evaluation the classification results.
+@defgroup moduleEva Evaluation
+@ingroup moduleDGM
+@brief Sub-module containing classes and methods for evaluation the classification results.
 */
 
 /**
