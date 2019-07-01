@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Infer.h"
-#include "GraphPairwise.h"
+#include "IGraphPairwise.h"
 
 namespace DirectGraphicalModels
 {
@@ -22,8 +22,8 @@ namespace DirectGraphicalModels
 		* @brief Constructor
 		* @param graph The graph
 		*/
-		DllExport CMessagePassing(CGraphPairwise &graph) : CInfer(graph) {}
-		DllExport virtual ~CMessagePassing(void) {}
+		DllExport CMessagePassing(IGraphPairwise& graph) : CInfer(graph) {}
+		DllExport virtual ~CMessagePassing(void) = default;
 		
 		DllExport virtual void	  infer(unsigned int nIt = 1);
 
@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 		* @brief Returns the graph
 		* @return The graph
 		*/
-		CGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<CGraphPairwise &>(getGraph()); }
+		IGraphPairwise & getGraphPairwise(void) const { return dynamic_cast<IGraphPairwise &>(getGraph()); }
 		/**
 		* @brief Calculates messages, associated with the edges of corresponding graphical model
 		* @details > This function may modify Edge::msg and Edge::msg_temp containers of graph edges
