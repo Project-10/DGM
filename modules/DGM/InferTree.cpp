@@ -5,15 +5,14 @@ namespace DirectGraphicalModels
 {
 void CInferTree::calculateMessages(unsigned int)
 {
-	byte	nStates = getGraph().getNumStates();
+/*	byte	nStates = getGraph().getNumStates();
 	size_t	nNodes	= getGraph().getNumNodes();
 
 	// ====================================== Initialization ======================================
-	for (ptr_edge_t &edge: getGraphPairwise().m_vEdges) {
-		delete[] edge->msg;
-		edge->msg = NULL;
+	delete[] m_pMsg;
+	m_pMsg = NULL;
+	for (ptr_edge_t &edge: getGraphPairwise().m_vEdges) 
 		edge->suspend = false;
-	}
 
 	// =================================== Computing messages ===================================	
 	size_t  * nFromEdges = new size_t[nNodes];							// Count number of neighbors
@@ -70,6 +69,6 @@ void CInferTree::calculateMessages(unsigned int)
 	} // while
 
 	delete[] temp;
-	delete[] nFromEdges;
+	delete[] nFromEdges;*/
 }
 }

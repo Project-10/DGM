@@ -6,21 +6,15 @@ namespace DirectGraphicalModels
 {
 void CInferTRW::infer(unsigned int nIt)
 {
-	const byte nStates = getGraph().getNumStates();					// number of states (classes)
+	const size_t nEdges = getGraph().getNumEdges();						// number of edges
+	const byte	 nStates = getGraph().getNumStates();					// number of states (classes)
 
 	// ====================================== Initialization ======================================			
 	createMessages();
-#ifdef ENABLE_PPL
-	concurrency::parallel_for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
-#else
-	std::for_each(getGraphPairwise().m_vEdges.begin(), getGraphPairwise().m_vEdges.end(), [nStates](ptr_edge_t &edge) {
-#endif
-		std::fill(edge->msg, edge->msg + nStates, 1.0f);
-		std::fill(edge->msg_temp, edge->msg_temp + nStates, 1.0f);
-	});
+	std::fill(m_pMsg, m_pMsg + nEdges * nStates, 1.0f);
+	std::fill(m_pMsgTemp, m_pMsgTemp + nEdges * nStates, 1.0f);
 
 	// =================================== Calculating messages ==================================	
-
 	calculateMessages(nIt);
 
 	// =================================== Calculating beliefs ===================================	
@@ -37,7 +31,8 @@ void CInferTRW::infer(unsigned int nIt)
 		for (size_t e_t : node->to) {
 			Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 			if (edge_to->node1 > edge_to->node2) continue;
-			for (byte s = 0; s < nStates; s++) node->Pot.at<float>(s, 0) *= edge_to->msg[s];
+			float *msg = &m_pMsg[e_t * nStates];
+			for (byte s = 0; s < nStates; s++) node->Pot.at<float>(s, 0) *= msg[s];
 		}
 
 		Point extremumLoc;
@@ -68,7 +63,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 				if (edge_to->node1 > edge_to->node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_to->msg[s];				// data = node.pot * edge_to.msg
+				float *msg = &m_pMsg[e_t * nStates];
+				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];				// data = node.pot * edge_to.msg
 				nForward++;
 			} // e_t
 			
@@ -76,7 +72,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
 				if (edge_from->node1 > edge_from->node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_from->msg[s];				// data = node.pot * edge_to.msg * edge_from.msg
+				float *msg = &m_pMsg[e_f * nStates];
+				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];				// data = node.pot * edge_to.msg * edge_from.msg
 				nBackward++;
 			} // e_f
 
@@ -85,7 +82,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// pass messages from i to nodes with higher m_ordering
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
-				if (edge_to->node1 < edge_to->node2) calculateMessage(*edge_to, temp, data);
+				float *msg = &m_pMsg[e_t * nStates];
+				if (edge_to->node1 < edge_to->node2) calculateMessage(msg, *edge_to, temp, data);
 			} // e_t
 		});
 
@@ -97,7 +95,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 				if (edge_to->node1 > edge_to->node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_to->msg[s];
+				float *msg = &m_pMsg[e_t * nStates];
+				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];
 				nForward++;
 			} // e_t
 			
@@ -105,7 +104,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
 				if (edge_from->node1 > edge_from->node2) continue;
-				for (byte s = 0; s < nStates; s++) data[s] *= edge_from->msg[s];
+				float *msg = &m_pMsg[e_f * nStates];
+				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];
 				nBackward++;
 			} // e_f
 
@@ -118,7 +118,8 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// pass messages from i to nodes with smaller m_ordering
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
-				if (edge_from->node1 < edge_from->node2) calculateMessage(*edge_from, temp, data);
+				float *msg = &m_pMsg[e_f * nStates];
+				if (edge_from->node1 < edge_from->node2) calculateMessage(msg, *edge_from, temp, data);
 			} // e_f
 		}); // All Nodes
 	} // iterations
@@ -127,26 +128,26 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 	delete[] temp;
 }
 
-// Updates edge->msg = F(data, edge.Pot)
-void CInferTRW::calculateMessage(Edge &edge, float *temp, float *data)
+// Updates msg = F(msg, data, edge.Pot)
+void CInferTRW::calculateMessage(float *msg, const Edge &edge, float *temp, float *data)
 {
 	const byte		nStates = getGraph().getNumStates();
 
-	for (byte s = 0; s < nStates; s++) temp[s] = data[s] / MAX(FLT_EPSILON, edge.msg[s]); 				// tmp = gamma * data / edge.msg
+	for (byte s = 0; s < nStates; s++) temp[s] = data[s] / MAX(FLT_EPSILON, msg[s]); 				// tmp = gamma * data / edge.msg
 
 	for (byte y = 0; y < nStates; y++) {
-		float *pPot = edge.Pot.ptr<float>(y);
+		const float *pPot = edge.Pot.ptr<float>(y);
 		float max = temp[0] * pPot[0];																// vMin = tmp + edge.Pot(0, kdest)
 		for (byte x = 1; x < nStates; x++) {
 			float val = temp[x] * pPot[x];
 			if (max < val) max = val;
 		}
-		edge.msg[y] = max;
+		msg[y] = max;
 	}
 
 	// Normalization
-	float max = edge.msg[0];
-	for (byte s = 1; s < nStates; s++) if (max < edge.msg[s]) max = edge.msg[s];
-	for (byte s = 0; s < nStates; s++) edge.msg[s] /= max;
+	float max = msg[0];
+	for (byte s = 1; s < nStates; s++) if (max < msg[s]) max = msg[s];
+	for (byte s = 0; s < nStates; s++) msg[s] /= max;
 }
 }
