@@ -13,9 +13,9 @@ namespace DirectGraphicalModels
 			size_t nToEdges = node->to.size();
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {				// outgoing edges
 				Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();	// current outgoing edge
-				float *msg = &m_pMsg[node->to[e_t] * nStates];
+				float *msg = &m_msg[node->to[e_t] * nStates];
 				if (edge_to->node2 == node->id + 1) 
-					calculateMessage(edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, msg);
 			} // e_t;
 		});
 
@@ -24,9 +24,9 @@ namespace DirectGraphicalModels
 			size_t nToEdges = node->to.size();
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {				// outgoing edges
 				Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();	// current outgoing edge
-				float *msg = &m_pMsg[node->to[e_t] * nStates];
+				float *msg = &m_msg[node->to[e_t] * nStates];
 				if (edge_to->node2 == node->id - 1) 
-					calculateMessage(edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, msg);
 			} // e_t;
 		});
 

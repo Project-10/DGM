@@ -11,8 +11,8 @@ void CMessagePassing::infer(unsigned int nIt)
 
 	// ====================================== Initialization ======================================			
 	createMessages(); 
-	std::fill(m_pMsg, m_pMsg + nEdges * nStates, 1.0f / nStates);							// msg[] = 1 / nStates;
-	std::fill(m_pMsgTemp, m_pMsgTemp + nEdges * nStates, 1.0f / nStates);					// msg_temp[] = 1 / nStates;
+	std::fill(m_msg, m_msg + nEdges * nStates, 1.0f / nStates);							// msg[] = 1 / nStates;
+	std::fill(m_msg_temp, m_msg_temp + nEdges * nStates, 1.0f / nStates);				// msg_temp[] = 1 / nStates;
 
 
 	// =================================== Calculating messages ==================================	
@@ -52,7 +52,7 @@ void CMessagePassing::infer(unsigned int nIt)
 
 		for (size_t e_f = 0; e_f < nFromEdges; e_f++) {
 			Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();	// current incoming edge
-			float *msg = &m_pMsg[node->from[e_f] * nStates];
+			float *msg = &m_msg[node->from[e_f] * nStates];
 			float epsilon = FLT_EPSILON;
 			for (byte s = 0; s < nStates; s++) { 		// states
 														// node.Pot.at<float>(s,0) *= edge_from->msg[s];
@@ -75,10 +75,11 @@ void CMessagePassing::infer(unsigned int nIt)
 }
 
 // dst: usually edge_to->msg or edge_to->msg_temp
-void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, bool maxSum)
+// TODO: if reference is OK, merge with other frm TRW
+void CMessagePassing::calculateMessage(const Edge& edge_to, float *temp, float *dst, bool maxSum)
 {
 	byte		  s;															// state indexes
-	Node		* node = getGraphPairwise().m_vNodes[edge_to->node1].get();		// source node
+	Node		* node = getGraphPairwise().m_vNodes[edge_to.node1].get();		// source node
 	size_t		  nFromEdges = node->from.size();								// number of incoming eges
 	const byte	  nStates = getGraph().getNumStates();							// number of states
 
@@ -87,16 +88,14 @@ void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, 
 
 	for (size_t e_f = 0; e_f < nFromEdges; e_f++) {								// incoming edges
 		Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();	// current incoming edge
-		float *msg = &m_pMsg[node->from[e_f] * nStates];
-		if (edge_from->node1 != edge_to->node2)
+		float *msg = &m_msg[node->from[e_f] * nStates];
+		if (edge_from->node1 != edge_to.node2)
 			for (s = 0; s < nStates; s++)
 				temp[s] *= msg[s];												// temp = temp * msg
-		else
-			edge_from->suspend = true;
 	} // e_f
 
 	// Compute new message: new_msg = (edge_to.Pot^2)^t x temp
-	float Z = MatMul(edge_to->Pot, temp, dst, maxSum);
+	float Z = MatMul(edge_to.Pot, temp, dst, maxSum);
 
 	// Normalization and setting new values
 	if (Z > FLT_EPSILON)
@@ -112,36 +111,36 @@ void CMessagePassing::createMessages(void)
 	const size_t nEdges = getGraph().getNumEdges();
 	const byte	nStates	= getGraph().getNumStates();
 
-	m_pMsg = new float[nEdges * nStates];
-	DGM_ASSERT_MSG(m_pMsg, "Out of Memory");
-	m_pMsgTemp = new float[nEdges * nStates];
-	DGM_ASSERT_MSG(m_pMsgTemp, "Out of Memory");
+	m_msg = new float[nEdges * nStates];
+	DGM_ASSERT_MSG(m_msg, "Out of Memory");
+	m_msg_temp = new float[nEdges * nStates];
+	DGM_ASSERT_MSG(m_msg_temp, "Out of Memory");
 }
 
 void CMessagePassing::deleteMessages(void)
 {
-	if (m_pMsg) {
-		delete[] m_pMsg;
-		m_pMsg = NULL;
+	if (m_msg) {
+		delete[] m_msg;
+		m_msg = NULL;
 	}
-	if (m_pMsgTemp) {
-		delete[] m_pMsgTemp;
-		m_pMsgTemp = NULL;
+	if (m_msg_temp) {
+		delete[] m_msg_temp;
+		m_msg_temp = NULL;
 	}
 }
 
 void CMessagePassing::swapMessages(void)
 {
-	float *pTemp = m_pMsg;
-	m_pMsg = m_pMsgTemp;
-	m_pMsgTemp = pTemp;
+	float *pTemp = m_msg;
+	m_msg = m_msg_temp;
+	m_msg_temp = pTemp;
 }
 
 // dst = (M * M)^T x v
-float CMessagePassing::MatMul(const Mat &M, const float *v, float *&dst, bool maxSum)
+float CMessagePassing::MatMul(const Mat &M, const float *v, float *dst, bool maxSum)
 {
 	float res = 0;
-	if (!dst) dst = new float[M.cols];
+	DGM_ASSERT(dst);
 	for (int x = 0; x < M.cols; x++) {
 		float sum = 0;
 		for (int y = 0; y < M.rows; y++) {

@@ -46,10 +46,9 @@ namespace DirectGraphicalModels
 		* @param[in] edge Graph edge
 		* @param[in] temp Auxilary array of \b nStates values. Introduced for higher perfomance reasons.
 		* @param[out] dst Destination array for calculated message. Usually \b edge->msg or \b edge->msg_temp.
-		* If the pointer is NULL, destination container will be created as a new vector of length \b nStates.
 		* @param[in] maxSum Flag indicating weather the message must be calculated according to the \a sum-product (false) or \a max-product (true) algorithm.
 		*/
-		void calculateMessage(Edge *edge, float *temp, float *&dst, bool maxSum = false);
+		void calculateMessage(const Edge& edge, float *temp, float *dst, bool maxSum = false);
 		/**
 		* @brief Allocates memory for Edge::msg and Edge::msg_temp containers for all edges in the graph
 		*/
@@ -68,16 +67,15 @@ namespace DirectGraphicalModels
 		* \f$\vec{dst} = (M\cdot M)^\top\times\vec{v}\f$
 		* @param[in] M Matrix: Mat(size: \a M.height x \a M.width; type: CV_32FC1)
 		* @param[in] v Vector of length \a M.height
-		* @param[out] dst Resulting vector. If the pointer is NULL, destination container will be created as a new vector of length \a M.width.
+		* @param[out] dst Resulting vector.
 		* @param[in] maxSum Flag indicating weather the \a max-sum multiplication should be performed
 		* @return The sum of all elemts in vector \b dst
 		*/
-		static float MatMul(const Mat &M, const float *v, float *&dst, bool maxSum = false);
+		static float MatMul(const Mat &M, const float *v, float *dst, bool maxSum = false);
 
 
 	protected:	
-		float * m_pMsg		= NULL;
-		float * m_pMsgTemp	= NULL;
-
+		float * m_msg		= NULL;		///< Message: array of nStates x nEdges
+		float * m_msg_temp	= NULL;		///< Temp Message: array of nStates x nEdges
 	};
 }

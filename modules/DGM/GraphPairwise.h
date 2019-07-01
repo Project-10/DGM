@@ -34,10 +34,9 @@ namespace DirectGraphicalModels
 		size_t	  node2;		///< Second (destination) node in edge
 		Mat		  Pot;			///< The edge potentials: Mat(size: nStates x nStates; type: CV_32FC1)
 		byte	  group_id;		///< ID of the group, to which the edge belongs
-		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
 		Edge(void) = delete;
-		Edge(size_t n1, size_t n2, byte group = 0, const Mat& p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), group_id(group), suspend(false) {}
+		Edge(size_t n1, size_t n2, byte group = 0, const Mat& p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), group_id(group) {}
 	};
 	using	ptr_edge_t = std::unique_ptr<Edge>;
 	using	vec_edge_t = std::vector<ptr_edge_t>;

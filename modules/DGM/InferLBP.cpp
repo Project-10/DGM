@@ -26,8 +26,8 @@ void CInferLBP::calculateMessages(unsigned int nIt)
 			size_t nToEdges = node->to.size();
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {				// outgoing edges
 				Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();	// current outgoing edge
-				float *msg_temp = &m_pMsgTemp[node->to[e_t] * nStates];
-				calculateMessage(edge_to, temp, msg_temp, m_maxSum);
+				float *msg_temp = &m_msg_temp[node->to[e_t] * nStates];
+				calculateMessage(*edge_to, temp, msg_temp, m_maxSum);
 			} // e_t;
 #ifdef ENABLE_PPL
 			delete[] temp;
