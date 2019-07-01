@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	auto				edgeTrainer = CTrainEdge::create(edgeModel, nStates, nFeatures);
 	CGraphPairwise		graph(nStates);
 	CGraphPairwiseExt	graphExt(graph);
-	CInferLBP			decoder(graph);
+	CInferTRW			decoder(graph);
 	CMarker				marker(DEF_PALETTE_6);
 	CCMat				confMat(nStates);
 
