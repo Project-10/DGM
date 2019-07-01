@@ -24,7 +24,6 @@ void CMessagePassing::infer(unsigned int nIt)
 #else
 	std::for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&,nStates](ptr_node_t &node) {
 #endif
-		size_t nFromEdges = node->from.size();
 		// Don't understand the normalization step, replaced with another version.
 		//for (size_t e_f = 0; e_f < nFromEdges; e_f++) {				
 		//	Edge *edge_from = m_pGraph->m_vEdges[node->from[e_f]].get();	// current incoming edge
@@ -49,17 +48,17 @@ void CMessagePassing::infer(unsigned int nIt)
 //	}
 //} // e_f
 
+		const float epsilon = FLT_EPSILON;
 
-		for (size_t e_f = 0; e_f < nFromEdges; e_f++) {
-			Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();	// current incoming edge
-			float *msg = &m_msg[node->from[e_f] * nStates];
-			float epsilon = FLT_EPSILON;
+		for (size_t e_f_idx : node->from) {
+			float *msg = &m_msg[e_f_idx * nStates];		// message of the current incoming edge
 			for (byte s = 0; s < nStates; s++) { 		// states
-														// node.Pot.at<float>(s,0) *= edge_from->msg[s];
+//				node->Pot.at<float>(s, 0) *= msg[s];
 				node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + msg[s]);		// Soft multiplication
 			} //s
-		} // e_f
-		  // Normalization
+		} // e_f_idx
+		
+		// Normalization
 		float SUM_pot = 0;
 		for (byte s = 0; s < nStates; s++)			// states
 			SUM_pot += node->Pot.at<float>(s, 0);
@@ -85,13 +84,13 @@ void CMessagePassing::calculateMessage(const Edge& edge_to, float *temp, float *
 	// Compute temp = product of all incoming msgs except e_t
 	for (s = 0; s < nStates; s++) temp[s] = node->Pot.at<float>(s, 0);			// temp = node.Pot
 
-	for (size_t e_f = 0; e_f < nFromEdges; e_f++) {								// incoming edges
-		Edge *edge_from = getGraphPairwise().m_vEdges[node->from[e_f]].get();	// current incoming edge
-		float *msg = &m_msg[node->from[e_f] * nStates];
+	for (size_t e_f_idx : node->from) {											// incoming edges
+		Edge *edge_from = getGraphPairwise().m_vEdges[e_f_idx].get();			// current incoming edge
+		float *msg = &m_msg[e_f_idx * nStates];
 		if (edge_from->node1 != edge_to.node2)
 			for (s = 0; s < nStates; s++)
 				temp[s] *= msg[s];												// temp = temp * msg
-	} // e_f
+	} // e_f_idx
 
 	// Compute new message: new_msg = (edge_to.Pot^2)^t x temp
 	float Z = MatMul(edge_to.Pot, temp, dst, maxSum);
