@@ -105,15 +105,6 @@ namespace DirectGraphicalModels
 		m_msg_temp = pTemp;
 	}
 
-	for (int x = 0; x < M.cols; x++) {
-		float sum = 0;
-		for (int y = 0; y < M.rows; y++) {
-			float m = M.at<float>(y, x);
-			float prod = v[y] * m * m;
-			if (maxSum) { if (prod > sum) sum = prod; }
-			else sum += prod;
-		} // y
-	return res;
 	// dst = (M * M)^T x v
 	float CMessagePassing::MatMul(const Mat& M, const float* v, float* dst, bool maxSum)
 	{
