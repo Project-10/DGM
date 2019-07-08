@@ -20,7 +20,7 @@ namespace DirectGraphicalModels
 		* @param graph The graph
 		*/			
 		DllExport CInferViterbi(CGraphPairwise &graph) : CInferLBP(graph) { setMaxSum(true); }
-		DllExport virtual ~CInferViterbi(void) {};
+		DllExport virtual ~CInferViterbi(void) = default;
 	};
 
 }

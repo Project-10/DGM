@@ -132,7 +132,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 // Updates edge->msg = F(data, edge.Pot)
 void CInferTRW::calculateMessage(float *msg, Edge &edge, float *temp, float *data)
 {
-	const byte		nStates = getGraph().getNumStates();
+	const byte nStates = getGraph().getNumStates();
 
 	for (byte s = 0; s < nStates; s++) temp[s] = data[s] / MAX(FLT_EPSILON, msg[s]); 				// tmp = gamma * data / edge.msg
 
