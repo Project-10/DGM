@@ -10,11 +10,8 @@ void CInferTree::calculateMessages(unsigned int)
 	const size_t	nEdges	= getGraph().getNumEdges();
 
 	// ====================================== Initialization ======================================
-	for (ptr_edge_t &edge: getGraphPairwise().m_vEdges) {
-		delete[] edge->msg;
-		edge->msg = NULL;
-	}
-	vec_bool_t		suspend(nEdges, false);								// Flag, indicating weather the message calculation must be postponed
+	vec_bool_t		isReady(nEdges, false);								// Flags indicating whether the messages were already calculated
+	vec_bool_t		suspend(nEdges, false);								// Flags indicating weather the message calculation must be postponed
 	
 	// =================================== Computing messages ===================================	
 	size_t  * nFromEdges = new size_t[nNodes];							// Count number of neighbors
@@ -45,9 +42,10 @@ void CInferTree::calculateMessages(unsigned int)
 		if (allSuspend) {	// Now prepare messages for suspending edges
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
-				if (edge_to->msg) continue;
-					
-				calculateMessage(edge_to, temp, edge_to->msg);
+				if (isReady[node->to[e_t]]) continue;
+				float *msg = &m_msg[node->to[e_t] * nStates];
+				calculateMessage(edge_to, temp, msg);
+				isReady[node->to[e_t]] = true;
 				
 				// ------
 				size_t n1 = edge_to->node1;
@@ -66,10 +64,11 @@ void CInferTree::calculateMessages(unsigned int)
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
 				Edge * edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
 				if (suspend[node->to[e_t]]) continue;
-				if (edge_to->msg)     continue;
-					
-				calculateMessage(edge_to, temp, edge_to->msg);
+				if (isReady[node->to[e_t]]) continue;
 				
+				float *msg = &m_msg[node->to[e_t] * nStates];
+				calculateMessage(edge_to, temp, msg);
+				isReady[node->to[e_t]] = true;
 				// ------
 				size_t n1 = edge_to->node1;
 				size_t n2 = edge_to->node2;

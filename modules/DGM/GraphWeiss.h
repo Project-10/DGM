@@ -29,23 +29,10 @@ namespace DirectGraphicalModels
 			Node	* node1;		///< First node in edge
 			Node	* node2;		///< Second node in edge
 			Mat		  Pot;			///< The edge potentials: Mat(size: nStates x nStates; type: CV_32FC1)
-			float	* msg;			///< Message (for the loopyBP algorithm: class CDecodeLPB): Mat(size: nStates x 1; type: CV_32FC1)
-			float	* msg_temp;		///< Temp Message (for the loopyBP algorithm: class CDecodeLPB): Mat(size: nStates x 1; type: CV_32FC1)
 			byte	  group_id;		///< ID of the group, to which the edge belongs
 			
 			Edge(void) = delete;
-			Edge(Node* n1, Node* n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group) {}
-			
-			~Edge(void) {
-				if (msg)		delete[] msg;		msg = NULL;
-				if (msg_temp)	delete[] msg_temp;	msg_temp = NULL;
-			}
-			
-			void msg_swap(void) {
-				float *tmp = msg;
-				msg = msg_temp;
-				msg_temp = tmp;
-			}
+			Edge(Node* n1, Node* n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), group_id(group) {}
 		};
 
 		/// @todo Use smart pointers here

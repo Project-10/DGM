@@ -73,5 +73,10 @@ namespace DirectGraphicalModels
 		* @return The sum of all elemts in vector \b dst
 		*/
 		static float MatMul(const Mat &M, const float *v, float *&dst, bool maxSum = false);
+		
+		
+	protected:
+		float	* m_msg;			///< Message: Mat(size: nStates x 1; type: CV_32FC1)
+		float	* m_msg_temp;		///< Temp Message: Mat(size: nStates x 1; type: CV_32FC1)
 	};
 }
