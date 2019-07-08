@@ -47,9 +47,9 @@ namespace DirectGraphicalModels
 	}
 
 	// dst: usually edge_to->msg or edge_to->msg_temp
-	void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *dst, bool maxSum)
+	void CMessagePassing::calculateMessage(const Edge& edge_to, float* temp, float* dst, bool maxSum)
 	{
-		Node		* node = getGraphPairwise().m_vNodes[edge_to->node1].get();		// source node
+		Node		* node = getGraphPairwise().m_vNodes[edge_to.node1].get();		// source node
 		const byte	  nStates = getGraph().getNumStates();							// number of states
 
 		// Compute temp = product of all incoming msgs except e_t
@@ -58,13 +58,13 @@ namespace DirectGraphicalModels
 		for (size_t e_f : node->from) {												// incoming edges
 			Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();				// current incoming edge
 			float *msg = &m_msg[e_f * nStates];										// message of current incoming edge
-			if (edge_from->node1 != edge_to->node2)
+			if (edge_from->node1 != edge_to.node2)
 				for (byte s = 0; s < nStates; s++)
 					temp[s] *= msg[s];												// temp = temp * msg
 		} // e_f
 
 		// Compute new message: new_msg = (edge_to.Pot^2)^t x temp
-		float Z = MatMul(edge_to->Pot, temp, dst, maxSum);
+		float Z = MatMul(edge_to.Pot, temp, dst, maxSum);
 
 		// Normalization and setting new values
 		if (Z > FLT_EPSILON)

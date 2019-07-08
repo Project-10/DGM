@@ -48,7 +48,7 @@ namespace DirectGraphicalModels
 		* @param[out] dst Destination array for calculated message. Usually \b edge->msg or \b edge->msg_temp.
 		* @param[in] maxSum Flag indicating weather the message must be calculated according to the \a sum-product (false) or \a max-product (true) algorithm.
 		*/
-		void calculateMessage(Edge* edge, float* temp, float* dst, bool maxSum = false);
+		void calculateMessage(const Edge& edge, float* temp, float* dst, bool maxSum = false);
 		/**
 		* @brief Allocates memory for Edge::msg and Edge::msg_temp containers for all edges in the graph
 		*/

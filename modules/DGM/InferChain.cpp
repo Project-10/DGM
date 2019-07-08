@@ -14,7 +14,7 @@ namespace DirectGraphicalModels
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();		// current outgoing edge
 				float *msg = &m_msg[e_t * nStates];							// message of current outgoing edge
 				if (edge_to->node2 == node->id + 1)
-					calculateMessage(edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, msg);
 			} // e_t;
 		});
 
@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();		// current outgoing edge
 				float *msg = &m_msg[e_t * nStates];							// message of current outgoing edge
 				if (edge_to->node2 == node->id - 1)
-					calculateMessage(edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, msg);
 			} // e_t;
 		});
 
