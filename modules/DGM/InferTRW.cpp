@@ -10,9 +10,7 @@ void CInferTRW::infer(unsigned int nIt)
 	const size_t nEdges = getGraph().getNumEdges();						// number of edges
 
 	// ====================================== Initialization ======================================			
-	createMessages();
-	std::fill(m_msg, m_msg + nEdges * nStates, 1.0f);
-	std::fill(m_msg_temp, m_msg_temp + nEdges * nStates, 1.0f);
+	createMessages(1.0f);
 
 	// =================================== Calculating messages ==================================	
 

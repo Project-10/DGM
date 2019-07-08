@@ -52,7 +52,7 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Allocates memory for Edge::msg and Edge::msg_temp containers for all edges in the graph
 		*/
-		void createMessages(void);
+		void createMessages(std::optional<float> val = std::nullopt);
 		/**
 		* @brief Deletes memory for Edge::msg and Edge::msg_temp containers for all edges in the graph
 		*/

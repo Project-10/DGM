@@ -10,9 +10,7 @@ namespace DirectGraphicalModels
 		const size_t nEdges  = getGraph().getNumEdges();
 
 		// ====================================== Initialization ======================================
-		createMessages();
-		std::fill(m_msg, m_msg + nEdges * nStates, 1.0f / nStates);							// msg[] = 1 / nStates;
-		std::fill(m_msg_temp, m_msg_temp + nEdges * nStates, 1.0f / nStates);				// msg_temp[] = 1 / nStates;
+		createMessages(1.0f / nStates);				// msg[] = 1 / nStates; msg_temp[] = 1 / nStates;
 
 		// =================================== Calculating messages ==================================
 		calculateMessages(nIt);
@@ -75,7 +73,7 @@ namespace DirectGraphicalModels
 				dst[s] = 1.0f / nStates;
 	}
 
-	void CMessagePassing::createMessages(void)
+	void CMessagePassing::createMessages(std::optional<float> val)
 	{
 		const size_t nEdges = getGraph().getNumEdges();
 		const byte	nStates	= getGraph().getNumStates();
@@ -84,6 +82,11 @@ namespace DirectGraphicalModels
 		DGM_ASSERT_MSG(m_msg, "Out of Memory");
 		m_msg_temp = new float[nEdges * nStates];
 		DGM_ASSERT_MSG(m_msg_temp, "Out of Memory");
+
+		if (val) {
+			std::fill(m_msg, m_msg + nEdges * nStates, val.value());
+			std::fill(m_msg_temp, m_msg_temp + nEdges * nStates, val.value());
+		}
 	}
 
 	void CMessagePassing::deleteMessages(void)
