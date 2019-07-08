@@ -43,8 +43,7 @@ namespace DirectGraphicalModels
 					if (isReady[e_t]) continue;
 					
 					Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
-					float *msg = &m_msg[e_t * nStates];
-					calculateMessage(*edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, getMessage(e_t));
 					isReady[e_t] = true;
 					
 					// ------
@@ -66,8 +65,7 @@ namespace DirectGraphicalModels
 					if (isReady[e_t]) continue;
 					
 					Edge * edge_to = getGraphPairwise().m_vEdges[e_t].get();
-					float *msg = &m_msg[e_t * nStates];
-					calculateMessage(*edge_to, temp, msg);
+					calculateMessage(*edge_to, temp, getMessage(e_t));
 					isReady[e_t] = true;
 					// ------
 					size_t n1 = edge_to->node1;

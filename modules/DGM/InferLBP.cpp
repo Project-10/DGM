@@ -25,8 +25,7 @@ namespace DirectGraphicalModels
 				// Calculate a message to each neighbor
 				for (size_t e_t : node->to) {									// outgoing edges
 					Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();		// current outgoing edge
-					float *msg_temp = &m_msg_temp[e_t * nStates];				// message of current outgoing edge
-					calculateMessage(*edge_to, temp, msg_temp, m_maxSum);
+					calculateMessage(*edge_to, temp, getMessageTemp(e_t), m_maxSum);
 				} // e_t;
 #ifdef ENABLE_PPL
 				delete[] temp;

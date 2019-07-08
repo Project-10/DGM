@@ -22,7 +22,7 @@ namespace DirectGraphicalModels
 		std::for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&,nStates](ptr_node_t &node) {
 #endif
 			for (size_t e_f : node->from) {
-				float *msg = &m_msg[e_f * nStates];			// message of current incoming edge
+				float *msg = getMessage(e_f);					// message of current incoming edge
 				float epsilon = FLT_EPSILON;
 				for (byte s = 0; s < nStates; s++) { 		// states
 					// node->Pot.at<float>(s,0) *= msg[s];
@@ -55,10 +55,11 @@ namespace DirectGraphicalModels
 
 		for (size_t e_f : node->from) {												// incoming edges
 			Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();				// current incoming edge
-			float *msg = &m_msg[e_f * nStates];										// message of current incoming edge
-			if (edge_from->node1 != edge_to.node2)
+			if (edge_from->node1 != edge_to.node2) {
+				float *msg = getMessage(e_f);											// message of current incoming edge
 				for (byte s = 0; s < nStates; s++)
 					temp[s] *= msg[s];												// temp = temp * msg
+			}
 		} // e_f
 
 		// Compute new message: new_msg = (edge_to.Pot^2)^t x temp
@@ -106,6 +107,16 @@ namespace DirectGraphicalModels
 		float *pTemp = m_msg;
 		m_msg = m_msg_temp;
 		m_msg_temp = pTemp;
+	}
+
+	float* CMessagePassing::getMessage(size_t edge) 
+	{ 
+		return m_msg ? m_msg + edge * getGraph().getNumStates() : NULL;
+	}
+
+	float* CMessagePassing::getMessageTemp(size_t edge) 
+	{ 
+		return m_msg_temp ? m_msg_temp + edge * getGraph().getNumStates() : NULL;
 	}
 
 	// dst = (M * M)^T x v

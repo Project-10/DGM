@@ -30,7 +30,7 @@ void CInferTRW::infer(unsigned int nIt)
 		for (size_t e_t : node->to) {
 			Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 			if (edge_to->node1 > edge_to->node2) continue;
-			float *msg = &m_msg[e_t * nStates];
+			float *msg = getMessage(e_t);
 			for (byte s = 0; s < nStates; s++) node->Pot.at<float>(s, 0) *= msg[s];
 		}
 
@@ -62,7 +62,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 				if (edge_to->node1 > edge_to->node2) continue;
-				float *msg = &m_msg[e_t * nStates];
+				float *msg = getMessage(e_t);
 				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];				// data = node.pot * edge_to.msg
 				nForward++;
 			} // e_t
@@ -71,7 +71,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
 				if (edge_from->node1 > edge_from->node2) continue;
-				float *msg = &m_msg[e_f * nStates];
+				float *msg = getMessage(e_f);
 				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];				// data = node.pot * edge_to.msg * edge_from.msg
 				nBackward++;
 			} // e_f
@@ -81,8 +81,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// pass messages from i to nodes with higher m_ordering
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
-				float *msg = &m_msg[e_t * nStates];
-				if (edge_to->node1 < edge_to->node2) calculateMessage(msg, *edge_to, temp, data);
+				if (edge_to->node1 < edge_to->node2) calculateMessage(getMessage(e_t), *edge_to, temp, data);
 			} // e_t
 		});
 
@@ -94,7 +93,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_t : node->to) {
 				Edge *edge_to = getGraphPairwise().m_vEdges[e_t].get();
 				if (edge_to->node1 > edge_to->node2) continue;
-				float *msg = &m_msg[e_t * nStates];
+				float *msg = getMessage(e_t);
 				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];
 				nForward++;
 			} // e_t
@@ -103,7 +102,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
 				if (edge_from->node1 > edge_from->node2) continue;
-				float *msg = &m_msg[e_f * nStates];
+				float *msg = getMessage(e_f);
 				for (byte s = 0; s < nStates; s++) data[s] *= msg[s];
 				nBackward++;
 			} // e_f
@@ -117,8 +116,7 @@ void CInferTRW::calculateMessages(unsigned int nIt)
 			// pass messages from i to nodes with smaller m_ordering
 			for (size_t e_f : node->from) {
 				Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();
-				float *msg = &m_msg[e_f * nStates];
-				if (edge_from->node1 < edge_from->node2) calculateMessage(msg, *edge_from, temp, data);
+				if (edge_from->node1 < edge_from->node2) calculateMessage(getMessage(e_f), *edge_from, temp, data);
 			} // e_f
 		}); // All Nodes
 	} // iterations
