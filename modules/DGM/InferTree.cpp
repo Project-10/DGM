@@ -5,16 +5,17 @@ namespace DirectGraphicalModels
 {
 void CInferTree::calculateMessages(unsigned int)
 {
-	byte	nStates = getGraph().getNumStates();
-	size_t	nNodes	= getGraph().getNumNodes();
+	const byte		nStates	= getGraph().getNumStates();
+	const size_t	nNodes	= getGraph().getNumNodes();
+	const size_t	nEdges	= getGraph().getNumEdges();
 
 	// ====================================== Initialization ======================================
 	for (ptr_edge_t &edge: getGraphPairwise().m_vEdges) {
 		delete[] edge->msg;
 		edge->msg = NULL;
-		edge->suspend = false;
 	}
-
+	vec_bool_t		suspend(nEdges, false);								// Flag, indicating weather the message calculation must be postponed
+	
 	// =================================== Computing messages ===================================	
 	size_t  * nFromEdges = new size_t[nNodes];							// Count number of neighbors
 	std::deque<size_t> nodeQueue;
@@ -35,13 +36,11 @@ void CInferTree::calculateMessages(unsigned int)
 		size_t nToEdges = node->to.size();
 			
 		bool allSuspend = true;
-		for (size_t e_t = 0; e_t < nToEdges; e_t++) {
-			Edge *edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
-			if (!edge_to->suspend) {
+		for (size_t e_t = 0; e_t < nToEdges; e_t++)
+			if (!suspend[node->to[e_t]]) {
 				allSuspend = false;
 				break;
 			}
-		}
 
 		if (allSuspend) {	// Now prepare messages for suspending edges
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
@@ -49,20 +48,38 @@ void CInferTree::calculateMessages(unsigned int)
 				if (edge_to->msg) continue;
 					
 				calculateMessage(edge_to, temp, edge_to->msg);
-					
+				
+				// ------
+				size_t n1 = edge_to->node1;
 				size_t n2 = edge_to->node2;
+				auto it = std::find_if(getGraphPairwise().m_vNodes[n1]->from.begin(), getGraphPairwise().m_vNodes[n1]->from.end(), [&](size_t e) {
+					return (getGraphPairwise().m_vEdges[e]->node1 == n2);
+				});
+				if (it != getGraphPairwise().m_vNodes[n1]->from.end())
+					suspend[*it] = true;
+				// ------
+				
 				nFromEdges[n2]--;
 				if (nFromEdges[n2] <= 1) nodeQueue.push_back(n2);
 			}
 		} else {			// Prepare messages for all non-suspending edges	
 			for (size_t e_t = 0; e_t < nToEdges; e_t++) {
 				Edge * edge_to = getGraphPairwise().m_vEdges[node->to[e_t]].get();
-				if (edge_to->suspend) continue;
+				if (suspend[node->to[e_t]]) continue;
 				if (edge_to->msg)     continue;
 					
 				calculateMessage(edge_to, temp, edge_to->msg);
-					
+				
+				// ------
+				size_t n1 = edge_to->node1;
 				size_t n2 = edge_to->node2;
+				auto it = std::find_if(getGraphPairwise().m_vNodes[n1]->from.begin(), getGraphPairwise().m_vNodes[n1]->from.end(), [&](size_t e) {
+					return (getGraphPairwise().m_vEdges[e]->node1 == n2);
+				});
+				if (it != getGraphPairwise().m_vNodes[n1]->from.end())
+					suspend[*it] = true;
+				// ------
+				
 				nFromEdges[n2]--;
 				if (nFromEdges[n2] <= 1) nodeQueue.push_back(n2);
 			}

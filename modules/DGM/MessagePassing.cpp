@@ -94,8 +94,6 @@ void CMessagePassing::calculateMessage(Edge *edge_to, float *temp, float *&dst, 
 		if (edge_from->node1 != edge_to->node2)
 			for (s = 0; s < nStates; s++)
 				temp[s] *= edge_from->msg[s];								// temp = temp * msg
-		else
-			edge_from->suspend = true;
 	} // e_f
 
 	// Compute new message: new_msg = (edge_to.Pot^2)^t x temp

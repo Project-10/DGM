@@ -36,10 +36,9 @@ namespace DirectGraphicalModels
 		float	* msg;			///< Message (used in message-passing algorithms): Mat(size: nStates x 1; type: CV_32FC1)
 		float	* msg_temp;		///< Temp Message (used in message-passing algorithms): Mat(size: nStates x 1; type: CV_32FC1)
 		byte	  group_id;		///< ID of the group, to which the edge belongs
-		bool	  suspend;		///< Flag, indicating weather the message calculation must be postponed (used in message-passing algorithms)
 
 		Edge(void) = delete;
-		Edge(size_t n1, size_t n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group), suspend(false) {}
+		Edge(size_t n1, size_t n2, byte group = 0, const Mat &p = EmptyMat) : node1(n1), node2(n2), Pot(p.empty() ? Mat() : p.clone()), msg(NULL), msg_temp(NULL), group_id(group) {}
 
 		~Edge(void) {
 			if (msg)	  delete msg;
