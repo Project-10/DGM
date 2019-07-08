@@ -7,7 +7,6 @@ namespace DirectGraphicalModels
 	void CMessagePassing::infer(unsigned int nIt)
 	{
 		const byte   nStates = getGraph().getNumStates();
-		const size_t nEdges  = getGraph().getNumEdges();
 
 		// ====================================== Initialization ======================================
 		createMessages(1.0f / nStates);				// msg[] = 1 / nStates; msg_temp[] = 1 / nStates;
@@ -22,20 +21,20 @@ namespace DirectGraphicalModels
 		std::for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&,nStates](ptr_node_t &node) {
 #endif
 			for (size_t e_f : node->from) {
-				float *msg = getMessage(e_f);					// message of current incoming edge
+				float *msg = getMessage(e_f);				// message of current incoming edge
 				float epsilon = FLT_EPSILON;
 				for (byte s = 0; s < nStates; s++) { 		// states
 					// node->Pot.at<float>(s,0) *= msg[s];
 					node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + msg[s]);		// Soft multiplication
 				} //s
 			} // e_f
-			  // Normalization
+			
+			// Normalization
 			float SUM_pot = 0;
 			for (byte s = 0; s < nStates; s++)				// states
 				SUM_pot += node->Pot.at<float>(s, 0);
 			for (byte s = 0; s < nStates; s++) {			// states
 				node->Pot.at<float>(s, 0) /= SUM_pot;
-				//node->Pot.at<float>(s, 0) /= SUM_new_pot;
 				DGM_ASSERT_MSG(!std::isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 						SUM_pot = %f\n", node->id, SUM_pot);
 			}
@@ -44,7 +43,7 @@ namespace DirectGraphicalModels
 		deleteMessages();
 	}
 
-	// dst: usually edge_to->msg or edge_to->msg_temp
+	// dst: usually edge msg or edge msg_temp
 	void CMessagePassing::calculateMessage(const Edge& edge_to, float* temp, float* dst, bool maxSum)
 	{
 		Node		* node = getGraphPairwise().m_vNodes[edge_to.node1].get();		// source node
@@ -56,7 +55,7 @@ namespace DirectGraphicalModels
 		for (size_t e_f : node->from) {												// incoming edges
 			Edge *edge_from = getGraphPairwise().m_vEdges[e_f].get();				// current incoming edge
 			if (edge_from->node1 != edge_to.node2) {
-				float *msg = getMessage(e_f);											// message of current incoming edge
+				float *msg = getMessage(e_f);										// message of current incoming edge
 				for (byte s = 0; s < nStates; s++)
 					temp[s] *= msg[s];												// temp = temp * msg
 			}
