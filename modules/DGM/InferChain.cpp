@@ -5,7 +5,6 @@ namespace DirectGraphicalModels
 {
 	void CInferChain::calculateMessages(unsigned int)
 	{
-		const byte nStates = getGraph().getNumStates();
 		float *temp = new float[getGraph().getNumNodes()];
 
 		// Forward pass
