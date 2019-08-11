@@ -81,7 +81,7 @@ if (USE_OPENGL)
 	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)  
 	set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)  
 	
-	add_subdirectory(3rdparty/glfw-3.2.1)  
+	add_subdirectory(3rdparty/glfw-3.3)  
 
 	set_target_properties(glfw PROPERTIES FOLDER "3rdparty")
 endif()  
