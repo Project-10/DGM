@@ -161,7 +161,7 @@ Mat CMarkerHistogram::drawFeatureHistogram(word f, int activeState) const
 	// histogram
 	if (typeid(m_nodeTrainer) == typeid(CTrainNodeBayes))
 		for (byte s = 0; s < nStates; s++) {				// states
-				IPDF *pPDF = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF(s, f);
+				ptr_pdf_t pPDF = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF(s, f);
 				DGM_ASSERT(pPDF);
 				for (x = 0; x < 256; x++) {
 					int len	=  static_cast<int>(koeff * pPDF->getDensity(x));

@@ -25,7 +25,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainNodeBayes(byte nStates, word nFeatures);
-		DllExport virtual ~CTrainNodeBayes(void);
+		DllExport virtual ~CTrainNodeBayes(void) = default;
 
 		DllExport virtual void	reset(void);
 
@@ -38,7 +38,7 @@ namespace DirectGraphicalModels
 		* @param feature The feature
 		* @return The probability density function 
 		*/
-		DllExport IPDF			* getPDF(byte state, word feature) const { return m_pPDF[state][feature]; }	
+		DllExport ptr_pdf_t		getPDF(byte state, word feature) const { return m_vPDF[feature * m_nStates + state]; }
 		/**
 		* @brief Returns the 2D normalized probability density function (PDF) for specific state (class) 
 		* @note Used for test purposes. Use this function when only 2 features are in use. 
@@ -71,9 +71,8 @@ namespace DirectGraphicalModels
 
 
 	private:
-		IPDF				 *** m_pPDF;		///< The 1D PDF for node potentials	 [state][feature]
-		std::vector<ptr_pdf_t>	 m_vPDF2D;		///< The 2D data histogram for node potentials and 2 features[state]
-//		IPDF	   ** m_pPDF2D;					///< The 2D data histogram for node potentials and 2 features[state]
-		Mat						 m_prior;		///< The class prior probability vector
+		std::vector<ptr_pdf_t>	m_vPDF;			///< The 1D PDF for node potentials	 [state][feature]
+		std::vector<ptr_pdf_t>	m_vPDF2D;		///< The 2D data histogram for node potentials and 2 features[state]
+		Mat						m_prior;		///< The class prior probability vector
 	};
 }
