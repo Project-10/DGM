@@ -60,11 +60,10 @@ namespace DirectGraphicalModels
 
 	void CTrainNodeBayes::smooth(int nIt)
 	{
-		if (typeid(m_vPDF[0].get()) != typeid(CPDFHistogram)) return;
 		for (auto &pdf: m_vPDF)
-			dynamic_cast<CPDFHistogram *>(pdf.get())->smooth(nIt);
+			pdf->smooth(nIt);
 		for(auto &pdf: m_vPDF2D)
-			dynamic_cast<CPDFHistogram2D *>(pdf.get())->smooth(nIt);
+			pdf->smooth(nIt);
 	}
 
 	void CTrainNodeBayes::saveFile(FILE *pFile) const

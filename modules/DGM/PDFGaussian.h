@@ -8,27 +8,28 @@ namespace DirectGraphicalModels
 {
 	// ================================ Histogram PDF Class ==============================
 	/**
-	* @brief Gaissian-based PDF class
-	* @details This class approximates PDF via Gaussian functions. 
-	* @author Sergey G. Kosov, sergey.kosov@project-10.de
-	*/
+	 * @brief Gaissian-based PDF class
+	 * @details This class approximates PDF via Gaussian functions.
+	 * @author Sergey G. Kosov, sergey.kosov@project-10.de
+	 */
 	class CPDFGaussian : public IPDF
 	{
 	public:
 		DllExport CPDFGaussian(void) : IPDF(), m_mu(0), m_sigma2(0) {}
-		DllExport virtual ~CPDFGaussian(void) {}
+		DllExport virtual ~CPDFGaussian(void) = default;
 
-		DllExport virtual void	reset(void);
+		DllExport virtual void	reset(void) override;
 
-		DllExport virtual void		addPoint(Scalar point);
-		DllExport virtual double	getDensity(Scalar point); 
-		DllExport virtual Scalar	min(void) const { return Scalar(m_mu - 3 * sqrt(m_sigma2)); }
-		DllExport virtual Scalar	max(void) const { return Scalar(m_mu + 3 * sqrt(m_sigma2)); }
+		DllExport virtual void		addPoint(Scalar point) override;
+		DllExport virtual double	getDensity(Scalar point) override;
+		DllExport virtual void 		smooth(unsigned int nIt) override;
+		DllExport virtual Scalar	min(void) const override { return Scalar(m_mu - 3 * sqrt(m_sigma2)); }
+		DllExport virtual Scalar	max(void) const override { return Scalar(m_mu + 3 * sqrt(m_sigma2)); }
 
 
 	protected:
-		DllExport virtual void		saveFile(FILE *pFile) const;
-		DllExport virtual void		loadFile(FILE *pFile);
+		DllExport virtual void		saveFile(FILE *pFile) const override;
+		DllExport virtual void		loadFile(FILE *pFile) override;
 
 	
 	private:

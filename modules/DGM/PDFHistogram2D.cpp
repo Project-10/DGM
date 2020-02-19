@@ -29,10 +29,10 @@ namespace DirectGraphicalModels
 		return m_nPoints ? static_cast<double>(m_data[x][y]) / m_nPoints : 0;
 	}
 
-	void CPDFHistogram2D::smooth(int nIt)
+	void CPDFHistogram2D::smooth(unsigned int nIt)
 	{
 		long tmp[256][256];
-		for (int iter = 0; iter < nIt; iter++) {
+		for (unsigned int iter = 0; iter < nIt; iter++) {
 			memcpy(tmp, m_data, 256 * 256 * sizeof(long));
 			for (int x = 1; x < 255; x++)
 				for (int y = 1; y < 255; y++)
