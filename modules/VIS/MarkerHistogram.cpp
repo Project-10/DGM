@@ -206,7 +206,7 @@ Mat CMarkerHistogram::drawFeatureHistogram2D(word f, int activeState) const
 	// histogram
 	if ((typeid(m_nodeTrainer) == typeid(CTrainNodeBayes)) && (nFeatures == 2)) {
 		for (byte s = 0; s < nStates; s++) {				// states
-			IPDF *pPDF2D = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF2D(s);
+			ptr_pdf_t pPDF2D = dynamic_cast<const CTrainNodeBayes &>(m_nodeTrainer).getPDF2D(s);
 			DGM_ASSERT(pPDF2D);
 			for (int y = 0; y < 256; y++) {
 				Vec3b *pTmp = tmp.ptr<Vec3b>(margin.height + 256 - y);

@@ -29,7 +29,7 @@ namespace DirectGraphicalModels
 		* @param nStates Number of states (classes).
 		*/
 		CBaseRandomModel(byte nStates) : m_nStates(nStates) {}
-		virtual ~CBaseRandomModel(void) {}
+		virtual ~CBaseRandomModel(void) = default;
 
 		/**
 		* @brief Resets class variables.

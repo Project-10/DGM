@@ -11,6 +11,7 @@ namespace DirectGraphicalModels
 	* @brief Interface class for Probability Density Function (PDF)
 	* @details This class defines the interface for estimation of probability density functions for 
 	* random read-valued variables
+	* @todo Add smooth() method
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
 	class IPDF : public CBaseRandomModel 
@@ -19,7 +20,7 @@ namespace DirectGraphicalModels
 	
 	public:
 		DllExport IPDF(void) : CBaseRandomModel(0), m_nPoints(0) {}
-		DllExport virtual ~IPDF(void) {}
+		DllExport virtual ~IPDF(void) = default;
 
 		/**
 		* @brief Adds a sample point for PDF estimation.
@@ -53,4 +54,6 @@ namespace DirectGraphicalModels
 	protected:
 		long	m_nPoints;				///< The number of samples, added with the addPoint() function
 	};
+
+	using ptr_pdf_t = std::shared_ptr<IPDF>;
 }

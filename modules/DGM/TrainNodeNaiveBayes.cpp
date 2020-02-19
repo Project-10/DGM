@@ -21,11 +21,9 @@ namespace DirectGraphicalModels
 	//			m_pPDF[s][f] = new CPDFGaussian();
 		} // s
 
-		if (getNumFeatures() == 2) {
-			m_pPDF2D = new IPDF*[m_nStates];
+		if (getNumFeatures() == 2)
 			for (byte s = 0; s < m_nStates; s++)
-				m_pPDF2D[s] = new CPDFHistogram2D();
-		} else m_pPDF2D = NULL;
+				m_vPDF2D.push_back(std::make_shared<CPDFHistogram2D>());
 	}
 
 	// Destructor
@@ -38,12 +36,6 @@ namespace DirectGraphicalModels
 			delete m_pPDF[s];
 		} // s
 		delete m_pPDF;
-		
-		if (m_pPDF2D) {
-			for (byte s = 0; s < m_nStates; s++)
-				delete[] m_pPDF2D[s];
-			delete m_pPDF2D;
-		}
 	}
 
 	void CTrainNodeBayes::reset(void)
@@ -55,9 +47,7 @@ namespace DirectGraphicalModels
 			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->reset();
 		
-		if (m_pPDF2D)
-			for (byte s = 0; s < m_nStates; s++)
-				m_pPDF2D[s]->reset();
+		m_vPDF2D.clear();
 	}
 
 	void CTrainNodeBayes::addFeatureVec(const Mat &featureVector, byte gt)
@@ -74,10 +64,10 @@ namespace DirectGraphicalModels
 			m_pPDF[gt][f]->addPoint(feature);
 		}
 		
-		if (m_pPDF2D) {
+		if (!m_vPDF2D.empty()) {
 			byte x = featureVector.at<byte>(0, 0);
 			byte y = featureVector.at<byte>(1, 0);
-			m_pPDF2D[gt]->addPoint(Scalar(x, y));
+			m_vPDF2D[gt]->addPoint(Scalar(x, y));
 		}
 	}
 
@@ -92,9 +82,8 @@ namespace DirectGraphicalModels
 		for (byte s = 0; s < m_nStates; s++)
 			for (word f = 0; f < getNumFeatures(); f++)
 				dynamic_cast<CPDFHistogram *>(m_pPDF[s][f])->smooth(nIt);
-		if (m_pPDF2D)
-			for (byte s = 0; s < m_nStates; s++)
-				dynamic_cast<CPDFHistogram2D *>(m_pPDF2D[s])->smooth(nIt);
+		for(auto &pdf: m_vPDF2D)
+			dynamic_cast<CPDFHistogram2D *>(pdf.get())->smooth(nIt);
 	}
 
 	void CTrainNodeBayes::saveFile(FILE *pFile) const
@@ -104,9 +93,8 @@ namespace DirectGraphicalModels
 		for (byte s = 0; s < m_nStates; s++)
 			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->saveFile(pFile);
-		if (m_pPDF2D)
-			for (byte s = 0; s < m_nStates; s++)
-				m_pPDF2D[s]->saveFile(pFile);
+		for (auto &pdf: m_vPDF2D)
+			pdf->saveFile(pFile);
 	} 
 
 	void CTrainNodeBayes::loadFile(FILE *pFile)
@@ -117,9 +105,8 @@ namespace DirectGraphicalModels
 		for (byte s = 0; s < m_nStates; s++)
 			for (word f = 0; f < getNumFeatures(); f++)
 				m_pPDF[s][f]->loadFile(pFile);
-		if (m_pPDF2D)
-			for (byte s = 0; s < m_nStates; s++)
-				m_pPDF2D[s]->loadFile(pFile);
+		for (auto &pdf: m_vPDF2D)
+			pdf->loadFile(pFile);
 	} 
 
 	void CTrainNodeBayes::calculateNodePotentials(const Mat &featureVector, Mat &potential, Mat &mask) const

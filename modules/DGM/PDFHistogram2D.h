@@ -18,7 +18,7 @@ namespace DirectGraphicalModels
 	{
 	public:
 		DllExport CPDFHistogram2D(void);
-		DllExport virtual ~CPDFHistogram2D(void);
+		DllExport virtual ~CPDFHistogram2D(void) = default;
 
 		DllExport virtual void		reset(void);
 

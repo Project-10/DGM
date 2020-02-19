@@ -4,11 +4,10 @@
 
 #include "TrainNode.h"
 #include "PriorNode.h"
+#include "IPDF.h"
 
 namespace DirectGraphicalModels
 {
-	class IPDF;
-
 	// ====================== Bayes Train Class =====================
 	/** 
 	* @ingroup moduleTrainNode
@@ -28,10 +27,10 @@ namespace DirectGraphicalModels
 		DllExport CTrainNodeBayes(byte nStates, word nFeatures);
 		DllExport virtual ~CTrainNodeBayes(void);
 
-		DllExport virtual void	  reset(void);
+		DllExport virtual void	reset(void);
 
-		DllExport virtual void	  addFeatureVec(const Mat &featureVector, byte gt);	
-		DllExport virtual void	  train(bool doClean = false);
+		DllExport virtual void	addFeatureVec(const Mat &featureVector, byte gt);	
+		DllExport virtual void	train(bool doClean = false);
 
 		/**
 		* @brief Returns the normalized probability density function (PDF) for specific state (class) and feature 
@@ -46,16 +45,16 @@ namespace DirectGraphicalModels
 		* @param state The state (class)
 		* @return The probability density function for 2 features
 		*/
-		DllExport IPDF			* getPDF2D(byte state) const { return m_pPDF2D[state]; }
+		DllExport ptr_pdf_t		getPDF2D(byte state) const { return m_vPDF2D[state]; }
 		/**
 		* @brief Smothes the underlying Probability Density Functions (PDFs)
 		* @param nIt Number of smooth iterations
 		*/
-		DllExport void			  smooth(int nIt = 1);
+		DllExport void			smooth(int nIt = 1);
 	
 	protected:
-		DllExport virtual void	  saveFile(FILE *pFile) const; 
-		DllExport virtual void	  loadFile(FILE *pFile); 
+		DllExport virtual void	saveFile(FILE *pFile) const; 
+		DllExport virtual void	loadFile(FILE *pFile); 
 		/**
 		* @brief Calculates the node potential, based on the feature vector.
 		* @details This function calculates the potentials of the node, described with the sample \b featureVector (\f$ \textbf{f} \f$):
@@ -72,8 +71,9 @@ namespace DirectGraphicalModels
 
 
 	private:
-		IPDF	  *** m_pPDF;				///< The 1D PDF for node potentials	 [state][feature]
-		IPDF	   ** m_pPDF2D;				///< The 2D data histogram for node potentials and 2 features[state]
-		Mat			  m_prior;				///< The class prior probability vector
+		IPDF				 *** m_pPDF;		///< The 1D PDF for node potentials	 [state][feature]
+		std::vector<ptr_pdf_t>	 m_vPDF2D;		///< The 2D data histogram for node potentials and 2 features[state]
+//		IPDF	   ** m_pPDF2D;					///< The 2D data histogram for node potentials and 2 features[state]
+		Mat						 m_prior;		///< The class prior probability vector
 	};
 }
