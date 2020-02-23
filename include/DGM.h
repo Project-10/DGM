@@ -70,6 +70,8 @@
 #include "DGM/Decode.h"
 #include "DGM/DecodeExact.h"
 
+#include "DGM/PSO.h"
+#include "DGM/ParamEstAlgorithm.h"
 #include "DGM/Powell.h"
 
 /**

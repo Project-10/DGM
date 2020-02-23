@@ -2,6 +2,7 @@
 // Written by Sergey G. Kosov in 2013, 2016 for Project X
 #pragma once
 
+#include "ParamEstAlgorithm.h"
 #include "types.h"
 
 namespace DirectGraphicalModels
@@ -34,7 +35,7 @@ namespace DirectGraphicalModels
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPowell
+	class CPowell : public ParamEstAlgorithm
 	{
 	public:
 		/**
@@ -49,42 +50,42 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Resets class variables
 		*/
-		DllExport void	  reset(void);
+		DllExport void	  reset(void) override;
 		/**
 		* @brief Sets the initial parameters (arguments) for the search algorithm
 		* @details 
 		* > Default values are \b 0 for all parameters (arguments)
 		* @param vParams An array with the initial values for the search algorithm
 		*/
-		DllExport void	  setInitParams(const vec_float_t& vParams);
+		DllExport void	  setInitParams(const vec_float_t& vParams) override;
 		/**
 		* @brief Sets the searching steps along the parameters (arguments)
 		* @details 
 		* > Default values are \b 0.1 for all parameters (arguments)
 		* @param vDeltas An array with the offset values for each parameter (argument)
 		*/
-		DllExport void	  setDeltas(const vec_float_t& vDeltas);
+		DllExport void	  setDeltas(const vec_float_t& vDeltas) override;
 		/**
 		* @brief Sets the lower boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$-\infty\f$ for all parameters (arguments)
 		* @param vMinParam An array with the minimal parameter (argument) values
 		*/
-		DllExport void	  setMinParams(const vec_float_t& vMinParam);
+		DllExport void	  setMinParams(const vec_float_t& vMinParam) override;
 		/**
 		* @brief Sets the upper boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$+\infty\f$ for all parameters (arguments)
 		* @param vMaxParam An array with the maximal parameter (argument) values
 		*/
-		DllExport void	  setMaxParams(const vec_float_t& vMaxParam);
+		DllExport void	  setMaxParams(const vec_float_t& vMaxParam) override;
 		/**
 		* @brief Sets the acceleration coefficient
 		* @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
 		* > Default value is \b 0.1
 		* @param acceleration The acceleration coefficient
 		*/
-		DllExport void	  setAcceleration(float acceleration);
+		DllExport void	  setAcceleration(float acceleration) override;
 		/**
 		* @brief Gets the updated parameters (arguments)
 		* @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them 
@@ -92,13 +93,19 @@ namespace DirectGraphicalModels
 		* @param val The current value of the objective function
 		* @return The pointer to array with the updated parameters
 		*/
-		DllExport vec_float_t getParams(float val);
+		DllExport vec_float_t getParams(float val) override;
 		/**
 		* @brief Indicates weather the method has converged
 		* @retval true if the method has converged
 		* @retval false otherwise
 		*/
 		DllExport bool	  isConverged(void) const;
+
+        /**
+        * @param objectiveFunct The objective function to be minimized
+        * @return Array of the best parameters founds
+        */
+        DllExport vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) override;
 
 
 	private:

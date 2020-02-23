@@ -33,7 +33,7 @@ namespace DirectGraphicalModels
 
 	void CPowell::setInitParams(const vec_float_t& vParams) 
 	{
-		DGM_ASSERT_MSG(m_vParams.size() == vParams.size(), "The size of the argument (%zu) ddoes not correspond to the number of parameters (%zu)", vParams.size(), m_nParams);
+		DGM_ASSERT_MSG(m_vParams.size() == vParams.size(), "The size of the argument (%zu) does not correspond to the number of parameters (%zu)", vParams.size(), m_nParams);
 		
 		for (size_t p = 0; p < vParams.size(); p++) {
 			const float& param = vParams[p];
@@ -100,7 +100,7 @@ namespace DirectGraphicalModels
 		if (isConverged()) return m_vParams;
 
 		// =============== Fill all 3 kappa values ===============
-			 if (m_vKappa[oD] < 0) { m_vKappa[oD] = kappa; m_midPoint = curArg; } 
+			 if (m_vKappa[oD] < 0) { m_vKappa[oD] = kappa; m_midPoint = curArg; }
 		else if (m_vKappa[mD] < 0)   m_vKappa[mD] = kappa;
 		else if (m_vKappa[pD] < 0)   m_vKappa[pD] = kappa;
 
@@ -172,6 +172,16 @@ namespace DirectGraphicalModels
 			}
 		} // infinite loop
 	}
+
+    vec_float_t CPowell::getParams(float (*objectiveFunct)(vec_float_t)) {
+	    vec_float_t  ret_params = m_vParams;
+        while (!isConverged()) {
+            float kappa = objectiveFunct(ret_params);
+            ret_params = getParams(kappa);
+        }
+
+        return ret_params;
+    }
 
 	bool CPowell::isConverged(void) const
 	{
