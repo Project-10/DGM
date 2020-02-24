@@ -10,7 +10,9 @@
 namespace DirectGraphicalModels {
     class ParamEstAlgorithm {
     public:
-
+        /**
+         * @brief Resets class variables
+         */
         DllExport virtual void reset() = 0;
         /**
         * @brief Sets the initial parameters (arguments) for the search algorithm
@@ -63,7 +65,6 @@ namespace DirectGraphicalModels {
         * @retval false otherwise
         */
         DllExport virtual bool isConverged() {}
-
     };
 }
 

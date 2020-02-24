@@ -17,7 +17,6 @@ DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams)
           m_vMin(vParams.size()),
           m_vMax(vParams.size()),
           isThreadsEnabled(false) {
-
     for (size_t p = 0; p < vParams.size(); p++) {
         const float &param = vParams[p];
         m_vParams[p] = param;
@@ -48,7 +47,6 @@ DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams)
     w = W_DEFAULT_VALUE;
 
     reset();
-
 }
 
 void DirectGraphicalModels::PSO::reset() {

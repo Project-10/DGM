@@ -157,7 +157,6 @@ namespace DirectGraphicalModels {
          */
         DllExport ~PSO();
 
-
     };
 }
 
