@@ -156,7 +156,6 @@ namespace DirectGraphicalModels {
          * @brief Destructor
          */
         DllExport ~PSO();
-
     };
 }
 
