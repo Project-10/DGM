@@ -2,8 +2,7 @@
 // Created by ahambasan on 22.02.20.
 //
 
-#ifndef DGM_PSO_H
-#define DGM_PSO_H
+#pragma once
 
 #include "ParamEstAlgorithm.h"
 
@@ -49,7 +48,7 @@ namespace DirectGraphicalModels {
         const float W_DEFAULT_VALUE     = 0.5;  // default value for inertia parameter
 
 
-        std::vector<Boid> b_n;                  // vector containing the particles/ boids
+        std::vector<Boid> m_vBoids;                  // vector containing the particles/ boids
         float             c1;                   // cognitive component parameter
         float             c2;                   // social component parameter
         float             w;                    // inertia parameter
@@ -74,8 +73,8 @@ namespace DirectGraphicalModels {
       * (See [example code](#pso_example_code) for more details)
       * @param objectiveFunct The objective function to be minimized.
       */
-        void runPSO(float (*objectiveFunct)(vec_float_t));
-        void runPSO_withThreads(float (*objectiveFunct)(vec_float_t), size_t idx);
+        void runPSO(const std::function<float(vec_float_t)>& objectiveFunct);
+        void runPSO_withThreads(const std::function<float(vec_float_t)>& objectiveFunct, size_t idx);
 
     public:
         /**
@@ -121,12 +120,12 @@ namespace DirectGraphicalModels {
          * @param objectiveFunct The objective function to be minimized
          * @return Array of the best parameters found
          */
-        DllExport vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) override;
+        DllExport vec_float_t getParams(std::function<float(vec_float_t)> objectiveFunct) override;
 
         /**
          * @return boolean value representing whether multiThreading is enabled or not
          */
-        DllExport bool isMultiThreadingEnabled();
+        DllExport bool isMultiThreadingEnabled() const;
 
         /**
          * @brief Enables multiThreading
@@ -157,6 +156,3 @@ namespace DirectGraphicalModels {
         DllExport ~PSO();
     };
 }
-
-
-#endif //DGM_PSO_H

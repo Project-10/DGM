@@ -173,7 +173,7 @@ namespace DirectGraphicalModels
 		} // infinite loop
 	}
 
-    vec_float_t CPowell::getParams(float (*objectiveFunct)(vec_float_t)) {
+    vec_float_t CPowell::getParams(std::function<float(vec_float_t)> objectiveFunct) {
 	    vec_float_t  ret_params = m_vParams;
         while (!isConverged()) {
             float kappa = objectiveFunct(ret_params);

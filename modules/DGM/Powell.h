@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ParamEstAlgorithm.h"
-#include "types.h"
 
 namespace DirectGraphicalModels
 {
@@ -105,7 +104,7 @@ namespace DirectGraphicalModels
         * @param objectiveFunct The objective function to be minimized
         * @return Array of the best parameters founds
         */
-        DllExport vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) override;
+        DllExport vec_float_t getParams(std::function<float(vec_float_t)> objectiveFunct) override;
 
 
 	private:

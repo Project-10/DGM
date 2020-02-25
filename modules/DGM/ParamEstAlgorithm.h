@@ -2,8 +2,7 @@
 // Created by ahambasan on 21.02.20.
 //
 
-#ifndef DGM_PARAMESTALGORITHM_H
-#define DGM_PARAMESTALGORITHM_H
+#pragma once
 
 #include "types.h"
 
@@ -47,7 +46,7 @@ namespace DirectGraphicalModels {
          * @param objectiveFunct The objective function to be minimized
          * @return Array of the best parameters found
          */
-        DllExport virtual vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) = 0;
+        DllExport virtual vec_float_t getParams(std::function<float(vec_float_t)> objectiveFunction) = 0;
         /**
         * @brief Indicates weather the method has converged
         * @retval true if the method has converged
@@ -60,7 +59,3 @@ namespace DirectGraphicalModels {
          DllExport virtual ~ParamEstAlgorithm() = default;
     };
 }
-
-
-
-#endif //DGM_PARAMESTALGORITHM_H
