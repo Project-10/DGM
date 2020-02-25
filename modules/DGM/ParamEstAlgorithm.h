@@ -52,7 +52,7 @@ namespace DirectGraphicalModels {
         * @retval true if the method has converged
         * @retval false otherwise
         */
-        DllExport virtual bool isConverged() = 0;
+        DllExport virtual bool isConverged(void)  const = 0;
         /**
          * @brief Destructor
          */
