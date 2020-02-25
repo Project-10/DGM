@@ -9,7 +9,15 @@
 #include <vector>
 #include <random>
 
-DirectGraphicalModels::PSO::PSO() = default;
+DirectGraphicalModels::PSO::PSO() {
+    // initialize meta parameters
+    this->c1 = C1_DEFAULT_VALUE;
+    this->c2 = C2_DEFAULT_VALUE;
+    this->w = W_DEFAULT_VALUE;
+
+    this->m_nParams = 0;
+    this->isThreadsEnabled = false;
+}
 
 DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams)
         : m_nParams(vParams.size()),
@@ -39,12 +47,12 @@ DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams)
         b_n.push_back(*b_x);
     }
 
-    gBest = m_vParams;
+    this->gBest = m_vParams;
 
     // initialize meta parameters
-    c1 = C1_DEFAULT_VALUE;
-    c2 = C2_DEFAULT_VALUE;
-    w = W_DEFAULT_VALUE;
+    this->c1 = C1_DEFAULT_VALUE;
+    this->c2 = C2_DEFAULT_VALUE;
+    this->w = W_DEFAULT_VALUE;
 
     reset();
 }

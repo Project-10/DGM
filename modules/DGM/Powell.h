@@ -64,7 +64,7 @@ namespace DirectGraphicalModels
 		* > Default values are \b 0.1 for all parameters (arguments)
 		* @param vDeltas An array with the offset values for each parameter (argument)
 		*/
-		DllExport void	  setDeltas(const vec_float_t& vDeltas) override;
+		DllExport void	  setDeltas(const vec_float_t& vDeltas);
 		/**
 		* @brief Sets the lower boundary for parameters (arguments) search
 		* @details
@@ -85,7 +85,7 @@ namespace DirectGraphicalModels
 		* > Default value is \b 0.1
 		* @param acceleration The acceleration coefficient
 		*/
-		DllExport void	  setAcceleration(float acceleration) override;
+		DllExport void	  setAcceleration(float acceleration);
 		/**
 		* @brief Gets the updated parameters (arguments)
 		* @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them 

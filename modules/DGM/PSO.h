@@ -6,7 +6,6 @@
 #define DGM_PSO_H
 
 #include "ParamEstAlgorithm.h"
-#include <vector>
 
 namespace DirectGraphicalModels {
     // ================================ Particle Swarm Optimization Class ===============================
@@ -51,9 +50,9 @@ namespace DirectGraphicalModels {
 
 
         std::vector<Boid> b_n;                  // vector containing the particles/ boids
-        float             c1{};                   // cognitive component parameter
-        float             c2{};                   // social component parameter
-        float             w{};                    // inertia parameter
+        float             c1;                   // cognitive component parameter
+        float             c2;                   // social component parameter
+        float             w;                    // inertia parameter
 
 
         vec_float_t m_vParams;                  // array of the initial parameter parameters
@@ -62,9 +61,9 @@ namespace DirectGraphicalModels {
         vec_float_t m_vMin;                     // array of minimal parameter values
         vec_float_t m_vMax;                     // array of maximal parameter values
         vec_bool_t  m_vConverged;
-        size_t      m_nParams{};                  // number of parameters (arguments of the objective function)
+        size_t      m_nParams;                  // number of parameters (arguments of the objective function)
 
-        bool        isThreadsEnabled{};           // boolean afferent to multiThreading enabling
+        bool        isThreadsEnabled;           // boolean afferent to multiThreading enabling
 
         std::mutex  mtx;                        // mutex for multiThreading option
 
@@ -120,7 +119,7 @@ namespace DirectGraphicalModels {
 
         /**
          * @param objectiveFunct The objective function to be minimized
-         * @return Array of the best parameters founds
+         * @return Array of the best parameters found
          */
         DllExport vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) override;
 

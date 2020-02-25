@@ -22,13 +22,6 @@ namespace DirectGraphicalModels {
         */
         DllExport virtual void setInitParams(const vec_float_t &vParams) = 0;
         /**
-        * @brief Sets the searching steps along the parameters (arguments)
-        * @details
-        * > Default values are \b 0.1 for all parameters (arguments)
-        * @param vDeltas An array with the offset values for each parameter (argument)
-        */
-        DllExport virtual void setDeltas(const vec_float_t &vDeltas) {}
-        /**
         * @brief Sets the lower boundary for parameters (arguments) search
         * @details
         * > Default values are \f$-\infty\f$ for all parameters (arguments)
@@ -43,28 +36,28 @@ namespace DirectGraphicalModels {
         */
         DllExport virtual void setMaxParams(const vec_float_t &vMaxParam) = 0;
         /**
-        * @brief Sets the acceleration coefficient
-        * @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
-        * > Default value is \b 0.1
-        * @param acceleration The acceleration coefficient
-        */
-        DllExport virtual void setAcceleration(float acceleration) {}
-        /**
         * @brief Gets the updated parameters (arguments)
         * @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them
         * (See [example code](#powell_example_code) for more details)
         * @param val The current value of the objective function
         * @return The pointer to array with the updated parameters
         */
-        DllExport virtual vec_float_t getParams(float val) {}
-
+        DllExport virtual vec_float_t getParams(float val) { return vec_float_t(); }
+        /**
+         * @param objectiveFunct The objective function to be minimized
+         * @return Array of the best parameters found
+         */
         DllExport virtual vec_float_t getParams(float (*objectiveFunct)(vec_float_t)) = 0;
         /**
         * @brief Indicates weather the method has converged
         * @retval true if the method has converged
         * @retval false otherwise
         */
-        DllExport virtual bool isConverged() {}
+        DllExport virtual bool isConverged() = 0;
+        /**
+         * @brief Destructor
+         */
+         DllExport virtual ~ParamEstAlgorithm() = default;
     };
 }
 
