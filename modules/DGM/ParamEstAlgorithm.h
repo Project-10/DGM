@@ -15,10 +15,11 @@ namespace DirectGraphicalModels {
         size_t      m_nParams;                  // number of parameters (arguments of the objective function)
         vec_float_t m_vParams;                  // array of the initial parameter parameters
     public:
+
         /**
          * @brief Argument Constructor
          */
-         ParamEstAlgorithm(size_t nParams);
+         explicit ParamEstAlgorithm(size_t nParams);
         /**
          * @brief Resets class variables
          */
