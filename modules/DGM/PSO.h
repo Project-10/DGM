@@ -59,7 +59,7 @@ namespace DirectGraphicalModels {
 
         vec_float_t m_vMin;                     // array of minimal parameter values
         vec_float_t m_vMax;                     // array of maximal parameter values
-        vec_bool_t  m_vConverged;
+
         size_t      m_nParams;                  // number of parameters (arguments of the objective function)
 
         bool        isThreadsEnabled;           // boolean afferent to multiThreading enabling
@@ -93,30 +93,6 @@ namespace DirectGraphicalModels {
         DllExport void reset() override;
 
         /**
-        * @brief Sets the initial parameters (arguments) for the search algorithm
-        * @details
-        * > Default values are \b 0 for all parameters (arguments)
-        * @param vParams An array with the initial values for the search algorithm
-        */
-        DllExport void setInitParams(const vec_float_t &vParams) override;
-
-        /**
-        * @brief Sets the lower boundary for parameters (arguments) search
-        * @details
-        * > Default values are \f$-\infty\f$ for all parameters (arguments)
-        * @param vMinParam An array with the minimal parameter (argument) values
-        */
-        DllExport void setMinParams(const vec_float_t &vMinParam) override;
-
-        /**
-       * @brief Sets the upper boundary for parameters (arguments) search
-       * @details
-       * > Default values are \f$+\infty\f$ for all parameters (arguments)
-       * @param vMaxParam An array with the maximal parameter (argument) values
-       */
-        DllExport void setMaxParams(const vec_float_t &vMaxParam) override;
-
-        /**
          * @param objectiveFunct The objective function to be minimized
          * @return Array of the best parameters found
          */
@@ -142,13 +118,6 @@ namespace DirectGraphicalModels {
          * @brief Disables multiThreading
          */
         DllExport void disableMultiThreading();
-
-        /**
-        * @brief Indicates weather the method has converged
-        * @retval true if the method has converged
-        * @retval false otherwise
-        */
-        DllExport bool isConverged(void) const;
 
         /**
          * @brief Destructor

@@ -7,7 +7,7 @@
 
 #include <random>
 
-DirectGraphicalModels::PSO::PSO() {
+DirectGraphicalModels::PSO::PSO() : ParamEstAlgorithm(0) {
     // initialize meta parameters
     this->c1 = C1_DEFAULT_VALUE;
     this->c2 = C2_DEFAULT_VALUE;
@@ -17,13 +17,8 @@ DirectGraphicalModels::PSO::PSO() {
     this->isThreadsEnabled = false;
 }
 
-DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams)
-        : m_nParams(vParams.size()),
-          m_vParams(vParams),
-          m_vMin(vParams.size()),
-          m_vMax(vParams.size()),
-          isThreadsEnabled(false) {
-    this->m_nParams = vParams.size();
+DirectGraphicalModels::PSO::PSO(const vec_float_t &vParams) : ParamEstAlgorithm(vParams.size()) {
+    this->isThreadsEnabled = false;
 
     // SOURCE: https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -55,57 +50,6 @@ void DirectGraphicalModels::PSO::reset() {
     std::fill(m_vMin.begin(), m_vMin.end(), -FLT_MAX);
     std::fill(m_vMax.begin(), m_vMax.end(), FLT_MAX);
     std::fill(m_vParams.begin(), m_vParams.end(), 0.0f);
-}
-
-void DirectGraphicalModels::PSO::setInitParams(const vec_float_t &vParams) {
-    DGM_ASSERT_MSG(m_vParams.size() == vParams.size(),
-                   "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
-                   vParams.size(), m_nParams);
-
-    for (size_t p = 0; p < vParams.size(); p++) {
-        const float &param = vParams[p];
-        if (param > m_vMax[p]) {
-            DGM_WARNING("Argument[%zu]=%.2f exceeds the upper boundary %.2f and will not be set",
-                        p, param, m_vMax[p]);
-            continue;
-        }
-        if (param < m_vMin[p]) {
-            DGM_WARNING("Argument[%zu]=%.2f exceeds the lower boundary %.2f and will not be set",
-                        p, param, m_vMin[p]);
-            continue;
-        }
-        m_vParams[p] = param;
-    }
-}
-
-void DirectGraphicalModels::PSO::setMinParams(const vec_float_t &vMinParam) {
-    DGM_ASSERT_MSG(m_vMin.size() == vMinParam.size(),
-                   "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
-                   vMinParam.size(), m_nParams);
-
-    for (size_t p = 0; p < vMinParam.size(); p++) {
-        const float &minParam = vMinParam[p];
-        if (minParam > m_vParams[p])
-            DGM_WARNING(
-                    "Argument[%zu]=%.2f contradicts the parameter value %.2f and will not be set",
-                    p, minParam, m_vParams[p]);
-        else m_vMin[p] = minParam;
-    }
-}
-
-void DirectGraphicalModels::PSO::setMaxParams(const vec_float_t &vMaxParam) {
-    DGM_ASSERT_MSG(m_vMax.size() == vMaxParam.size(),
-                   "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
-                   vMaxParam.size(), m_nParams);
-
-    for (size_t p = 0; p < vMaxParam.size(); p++) {
-        const float &maxParam = vMaxParam[p];
-        if (maxParam < m_vParams[p])
-            DGM_WARNING(
-                    "Argument[%zu]=%.2f contradicts the parameter value %.2f and will not be set",
-                    p, maxParam, m_vParams[p]);
-        else m_vMax[p] = maxParam;
-    }
 }
 
 vec_float_t DirectGraphicalModels::PSO::getParams(std::function<float(vec_float_t)> objectiveFunct) {
@@ -207,11 +151,6 @@ void DirectGraphicalModels::PSO::enableMultiThreading(bool enable) {
 
 void DirectGraphicalModels::PSO::disableMultiThreading() {
     this->isThreadsEnabled = false;
-}
-
-bool DirectGraphicalModels::PSO::isConverged() const {
-    for (const bool& converged : m_vConverged) if (!converged) return false;
-    return true;
 }
 
 DirectGraphicalModels::PSO::~PSO() = default;

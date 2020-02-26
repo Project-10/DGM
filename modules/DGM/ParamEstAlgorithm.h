@@ -8,7 +8,17 @@
 
 namespace DirectGraphicalModels {
     class ParamEstAlgorithm {
+    protected:
+        vec_bool_t  m_vConverged;
+        vec_float_t m_vMin;                     // array of minimal parameter values
+        vec_float_t m_vMax;                     // array of maximal parameter values
+        size_t      m_nParams;                  // number of parameters (arguments of the objective function)
+        vec_float_t m_vParams;                  // array of the initial parameter parameters
     public:
+        /**
+         * @brief Argument Constructor
+         */
+         ParamEstAlgorithm(size_t nParams);
         /**
          * @brief Resets class variables
          */
@@ -19,21 +29,21 @@ namespace DirectGraphicalModels {
         * > Default values are \b 0 for all parameters (arguments)
         * @param vParams An array with the initial values for the search algorithm
         */
-        DllExport virtual void setInitParams(const vec_float_t &vParams) = 0;
+        DllExport virtual void setInitParams(const vec_float_t &vParams);
         /**
         * @brief Sets the lower boundary for parameters (arguments) search
         * @details
         * > Default values are \f$-\infty\f$ for all parameters (arguments)
         * @param vMinParam An array with the minimal parameter (argument) values
         */
-        DllExport virtual void setMinParams(const vec_float_t &vMinParam) = 0;
+        DllExport virtual void setMinParams(const vec_float_t &vMinParam);
         /**
         * @brief Sets the upper boundary for parameters (arguments) search
         * @details
         * > Default values are \f$+\infty\f$ for all parameters (arguments)
         * @param vMaxParam An array with the maximal parameter (argument) values
         */
-        DllExport virtual void setMaxParams(const vec_float_t &vMaxParam) = 0;
+        DllExport virtual void setMaxParams(const vec_float_t &vMaxParam);
         /**
         * @brief Gets the updated parameters (arguments)
         * @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them
@@ -52,7 +62,7 @@ namespace DirectGraphicalModels {
         * @retval true if the method has converged
         * @retval false otherwise
         */
-        DllExport virtual bool isConverged(void)  const = 0;
+        DllExport virtual bool isConverged(void)  const;
         /**
          * @brief Destructor
          */
