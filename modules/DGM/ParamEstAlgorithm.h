@@ -14,8 +14,8 @@ namespace DirectGraphicalModels {
         vec_float_t m_vMax;                     // array of maximal parameter values
         size_t      m_nParams;                  // number of parameters (arguments of the objective function)
         vec_float_t m_vParams;                  // array of the initial parameter parameters
-    public:
 
+    public:
         /**
          * @brief Argument Constructor
          */
