@@ -131,7 +131,7 @@ namespace DirectGraphicalModels
 		reset_SigmaInv_Q_Alpha();
 	}
 
-	void CKDGauss::setMu(Mat &mu)
+	void CKDGauss::setMu(const Mat& mu)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(mu.size() == m_mu.size(), "Wrong mu size");
@@ -142,7 +142,7 @@ namespace DirectGraphicalModels
 		reset_SigmaInv_Q_Alpha();
 	}
 
-	void CKDGauss::setSigma(Mat &sigma)
+	void CKDGauss::setSigma(const Mat& sigma)
 	{
 		// Assertions
 		DGM_ASSERT_MSG(sigma.size() == m_sigma.size(), "Wrong sigma size");
@@ -172,7 +172,7 @@ namespace DirectGraphicalModels
         return m_alpha;
 	}
 
-	double CKDGauss::getValue(Mat &x, Mat &X, Mat &p1, Mat &p2) const
+	double CKDGauss::getValue(const Mat& x, Mat &X, Mat &p1, Mat &p2) const
 	{
 		// Assertions
 		DGM_ASSERT_MSG(x.size() == m_mu.size(), "Wrong x size");

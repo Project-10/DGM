@@ -6,6 +6,6 @@
 
 class CTests : public ::testing::Test {
 public:
-	CTests(void) {}
-	~CTests(void) {}
+	CTests(void) = default;
+	~CTests(void) = default;
 };

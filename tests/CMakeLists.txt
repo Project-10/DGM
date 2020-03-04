@@ -9,6 +9,7 @@ source_group("Source Files" FILES "main.cpp" ${GTEST_SOURCES})
 source_group("Source Files\\Tests" FILES "Tests.h" "Tests.cpp" 
 										 "TestGraph.h" "TestGraph.cpp"
 										 "TestInference.h" "TestInference.cpp"
+										 "TestPDF.h" "TestPDF.cpp"
 			)
 
 # Properties -> C/C++ -> General -> Additional Include Directories

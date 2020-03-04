@@ -101,7 +101,7 @@ namespace DirectGraphicalModels
 		* @brief Sets \f$\mu\f$.
 		* @param mu the mean vector \f$\mu\f$ : Mat(size: k x 1; type: CV_64FC1)
 		*/
-		DllExport void			setMu(Mat &mu);
+		DllExport void			setMu(const Mat& mu);
 		/**
 		* @brief Returns \f$\mu\f$.
 		* @return the mean vector \f$\mu\f$: Mat(size: k x 1; type: CV_64FC1)
@@ -111,7 +111,7 @@ namespace DirectGraphicalModels
 		* @brief Sets \f$\Sigma\f$.
 		* @param sigma the covariance matrix \f$\Sigma\f$: Diagonal Mat(size: k x k; type: CV_64FC1)
 		*/
-		DllExport void			setSigma(Mat &sigma);
+		DllExport void			setSigma(const Mat& sigma);
 		/**
 		* @brief Returns \f$\Sigma\f$.
 		* @return the covariance matrix \f$\Sigma\f$: Mat(size: k x k; type: CV_64FC1)
@@ -164,7 +164,7 @@ namespace DirectGraphicalModels
 		* @param aux3 Auxilary variable
 		* @return unscaled value of the Gaussian function
 		*/
-		DllExport double		getValue(Mat &x, Mat &aux1 = EmptyMat, Mat &aux2 = EmptyMat, Mat &aux3 = EmptyMat) const;
+		DllExport double		getValue(const Mat& x, Mat &aux1 = EmptyMat, Mat &aux2 = EmptyMat, Mat &aux3 = EmptyMat) const;
 		/**
 		* @brief Returns a random vector (sample) from multivariate normal distribution
 		* @details The implementation is based on the paper <a target=blank href="ftp://ftp.dca.fee.unicamp.br/pub/docs/vonzuben/ia013_2s09/material_de_apoio/gen_rand_multivar.pdf">Generating Random Vectors from the Multivariate Normal Distribution</a>
