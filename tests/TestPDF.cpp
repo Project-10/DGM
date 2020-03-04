@@ -6,8 +6,8 @@ using namespace DirectGraphicalModels;
 void testPDF_1D(IPDF& pdf) {
 	ASSERT_FALSE(pdf.isEstimated());
 	
-	const double mu 	= random::u<double>(1, 254);
-	const double sigma2 = random::u<double>(1, 1000);
+	const double mu 	= random::U<double>(1, 254);
+	const double sigma2 = random::U<double>(1, 1000);
 	
 	CKDGauss gauss(1);
 	gauss.setMu(Mat(1, 1, CV_64FC1, mu));
@@ -19,7 +19,7 @@ void testPDF_1D(IPDF& pdf) {
 	ASSERT_TRUE(pdf.isEstimated());
 
 	for (int i = 0; i < 100; i++) {
-		double x = random::u<double>(1, 254);
+		double x = random::U<double>(1, 254);
 		double pdf_density = pdf.getDensity(x);
 		double gt_density = gauss.getAlpha() * gauss.getValue(Mat(1, 1, CV_64FC1, x));
 		ASSERT_LE(abs(pdf_density - gt_density), 10e-3);
