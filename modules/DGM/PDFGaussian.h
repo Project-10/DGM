@@ -18,7 +18,7 @@ namespace DirectGraphicalModels
 		DllExport CPDFGaussian(void) : IPDF(), m_mu(0), m_sigma2(0) {}
 		DllExport virtual ~CPDFGaussian(void) = default;
 
-		DllExport virtual void	reset(void) override;
+		DllExport virtual void		reset(void) override;
 
 		DllExport virtual void		addPoint(Scalar point) override;
 		DllExport virtual double	getDensity(Scalar point) override;
