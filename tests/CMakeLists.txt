@@ -11,6 +11,7 @@ source_group("Source Files\\Tests" FILES "Tests.h" "Tests.cpp"
 										 "TestInference.h" "TestInference.cpp"
 										 "TestPDF.h" "TestPDF.cpp"
 										 "TestKDTree.h" "TestKDTree.cpp"
+										 "TestParamEstimation.h" "TestParamEstimation.cpp"
 			)
 
 # Properties -> C/C++ -> General -> Additional Include Directories

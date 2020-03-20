@@ -1,0 +1,48 @@
+#include "TestParamEstimation.h"
+#include "DGM/random.h"
+
+void CTestParamEstimation::testParamEstimation(CPowell& paramEstimator)
+{
+	for (size_t i = 0; i < nParams; i++) {
+		m_vInitParams[i] = static_cast<float>(random::u(-10, 10));
+		m_vInitDeltas[i] = 0.01f;
+		m_vSolution[i] = static_cast<float>(random::u(-10, 10));
+	}
+
+	vec_float_t vParams = m_vInitParams;
+	paramEstimator.setInitParams(m_vInitParams);
+	paramEstimator.setDeltas(m_vInitDeltas);
+
+	while (!paramEstimator.isConverged()) {
+		float val = objectiveFunction(vParams);
+		vParams = paramEstimator.getParams(val);
+	}
+
+	//printf("Solution:");
+	//for (float p : m_vSolution) printf("%.2f ", p);
+	//printf("\n");
+	//printf("Optimal parameters: ");
+	//for (float p : vParams) printf("%.2f ", p);
+	//printf("\n");
+
+	// Check result
+	for (size_t i = 0; i < nParams; i++) 
+		ASSERT_GE(m_vInitDeltas[i], fabs(vParams[i] - m_vSolution[i]));
+}
+
+float CTestParamEstimation::objectiveFunction(const vec_float_t& vParams)
+{
+	float res = 0;
+	for (size_t i = 0; i < vParams.size(); i++)
+		res += fabs(vParams[i] - m_vSolution[i]);
+
+	return 10 * vParams.size() - res;
+}
+
+
+
+TEST_F(CTestParamEstimation, Powell) 
+{
+	CPowell powell(nParams);
+	testParamEstimation(powell);
+}
