@@ -13,14 +13,14 @@ public:
 	
 
 protected:
-	vec_float_t						m_vPotExact;
+	vec_float_t	m_vPotExact;
 
 
 protected:
 	void	testInferer(CInfer &inferer);
 
 
-protected:
+protected:	// Test configuration
 	const static byte	m_nStates	= 2;
 	const static size_t	m_nNodes	= 8;
 };

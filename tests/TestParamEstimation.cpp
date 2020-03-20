@@ -4,9 +4,9 @@
 void CTestParamEstimation::testParamEstimation(CPowell& paramEstimator)
 {
 	for (size_t i = 0; i < nParams; i++) {
-		m_vInitParams[i] = static_cast<float>(random::u(-10, 10));
-		m_vInitDeltas[i] = 0.01f;
-		m_vSolution[i] = static_cast<float>(random::u(-10, 10));
+		m_vInitParams[i] = random::U<float>(-10, 10);
+		m_vInitDeltas[i] = 1e-4f;						// accuracy
+		m_vSolution[i]	 = random::U<float>(-10, 10);
 	}
 
 	vec_float_t vParams = m_vInitParams;
