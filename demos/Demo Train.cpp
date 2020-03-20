@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	imwrite(argv[8], test_img);
 	
 	imshow("Image", test_img);
-	waitKey();
+	waitKey(100);
 
 	return 0;
 }
