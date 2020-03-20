@@ -3,12 +3,11 @@
 #pragma once
 
 #include "TrainNode.h"
+#include "KDTree.h"
+#include "SamplesAccumulator.h"
 
 namespace DirectGraphicalModels
 {
-	class CKDTree;
-	class CSamplesAccumulator;
-
 	/// @brief k-Nearest Neighbors parameters
 	typedef struct TrainNodeKNNParams {
 		float	bias;								///< Regularization CRF parameter: bias is added to all potential values
@@ -54,7 +53,7 @@ namespace DirectGraphicalModels
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
 		DllExport CTrainNodeKNN(byte nStates, word nFeatures, size_t maxSamples);
-		DllExport ~CTrainNodeKNN(void);
+		DllExport virtual ~CTrainNodeKNN(void) = default;
 
 		DllExport void	reset(void);
 		DllExport void	save(const std::string &path, const std::string &name = std::string(), short idx = -1) const;
@@ -71,8 +70,8 @@ namespace DirectGraphicalModels
 
 
 	protected:
-		CKDTree				* m_pTree;						///< k-D Tree
-		CSamplesAccumulator * m_pSamplesAcc;				///< Samples Accumulator
+		std::unique_ptr<CKDTree>				m_pTree;					///< k-D Tree
+		std::unique_ptr<CSamplesAccumulator>	m_pSamplesAcc;				///< Samples Accumulator
 
 
 	private:

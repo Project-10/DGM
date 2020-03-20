@@ -20,17 +20,17 @@ namespace DirectGraphicalModels
 		/**
 		* @brief Default constructor
 		*/
-		DllExport CKDTree(void) : m_root(nullptr) {}
+		DllExport CKDTree(void) = default;
 		/**
 		* @brief Constructor
 		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
 		* @param values The values for every key: Mat(size: nKeys x 1; type: CV_8UC1)
 		*/
-		DllExport CKDTree(Mat &keys, Mat &values) : m_root(nullptr) { build(keys, values); }	
-		DllExport CKDTree(const CKDTree &) = delete;
-		DllExport ~CKDTree(void) {}
+		DllExport CKDTree(Mat &keys, Mat &values) { build(keys, values); }	
+		DllExport CKDTree(const CKDTree&) = delete;
+		DllExport ~CKDTree(void) = default;
 
-		DllExport bool											operator=(const CKDTree)  = delete;
+		DllExport bool											operator=(const CKDTree&) = delete;
 
 		/**
 		* @brief Resets the tree
@@ -75,11 +75,11 @@ namespace DirectGraphicalModels
 
 	private:
 		std::shared_ptr<CKDNode>								loadTree(FILE *pFile, int k);
-		std::shared_ptr<CKDNode>								buildTree(Mat &data, pair_mat_t &boundingBox);
+		std::shared_ptr<CKDNode>								buildTree(Mat& data, const pair_mat_t& boundingBox);
 		std::shared_ptr<const CKDNode>							findNearestNode(const Mat &key) const;
 
 
 	private:
-		std::shared_ptr<CKDNode>	m_root;
+		std::shared_ptr<CKDNode>	m_root = nullptr;
 	};
 }

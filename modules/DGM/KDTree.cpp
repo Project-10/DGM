@@ -7,7 +7,7 @@ namespace DirectGraphicalModels
 {
 	namespace {
 		template<typename T>
-		pair_mat_t getBoundingBox(Mat &data)
+		pair_mat_t getBoundingBox(const Mat& data)
 		{
 			Mat min, max;
 
@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 			T * pMin = min.ptr<T>(0);
 			T * pMax = max.ptr<T>(0);
 			for (int y = 1; y < data.rows; y++) {				// samples
-				T * pData = data.ptr<T>(y);
+				const T * pData = data.ptr<T>(y);
 				for (int x = 0; x < data.cols; x++) {			// dimensions
 					if (pMin[x] > pData[x]) pMin[x] = pData[x];
 					if (pMax[x] < pData[x]) pMax[x] = pData[x];
@@ -27,7 +27,7 @@ namespace DirectGraphicalModels
 		}
 
 		template<typename T>
-		int getSplitDimension(pair_mat_t &boundingBox)
+		int getSplitDimension(const pair_mat_t& boundingBox)
 		{
 			int		res = 0;
 			Mat		diff = boundingBox.second - boundingBox.first;		// diff = max - min
@@ -176,53 +176,45 @@ namespace DirectGraphicalModels
 	// data_i = [key,val]: k + 1 entries 
 	// left = [0; splitVal)
 	// right = [splitVal; end]
-	std::shared_ptr<CKDNode> CKDTree::buildTree(Mat &data, pair_mat_t &boundingBox)
+	std::shared_ptr<CKDNode> CKDTree::buildTree(Mat& data, const pair_mat_t& boundingBox)
 	{
 		if (data.rows == 1) {
-			std::shared_ptr<CKDNode> res(new CKDNode(lvalue_cast(data(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1)));
-			return res;
+			return std::make_shared<CKDNode>(lvalue_cast(data(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1));
 		}
 		else if (data.rows == 2) {
-			//pair_mat_t boundingBox = getBoundingBox<byte>(data);
 			int	 splitDim = getSplitDimension<byte>(boundingBox);
 			byte splitVal = (data.at<byte>(0, splitDim) + data.at<byte>(1, splitDim)) / 2;
+			
 			std::shared_ptr<CKDNode> left, right;
 			if (data.at<byte>(0, splitDim) < data.at<byte>(1, splitDim)) {
-				left  = std::shared_ptr<CKDNode>(new CKDNode(lvalue_cast(data.row(0)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1)));
-				right = std::shared_ptr<CKDNode>(new CKDNode(lvalue_cast(data.row(1)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(1, data.cols - 1)));
+				left  = std::make_shared<CKDNode>(lvalue_cast(data.row(0)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1));
+				right = std::make_shared<CKDNode>(lvalue_cast(data.row(1)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(1, data.cols - 1));
 			}
 			else {
-				left  = std::shared_ptr<CKDNode>(new CKDNode(lvalue_cast(data.row(1)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(1, data.cols - 1)));
-				right = std::shared_ptr<CKDNode>(new CKDNode(lvalue_cast(data.row(0)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1)));
+				left  = std::make_shared<CKDNode>(lvalue_cast(data.row(1)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(1, data.cols - 1));
+				right = std::make_shared<CKDNode>(lvalue_cast(data.row(0)(Rect(0, 0, data.cols - 1, 1))), data.at<byte>(0, data.cols - 1));
 			}
-			std::shared_ptr<CKDNode> res(new CKDNode(boundingBox, splitVal, splitDim, left, right));
-			return res;
+			return std::make_shared<CKDNode>(boundingBox, splitVal, splitDim, left, right);
 		}
 		else {
-			//pair_mat_t boundingBox = getBoundingBox<byte>(data);
 			int	 splitDim = getSplitDimension<byte>(boundingBox);
-			//if (splitDim == 1) printf("Achtung\n");
 			parallel::sortRows<byte>(data, splitDim);
 			int	 splitIdx = data.rows / 2;
 			byte splitVal = data.at<byte>(splitIdx, splitDim);
 
-			pair_mat_t boundingBoxLeft, boundingBoxRight;
-			boundingBox.first.copyTo(boundingBoxLeft.first);
-			boundingBox.second.copyTo(boundingBoxLeft.second);
-			boundingBox.first.copyTo(boundingBoxRight.first);
-			boundingBox.second.copyTo(boundingBoxRight.second);
+			pair_mat_t boundingBoxLeft(boundingBox.first.clone(), boundingBox.second.clone());
+			pair_mat_t boundingBoxRight(boundingBox.first.clone(), boundingBox.second.clone());
 
 			boundingBoxLeft.second.at<byte>(0, splitDim) = splitVal > 0 ? splitVal - 1 : 0;
 			boundingBoxRight.first.at<byte>(0, splitDim) = splitVal;
 
-			std::shared_ptr<CKDNode> left = buildTree(lvalue_cast(data(Rect(0, 0, data.cols, splitIdx))), boundingBoxLeft);
-			std::shared_ptr<CKDNode> right = buildTree(lvalue_cast(data(Rect(0, data.rows / 2, data.cols, data.rows - data.rows / 2))), boundingBoxRight);
-			std::shared_ptr<CKDNode> res(new CKDNode(boundingBox, splitVal, splitDim, left, right));
-			return res;
+			auto left  = buildTree(lvalue_cast(data(Rect(0, 0, data.cols, splitIdx))), boundingBoxLeft);
+			auto right = buildTree(lvalue_cast(data(Rect(0, data.rows / 2, data.cols, data.rows - data.rows / 2))), boundingBoxRight);
+			return std::make_shared<CKDNode>(boundingBox, splitVal, splitDim, left, right);
 		}
 	}
 
-	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat &key) const
+	std::shared_ptr<const CKDNode> CKDTree::findNearestNode(const Mat& key) const
 	{
 		std::shared_ptr<CKDNode> node(m_root);
 

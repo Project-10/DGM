@@ -1,6 +1,4 @@
 #include "TrainNodeKNN.h"
-#include "KDTree.h"
-#include "SamplesAccumulator.h"
 #include "mathop.h"
 
 namespace DirectGraphicalModels 
@@ -21,16 +19,9 @@ namespace DirectGraphicalModels
 	
 	void CTrainNodeKNN::init(TrainNodeKNNParams params)
 	{
-		m_pSamplesAcc	= new CSamplesAccumulator(m_nStates, params.maxSamples);
-		m_pTree			= new CKDTree();
+		m_pSamplesAcc	= std::make_unique<CSamplesAccumulator>(m_nStates, params.maxSamples);
+		m_pTree			= std::make_unique<CKDTree>();
 		m_params		= params;
-	}
-
-	// Destructor
-	CTrainNodeKNN::~CTrainNodeKNN(void)
-	{
-		delete m_pSamplesAcc;
-		delete m_pTree;
 	}
 
 	void CTrainNodeKNN::reset(void)
