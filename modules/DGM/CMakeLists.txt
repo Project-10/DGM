@@ -55,8 +55,9 @@ source_group("Source Files\\Inference\\Message Passing\\LBP" FILES "InferLBP.h" 
 source_group("Source Files\\Inference\\Message Passing\\Tree" FILES "InferTree.h" "InferTree.cpp")
 source_group("Source Files\\Inference\\Message Passing\\TRW" FILES "InferTRW.h" "InferTRW.cpp")
 source_group("Source Files\\Inference\\Message Passing\\Viterbi" FILES "InferViterbi.h")
-source_group("Source Files\\Param Estimation" FILES "ParamEstAlgorithm.h"
-  "ParamEstAlgorithm" "Powell.h" "Powell.cpp" "PSO.h" "PSO.cpp")
+source_group("Source Files\\Param Estimation" FILES "ParamEstAlgorithm.h" "ParamEstAlgorithm.cpp")
+source_group("Source Files\\Param Estimation\\Powell" FILES "Powell.h" "Powell.cpp")
+source_group("Source Files\\Param Estimation\\PSO" FILES "PSO.h" "PSO.cpp")
 source_group("Source Files\\Random Model" FILES "BaseRandomModel.h" "BaseRandomModel.cpp")
 source_group("Source Files\\Random Model\\PDF" FILES "IPDF.h")
 source_group("Source Files\\Random Model\\PDF\\Gaussian 1D" FILES "PDFGaussian.h" "PDFGaussian.cpp")

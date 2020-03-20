@@ -19,7 +19,7 @@ public:
 
 
 protected:	
-	void	testParamEstimation(CPowell& paramEstimator);
+	void	testParamEstimation(CParamEstAlgorithm& paramEstimator);
 	float	objectiveFunction(const vec_float_t& vParams);
 
 private:

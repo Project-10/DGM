@@ -4,7 +4,10 @@
 namespace DirectGraphicalModels {
     // Constructor
     CPowell::CPowell(size_t nParams)
-            : ParamEstAlgorithm(nParams), m_vDeltas(nParams), m_vKappa(3) {
+        : CParamEstAlgorithm(nParams)
+        , m_vKappa(3) 
+        , m_vConverged(nParams)
+    {
         reset();
     }
 
@@ -20,20 +23,6 @@ namespace DirectGraphicalModels {
         std::fill(m_vMax.begin(), m_vMax.end(), FLT_MAX);
         std::fill(m_vConverged.begin(), m_vConverged.end(), false);
         std::fill(m_vKappa.begin(), m_vKappa.end(), -1.0f);
-    }
-
-    void CPowell::setDeltas(const vec_float_t &vDeltas) {
-        DGM_ASSERT_MSG(m_vDeltas.size() == vDeltas.size(),
-                       "The size of the argument (%zu) ddoes not correspond to the number of parameters (%zu)",
-                       vDeltas.size(), m_nParams);
-
-        m_vDeltas = vDeltas;
-    }
-
-    void CPowell::setAcceleration(float acceleration) {
-        if (acceleration >= 0.0f) m_acceleration = acceleration;
-        else
-            DGM_WARNING("Negative acceleration value was not set");
     }
 
     vec_float_t CPowell::getParams(float kappa) {
@@ -86,7 +75,7 @@ namespace DirectGraphicalModels {
 
                 if (isConverged()) return m_vParams;                // we have converged
 
-                m_paramID = (m_paramID + 1) % m_nParams;            // new argument
+                m_paramID = (m_paramID + 1) % m_vParams.size();     // new argument
 
                 // reset variabels for new argument
                 m_vKappa[mD] = -1;
@@ -95,7 +84,8 @@ namespace DirectGraphicalModels {
                 m_koeff = 1.0;
 
                 m_midPoint = curArg;                            // refresh the middle point
-            } else if (maxKappa == m_vKappa[mD]) {    // >>>>> Lower value -> Step argument down
+            }
+            else if (maxKappa == m_vKappa[mD]) {    // >>>>> Lower value -> Step argument down
                 std::fill(m_vConverged.begin(), m_vConverged.end(), false);        // reset convergence
 
                 m_midPoint = MAX(minArg, m_midPoint - m_koeff * delta);            // refresh the middle point
@@ -108,7 +98,8 @@ namespace DirectGraphicalModels {
                 // increase the search step
                 m_nSteps++;
                 m_koeff += m_acceleration * m_nSteps;
-            } else if (maxKappa == m_vKappa[pD]) {    // >>>>> Upper value -> Step argument up
+            }
+            else if (maxKappa == m_vKappa[pD]) {    // >>>>> Upper value -> Step argument up
                 std::fill(m_vConverged.begin(), m_vConverged.end(), false);        // reset convergence
 
                 m_midPoint = MIN(maxArg, m_midPoint + m_koeff * delta);            // refresh the middle point
@@ -133,5 +124,17 @@ namespace DirectGraphicalModels {
         }
 
         return ret_params;
+    }
+
+    bool CPowell::isConverged(void) const
+    {
+        for (const bool& converged : m_vConverged) if (!converged) return false;
+        return true;
+    }
+
+    void CPowell::setAcceleration(float acceleration) {
+        if (acceleration >= 0.0f) m_acceleration = acceleration;
+        else
+            DGM_WARNING("Negative acceleration value was not set");
     }
 }

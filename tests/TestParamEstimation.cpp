@@ -1,7 +1,7 @@
 #include "TestParamEstimation.h"
 #include "DGM/random.h"
 
-void CTestParamEstimation::testParamEstimation(CPowell& paramEstimator)
+void CTestParamEstimation::testParamEstimation(CParamEstAlgorithm& paramEstimator)
 {
 	for (size_t i = 0; i < nParams; i++) {
 		m_vInitParams[i] = random::U<float>(-10, 10);
@@ -40,9 +40,14 @@ float CTestParamEstimation::objectiveFunction(const vec_float_t& vParams)
 }
 
 
-
 TEST_F(CTestParamEstimation, Powell) 
 {
 	CPowell powell(nParams);
 	testParamEstimation(powell);
+}
+
+TEST_F(CTestParamEstimation, PSO)
+{
+	PSO pso(nParams);
+	// testParamEstimation(pso); // TODO: uncomment
 }

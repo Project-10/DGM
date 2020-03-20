@@ -34,49 +34,35 @@ namespace DirectGraphicalModels
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPowell : public ParamEstAlgorithm
+	class CPowell : public CParamEstAlgorithm
 	{
 	public:
 		/**
-		* @brief Constructor
-		* @param nParams Number of parameters (arguments) of the objective function
-		*/		
+		 * @brief Constructor
+		 * @param nParams Number of parameters (arguments) of the objective function
+		 */		
 		DllExport CPowell(size_t nParams);
-		DllExport CPowell(const CPowell&) = delete;
-		DllExport ~CPowell(void) = default;
-		DllExport const CPowell& operator=(const CPowell&) = delete;
+		DllExport virtual ~CPowell(void) = default;
 
+		DllExport virtual void			reset(void) override;
 		/**
-		* @brief Resets class variables
-		*/
-		DllExport void	  reset(void) override;
+		 * @brief Gets the updated parameters (arguments)
+		 * @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them
+		 * (See [example code](#powell_example_code) for more details)
+		 * @param val The current value of the objective function
+		 * @return The pointer to array with the updated parameters
+		 */
+		DllExport virtual vec_float_t	getParams(float val) override;
+		DllExport virtual vec_float_t	getParams(std::function<float(vec_float_t)> objectiveFunct) override;
+		DllExport virtual bool			isConverged(void) const override;
+		
 		/**
-		* @brief Sets the searching steps along the parameters (arguments)
-		* @details
-		* > Default values are \b 0.1 for all parameters (arguments)
-		* @param vDeltas An array with the offset values for each parameter (argument)
-		*/
-		DllExport void	  setDeltas(const vec_float_t& vDeltas);
-		/**
-		* @brief Sets the acceleration coefficient
-		* @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
-		* > Default value is \b 0.1
-		* @param acceleration The acceleration coefficient
-		*/
-		DllExport void	  setAcceleration(float acceleration);
-		/**
-		* @brief Gets the updated parameters (arguments)
-		* @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them 
-		* (See [example code](#powell_example_code) for more details)
-		* @param val The current value of the objective function
-		* @return The pointer to array with the updated parameters
-		*/
-		DllExport vec_float_t getParams(float val) override;
-		/**
-        * @param objectiveFunct The objective function to be minimized
-        * @return Array of the best parameters founds
-        */
-        DllExport vec_float_t getParams(std::function<float(vec_float_t)> objectiveFunct) override;
+		 * @brief Sets the acceleration coefficient
+		 * @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
+		 * > Default value is \b 0.1
+		 * @param acceleration The acceleration coefficient
+		 */
+		DllExport void					setAcceleration(float acceleration);
 
 
 	private:
@@ -86,8 +72,8 @@ namespace DirectGraphicalModels
 		float		m_koeff;		// koefficient for optimized Powell search method
 		float		m_acceleration;	// acceleration of search along one direction
 		
-		vec_float_t	m_vDeltas;		// array of the delta values for each parameter
 		vec_float_t	m_vKappa;		// method's auxilary array
+		vec_bool_t	m_vConverged;	// array of flags, indicating converged variables
 
 		// Simplified accessors for current argument
 		#define curArg m_vParams[m_paramID]
