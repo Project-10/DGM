@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "ParamEstAlgorithm.h"
+#include "CParamEstAlgorithm.h"
 
 namespace DirectGraphicalModels {
 	// ================================ Particle Swarm Optimization Class ===============================
@@ -22,14 +22,14 @@ namespace DirectGraphicalModels {
 	*
 	* const vec_float_t	vInitParams = {0.0f, 0.0f};		// coordinates of the initial point for the search algorithm
 
-	* PSO PSO(vInitParams);
+	* CParamEstimationPSO CParamEstimationPSO(vInitParams);
 	* vec_float_t vParams = pso.getParams(objectiveFunction);
 
 	* @endcode
 	* @author Alexandru Hambasan, a.hambasan@jacobs-university.de
 	*/
 
-	class PSO : public CParamEstAlgorithm 
+	class CParamEstimationPSO : public CParamEstAlgorithm
 	{
 	private:
 		/**
@@ -49,16 +49,16 @@ namespace DirectGraphicalModels {
 		const float W_DEFAULT_VALUE     = 0.5f; // default value for inertia parameter
 
 
-		std::vector<Boid> m_vBoids;                  // vector containing the particles/ boids
-		float             c1;                   // cognitive component parameter
-		float             c2;                   // social component parameter
-		float             w;                    // inertia parameter
+		std::vector<Boid> m_vBoids;             // vector containing the particles/ boids
+		float             m_c1;                 // cognitive component parameter
+		float             m_c2;                 // social component parameter
+		float             m_w;                  // inertia parameter
 
-		vec_float_t gBest;                      // global best parameters
+		vec_float_t m_gBest;                    // global best parameters
 
-		bool        isThreadsEnabled;           // boolean afferent to multiThreading enabling
+		bool        m_isThreadsEnabled;         // boolean afferent to multiThreading enabling
 
-		std::mutex  mtx;                        // mutex for multiThreading option
+		std::mutex  m_mtx;                      // mutex for multiThreading option
 
 		/**
 	  * @brief Sets gBest variable to the best parameters founds
@@ -74,16 +74,16 @@ namespace DirectGraphicalModels {
 		/**
 		 * @brief Default Constructor - initialize the parameter vector of the objective function to
 		 */
-		DllExport PSO(size_t nParams);
+		DllExport CParamEstimationPSO(size_t nParams);
 		/**
 		 * @brief Argument Constructor
 		 * @param vParams An array containing the initial value of the parameters to be optimized
 		 */
-		DllExport explicit PSO(const vec_float_t &vParams);
+		DllExport explicit CParamEstimationPSO(const vec_float_t &vParams);
 		/**
 		 * @brief Destructor
 		 */
-		DllExport ~PSO() = default;
+		DllExport ~CParamEstimationPSO() = default;
 
 		DllExport virtual void			reset(void) override;
 		DllExport virtual vec_float_t	getParams(float val) override { return m_vParams; }                     // TODO: implement this function

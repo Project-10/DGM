@@ -1,16 +1,16 @@
-// The Powell search method class for random model parameters trainig
+// The CParamEstimationPowell search method class for random model parameters trainig
 // Written by Sergey G. Kosov in 2013, 2016 for Project X
 #pragma once
 
-#include "ParamEstAlgorithm.h"
+#include "CParamEstAlgorithm.h"
 
 namespace DirectGraphicalModels
 {
-	// ================================ Powell Class ===============================
+	// ================================ CParamEstimationPowell Class ===============================
 	/**
 	* @ingroup moduleParamEst
-	* @brief The Powell search method class
-	* @details The Powell search method is an iterative optimisation algortihm that does not require an estimate for the gradient of the objective function: 
+	* @brief The CParamEstimationPowell search method class
+	* @details The CParamEstimationPowell search method is an iterative optimisation algortihm that does not require an estimate for the gradient of the objective function:
 	* \f$ f:\mathbb{R}^n\rightarrow\mathbb{R} \f$, where \f$ n \f$ is the number of parameters (arguments). In order to find the extremum point, one may use the
 	* common case:
 	* @anchor powell_example_code
@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 	* const vec_float_t	vInitDeltas = {0.1f, 0.1f};		// searching steps along the parameters (arguments)
 	* vec_float_t vParams = vInitParams;
 
-	* CPowell powell(nParams);
+	* CParamEstimationPowell powell(nParams);
 	* powell.setInitParams(vInitParams);
 	* powell.setDeltas(vInitDeltas);
 
@@ -34,15 +34,15 @@ namespace DirectGraphicalModels
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPowell : public CParamEstAlgorithm
+	class CParamEstimationPowell : public CParamEstAlgorithm
 	{
 	public:
 		/**
 		 * @brief Constructor
 		 * @param nParams Number of parameters (arguments) of the objective function
 		 */		
-		DllExport CPowell(size_t nParams);
-		DllExport virtual ~CPowell(void) = default;
+		DllExport CParamEstimationPowell(size_t nParams);
+		DllExport virtual ~CParamEstimationPowell(void) = default;
 
 		DllExport virtual void			reset(void) override;
 		/**
@@ -69,7 +69,7 @@ namespace DirectGraphicalModels
 		size_t		m_paramID;		// index of a currently adjusting argument
 		size_t		m_nSteps;		// number of adjustments for one argument
 		float		m_midPoint;		// parameter value for kappa: 0
-		float		m_koeff;		// koefficient for optimized Powell search method
+		float		m_koeff;		// koefficient for optimized CParamEstimationPowell search method
 		float		m_acceleration;	// acceleration of search along one direction
 		
 		vec_float_t	m_vKappa;		// method's auxilary array

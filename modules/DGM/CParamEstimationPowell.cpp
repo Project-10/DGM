@@ -1,9 +1,9 @@
-#include "Powell.h"
+#include "CParamEstimationPowell.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels {
     // Constructor
-    CPowell::CPowell(size_t nParams)
+    CParamEstimationPowell::CParamEstimationPowell(size_t nParams)
         : CParamEstAlgorithm(nParams)
         , m_vKappa(3) 
         , m_vConverged(nParams)
@@ -11,7 +11,7 @@ namespace DirectGraphicalModels {
         reset();
     }
 
-    void CPowell::reset(void) {
+    void CParamEstimationPowell::reset(void) {
         m_paramID = 0;                // first parameter
         m_nSteps = 0;
         m_koeff = 1.0f;                // identity koefficient
@@ -25,7 +25,7 @@ namespace DirectGraphicalModels {
         std::fill(m_vKappa.begin(), m_vKappa.end(), -1.0f);
     }
 
-    vec_float_t CPowell::getParams(float kappa) {
+    vec_float_t CParamEstimationPowell::getParams(float kappa) {
         // Assertions
         DGM_ASSERT_MSG(kappa > 0.0f, "Negative kappa values are not allowed");
 
@@ -116,7 +116,7 @@ namespace DirectGraphicalModels {
         } // infinite loop
     }
 
-    vec_float_t CPowell::getParams(std::function<float(vec_float_t)> objectiveFunct) {
+    vec_float_t CParamEstimationPowell::getParams(std::function<float(vec_float_t)> objectiveFunct) {
         vec_float_t ret_params = m_vParams;
         while (!isConverged()) {
             float kappa = objectiveFunct(ret_params);
@@ -126,13 +126,13 @@ namespace DirectGraphicalModels {
         return ret_params;
     }
 
-    bool CPowell::isConverged(void) const
+    bool CParamEstimationPowell::isConverged(void) const
     {
         for (const bool& converged : m_vConverged) if (!converged) return false;
         return true;
     }
 
-    void CPowell::setAcceleration(float acceleration) {
+    void CParamEstimationPowell::setAcceleration(float acceleration) {
         if (acceleration >= 0.0f) m_acceleration = acceleration;
         else
             DGM_WARNING("Negative acceleration value was not set");
