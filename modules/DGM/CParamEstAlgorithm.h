@@ -10,7 +10,7 @@ namespace DirectGraphicalModels
 	/**
 	 *
 	 */
-	class CParamEstAlgorithm 
+	class CParamEstAlgorithm
 	{
 	public:
 		/**

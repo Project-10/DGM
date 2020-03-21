@@ -1,23 +1,23 @@
 //
 // Created by ahambasan on 22.02.20.
 //
-#include "PSO.h"
+#include "CParamEstimationPSO.h"
 #include "macroses.h"
 
 #include <random>   // TODO: you can use random namespace function from DGM/random.h
 
 namespace DirectGraphicalModels 
 {
-    PSO::PSO(size_t nParams) 
-        : CParamEstimation(nParams)
+    CParamEstimationPSO::CParamEstimationPSO(size_t nParams)
+        : CParamEstAlgorithm(nParams)
         , m_isThreadsEnabled(false)
     {
         reset();
     }
 
     // TODO: please substite this function with an implementatuion of setInitParams()
-    PSO::PSO(const vec_float_t& vParams) 
-        : CParamEstimation(vParams.size())
+    CParamEstimationPSO::CParamEstimationPSO(const vec_float_t& vParams)
+        : CParamEstAlgorithm(vParams.size())
         , m_isThreadsEnabled(false)
     {
         // TODO: you can use random namespace function from DGM/random.h
@@ -42,7 +42,7 @@ namespace DirectGraphicalModels
         reset();
     }
 
-    void PSO::reset() {
+    void CParamEstimationPSO::reset() {
         // initialize meta parameters
         m_c1 = C1_DEFAULT_VALUE;
         m_c2 = C2_DEFAULT_VALUE;
@@ -53,11 +53,11 @@ namespace DirectGraphicalModels
         std::fill(m_vParams.begin(), m_vParams.end(), 0.0f);
     }
 
-    vec_float_t PSO::getParams(std::function<float(vec_float_t)> objectiveFunct) {
+    vec_float_t CParamEstimationPSO::getParams(std::function<float(vec_float_t)> objectiveFunct) {
         if (m_isThreadsEnabled) {
             std::vector<std::thread> threads_v;
             for (size_t i = 0; i < NUMBER_BOIDS; i++) {
-                threads_v.emplace_back(&DirectGraphicalModels::PSO::runPSO_withThreads,
+                threads_v.emplace_back(&DirectGraphicalModels::CParamEstimationPSO::runPSO_withThreads,
                     this, objectiveFunct, i);
             }
             std::for_each(threads_v.begin(), threads_v.end(), [](std::thread& th) {
@@ -72,7 +72,7 @@ namespace DirectGraphicalModels
         }
     }
 
-    void PSO::runPSO(const std::function<float(vec_float_t)>& objectiveFunct) {
+    void CParamEstimationPSO::runPSO(const std::function<float(vec_float_t)>& objectiveFunct) {
         size_t it = 0;
         while (it < MAX_NR_ITERATIONS) {
             for (auto& boid : m_vBoids) {
@@ -105,8 +105,8 @@ namespace DirectGraphicalModels
         }
     }
 
-    void PSO::runPSO_withThreads(const std::function<float(vec_float_t)>& objectiveFunct,
-        size_t idx) {
+    void CParamEstimationPSO::runPSO_withThreads(const std::function<float(vec_float_t)>& objectiveFunct,
+                                                 size_t idx) {
         size_t it = 0;
         while (it < MAX_NR_ITERATIONS) {
             float objectiveFunct_val = objectiveFunct(m_vBoids[idx].pParams);
@@ -139,19 +139,19 @@ namespace DirectGraphicalModels
         }
     }
 
-    bool PSO::isMultiThreadingEnabled() const {
+    bool CParamEstimationPSO::isMultiThreadingEnabled() const {
         return this->m_isThreadsEnabled;
     }
 
-    void PSO::enableMultiThreading() {
+    void CParamEstimationPSO::enableMultiThreading() {
         this->m_isThreadsEnabled = true;
     }
 
-    void PSO::enableMultiThreading(bool enable) {
+    void CParamEstimationPSO::enableMultiThreading(bool enable) {
         this->m_isThreadsEnabled = enable;
     }
 
-    void PSO::disableMultiThreading() {
+    void CParamEstimationPSO::disableMultiThreading() {
         this->m_isThreadsEnabled = false;
     }
 

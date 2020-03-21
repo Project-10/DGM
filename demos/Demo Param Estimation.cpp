@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
 	CMarker	marker(DEF_PALETTE_6);
 	CCMat	confMat(nStates);
 
-	// Initializing Powell search class and parameters
+	// Initializing CParamEstimationPowell search class and parameters
 	const vec_float_t vInitParams  = { 100.0f, 300.0f, 3.0f, 10.0f };
 	const vec_float_t vInitDeltas  = {  10.0f,  10.0f, 1.0f,  1.0f };
 	vec_float_t vParams = vInitParams;									// Actual model parameters
 
-	CPowell powell(vParams.size());
+	CParamEstimationPowell powell(vParams.size());
 	powell.setInitParams(vInitParams);
 	powell.setDeltas(vInitDeltas);
 

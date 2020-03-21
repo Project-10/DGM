@@ -42,12 +42,12 @@ float CTestParamEstimation::objectiveFunction(const vec_float_t& vParams)
 
 TEST_F(CTestParamEstimation, Powell) 
 {
-	CPowell powell(nParams);
+	CParamEstimationPowell powell(nParams);
 	testParamEstimation(powell);
 }
 
 TEST_F(CTestParamEstimation, PSO)
 {
-	PSO pso(nParams);
+	CParamEstimationPSO pso(nParams);
 	// testParamEstimation(pso); // TODO: uncomment
 }

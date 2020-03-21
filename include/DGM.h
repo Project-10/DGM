@@ -70,9 +70,9 @@
 #include "DGM/Decode.h"
 #include "DGM/DecodeExact.h"
 
-#include "DGM/PSO.h"
-#include "DGM/ParamEstAlgorithm.h"
-#include "DGM/Powell.h"
+#include "DGM/CParamEstimationPSO.h"
+#include "DGM/CParamEstAlgorithm.h"
+#include "DGM/CParamEstimationPowell.h"
 
 /**
 @mainpage Introduction
@@ -144,7 +144,7 @@ The corresponding classes are @b CDecode* (where @b * is the name of the method 
 
 @subsection sec_main_paramest Parameter Estimation
 DGM implements the following parameter estimation method:
-- <b>Powell:</b> Powell search method @ref DirectGraphicalModels::CPowell
+- <b>CParamEstimationPowell:</b> CParamEstimationPowell search method @ref DirectGraphicalModels::CParamEstimationPowell
 
 @subsection sec_main_sampling Sampling
 DGM implements the following sampling method:
@@ -942,19 +942,19 @@ both edge models and then the corresponding weighting parameters.
 		  std::vector<float> vParams     = vInitParams;							// Actual model parameters
 @endcode
 
-Then we initialize the Powell search class. The vector \b vInitDeltas containes the minimal step values for the search algorithm to change the parameters. The order of these values corresponds 
+Then we initialize the CParamEstimationPowell search class. The vector \b vInitDeltas containes the minimal step values for the search algorithm to change the parameters. The order of these values corresponds
 to the order of parameters in \b vInitParams. Too small values in \b vInitDeltas may make the search more accurate, but also more slow and increase the probability of stucking in a local extremum. 
 Too large values may lead to oscillation and poor convergence.
 
 @code{.cpp}
 	using namespace DirectGraphicalModels;
 
-	CPowell powell(vParams.size());
+	CParamEstimationPowell powell(vParams.size());
 	powell.setInitParams(vInitParams);
 	powell.setDeltas(vInitDeltas);
 @endcode
 
-The parameters are optimized in the mail loop where we gather graph filling, decoding and evaluation phases with the help of DirectGraphicalModels::CPowell::getParams(). 
+The parameters are optimized in the mail loop where we gather graph filling, decoding and evaluation phases with the help of DirectGraphicalModels::CParamEstimationPowell::getParams().
 This function takes as argument one floating-point number and returns a vector, containing new parameters which should lead to increase of the argument. In this tutorial we use the overall 
 classification accuracy as the measure to maximize. However it might be a weighted sum of per-class accuracies (\a i.e. sum of the diagonal elements of the confusion matrix).
 

@@ -1,7 +1,7 @@
 //
 // Created by ahambasan on 26.02.20.
 //
-#include "ParamEstAlgorithm.h"
+#include "CParamEstAlgorithm.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels 
