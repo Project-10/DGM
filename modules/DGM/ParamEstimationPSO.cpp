@@ -1,7 +1,7 @@
 //
 // Created by ahambasan on 22.02.20.
 //
-#include "CParamEstimationPSO.h"
+#include "ParamEstimationPSO.h"
 #include "macroses.h"
 
 #include <random>   // TODO: you can use random namespace function from DGM/random.h
@@ -9,7 +9,7 @@
 namespace DirectGraphicalModels 
 {
     CParamEstimationPSO::CParamEstimationPSO(size_t nParams)
-        : CParamEstAlgorithm(nParams)
+        : CParamEstimation(nParams)
         , m_isThreadsEnabled(false)
     {
         reset();
@@ -17,7 +17,7 @@ namespace DirectGraphicalModels
 
     // TODO: please substite this function with an implementatuion of setInitParams()
     CParamEstimationPSO::CParamEstimationPSO(const vec_float_t& vParams)
-        : CParamEstAlgorithm(vParams.size())
+        : CParamEstimation(vParams.size())
         , m_isThreadsEnabled(false)
     {
         // TODO: you can use random namespace function from DGM/random.h

@@ -1,10 +1,10 @@
-#include "CParamEstimationPowell.h"
+#include "ParamEstimationPowell.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels {
     // Constructor
     CParamEstimationPowell::CParamEstimationPowell(size_t nParams)
-        : CParamEstAlgorithm(nParams)
+        : CParamEstimation(nParams)
         , m_vKappa(3) 
         , m_vConverged(nParams)
     {

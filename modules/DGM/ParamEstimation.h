@@ -10,17 +10,17 @@ namespace DirectGraphicalModels
 	/**
 	 *
 	 */
-	class CParamEstAlgorithm
+	class CParamEstimation
 	{
 	public:
 		/**
 		 * @brief Constructor
 		 * @param nParams Number of parameters (arguments) of the objective function
 		 */
-		DllExport CParamEstAlgorithm(size_t nParams);
-		DllExport CParamEstAlgorithm(const CParamEstAlgorithm&) = delete;
-		DllExport virtual ~CParamEstAlgorithm() = default;
-		DllExport const CParamEstAlgorithm& operator=(const CParamEstAlgorithm&) = delete;
+		DllExport CParamEstimation(size_t nParams);
+		DllExport CParamEstimation(const CParamEstimation&) = delete;
+		DllExport virtual ~CParamEstimation() = default;
+		DllExport const CParamEstimation& operator=(const CParamEstimation&) = delete;
 
 		/**
 		 * @brief Resets class variables

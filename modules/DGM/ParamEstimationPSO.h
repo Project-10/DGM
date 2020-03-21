@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "CParamEstAlgorithm.h"
+#include "ParamEstimation.h"
 
 namespace DirectGraphicalModels {
 	// ================================ Particle Swarm Optimization Class ===============================
@@ -29,7 +29,7 @@ namespace DirectGraphicalModels {
 	* @author Alexandru Hambasan, a.hambasan@jacobs-university.de
 	*/
 
-	class CParamEstimationPSO : public CParamEstAlgorithm
+	class CParamEstimationPSO : public CParamEstimation
 	{
 	private:
 		/**

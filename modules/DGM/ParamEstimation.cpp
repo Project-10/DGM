@@ -1,19 +1,19 @@
 //
 // Created by ahambasan on 26.02.20.
 //
-#include "CParamEstAlgorithm.h"
+#include "ParamEstimation.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels 
 {
-    CParamEstAlgorithm::CParamEstAlgorithm(size_t nParams)
+    CParamEstimation::CParamEstimation(size_t nParams)
         : m_vParams(nParams)
         , m_vDeltas(nParams)
         , m_vMin(nParams)
         , m_vMax(nParams)
     {}
 
-    void CParamEstAlgorithm::setInitParams(const vec_float_t& vParams) {
+    void CParamEstimation::setInitParams(const vec_float_t& vParams) {
         DGM_ASSERT_MSG(vParams.size() == m_vParams.size(),
             "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
             vParams.size(), m_vParams.size());
@@ -34,7 +34,7 @@ namespace DirectGraphicalModels
         }
     }
 
-    void CParamEstAlgorithm::setDeltas(const vec_float_t& vDeltas) {
+    void CParamEstimation::setDeltas(const vec_float_t& vDeltas) {
         DGM_ASSERT_MSG(vDeltas.size() == m_vDeltas.size(),
             "The size of the argument (%zu) ddoes not correspond to the number of parameters (%zu)",
             vDeltas.size(), m_vDeltas.size());
@@ -42,7 +42,7 @@ namespace DirectGraphicalModels
         m_vDeltas = vDeltas;
     }
 
-    void CParamEstAlgorithm::setMinParams(const vec_float_t& vMinParam) {
+    void CParamEstimation::setMinParams(const vec_float_t& vMinParam) {
         DGM_ASSERT_MSG(vMinParam.size() == m_vMin.size(),
             "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
             vMinParam.size(), m_vMin.size());
@@ -57,7 +57,7 @@ namespace DirectGraphicalModels
         }
     }
 
-    void CParamEstAlgorithm::setMaxParams(const vec_float_t& vMaxParam) {
+    void CParamEstimation::setMaxParams(const vec_float_t& vMaxParam) {
         DGM_ASSERT_MSG(vMaxParam.size() == m_vMax.size(),
             "The size of the argument (%zu) does not correspond to the number of parameters (%zu)",
             vMaxParam.size(), m_vMax.size());

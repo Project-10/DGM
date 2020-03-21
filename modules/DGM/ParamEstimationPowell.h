@@ -2,7 +2,7 @@
 // Written by Sergey G. Kosov in 2013, 2016 for Project X
 #pragma once
 
-#include "CParamEstAlgorithm.h"
+#include "ParamEstimation.h"
 
 namespace DirectGraphicalModels
 {
@@ -34,7 +34,7 @@ namespace DirectGraphicalModels
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CParamEstimationPowell : public CParamEstAlgorithm
+	class CParamEstimationPowell : public CParamEstimation
 	{
 	public:
 		/**

@@ -70,9 +70,9 @@
 #include "DGM/Decode.h"
 #include "DGM/DecodeExact.h"
 
-#include "DGM/CParamEstimationPSO.h"
-#include "DGM/CParamEstAlgorithm.h"
-#include "DGM/CParamEstimationPowell.h"
+#include "DGM/ParamEstimationPSO.h"
+#include "DGM/ParamEstimation.h"
+#include "DGM/ParamEstimationPowell.h"
 
 /**
 @mainpage Introduction

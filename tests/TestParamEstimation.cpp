@@ -1,7 +1,7 @@
 #include "TestParamEstimation.h"
 #include "DGM/random.h"
 
-void CTestParamEstimation::testParamEstimation(CParamEstAlgorithm& paramEstimator)
+void CTestParamEstimation::testParamEstimation(CParamEstimation& paramEstimator)
 {
 	for (size_t i = 0; i < nParams; i++) {
 		m_vInitParams[i] = random::U<float>(-10, 10);

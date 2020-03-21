@@ -16,7 +16,7 @@ void CTestKDTree::fill_tree(CKDTree& tree) {
 	// Values
 	m_values = Mat(nSamples, 1, CV_8UC1);
 
-	tree.build(m_keys.clone(), m_values);
+	tree.build(lvalue_cast(m_keys.clone()), m_values);
 }
 
 Mat  CTestKDTree::find_nearestNeighbor_bruteForce(const Mat& key)
