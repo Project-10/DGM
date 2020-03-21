@@ -116,16 +116,6 @@ namespace DirectGraphicalModels {
         } // infinite loop
     }
 
-    vec_float_t CParamEstimationPowell::getParams(std::function<float(vec_float_t)> objectiveFunct) {
-        vec_float_t ret_params = m_vParams;
-        while (!isConverged()) {
-            float kappa = objectiveFunct(ret_params);
-            ret_params = getParams(kappa);
-        }
-
-        return ret_params;
-    }
-
     bool CParamEstimationPowell::isConverged(void) const
     {
         for (const bool& converged : m_vConverged) if (!converged) return false;

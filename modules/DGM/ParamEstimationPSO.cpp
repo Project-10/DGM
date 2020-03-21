@@ -10,7 +10,6 @@ namespace DirectGraphicalModels
 {
     CParamEstimationPSO::CParamEstimationPSO(size_t nParams)
         : CParamEstimation(nParams)
-        , m_isThreadsEnabled(false)
     {
         reset();
     }
@@ -18,7 +17,6 @@ namespace DirectGraphicalModels
     // TODO: please substite this function with an implementatuion of setInitParams()
     CParamEstimationPSO::CParamEstimationPSO(const vec_float_t& vParams)
         : CParamEstimation(vParams.size())
-        , m_isThreadsEnabled(false)
     {
         // TODO: you can use random namespace function from DGM/random.h
         // SOURCE: https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
@@ -53,28 +51,9 @@ namespace DirectGraphicalModels
         std::fill(m_vParams.begin(), m_vParams.end(), 0.0f);
     }
 
-    vec_float_t CParamEstimationPSO::getParams(std::function<float(vec_float_t)> objectiveFunct) {
-        if (m_isThreadsEnabled) {
-            std::vector<std::thread> threads_v;
-            for (size_t i = 0; i < NUMBER_BOIDS; i++) {
-                threads_v.emplace_back(&DirectGraphicalModels::CParamEstimationPSO::runPSO_withThreads,
-                    this, objectiveFunct, i);
-            }
-            std::for_each(threads_v.begin(), threads_v.end(), [](std::thread& th) {
-                th.join();
-                });
-
-            return m_gBest;
-        }
-        else {
-            runPSO(objectiveFunct);
-            return m_gBest;
-        }
-    }
-
-    void CParamEstimationPSO::runPSO(const std::function<float(vec_float_t)>& objectiveFunct) {
-        size_t it = 0;
-        while (it < MAX_NR_ITERATIONS) {
+    vec_float_t CParamEstimationPSO::getParams(const std::function<float(vec_float_t)>& objectiveFunct)
+	{
+		for (size_t it = 0; it < MAX_NR_ITERATIONS; it++) {
             for (auto& boid : m_vBoids) {
                 float objectiveFunct_val = objectiveFunct(boid.pParams);
                 float pBest_val = objectiveFunct(boid.pBest);
@@ -100,59 +79,8 @@ namespace DirectGraphicalModels
                     boid.pParams[d] = boid.pParams[d] + boid.velocity[d];
                 }
             }
-
-            it++;
         }
-    }
-
-    void CParamEstimationPSO::runPSO_withThreads(const std::function<float(vec_float_t)>& objectiveFunct,
-                                                 size_t idx) {
-        size_t it = 0;
-        while (it < MAX_NR_ITERATIONS) {
-            float objectiveFunct_val = objectiveFunct(m_vBoids[idx].pParams);
-            float pBest_val = objectiveFunct(m_vBoids[idx].pBest);
-            if (objectiveFunct_val < pBest_val) {
-                m_vBoids[idx].pBest = m_vBoids[idx].pParams;
-            }
-
-            m_mtx.lock();
-            float gBest_val = objectiveFunct(m_gBest);
-            if (objectiveFunct_val < gBest_val) {
-                m_gBest = m_vBoids[idx].pBest;
-            }
-            m_mtx.unlock();
-
-
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_real_distribution<> dis(0, 1);
-
-            float r1 = dis(gen);
-            float r2 = dis(gen);
-            for (auto d = 0; d < m_vParams.size(); d++) {
-                m_vBoids[idx].velocity[d] = m_w * m_vBoids[idx].velocity[d] + m_c1 * r1 * (m_vBoids[idx].pBest[d] - m_vBoids[idx].pParams[d]) +
-                                            m_c2 * r2 * (m_gBest[d] - m_vBoids[idx].pParams[d]);
-                m_vBoids[idx].pParams[d] = m_vBoids[idx].pParams[d] + m_vBoids[idx].velocity[d];
-            }
-
-            it++;
-        }
-    }
-
-    bool CParamEstimationPSO::isMultiThreadingEnabled() const {
-        return this->m_isThreadsEnabled;
-    }
-
-    void CParamEstimationPSO::enableMultiThreading() {
-        this->m_isThreadsEnabled = true;
-    }
-
-    void CParamEstimationPSO::enableMultiThreading(bool enable) {
-        this->m_isThreadsEnabled = enable;
-    }
-
-    void CParamEstimationPSO::disableMultiThreading() {
-        this->m_isThreadsEnabled = false;
+		return m_gBest;
     }
 
 }

@@ -54,21 +54,7 @@ namespace DirectGraphicalModels {
 		float             m_c2;                 // social component parameter
 		float             m_w;                  // inertia parameter
 
-		vec_float_t m_gBest;                    // global best parameters
-
-		bool        m_isThreadsEnabled;         // boolean afferent to multiThreading enabling
-
-		std::mutex  m_mtx;                      // mutex for multiThreading option
-
-		/**
-	  * @brief Sets gBest variable to the best parameters founds
-	  * @details This function updates the global best parameters (arguments) of the objective function
-	  * based on its outcome value \b objectiveFunct_val
-	  * (See [example code](#pso_example_code) for more details)
-	  * @param objectiveFunct The objective function to be minimized.
-	  */
-		void runPSO(const std::function<float(vec_float_t)>& objectiveFunct);
-		void runPSO_withThreads(const std::function<float(vec_float_t)>& objectiveFunct, size_t idx);
+		vec_float_t 	  m_gBest;                    // global best parameters
 
 	public:
 		/**
@@ -87,28 +73,15 @@ namespace DirectGraphicalModels {
 
 		DllExport virtual void			reset(void) override;
 		DllExport virtual vec_float_t	getParams(float val) override { return m_vParams; }                     // TODO: implement this function
-		DllExport virtual vec_float_t   getParams(std::function<float(vec_float_t)> objectiveFunct) override;
 		DllExport virtual bool			isConverged(void) const override { return true; }                       // TODO: implement this function
 		
 		/**
-		 * @return boolean value representing whether multiThreading is enabled or not
+		 * @brief Sets gBest variable to the best parameters founds
+		 * @details This function updates the global best parameters (arguments) of the objective function
+		 * based on its outcome value \b objectiveFunct_val
+		 * (See [example code](#pso_example_code) for more details)
+		 * @param objectiveFunct The objective function to be minimized.
 		 */
-		DllExport bool isMultiThreadingEnabled() const;
-
-		/**
-		 * @brief Enables multiThreading
-		 */
-		DllExport void enableMultiThreading();
-
-		/**
-		 * @brief Overloaded function for convenience
-		 * @param enable Boolean parameter for enabling/ disabling multiThreading
-		 */
-		DllExport void enableMultiThreading(bool enable);
-
-		/**
-		 * @brief Disables multiThreading
-		 */
-		DllExport void disableMultiThreading();
+		DllExport vec_float_t   getParams(const std::function<float(vec_float_t)>& objectiveFunct);
 	};
 }

@@ -35,11 +35,6 @@ namespace DirectGraphicalModels
 		 */
 		DllExport virtual vec_float_t getParams(float val) = 0;
 		/**
-		 * @param objectiveFunct The objective function to be minimized
-		 * @return Array of the best parameters found
-		 */
-		DllExport virtual vec_float_t getParams(std::function<float(vec_float_t)> objectiveFunction) = 0;
-		/**
 		 * @brief Indicates weather the method has converged
 		 * @retval true if the method has converged
 		 * @retval false otherwise

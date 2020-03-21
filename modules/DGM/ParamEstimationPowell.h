@@ -53,7 +53,6 @@ namespace DirectGraphicalModels
 		 * @return The pointer to array with the updated parameters
 		 */
 		DllExport virtual vec_float_t	getParams(float val) override;
-		DllExport virtual vec_float_t	getParams(std::function<float(vec_float_t)> objectiveFunct) override;
 		DllExport virtual bool			isConverged(void) const override;
 		
 		/**
