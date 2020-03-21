@@ -23,7 +23,7 @@ namespace DirectGraphicalModels
 	* const vec_float_t	vInitDeltas = {0.1f, 0.1f};		// searching steps along the parameters (arguments)
 	* vec_float_t vParams = vInitParams;
 
-	* CPowell powell(nParams);
+	* CParamEstimationPowell powell(nParams);
 	* powell.setInitParams(vInitParams);
 	* powell.setDeltas(vInitDeltas);
 
@@ -34,15 +34,15 @@ namespace DirectGraphicalModels
 	* @endcode
 	* @author Sergey G. Kosov, sergey.kosov@project-10.de
 	*/	
-	class CPowell : public CParamEstAlgorithm
+	class CParamEstimationPowell : public CParamEstimation
 	{
 	public:
 		/**
 		 * @brief Constructor
 		 * @param nParams Number of parameters (arguments) of the objective function
 		 */		
-		DllExport CPowell(size_t nParams);
-		DllExport virtual ~CPowell(void) = default;
+		DllExport CParamEstimationPowell(size_t nParams);
+		DllExport virtual ~CParamEstimationPowell(void) = default;
 
 		DllExport virtual void			reset(void) override;
 		/**

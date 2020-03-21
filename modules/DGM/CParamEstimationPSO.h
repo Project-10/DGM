@@ -29,7 +29,7 @@ namespace DirectGraphicalModels {
 	* @author Alexandru Hambasan, a.hambasan@jacobs-university.de
 	*/
 
-	class PSO : public CParamEstAlgorithm 
+	class PSO : public CParamEstimation
 	{
 	private:
 		/**
@@ -49,16 +49,16 @@ namespace DirectGraphicalModels {
 		const float W_DEFAULT_VALUE     = 0.5f; // default value for inertia parameter
 
 
-		std::vector<Boid> m_vBoids;                  // vector containing the particles/ boids
-		float             c1;                   // cognitive component parameter
-		float             c2;                   // social component parameter
-		float             w;                    // inertia parameter
+		std::vector<Boid> m_vBoids;             // vector containing the particles/ boids
+		float             m_c1;                 // cognitive component parameter
+		float             m_c2;                 // social component parameter
+		float             m_w;                  // inertia parameter
 
-		vec_float_t gBest;                      // global best parameters
+		vec_float_t m_gBest;                    // global best parameters
 
-		bool        isThreadsEnabled;           // boolean afferent to multiThreading enabling
+		bool        m_isThreadsEnabled;         // boolean afferent to multiThreading enabling
 
-		std::mutex  mtx;                        // mutex for multiThreading option
+		std::mutex  m_mtx;                      // mutex for multiThreading option
 
 		/**
 	  * @brief Sets gBest variable to the best parameters founds

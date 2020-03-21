@@ -9,16 +9,16 @@
 namespace DirectGraphicalModels 
 {
     PSO::PSO(size_t nParams) 
-        : CParamEstAlgorithm(nParams)
-        , isThreadsEnabled(false)
+        : CParamEstimation(nParams)
+        , m_isThreadsEnabled(false)
     {
         reset();
     }
 
     // TODO: please substite this function with an implementatuion of setInitParams()
     PSO::PSO(const vec_float_t& vParams) 
-        : CParamEstAlgorithm(vParams.size()) 
-        , isThreadsEnabled(false)
+        : CParamEstimation(vParams.size())
+        , m_isThreadsEnabled(false)
     {
         // TODO: you can use random namespace function from DGM/random.h
         // SOURCE: https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
@@ -37,16 +37,16 @@ namespace DirectGraphicalModels
             m_vBoids.push_back(*b_x);
         }
 
-        gBest = m_vParams;
+        m_gBest = m_vParams;
 
         reset();
     }
 
     void PSO::reset() {
         // initialize meta parameters
-        c1 = C1_DEFAULT_VALUE;
-        c2 = C2_DEFAULT_VALUE;
-        w  = W_DEFAULT_VALUE;
+        m_c1 = C1_DEFAULT_VALUE;
+        m_c2 = C2_DEFAULT_VALUE;
+        m_w  = W_DEFAULT_VALUE;
 
         std::fill(m_vMin.begin(), m_vMin.end(), -FLT_MAX);
         std::fill(m_vMax.begin(), m_vMax.end(), FLT_MAX);
@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
     }
 
     vec_float_t PSO::getParams(std::function<float(vec_float_t)> objectiveFunct) {
-        if (isThreadsEnabled) {
+        if (m_isThreadsEnabled) {
             std::vector<std::thread> threads_v;
             for (size_t i = 0; i < NUMBER_BOIDS; i++) {
                 threads_v.emplace_back(&DirectGraphicalModels::PSO::runPSO_withThreads,
@@ -64,11 +64,11 @@ namespace DirectGraphicalModels
                 th.join();
                 });
 
-            return gBest;
+            return m_gBest;
         }
         else {
             runPSO(objectiveFunct);
-            return gBest;
+            return m_gBest;
         }
     }
 
@@ -82,9 +82,9 @@ namespace DirectGraphicalModels
                     boid.pBest = boid.pParams;
                 }
 
-                float gBest_val = objectiveFunct(gBest);
+                float gBest_val = objectiveFunct(m_gBest);
                 if (objectiveFunct_val < gBest_val) {
-                    gBest = boid.pBest;
+                    m_gBest = boid.pBest;
                 }
             }
             for (auto& boid : m_vBoids) {
@@ -95,8 +95,8 @@ namespace DirectGraphicalModels
                 float r1 = dis(gen);
                 float r2 = dis(gen);
                 for (auto d = 0; d < m_vParams.size(); d++) {
-                    boid.velocity[d] = w * boid.velocity[d] + c1 * r1 * (boid.pBest[d] - boid.pParams[d]) +
-                        c2 * r2 * (gBest[d] - boid.pParams[d]);
+                    boid.velocity[d] = m_w * boid.velocity[d] + m_c1 * r1 * (boid.pBest[d] - boid.pParams[d]) +
+                                       m_c2 * r2 * (m_gBest[d] - boid.pParams[d]);
                     boid.pParams[d] = boid.pParams[d] + boid.velocity[d];
                 }
             }
@@ -115,12 +115,12 @@ namespace DirectGraphicalModels
                 m_vBoids[idx].pBest = m_vBoids[idx].pParams;
             }
 
-            mtx.lock();
-            float gBest_val = objectiveFunct(gBest);
+            m_mtx.lock();
+            float gBest_val = objectiveFunct(m_gBest);
             if (objectiveFunct_val < gBest_val) {
-                gBest = m_vBoids[idx].pBest;
+                m_gBest = m_vBoids[idx].pBest;
             }
-            mtx.unlock();
+            m_mtx.unlock();
 
 
             std::random_device rd;
@@ -130,8 +130,8 @@ namespace DirectGraphicalModels
             float r1 = dis(gen);
             float r2 = dis(gen);
             for (auto d = 0; d < m_vParams.size(); d++) {
-                m_vBoids[idx].velocity[d] = w * m_vBoids[idx].velocity[d] + c1 * r1 * (m_vBoids[idx].pBest[d] - m_vBoids[idx].pParams[d]) +
-                    c2 * r2 * (gBest[d] - m_vBoids[idx].pParams[d]);
+                m_vBoids[idx].velocity[d] = m_w * m_vBoids[idx].velocity[d] + m_c1 * r1 * (m_vBoids[idx].pBest[d] - m_vBoids[idx].pParams[d]) +
+                                            m_c2 * r2 * (m_gBest[d] - m_vBoids[idx].pParams[d]);
                 m_vBoids[idx].pParams[d] = m_vBoids[idx].pParams[d] + m_vBoids[idx].velocity[d];
             }
 
@@ -140,19 +140,19 @@ namespace DirectGraphicalModels
     }
 
     bool PSO::isMultiThreadingEnabled() const {
-        return this->isThreadsEnabled;
+        return this->m_isThreadsEnabled;
     }
 
     void PSO::enableMultiThreading() {
-        this->isThreadsEnabled = true;
+        this->m_isThreadsEnabled = true;
     }
 
     void PSO::enableMultiThreading(bool enable) {
-        this->isThreadsEnabled = enable;
+        this->m_isThreadsEnabled = enable;
     }
 
     void PSO::disableMultiThreading() {
-        this->isThreadsEnabled = false;
+        this->m_isThreadsEnabled = false;
     }
 
 }
