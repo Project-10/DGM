@@ -36,9 +36,9 @@ namespace DirectGraphicalModels {
 		 * @brief Structure for representing a bird like object (BOID)
 		 */
 		struct Boid {
-			vec_float_t pBest;                  // personal best parameters
-			vec_float_t velocity;               // velocity of the particle/ BOID
-			vec_float_t pParams;                // personal position parameters
+			vec_float_t vBest;                  // personal best parameters
+			vec_float_t vVelocity;              // velocity of the particle/ BOID
+			vec_float_t vParams;                // personal position parameters
 		};
 
 		const size_t NUMBER_BOIDS       = 500;  // number of particles/ boids
@@ -58,22 +58,15 @@ namespace DirectGraphicalModels {
 
 	public:
 		/**
-		 * @brief Default Constructor - initialize the parameter vector of the objective function to
+		 * @brief Constructor
+		 * @param nParams Number of parameters (arguments) of the objective function
 		 */
 		DllExport CParamEstimationPSO(size_t nParams);
-		/**
-		 * @brief Argument Constructor
-		 * @param vParams An array containing the initial value of the parameters to be optimized
-		 */
-		DllExport explicit CParamEstimationPSO(const vec_float_t &vParams);
-		/**
-		 * @brief Destructor
-		 */
-		DllExport ~CParamEstimationPSO() = default;
+		DllExport ~CParamEstimationPSO(void) = default;
 
 		DllExport virtual void			reset(void) override;
-		DllExport virtual vec_float_t	getParams(float val) override { return m_vParams; }                     // TODO: implement this function
-		DllExport virtual bool			isConverged(void) const override { return true; }                       // TODO: implement this function
+		DllExport virtual vec_float_t	getParams(float val) override;                     
+		DllExport virtual bool			isConverged(void) const override; 
 		
 		/**
 		 * @brief Sets gBest variable to the best parameters founds
