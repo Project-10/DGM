@@ -31,10 +31,6 @@ namespace DirectGraphicalModels
 			gaussianMixture.reserve(m_params.maxGausses);
 	}
 
-	// Destructor
-	CTrainNodeGMM::~CTrainNodeGMM(void)
-	{ }
-
 	void CTrainNodeGMM::reset(void)
 	{
 		m_vGaussianMixtures.clear();

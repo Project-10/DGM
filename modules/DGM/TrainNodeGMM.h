@@ -54,7 +54,7 @@ namespace DirectGraphicalModels
 		* @param maxGausses The maximal number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
 		DllExport CTrainNodeGMM(byte nStates, word nFeatures, byte maxGausses);
-		DllExport virtual ~CTrainNodeGMM(void);
+		DllExport virtual ~CTrainNodeGMM(void) = default;
 
 		DllExport void	reset(void);
 

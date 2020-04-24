@@ -24,7 +24,7 @@ namespace DirectGraphicalModels
 		* @param nFeatures Number of features
 		*/
 		DllExport CTrainNodeGM(byte nStates, word nFeatures) : CBaseRandomModel(nStates), CTrainNodeGMM(nStates, nFeatures, 1) {}
-		DllExport ~CTrainNodeGM(void) {}
+		DllExport ~CTrainNodeGM(void) = default;
 
 		/**
 		* @brief Returns the node potential, based on the feature vector
