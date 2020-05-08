@@ -1,6 +1,7 @@
 #include "TestParamEstimation.h"
 #include "DGM/random.h"
 
+// TODO: test with empty parameters ?
 void CTestParamEstimation::testParamEstimation(CParamEstimation& paramEstimator)
 {
 	for (size_t i = 0; i < nParams; i++) {
@@ -35,8 +36,10 @@ float CTestParamEstimation::objectiveFunction(const vec_float_t& vParams)
 	float res = 0;
 	for (size_t i = 0; i < vParams.size(); i++)
 		res += fabs(vParams[i] - m_vSolution[i]);
+	res = 10 * vParams.size() - res;
+	if (res < 0) res = 0;
 
-	return 10 * vParams.size() - res;
+	return res;
 }
 
 
@@ -49,5 +52,5 @@ TEST_F(CTestParamEstimation, Powell)
 TEST_F(CTestParamEstimation, PSO)
 {
 	CParamEstimationPSO pso(nParams);
-	// testParamEstimation(pso); // TODO: uncomment
+	testParamEstimation(pso); // TODO: uncomment
 }
