@@ -29,5 +29,5 @@ private:
 
 
 protected:	// Test configuration
-	const static size_t nParams = 16;
+	const static size_t nParams = 10;
 };

@@ -36,32 +36,29 @@ namespace DirectGraphicalModels {
 		 * @brief Structure for representing a bird like object (BOID)
 		 */
 		struct Boid {
-			vec_float_t vArgBest;               // personal best parameters			// Initialized to the given by the user parameters
-			float		valBest;				// the value of the objective function for the personal best parameters
-			vec_float_t vArgCurrent;            // personal position parameters		// Initialized to be random in (-10; 10)
-			float		valCurrent;				// the value of the objective function for the personal position parameters
-			vec_float_t vVelocity;              // velocity of the particle/ BOID	// Initialized with 1
+			vec_float_t vArgBest;                   // personal best parameters			// Initialized to the given by the user parameters
+			float		valBest;				    // the value of the objective function for the personal best parameters
+			vec_float_t vArgCurrent;                // personal position parameters		// Initialized to be random in (-10; 10)
+			std::pair<float, bool>	valCurrent;		// pair of the value of the objective function for the personal position parameters and its status
+			vec_float_t vVelocity;                  // velocity of the particle/ BOID	// Initialized with 1
+			bool hasConverged = false;
 		};
 
-		const size_t NUMBER_BOIDS       = 500;  // number of particles/ boids
-		const size_t MAX_NR_ITERATIONS  = 1000; // number of iterations
+		const size_t NUMBER_BOIDS       = 500;      // number of particles/ boids
 
-		const float C1_DEFAULT_VALUE    = 1.7f; // default value for cognitive component parameter
-		const float C2_DEFAULT_VALUE    = 1.5f; // default value for social component parameter
-		const float W_DEFAULT_VALUE     = 0.5f; // default value for inertia parameter
+		const float C1_DEFAULT_VALUE    = 1.49617f; // default value for cognitive component parameter
+		const float C2_DEFAULT_VALUE    = 1.49617f; // default value for social component parameter
+		const float W_DEFAULT_VALUE     = 0.72984f; // default value for inertia parameter
 
+		std::vector<Boid>	m_vBoids;               // vector containing the particles/ boids
+		float				m_c1;                   // cognitive component parameter
+		float				m_c2;                   // social component parameter
+		float				m_w;                    // inertia parameter
 
-		std::vector<Boid>	m_vBoids;           // vector containing the particles/ boids
-		float				m_c1;               // cognitive component parameter
-		float				m_c2;               // social component parameter
-		float				m_w;                // inertia parameter
+		vec_float_t 		m_vGlobalArgBest;       // global best parameters
+		float				m_globalValBest;	    // Value of the objective function for global best parameters
 
-		vec_float_t 		m_vGlobalArgBest;   // global best parameters
-		float				m_globalValBest = -101;	// Value of the objective function for global best parameters
-
-		// TODO: remove it
-		size_t m_iteration = 0;
-		bool m_ifFirstCall = true;
+		const float         UNINITIALIZED = -INFINITY;
 
 	public:
 		/**
@@ -74,14 +71,6 @@ namespace DirectGraphicalModels {
 		DllExport virtual void			reset(void) override;
 		DllExport virtual vec_float_t	getParams(float val) override;                     
 		DllExport virtual bool			isConverged(void) const override; 
-		
-		/**
-		 * @brief Sets gBest variable to the best parameters founds
-		 * @details This function updates the global best parameters (arguments) of the objective function
-		 * based on its outcome value \b objectiveFunct_val
-		 * (See [example code](#pso_example_code) for more details)
-		 * @param objectiveFunct The objective function to be minimized.
-		 */
-		DllExport vec_float_t   getParams(const std::function<float(vec_float_t)>& objectiveFunct);
+
 	};
 }

@@ -51,6 +51,6 @@ TEST_F(CTestParamEstimation, Powell)
 
 TEST_F(CTestParamEstimation, PSO)
 {
-	CParamEstimationPSO pso(nParams);
-	testParamEstimation(pso); // TODO: uncomment
+    CParamEstimationPSO pso(nParams);
+	testParamEstimation(pso);
 }
