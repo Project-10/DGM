@@ -19,3 +19,4 @@ doc/html
 !.vscode/launch.json
 !.vscode/extensions.json
 ./vscode
+.DS_Store
