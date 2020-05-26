@@ -36,9 +36,11 @@ namespace DirectGraphicalModels {
 		 * @brief Structure for representing a bird like object (BOID)
 		 */
 		struct Boid {
-			vec_float_t vBest;                  // personal best parameters
-			vec_float_t vVelocity;              // velocity of the particle/ BOID
-			vec_float_t vParams;                // personal position parameters
+			vec_float_t vArgBest;               // personal best parameters			// Initialized to the given by the user parameters
+			float		valBest;				// the value of the objective function for the personal best parameters
+			vec_float_t vArgCurrent;            // personal position parameters		// Initialized to be random in (-10; 10)
+			float		valCurrent;				// the value of the objective function for the personal position parameters
+			vec_float_t vVelocity;              // velocity of the particle/ BOID	// Initialized with 1
 		};
 
 		const size_t NUMBER_BOIDS       = 500;  // number of particles/ boids
@@ -49,12 +51,17 @@ namespace DirectGraphicalModels {
 		const float W_DEFAULT_VALUE     = 0.5f; // default value for inertia parameter
 
 
-		std::vector<Boid> m_vBoids;             // vector containing the particles/ boids
-		float             m_c1;                 // cognitive component parameter
-		float             m_c2;                 // social component parameter
-		float             m_w;                  // inertia parameter
+		std::vector<Boid>	m_vBoids;           // vector containing the particles/ boids
+		float				m_c1;               // cognitive component parameter
+		float				m_c2;               // social component parameter
+		float				m_w;                // inertia parameter
 
-		vec_float_t 	  m_gBest;                    // global best parameters
+		vec_float_t 		m_vGlobalArgBest;   // global best parameters
+		float				m_globalValBest = -101;	// Value of the objective function for global best parameters
+
+		// TODO: remove it
+		size_t m_iteration = 0;
+		bool m_ifFirstCall = true;
 
 	public:
 		/**
