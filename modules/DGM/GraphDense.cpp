@@ -25,7 +25,7 @@ namespace DirectGraphicalModels
 	void CGraphDense::setNodes(size_t start_node, const Mat &pots)
 	{
 		// Assertions
-		DGM_ASSERT_MSG(start_node + pots.rows < getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
+		DGM_ASSERT_MSG(start_node + pots.rows <= getNumNodes(), "Node %zu is out of range %zu", start_node + pots.rows, getNumNodes());
 		DGM_ASSERT_MSG(pots.cols == getNumStates(), "Potential size (%d) does not match (%d)", pots.cols, getNumStates());
 		DGM_ASSERT_MSG(pots.type() == CV_32FC1, "Potentials type is not CV_32FC1");
 
