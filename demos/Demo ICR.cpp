@@ -140,8 +140,7 @@ for(int k = 0; k < 2000; k++) {
     for(int i = 0; i < inputLayer; i++) {
         float val = (float)trainDataBin[k][i]/255;
         float value = (int)(val * 1000 + .5);
-        myNeuron[i].setNodeValue( (float)value / 1000 );
-        
+        myNeuron[i].setNodeValue( (float)value / 1000 ); 
     }
     
 
@@ -339,8 +338,6 @@ for(int z = 0; z < testDataSize; z++) {
         neg++;
         //numrat[testDataDigit[z]] += 1;
     }
-    
-    
 }
 
     std::cout << "poz: " << poz << std::endl;
