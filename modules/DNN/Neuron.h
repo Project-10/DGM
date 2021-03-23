@@ -1,8 +1,10 @@
 #pragma once
 
-#include "DGM.h"
-#include "DNN.h"
+//#include "DGM.h"
+//#include "DNN.h"
 #include "types.h"
+#include <random>
+
 
 namespace DirectGraphicalModels {
     namespace dnn
@@ -10,7 +12,6 @@ namespace DirectGraphicalModels {
         class CNeuron
         {
         public:
-            
             static const int SIZE= 76;
 
             DllExport CNeuron(void) {
@@ -19,39 +20,35 @@ namespace DirectGraphicalModels {
             DllExport ~CNeuron(void) = default;
             
             void setNodeValue(double thisValue) {
-              value = thisValue;
+                m_value = thisValue;
             }
 
             double getNodeValue() {
-              return value;
+              return m_value;
             }
             
             void generateWeights(){
                 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
                 srand(seed);
-                
+
                 for (int i= 0; i < SIZE; i++) {
                     double f = (double)rand() / RAND_MAX;
                     double var = -0.5 + f * ((0.5) - (-0.5));
-                    weight[i] = var;
-//                    std::cout<<weight[i]<<" ";
+                    m_weight[i] = var;
                 }
-//                std::cout<<"\n";
             }
             
-
-            
             void setWeight(int index, double x){
-                weight[index] = x;
+                m_weight[index] = x;
             }
 
             double getWeight(int i) {
-                return weight[i];
+                return m_weight[i];
             }
             
         private:
-            double value;
-            double weight[SIZE];
+            double m_value;
+            double m_weight[SIZE];
         };
     }
 }

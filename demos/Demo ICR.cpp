@@ -4,24 +4,32 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
+//using namespace std;
 namespace dgm = DirectGraphicalModels;
 
 
+float applySigmoidFunction(float val){
+    float sigmoid = 1 / (1 + exp(-val));
+    float value = (int)(sigmoid * 10000 + .5);
+    float result = (float)value / 10000;
+    return result;
+}
+
+
+
 int main() {
-    
 //	dgm::dnn::CNeuron neuron;
-    
-//@ Read the binary and its corresponding digit from files
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+        
+// ==================== Read the MNIST data ====================
+
     
     static int trainDataBin[2000][784];
     static int trainDataDigit[2000];
     
-    string fileBinData = "../../../bin_data.txt";
-    string fileDigitData = "../../../digit_data.txt";
+    std::string fileBinData = "../../../bin_data.txt";
+    std::string fileDigitData = "../../../digit_data.txt";
     
-    ifstream inFile, inFile2;
+    std::ifstream inFile, inFile2;
     inFile.open(fileBinData.c_str());
     inFile2.open(fileDigitData.c_str());
 
@@ -32,7 +40,6 @@ int main() {
         inFile2.close();
     }
     
-
     if (inFile.is_open()) {
         for(int i = 0 ; i < 2000; i++) {
             for (int j = 0; j < 784; j++) {
@@ -41,87 +48,100 @@ int main() {
         }
         inFile.close();
     }
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
 
 
-//@ Create a matrix so you can visually see the number
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
-    
-//    srand (time(NULL));
-//    int v1 = rand() % 1000;
-    
-    double valueMatrix[28][28];
-    int z = 0;
-    for(int i = 0; i < 28; i++){
-        for(int j = 0; j < 28; j++){
-            valueMatrix[i][j] = trainDataBin[0][z];
-            z++;
-        }
-    }
+// ==================== Visualize Digit ====================
 
-    for(int i = 0; i < 28; i++){
-        for(int j = 0; j < 28; j++){
-            valueMatrix[i][j] > 0 ? cout<<"X " : cout<<". ";
-        }
-        cout<<endl;
-    }
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+//    double valueMatrix[28][28];
+//    int z = 0;
+//    for(int i = 0; i < 28; i++){
+//        for(int j = 0; j < 28; j++){
+//            valueMatrix[i][j] = trainDataBin[0][z];
+//            z++;
+//        }
+//    }
+//
+//    for(int i = 0; i < 28; i++){
+//        for(int j = 0; j < 28; j++){
+//            valueMatrix[i][j] > 0 ? std::cout<<"X " : std::cout<<". ";
+//        }
+//        std::cout<<std::endl;
+//    }
 
 
-    
-//@ Create the matrix to compare the results in the end of each iteration
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+// ==================== matrix to compare the output in the end ====================
+
     int result[10][10];
     for(int i = 0; i < 10; i++) {
         for(int j = 0; j < 10; j++) {
             (i == j) ? result[i][j] = 1 : result[i][j] = 0;
         }
     }
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
-
 
     
+// ==================== Create Neurons ====================
+
+    const byte nStates = 10;
+    
     int inputLayer = 784;
-    int hiddenLayer = 60; //76
-    int outputLayer = 10;
+    int hiddenLayer = 60;
+    int outputLayer = nStates; //10
+    
+    //[-0.1 to 0.1] 88%
+    float rangeMin = -0.5;
+    float rangeMax = 0.5;
     
     dgm::dnn::CNeuron myNeuron[inputLayer];
     dgm::dnn::CNeuron myHiddenNeuron[hiddenLayer];
     dgm::dnn::CNeuron myOutputNeuron[outputLayer];
  
     
-//@ Set initial random weights
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+// ==================== Set Initial Weights ====================
+
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     srand(seed);
  
-    for(int i = 0; i < inputLayer; i++) {
-        for(int j = 0; j < hiddenLayer; j++) {
-            double f = (double)rand() / RAND_MAX;
-            double var = -0.5 + f * ((0.5) - (-0.5));
-            myNeuron[i].setWeight(j, var);
+        for(int i = 0; i < inputLayer; i++) {
+            for(int j = 0; j < hiddenLayer; j++) {
+                double f = (double)rand() / RAND_MAX;
+                double var = rangeMin + f * ((rangeMax) - (rangeMin));
+                myNeuron[i].setWeight(j, var);
+            }
         }
-    }
+        for(int i = 0; i < hiddenLayer; i++) {
+            for(int j = 0; j < outputLayer; j++) {
+                double f = (double)rand() / RAND_MAX;
+                double var = rangeMin + f * ((rangeMax) - (rangeMin));
+                myHiddenNeuron[i].setWeight(j, var);
+            }
+        }
     
-    for(int i = 0; i < hiddenLayer; i++) {
-        for(int j = 0; j < outputLayer; j++) {
-            double f = (double)rand() / RAND_MAX;
-            double var = -0.5 + f * ((0.5) - (-0.5));
-            myHiddenNeuron[i].setWeight(j, var);
-        }
-    }
-/*xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+//    for(int i = 0; i < inputLayer; i++) {
+//        myNeuron[i].generateWeights();
+//    }
+//    for(int i = 0; i < hiddenLayer; i++) {
+//        myHiddenNeuron[i].generateWeights();
+//    }
+    
+//    for(int i = 0; i < hiddenLayer; i++) {
+//        for(int j=0; j< hiddenLayer; j++) {
+//            std::cout<<myNeuron[i].getWeight(j)<< " ";
+//        }
+//        std::cout<<std::endl;
+//    }
 
 
     
+// ==================== Start Training Data ====================
+
 for(int k = 0; k < 2000; k++) {
-    
-    cout<<"Training for digit: "<< trainDataDigit[k]<<endl;
+    std::cout<<"Training for digit: "<< trainDataDigit[k]<<std::endl;
 
     for(int i = 0; i < inputLayer; i++) {
         float val = (float)trainDataBin[k][i]/255;
         float value = (int)(val * 1000 + .5);
         myNeuron[i].setNodeValue( (float)value / 1000 );
+        
     }
     
 
@@ -132,13 +152,12 @@ for(int k = 0; k < 2000; k++) {
         for(int j=0; j < inputLayer ; j++) {
            val += myNeuron[j].getWeight(i) * myNeuron[j].getNodeValue();
         }
-        float sigmoid = 1 / (1 + exp(-val));
-        float value = (int)(sigmoid * 1000 + .5);
-        myHiddenNeuron[i].setNodeValue((float)value / 1000);
+        float value = applySigmoidFunction(val);
+        myHiddenNeuron[i].setNodeValue(value);
     }
     
 
-
+    
     // HiddenOutputMatrix dotProduct Hidden node
     //  [10 x 36] [36 x 1] --> Output layerMatrix [10, 1]
     for(int i=0 ; i < outputLayer; i++) {
@@ -146,9 +165,8 @@ for(int k = 0; k < 2000; k++) {
         for(int j = 0; j < hiddenLayer ; j++) {
            val += myHiddenNeuron[j].getWeight(i) * myHiddenNeuron[j].getNodeValue();
         }
-        float sigmoid = 1 / (1 + exp(-val));
-        float value = (int)(sigmoid * 1000 + .5);
-        myOutputNeuron[i].setNodeValue((float)value / 1000);
+        float value = applySigmoidFunction(val);
+        myOutputNeuron[i].setNodeValue(value);
     }
 
 
@@ -157,21 +175,15 @@ for(int k = 0; k < 2000; k++) {
     
     for(int i=0 ; i < outputLayer; i++) {
         resultErrorRate[i] = result[trainDataDigit[k]][i] - myOutputNeuron[i].getNodeValue();
-//        if (i == trainDataDigit[k]) {
-//            cout<<"--> ["<<i<<"] "<<setw(6)<< myOutputNeuron[i].getNodeValue()<<" ("<< resultErrorRate[i]<< ")\n";
-//        }
-//        else {
-//            cout<<"["<<i<<"] "<<setw(6)<< myOutputNeuron[i].getNodeValue()<<" ("<< resultErrorRate[i]<< ")\n";
-//        }
     }
     
     
-    // BACKPROPAGATION
-
-    //i bon update weights
+// ==================== BACKPROPAGATION ====================
+    
+    float alpha = 0.1; //learning rate
+    
+    //updates weights between [hiddenLayer][outputLayer]
     float DeltaWjk[hiddenLayer][outputLayer];
-    float alpha = 0.1; //change alpha
-
     for(int i = 0; i < hiddenLayer; i++) {
         for(int j = 0; j < outputLayer; j++) {
             DeltaWjk[i][j] = alpha * resultErrorRate[j] * myHiddenNeuron[i].getNodeValue();
@@ -179,8 +191,7 @@ for(int k = 0; k < 2000; k++) {
         }
     }
 
-
-    //update Weights (1)
+    //updates the values in the hiddenLayer
     float DeltaIn_j[hiddenLayer];
     for(int i = 0; i < hiddenLayer; i++) {
         double val = 0;
@@ -191,6 +202,7 @@ for(int k = 0; k < 2000; k++) {
     }
 
     
+    //still hiddenlayer nodes
     float DeltaJ[hiddenLayer];
     for(int i = 0; i < hiddenLayer; i++) {
         //derivative of sigmoid ... f'(hiddenNode value)
@@ -200,7 +212,7 @@ for(int k = 0; k < 2000; k++) {
     }
 
     
-    //this updates the weights (2)
+    //updates weights between [inputLayer][hiddenLayer]
     float DeltaVjk[inputLayer][hiddenLayer];
     for(int i = 0; i < inputLayer; i++) {
         for(int j = 0; j < hiddenLayer; j++) {
@@ -210,8 +222,9 @@ for(int k = 0; k < 2000; k++) {
     }
 
     
-    //UPDATE WEIGHTS AND BIASES
-    
+
+// ==================== UPDATE WEIGHTS ====================
+
     for(int i = 0; i < inputLayer; i++) {
         for(int j = 0; j < hiddenLayer; j++) {
             float oldWeight = myNeuron[i].getWeight(j);
@@ -220,7 +233,6 @@ for(int k = 0; k < 2000; k++) {
         }
     }
     
-    
     for(int i = 0; i < hiddenLayer; i++) {
         for(int j = 0; j < outputLayer; j++) {
             float oldWeight = myHiddenNeuron[i].getWeight(j);
@@ -228,43 +240,36 @@ for(int k = 0; k < 2000; k++) {
             //also biases
         }
     }
-    
 }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    /*xxxxxxxxxxxxxx        TEST DATA         xxxxxxxxxxxxxxxx*/
-    
-    
-    int testDataBin[2000][784];
-    int testDataDigit[2000];
+// ==================== TEST DIGITS ====================
 
-    //string testfileBinData = "../../../test_bin.txt";
-    //string testfileDigitData = "../../../test_digit.txt";
+    int testDataSize = 2000;
+    
+    int testDataBin[testDataSize][784];
+    int testDataDigit[testDataSize];
 
-    string testfileBinData = "../../../train_data.txt";
-    string testfileDigitData = "../../../train_digit.txt";
+    //this gives 92% accuracy with 10000
+    //std::string testfileBinData = "../../../test_bin.txt";
+    //std::string testfileDigitData = "../../../test_digit.txt";
 
-    ifstream testinFile, testinFile2;
+    std::string testfileBinData = "../../../train_data.txt";
+    std::string testfileDigitData = "../../../train_digit.txt";
+    
+    std::ifstream testinFile, testinFile2;
     testinFile.open(testfileBinData.c_str());
     testinFile2.open(testfileDigitData.c_str());
 
     if (testinFile2.is_open()) {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < testDataSize; i++) {
             testinFile2 >> testDataDigit[i];
         }
         testinFile2.close();
     }
 
     if (testinFile.is_open()) {
-        for(int i = 0 ; i < 2000; i++) {
+        for(int i = 0 ; i < testDataSize; i++) {
             for (int j = 0; j < 784; j++) {
                 testinFile >> testDataBin[i][j];
             }
@@ -272,18 +277,15 @@ for(int k = 0; k < 2000; k++) {
         testinFile.close();
     }
 
-    cout<<"\n";
+    std::cout<<"\n";
 
     int poz = 0;
     int neg = 0;
 
+    //int numrat[10]={0,0,0,0,0,0,0,0,0,0};
 
-//    int numrat[10]={0,0,0,0,0,0,0,0,0,0};
 
-
-for(int z = 0; z < 2000; z++)
-{
-
+for(int z = 0; z < testDataSize; z++) {
         for(int i = 0; i < inputLayer; i++) {
             float val = (float)testDataBin[z][i]/255;
             float value = (int)(val * 1000 + .5);
@@ -295,10 +297,8 @@ for(int z = 0; z < 2000; z++)
             for(int j=0; j < inputLayer ; j++) {
                val += myNeuron[j].getWeight(i) * myNeuron[j].getNodeValue();
             }
-            float sigmoid = 1 / (1 + exp(-val));
-            float value = (int)(sigmoid * 1000 + .5);
-
-            myHiddenNeuron[i].setNodeValue( (float)value / 1000 );
+            float value = applySigmoidFunction( val);
+            myHiddenNeuron[i].setNodeValue(value);
         }
     
         for(int i=0 ; i < outputLayer; i++) {
@@ -306,48 +306,46 @@ for(int z = 0; z < 2000; z++)
             for(int j = 0; j < hiddenLayer ; j++) {
                val += myHiddenNeuron[j].getWeight(i) * myHiddenNeuron[j].getNodeValue();
             }
-            float sigmoid = 1 / (1 + exp(-val));
-            float value = (int)(sigmoid * 1000 + .5);
-            myOutputNeuron[i].setNodeValue(  (float)value / 1000 );
+            float value = applySigmoidFunction(val);
+            myOutputNeuron[i].setNodeValue(value);
         }
 
-
-        double resultErrorRate[10];
+        double allPredictionsforDigits[10];
 
         for(int i=0 ; i < outputLayer; i++) {
-            resultErrorRate[i] = myOutputNeuron[i].getNodeValue();
+            allPredictionsforDigits[i] = myOutputNeuron[i].getNodeValue();
         }
 
 
         float max = 0;
+        float secondMax = 0;
+        int vlera2;
         int vlera;
         for(int i=0 ; i < outputLayer; i++){
-            if(resultErrorRate[i] >= max){
-                max = resultErrorRate[i];
+            if(allPredictionsforDigits[i] >= max){
+                max = allPredictionsforDigits[i];
                 vlera = i;
             }
         }
 
-//    cout<<"prediction "<<"["<<vlera<<"] for " << testDataDigit[z]<<" with %: "<<max<<" at position: "<<z<<endl;
-//        vlera == testDataDigit[z] ? poz++ : neg++;
-    
-    
     
     if(vlera == testDataDigit[z]) {
-        cout<<"prediction "<<"["<<vlera<<"] for " << testDataDigit[z]<<" at "<<max<<"% at position: "<<z<<endl;
+        std::cout<<"prediction "<<"["<<vlera<<"] for " << testDataDigit[z]<<" with "<<max<<"% at position: "<<z<<std::endl;
         poz++;
     }
-    else {
-//        numrat[testDataDigit[z]] += 1;
-        
-        cout<<"prediction "<<"["<<vlera<<"] for " << testDataDigit[z]<<" at "<<max<<"% at position: "<<z<<setw(5)<<"[x]"<<endl;
+                
+    else{
+        std::cout<<"prediction "<<"["<<vlera<<"] for " << testDataDigit[z]<<" with "<<max<<"% at position: "<<z<<std::setw(5)<<"[x]"<<std::endl;
         neg++;
+        //numrat[testDataDigit[z]] += 1;
     }
+    
+    
 }
 
-    cout << "poz: " << poz << endl;
-    cout << "nez: " << neg << endl;
-    cout <<"average: " << (float)poz/(poz+neg)*100 << "%" <<endl;
+    std::cout << "poz: " << poz << std::endl;
+    std::cout << "nez: " << neg << std::endl;
+    std::cout <<"average: " << (float)poz/(poz+neg)*100 << "%" << std::endl;
     
     
 //    for(int i=0; i<10; i++) {
@@ -358,7 +356,6 @@ for(int z = 0; z < 2000; z++)
 
 
 
-
     
     
     
@@ -380,15 +377,15 @@ for(int z = 0; z < 2000; z++)
     
     
     
-    //  Create the transposed Weight Matrix [36 x 784]
-    //    double weightMatrix [hiddenLayer][inputLayer];
-    //    for(int i = 0; i < hiddenLayer; i++) {
-    //        for(int j = 0; j < inputLayer;  j++) {
-    //            weightMatrix[i][j] = myNeuron[j].getWeight(i);
-    //            cout<<weightMatrix[i][j]<< " ";
-    //        }
-    //        cout<<"\n";
-    //    }
+//      Create the transposed Weight Matrix [36 x 784]
+//        double weightMatrix [hiddenLayer][inputLayer];
+//        for(int i = 0; i < hiddenLayer; i++) {
+//            for(int j = 0; j < inputLayer;  j++) {
+//                weightMatrix[i][j] = myNeuron[j].getWeight(i);
+//                cout<<weightMatrix[i][j]<< " ";
+//            }
+//            cout<<"\n";
+//        }
 
     
     
@@ -427,11 +424,13 @@ for(int z = 0; z < 2000; z++)
     
     
     
-//
-//
+
+
 //    //std::string image_path = samples::findFile("/Users/diond/Desktop/Pics/a.jpg");
 //    std::string image_path = samples::findFile("/Users/diond/Desktop/foto1.png");
 //    Mat img = imread(image_path, IMREAD_COLOR);
+    
+    
 //
 //for(int z=0; z<1000; z++){
 //
