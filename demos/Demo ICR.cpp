@@ -7,6 +7,7 @@
 //using namespace std;
 namespace dgm = DirectGraphicalModels;
 
+
 float applySigmoidFunction(float val){
     float sigmoid = 1 / (1 + exp(-val));
     float value = (int)(sigmoid * 10000 + .5);
@@ -19,11 +20,41 @@ float applySigmoidFunction(float val){
 int main() {
 //	dgm::dnn::CNeuron neuron;
         
+    // ==================== Create Neurons ====================
+
+        const byte nStates = 10;
+        
+        const int digits = 10;
+        const int inputLayer = 784;
+        const int hiddenLayer = 60;
+        const int outputLayer = nStates; //10
+        
+        //[-0.1 to 0.1] 88%
+        float rangeMin = -0.5;
+        float rangeMax = 0.5;
+        
+        dgm::dnn::CNeuron myNeuron[inputLayer];
+        dgm::dnn::CNeuron myHiddenNeuron[hiddenLayer];
+        dgm::dnn::CNeuron myOutputNeuron[outputLayer];
+    
+    
+    //        static int trainDataBin[2000][784];
+    //        static int trainDataDigit[2000];
+    //        int (*trainDataBin)[inputLayer] = new int[2000][inputLayer];
+    //        int *trainDataDigit = new int[2000];
+     
 // ==================== Read the MNIST data ====================
 
     
-    static int trainDataBin[2000][784];
-    static int trainDataDigit[2000];
+//    static int trainDataBin[2000][784];
+//    static int trainDataDigit[2000];
+    int (*trainDataBin)[inputLayer] = new int[2000][inputLayer];
+    int *trainDataDigit = new int[2000];
+
+    //        static int trainDataBin[2000][784];
+    //        static int trainDataDigit[2000];
+    //        int (*trainDataBin)[inputLayer] = new int[2000][inputLayer];
+    //        int *trainDataDigit = new int[2000];
     
     std::string fileBinData = "../../../bin_data.txt";
     std::string fileDigitData = "../../../digit_data.txt";
@@ -70,30 +101,16 @@ int main() {
 
 // ==================== matrix to compare the output in the end ====================
 
-    int result[10][10];
+//    int result[10][10];
+    int (*result)[digits] = new int[digits][digits];
+    
+
     for(int i = 0; i < 10; i++) {
         for(int j = 0; j < 10; j++) {
             (i == j) ? result[i][j] = 1 : result[i][j] = 0;
         }
     }
 
-    
-// ==================== Create Neurons ====================
-
-    const byte nStates = 10;
-    
-    int inputLayer = 784;
-    int hiddenLayer = 60;
-    int outputLayer = nStates; //10
-    
-    //[-0.1 to 0.1] 88%
-    float rangeMin = -0.5;
-    float rangeMax = 0.5;
-    
-    dgm::dnn::CNeuron myNeuron[inputLayer];
-    dgm::dnn::CNeuron myHiddenNeuron[hiddenLayer];
-    dgm::dnn::CNeuron myOutputNeuron[outputLayer];
- 
     
 // ==================== Set Initial Weights ====================
 
@@ -139,7 +156,7 @@ for(int k = 0; k < 2000; k++) {
     for(int i = 0; i < inputLayer; i++) {
         float val = (float)trainDataBin[k][i]/255;
         float value = (int)(val * 1000 + .5);
-        myNeuron[i].setNodeValue( (float)value / 1000 ); 
+        myNeuron[i].setNodeValue( (float)value / 1000 );
     }
     
 
@@ -169,7 +186,10 @@ for(int k = 0; k < 2000; k++) {
 
 
     
-    double resultErrorRate[10];
+//    double resultErrorRate[10];
+    double *resultErrorRate = new double[10];
+    
+
     
     for(int i=0 ; i < outputLayer; i++) {
         resultErrorRate[i] = result[trainDataDigit[k]][i] - myOutputNeuron[i].getNodeValue();
@@ -181,7 +201,8 @@ for(int k = 0; k < 2000; k++) {
     float alpha = 0.1; //learning rate
     
     //updates weights between [hiddenLayer][outputLayer]
-    float DeltaWjk[hiddenLayer][outputLayer];
+    //float DeltaWjk[hiddenLayer][outputLayer];
+    float (*DeltaWjk)[outputLayer] = new float[hiddenLayer][outputLayer];
     for(int i = 0; i < hiddenLayer; i++) {
         for(int j = 0; j < outputLayer; j++) {
             DeltaWjk[i][j] = alpha * resultErrorRate[j] * myHiddenNeuron[i].getNodeValue();
@@ -190,7 +211,10 @@ for(int k = 0; k < 2000; k++) {
     }
 
     //updates the values in the hiddenLayer
-    float DeltaIn_j[hiddenLayer];
+    //float DeltaIn_j[hiddenLayer];
+    float *DeltaIn_j = new float[hiddenLayer];
+    
+
     for(int i = 0; i < hiddenLayer; i++) {
         double val = 0;
         for(int j = 0; j < outputLayer; j++) {
@@ -201,7 +225,10 @@ for(int k = 0; k < 2000; k++) {
 
     
     //still hiddenlayer nodes
-    float DeltaJ[hiddenLayer];
+    //float DeltaJ[hiddenLayer];
+    float *DeltaJ = new float[hiddenLayer];
+    
+
     for(int i = 0; i < hiddenLayer; i++) {
         //derivative of sigmoid ... f'(hiddenNode value)
         float sigmoid = 1 / (1 + exp(myHiddenNeuron[i].getNodeValue()));
@@ -211,7 +238,10 @@ for(int k = 0; k < 2000; k++) {
 
     
     //updates weights between [inputLayer][hiddenLayer]
-    float DeltaVjk[inputLayer][hiddenLayer];
+    //float DeltaVjk[inputLayer][hiddenLayer];
+    float (*DeltaVjk)[hiddenLayer] = new float[inputLayer][hiddenLayer];
+    
+
     for(int i = 0; i < inputLayer; i++) {
         for(int j = 0; j < hiddenLayer; j++) {
             DeltaVjk[i][j] = alpha * DeltaJ[j] * myNeuron[i].getNodeValue();
@@ -245,8 +275,13 @@ for(int k = 0; k < 2000; k++) {
 
     int testDataSize = 2000;
     
-    int testDataBin[testDataSize][784];
-    int testDataDigit[testDataSize];
+//    int testDataBin[testDataSize][inputLayer];
+//    int testDataDigit[testDataSize];
+
+    int (*testDataBin)[inputLayer] = new int [testDataSize][inputLayer];
+    int *testDataDigit = new int [testDataSize];
+    
+
 
     //this gives 92% accuracy with 10000
     //std::string testfileBinData = "../../../test_bin.txt";
@@ -308,7 +343,10 @@ for(int z = 0; z < testDataSize; z++) {
             myOutputNeuron[i].setNodeValue(value);
         }
 
-        double allPredictionsforDigits[10];
+        //double allPredictionsforDigits[10];
+    
+        double *allPredictionsforDigits = new double[digits];
+    
 
         for(int i=0 ; i < outputLayer; i++) {
             allPredictionsforDigits[i] = myOutputNeuron[i].getNodeValue();
@@ -337,6 +375,7 @@ for(int z = 0; z < testDataSize; z++) {
         neg++;
         //numrat[testDataDigit[z]] += 1;
     }
+
 }
 
     std::cout << "poz: " << poz << std::endl;
