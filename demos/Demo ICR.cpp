@@ -7,7 +7,6 @@
 //using namespace std;
 namespace dgm = DirectGraphicalModels;
 
-
 float applySigmoidFunction(float val){
     float sigmoid = 1 / (1 + exp(-val));
     float value = (int)(sigmoid * 10000 + .5);
