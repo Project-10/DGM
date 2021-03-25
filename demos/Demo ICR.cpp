@@ -184,12 +184,9 @@ for(int k = 0; k < 2000; k++) {
         myOutputNeuron[i].setNodeValue(value);
     }
 
-
     
 //    double resultErrorRate[10];
-    double *resultErrorRate = new double[10];
-    
-
+    double *resultErrorRate = new double[digits];
     
     for(int i=0 ; i < outputLayer; i++) {
         resultErrorRate[i] = result[trainDataDigit[k]][i] - myOutputNeuron[i].getNodeValue();
@@ -202,23 +199,16 @@ for(int k = 0; k < 2000; k++) {
     
     //updates weights between [hiddenLayer][outputLayer]
     //float DeltaWjk[hiddenLayer][outputLayer];
-    float (*DeltaWjk)[outputLayer] = new float[hiddenLayer][outputLayer];
-    for(int i = 0; i < hiddenLayer; i++) {
-        for(int j = 0; j < outputLayer; j++) {
-            DeltaWjk[i][j] = alpha * resultErrorRate[j] * myHiddenNeuron[i].getNodeValue();
-            //do also for bias
-        }
-    }
-
     //updates the values in the hiddenLayer
     //float DeltaIn_j[hiddenLayer];
+    float (*DeltaWjk)[outputLayer] = new float[hiddenLayer][outputLayer];
     float *DeltaIn_j = new float[hiddenLayer];
     
-
     for(int i = 0; i < hiddenLayer; i++) {
         double val = 0;
         for(int j = 0; j < outputLayer; j++) {
             val += myHiddenNeuron[i].getWeight(j) * resultErrorRate[j];
+            DeltaWjk[i][j] = alpha * resultErrorRate[j] * myHiddenNeuron[i].getNodeValue();
         }
         DeltaIn_j[i] = val;
     }
@@ -227,21 +217,16 @@ for(int k = 0; k < 2000; k++) {
     //still hiddenlayer nodes
     //float DeltaJ[hiddenLayer];
     float *DeltaJ = new float[hiddenLayer];
-    
-
     for(int i = 0; i < hiddenLayer; i++) {
         //derivative of sigmoid ... f'(hiddenNode value)
         float sigmoid = 1 / (1 + exp(myHiddenNeuron[i].getNodeValue()));
         float inverse = 1 - sigmoid;
         DeltaJ[i] = DeltaIn_j[i] * sigmoid * inverse;
     }
-
     
     //updates weights between [inputLayer][hiddenLayer]
     //float DeltaVjk[inputLayer][hiddenLayer];
     float (*DeltaVjk)[hiddenLayer] = new float[inputLayer][hiddenLayer];
-    
-
     for(int i = 0; i < inputLayer; i++) {
         for(int j = 0; j < hiddenLayer; j++) {
             DeltaVjk[i][j] = alpha * DeltaJ[j] * myNeuron[i].getNodeValue();
@@ -352,10 +337,7 @@ for(int z = 0; z < testDataSize; z++) {
             allPredictionsforDigits[i] = myOutputNeuron[i].getNodeValue();
         }
 
-
         float max = 0;
-        float secondMax = 0;
-        int vlera2;
         int vlera;
         for(int i=0 ; i < outputLayer; i++){
             if(allPredictionsforDigits[i] >= max){
@@ -375,7 +357,6 @@ for(int z = 0; z < testDataSize; z++) {
         neg++;
         //numrat[testDataDigit[z]] += 1;
     }
-
 }
 
     std::cout << "poz: " << poz << std::endl;
