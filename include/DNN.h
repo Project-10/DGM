@@ -1,6 +1,6 @@
 #pragma once
 #include "DNN/Neuron.h"
-#include "DNN/Functions.hpp"
+// #include "DNN/Functions.hpp"
 
 /**
 @defgroup moduleDNN DNN Module
