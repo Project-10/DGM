@@ -28,7 +28,6 @@ int *readDigitData(std::string file, int dataSize) {
 
 
 int **readBinData(std::string file, int dataSize) {
-    
     const int inputLayer = 784;
     int **trainDataBin = new int*[dataSize];
 
