@@ -1,10 +1,6 @@
 #pragma once
-
-//#include "DGM.h"
-//#include "DNN.h"
 #include "types.h"
 #include <random>
-
 
 namespace DirectGraphicalModels {
     namespace dnn
@@ -12,18 +8,13 @@ namespace DirectGraphicalModels {
         class CNeuron
         {
         public:
-            static const int SIZE= 76;
-
-            DllExport CNeuron(void) {
-                //printf("CNeuron constructor\n");
-            }
-            DllExport ~CNeuron(void) = default;
+            static const int SIZE = 60;
             
             void setNodeValue(double thisValue) {
                 m_value = thisValue;
             }
 
-            double getNodeValue() {
+            double getNodeValue() const {
               return m_value;
             }
             
@@ -42,7 +33,7 @@ namespace DirectGraphicalModels {
                 m_weight[index] = x;
             }
 
-            double getWeight(int i) {
+            double getWeight(int i) const {
                 return m_weight[i];
             }
             
