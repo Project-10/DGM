@@ -1,9 +1,8 @@
 #pragma once
-#pragma comment(lib, "Ws2_32.lib")
+//#pragma comment(lib, "Ws2_32.lib")
+//#include <string>
 #include "types.h"
 #include <random>
-#include <string>
-#include <iostream>
 #include <fstream>
 
 namespace DirectGraphicalModels {
@@ -12,7 +11,12 @@ namespace DirectGraphicalModels {
         class CNeuron
         {
         public:
-            static const int SIZE = 60;
+            //static const int SIZE = 60;
+            
+            CNeuron(int size){
+                SIZE = size;
+            }
+            ~CNeuron();
             
             void setNodeValue(double thisValue) {
                 m_value = thisValue;
@@ -22,11 +26,11 @@ namespace DirectGraphicalModels {
               return m_value;
             }
             
-            void generateWeights(){
+            void generateWeights(int size){
                 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
                 srand(seed);
 
-                for (int i= 0; i < SIZE; i++) {
+                for (int i= 0; i < size; i++) {
                     double f = (double)rand() / RAND_MAX;
                     double var = -0.5 + f * ((0.5) - (-0.5));
                     m_weight[i] = var;
@@ -41,13 +45,17 @@ namespace DirectGraphicalModels {
                 return m_weight[i];
             }
             
+            int getSize() {
+                return SIZE;
+            }
+            
         private:
+            int SIZE;
             double m_value;
-            double m_weight[SIZE];
+            double m_weight[100];
         };
     }
 }
-
 
 float applySigmoidFunction(float val) {
     float sigmoid = 1 / (1 + exp(-val));
@@ -108,6 +116,27 @@ int **resultPredictions(int outputLayer) {
     return result;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//DO NOT USE WHATS BELOW
 
 //dgm::dnn::CNeuron* dotProd(int hiddenLayer, int inputLayer, dgm::dnn::CNeuron A[], dgm::dnn::CNeuron B[]) {
 //    for(int i=0 ; i < hiddenLayer; i++) {
