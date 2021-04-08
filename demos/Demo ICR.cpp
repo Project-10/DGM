@@ -3,7 +3,39 @@
 namespace dgm = DirectGraphicalModels;
 using namespace std::chrono;
 
-//dgm::dnn::CNeuron* dotProd(int hiddenLayer, int inputLayer, dgm::dnn::CNeuron A[], dgm::dnn::CNeuron B[]);
+/**
+ * @brief Applies the Sigmoid Activation function
+ * @param val value at each node
+ * @return a number between 0 and 1.
+ */
+double applySigmoidFunction(double val)
+{
+	double sigmoid = 1 / (1 + exp(-val));
+	
+	//TODO: why this is needed ?
+	double value = (int)(sigmoid * 10000 + .5);
+	double result = value / 10000;
+	
+	return result;
+}
+
+//TODO: First: I suggest to apply this method for the neurons in layer B invidiually, i.e. move the first loop from the method body to the user code
+//TODO: Second: It makes sense to move this method to the CNeuron class, since it will update its value
+//TODO: Third: Once this method in the CNeuron class, it makes sense to move tha activation function there as well. It is posible to use std::function for that
+void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB)
+{
+	for(size_t i = 0 ; i < vpLayerB.size(); i++) {
+		
+		double value = 0;
+		for(const auto& a : vpLayerA)
+			value += a->getWeight(i) * a->getNodeValue();
+	
+		value = applySigmoidFunction(value);
+		
+		vpLayerB[i]->setNodeValue(value);
+	}
+	
+}
 
 int main() {
     const size_t 	numNeuronsInputLayer   = 784;
@@ -174,16 +206,3 @@ int main() {
 //        std::cout << "average: " << (float)correct/(correct+uncorrect)*100 << "%" << std::endl;
 	return 0;
 }
-
-
-//dgm::dnn::CNeuron* dotProd(int hiddenLayer, int inputLayer, dgm::dnn::CNeuron A[], dgm::dnn::CNeuron B[]) {
-//    for(int i=0 ; i < hiddenLayer; i++) {
-//        double val = 0;
-//        for(int j=0; j < inputLayer ; j++) {
-//           val += A[j].getWeight(i) * A[j].getNodeValue();
-//        }
-//        float value = applySigmoidFunction(val);
-//        B[i].setNodeValue(value);
-//    }
-//    return B;
-//}

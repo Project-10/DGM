@@ -40,15 +40,7 @@ namespace DirectGraphicalModels {
 }
 
 
-///**
-// * Applies the Sigmoid Activation function
-// *
-// * @param the value at each node
-// * @return a number between 0 and 1.
-// */
-//float applySigmoidFunction(float val);
 //
-///**
 // * Reads the digits numerical value in a decimal notation
 // *
 // * @param file to read, and the number of digits to read
@@ -78,13 +70,6 @@ namespace DirectGraphicalModels {
 
 
 
-//float applySigmoidFunction(float val) {
-//    float sigmoid = 1 / (1 + exp(-val));
-//    float value = (int)(sigmoid * 10000 + .5);
-//    float result = (float)value / 10000;
-//    return result;
-//}
-//
 //int *readDigitData(std::string file, int dataSize) {
 //    int *trainDataDigit = new int[dataSize];
 //    std::string fileDigitData = file;
