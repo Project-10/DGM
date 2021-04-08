@@ -6,23 +6,46 @@ using namespace std::chrono;
 //dgm::dnn::CNeuron* dotProd(int hiddenLayer, int inputLayer, dgm::dnn::CNeuron A[], dgm::dnn::CNeuron B[]);
 
 int main() {
-    const int inputLayer   = 784;
-    const int hiddenLayer  = 60;
-    const int outputLayer  = 10;
-    float     rangeMin     = -0.5;
-    float     rangeMax     = 0.5;
+    const size_t 	numNeuronsInputLayer   = 784;
+    const size_t 	numNeuronsHiddenLayer  = 60;
+    const size_t 	numNeuronsOutputLayer  = 10;
 
-    std::vector<std::shared_ptr<dgm::dnn::CNeuron>> vpMyNeuron;
-    std::vector<std::shared_ptr<dgm::dnn::CNeuron>> vpMyHiddenNeuron;
-    std::vector<std::shared_ptr<dgm::dnn::CNeuron>> vpMyOutputNeuron;
-    dgm::dnn::CNeuron *myNeuron = new dgm::dnn::CNeuron(inputLayer);
-    dgm::dnn::CNeuron *myHiddenNeuron = new dgm::dnn::CNeuron(hiddenLayer);
-    dgm::dnn::CNeuron *myOutputNeuron = new dgm::dnn::CNeuron(outputLayer);
+    std::vector<dgm::dnn::ptr_neuron_t> vpInputLayer;
+    std::vector<dgm::dnn::ptr_neuron_t> vpHiddenLayer;
+    std::vector<dgm::dnn::ptr_neuron_t> vpOutputLayer;
+    
+	for (size_t i = 0; i < numNeuronsInputLayer; i++) {
+		double value = 1; // TODO: read the correct input values from the digit images
+		vpInputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(numNeuronsHiddenLayer, value) );
+	}
+	
+	for (size_t i = 0; i < numNeuronsHiddenLayer; i++)
+		vpHiddenLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(numNeuronsOutputLayer) );
+	
+	for (size_t i = 0; i < numNeuronsOutputLayer; i++)
+		vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
+	
 
-
-//    dgm::dnn::CNeuron *myNeuron        = new dgm::dnn::CNeuron[inputLayer];
-//    dgm::dnn::CNeuron *myHiddenNeuron  = new dgm::dnn::CNeuron[hiddenLayer];
-//    dgm::dnn::CNeuron *myOutputNeuron  = new dgm::dnn::CNeuron[outputLayer];
+	// Example 1
+	for(size_t i = 0; i < vpInputLayer.size(); i++) {
+		double value = i * 5 - 3;
+		vpInputLayer[i]->setNodeValue( value / 1000 );
+		vpInputLayer[i]->generateRandomWeights();
+	}
+	
+	// Example 2
+	for (size_t i = 0; i < vpInputLayer.size(); i++)
+		vpInputLayer[i]->generateRandomWeights();
+	
+	// Example 3
+	for (auto neuron: vpInputLayer) {
+		//numNeuronsHiddenLayer shpuld be equal to neuron->getSize()
+		//printf("number of weights: %d\n", neuron->getSize());
+		for (size_t i = 0; i < neuron->getSize(); i++)
+			printf("%.2f ", neuron->getWeight(i));
+		printf("\n");
+	}
+	
 
 //    int *trainDataDigit  = readDigitData("../../../test_digits.txt", 2000);
 //    int **trainDataBin   = readBinData("../../../test_data.txt", 2000);
