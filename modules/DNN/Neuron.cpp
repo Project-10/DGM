@@ -26,63 +26,10 @@ namespace DirectGraphicalModels { namespace dnn
         DGM_ASSERT(index < m_vWeights.size());
         return m_vWeights[index];
     }
-    
-    
 } }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//#include "Neuron.h"
-//#include <string>
-//
-//namespace DirectGraphicalModels {
-//	namespace dnn
-//	{
-//	}
-//}
-//
 ///**
 // * Applies the Sigmoid Activation function
 // *
