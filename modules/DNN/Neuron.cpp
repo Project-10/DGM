@@ -1,45 +1,121 @@
 #include "Neuron.h"
-#include <string>
+#include "DGM/random.h"
+#include "macroses.h"
 
-namespace DirectGraphicalModels {
-	namespace dnn
-	{
-	}
-}
+namespace DirectGraphicalModels { namespace dnn
+{
+    // Constructor
+    CNeuron::CNeuron(size_t size, float value) : m_value(value) {
+        m_vWeights.resize(size);
+    }
 
-/**
- * Applies the Sigmoid Activation function
- *
- * @param the value at each node
- * @return a number between 0 and 1.
- */
-float applySigmoidFunction(float val);
+    void CNeuron::generateRandomWeights(void)
+    {
+        for (float &weight : m_vWeights)
+            weight = random::U<float>(-0.5, 0.5);
+    }
 
-/**
- * Reads the digits numerical value in a decimal notation
- *
- * @param file to read, and the number of digits to read
- * @return an array of digits
- */
-int *readDigitData(std::string file, int dataSize);
+    void CNeuron::setWeight(size_t index, float weight)
+    {
+        DGM_ASSERT(index < m_vWeights.size());
+        m_vWeights[index] = weight;
+    }
 
-/**
- * Reads the digits pixel values (784 values for a digit)
- *
- * @param file to read, and the number of digits to read
- * @return a 2D array of digits with their pixel values 2D[dataSize][784]
- */
-int **readBinData(std::string file, int dataSize);
+    float CNeuron::getWeight(size_t index) const
+    {
+        DGM_ASSERT(index < m_vWeights.size());
+        return m_vWeights[index];
+    }
+    
+    
+} }
 
-//@returns an array with the correct firing output nodes for each digit (0-9)
-/**
- * Gives the correct firing output nodes for each digit so we can find the errorRate*
- * Example when comparing the output nodes in the end, the correct prediction for
- * number 2 lets say is : {0,0,1,0,0,0,0,0,0,0,0}
- *
- * @param the output digits value (10)
- * @return an array of numbers filled with 0's for input 'x' excepted with a single 1 in the index[x].
- */
-int **resultPredictions(int outputDigits);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#include "Neuron.h"
+//#include <string>
+//
+//namespace DirectGraphicalModels {
+//	namespace dnn
+//	{
+//	}
+//}
+//
+///**
+// * Applies the Sigmoid Activation function
+// *
+// * @param the value at each node
+// * @return a number between 0 and 1.
+// */
+//float applySigmoidFunction(float val);
+//
+///**
+// * Reads the digits numerical value in a decimal notation
+// *
+// * @param file to read, and the number of digits to read
+// * @return an array of digits
+// */
+//int *readDigitData(std::string file, int dataSize);
+//
+///**
+// * Reads the digits pixel values (784 values for a digit)
+// *
+// * @param file to read, and the number of digits to read
+// * @return a 2D array of digits with their pixel values 2D[dataSize][784]
+// */
+//int **readBinData(std::string file, int dataSize);
+//
+////@returns an array with the correct firing output nodes for each digit (0-9)
+///**
+// * Gives the correct firing output nodes for each digit so we can find the errorRate*
+// * Example when comparing the output nodes in the end, the correct prediction for
+// * number 2 lets say is : {0,0,1,0,0,0,0,0,0,0,0}
+// *
+// * @param the output digits value (10)
+// * @return an array of numbers filled with 0's for input 'x' excepted with a single 1 in the index[x].
+// */
+//int **resultPredictions(int outputDigits);
 
 
