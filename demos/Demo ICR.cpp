@@ -2,6 +2,8 @@
 namespace dgm = DirectGraphicalModels;
 using namespace std::chrono;
 
+void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB);
+
 int main() {
     const size_t     numNeuronsInputLayer   = 784;
     const size_t     numNeuronsHiddenLayer  = 60;
@@ -21,10 +23,6 @@ int main() {
     for (size_t i = 0; i < numNeuronsOutputLayer; i++)
         vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
 
-//    int *trainDataDigit  = readDigitData("../../../test_digits.txt", 2000);
-//    int **trainDataBin   = readBinData("../../../test_data.txt", 2000);
-//    int **trainDataBin   = readBinData("../../../a_data.txt", dataSize);
-
     int **trainDataBin   = readImgData("../../../train_images_4000/digit_", dataSize);
     int *trainDataDigit  = readDigitData("../../../a_digit.txt", dataSize);
     int **resultsArray   = resultPredictions(numNeuronsOutputLayer);
@@ -35,36 +33,15 @@ int main() {
     for(size_t i = 0; i < vpInputLayer.size(); i++)
         vpInputLayer[i]->generateRandomWeights();
 
-
     auto startTraining = high_resolution_clock::now();
-
     for(int k = 0; k < dataSize; k++) {
             for(size_t i = 0; i < vpInputLayer.size(); i++) {
                 float val = (float)trainDataBin[k][i]/255;
                 vpInputLayer[i]->setNodeValue(val);
             }
-
-            //inputWeightMatrix dotProduct inputMatrix
-            //[36 x 784] [784 x 1] --> Hidden layerMatrix [36, 1]
-            for(size_t i=0 ; i < vpHiddenLayer.size(); i++) {
-                double val = 0;
-                for(size_t j=0; j < vpInputLayer.size(); j++) {
-                   val += vpInputLayer[j]->getWeight(i) * vpInputLayer[j]->getNodeValue();
-                }
-                float value = applySigmoidFunction(val);
-                vpHiddenLayer[i]->setNodeValue(value);
-            }
-
-            // HiddenOutputMatrix dotProduct Hidden node
-            //  [10 x 36] [36 x 1] --> Output layerMatrix [10, 1]
-            for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-                double val = 0;
-                for(size_t j = 0; j < vpHiddenLayer.size() ; j++) {
-                   val += vpHiddenLayer[j]->getWeight(i) * vpHiddenLayer[j]->getNodeValue();
-                }
-                float value = applySigmoidFunction(val);
-                vpOutputLayer[i]->setNodeValue(value);
-            }
+        
+            dotProd(vpInputLayer, vpHiddenLayer);
+            dotProd(vpHiddenLayer, vpOutputLayer);
 
             double *resultErrorRate = new double[numNeuronsOutputLayer];
             for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
@@ -74,36 +51,22 @@ int main() {
         // ==================== BACKPROPAGATION ====================
             float (*DeltaWjk)[numNeuronsOutputLayer]  = new float[numNeuronsHiddenLayer][numNeuronsOutputLayer];
             float (*DeltaWik)[numNeuronsHiddenLayer]  = new float[numNeuronsInputLayer][numNeuronsHiddenLayer];
-            float *DeltaIn_j                          = new float[numNeuronsHiddenLayer];
             float *DeltaJ                             = new float[numNeuronsHiddenLayer];
             float learningRate                        = 0.1;
 
-            //updates weights between [hiddenLayer][outputLayer]
             for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-                double val = 0;
+                double nodeVal = 0;
                 for(size_t j = 0; j < vpOutputLayer.size(); j++) {
-                    val += vpHiddenLayer[i]->getWeight(j) * resultErrorRate[j];
+                    nodeVal += vpHiddenLayer[i]->getWeight(j) * resultErrorRate[j];
                     DeltaWjk[i][j] = learningRate * resultErrorRate[j] * vpHiddenLayer[i]->getNodeValue();
                 }
-                DeltaIn_j[i] = val;
-            }
-
-            //still hiddenlayer nodes
-            for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-                float sigmoid = 1 / (1 + exp(vpHiddenLayer[i]->getNodeValue()));
-                float inverse = 1 - sigmoid;
-                DeltaJ[i] = DeltaIn_j[i] * sigmoid * inverse;
-            }
-
-            //updates weights between [inputLayer][hiddenLayer]
-            for(size_t i = 0; i < vpInputLayer.size(); i++) {
-                for(int j = 0; j < vpHiddenLayer.size(); j++) {
-                    DeltaWik[i][j] = learningRate * DeltaJ[j] * vpInputLayer[i]->getNodeValue();
-                }
+                float sigmoid = applySigmoidFunction(vpHiddenLayer[i]->getNodeValue());
+                DeltaJ[i] = nodeVal * sigmoid * (1-sigmoid);
             }
 
             for(size_t i = 0; i < vpInputLayer.size(); i++) {
                 for(size_t j = 0; j < vpHiddenLayer.size(); j++) {
+                    DeltaWik[i][j] = learningRate * DeltaJ[j] * vpInputLayer[i]->getNodeValue();
                     float oldWeight = vpInputLayer[i]->getWeight(j);
                     vpInputLayer[i]->setWeight(j, oldWeight + DeltaWik[i][j]);
                 }
@@ -118,17 +81,12 @@ int main() {
     }
     auto stopTraining = high_resolution_clock::now();
 
-
 //     ==================== TEST DIGITS ====================
     int testDataSize    = 2000;
+    int correct         = 0;
+    int uncorrect       = 0;
     int *testDataDigit  = readDigitData("../../../b_digit.txt", testDataSize);
     int **testDataBin   = readImgData("../../../test_images_2000/digit_", testDataSize);
-    
-//     int *testDataDigit  = readDigitData("../../../train_digit.txt", testDataSize);
-//     int **testDataBin   = readBinData("../../../train_data.txt", testDataSize);
-
-     int correct      = 0;
-     int uncorrect    = 0;
 
      auto startTesting = high_resolution_clock::now();
      for(size_t z = 0; z < testDataSize; z++) {
@@ -137,45 +95,25 @@ int main() {
              vpInputLayer[i]->setNodeValue(val);
          }
 
-         for(size_t i=0 ; i < vpHiddenLayer.size(); i++) {
-             double val = 0;
-             for(size_t j=0; j < vpInputLayer.size(); j++) {
-                val += vpInputLayer[j]->getWeight(i) * vpInputLayer[j]->getNodeValue();
-             }
-             float value = applySigmoidFunction(val);
-             vpHiddenLayer[i]->setNodeValue( value );
-         }
-
-         for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-             double val = 0;
-             for(size_t j = 0; j < vpHiddenLayer.size(); j++) {
-                val += vpHiddenLayer[j]->getWeight(i) * vpHiddenLayer[j]->getNodeValue();
-             }
-             float value = applySigmoidFunction(val);
-             vpOutputLayer[i]->setNodeValue(  value );
-         }
+         dotProd(vpInputLayer, vpHiddenLayer);
+         dotProd(vpHiddenLayer, vpOutputLayer);
 
          double *allPredictionsforDigits = new double[numNeuronsOutputLayer];
          for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
              allPredictionsforDigits[i] = vpOutputLayer[i]->getNodeValue();
          }
 
-         float  maxAccuracy = 0;
-         int number;
+         float maxAccuracy = 0;
+         int   number;
          for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
              if(allPredictionsforDigits[i] >= maxAccuracy) {
                  maxAccuracy = allPredictionsforDigits[i];
                  number = i;
              }
          }
-
-         if (number == testDataDigit[z]) {
-             correct ++;
-             //std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
-         } else{
-             uncorrect++;
-             //std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<"  [x]"<<std::endl;
-         }
+         
+         std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
+         number == testDataDigit[z] ? correct++ : uncorrect++;
      }
      auto stopTesting    = high_resolution_clock::now();
 
@@ -189,7 +127,16 @@ int main() {
     return 0;
 }
 
+void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB) {
+    for(size_t i = 0 ; i < vpLayerB.size(); i++) {
+        double value = 0;
+        for(const auto& a : vpLayerA)
+            value += a->getWeight(i) * a->getNodeValue();
 
+        value = applySigmoidFunction(value);
+        vpLayerB[i]->setNodeValue(value);
+    }
+}
 
 
 //    ==== READ IMAGE DATA FROM PIXELS ====

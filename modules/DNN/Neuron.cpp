@@ -12,7 +12,7 @@ namespace DirectGraphicalModels { namespace dnn
     void CNeuron::generateRandomWeights(void)
     {
         for (float &weight : m_vWeights)
-            weight = random::U<float>(-0.5, 0.5);
+            weight = random::U<float>(-1, 1);
     }
 
     void CNeuron::setWeight(size_t index, float weight)
@@ -26,43 +26,89 @@ namespace DirectGraphicalModels { namespace dnn
         DGM_ASSERT(index < m_vWeights.size());
         return m_vWeights[index];
     }
-} }
+}}
 
 
+float applySigmoidFunction(float val)
+{
+    float sigmoid = 1 / (1 + exp(-val));
+    return sigmoid;
+}
 
-///**
-// * Applies the Sigmoid Activation function
-// *
-// * @param the value at each node
-// * @return a number between 0 and 1.
-// */
-//float applySigmoidFunction(float val);
+int *readDigitData(std::string file, int dataSize)
+{
+    int *trainDataDigit = new int[dataSize];
+    std::string fileDigitData = file;
+    std::ifstream inFile;
+    inFile.open(fileDigitData.c_str());
+
+    if (inFile.is_open()) {
+        for (int i = 0; i < dataSize; i++) {
+            inFile >> trainDataDigit[i];
+        }
+        inFile.close();
+    }
+    return trainDataDigit;
+}
+
+
+int **readImgData(std::string file, int dataSize)
+{
+    const int inputLayer = 784;
+    static int **trainDataBin = new int*[dataSize];
+    
+    for(int m = 0; m < dataSize; m++)
+    {
+        trainDataBin[m] = new int[inputLayer];
+        std::string number = std::to_string(m);
+        std::string path = file + number + ".png";
+        std::string image_path = samples::findFile(path);
+
+        Mat img = imread(image_path, 0);
+        
+        int l=0;
+        for(int i = 0; i < img.rows; i++) {
+            for(int j = 0; j < img.cols; j++) {
+                int value = abs((int)img.at<uchar>(i,j) - 255);
+                trainDataBin[m][l] = value;
+                l++;
+            }
+        }
+    }
+    return trainDataBin;
+}
+
+
+int **resultPredictions(int outputLayer)
+{
+    int **result = new int*[outputLayer];
+    
+    for(int i = 0; i < outputLayer; i++) {
+        result[i] = new int[outputLayer];
+        for(int j = 0; j < outputLayer; j++) {
+            result[i][j] = (i == j) ?  1 :  0;
+        }
+    }
+    return result;
+}
+
+//int **readBinData(std::string file, int dataSize) {
+//    const int inputLayer = 784;
+//    int **trainDataBin = new int*[dataSize];
 //
-///**
-// * Reads the digits numerical value in a decimal notation
-// *
-// * @param file to read, and the number of digits to read
-// * @return an array of digits
-// */
-//int *readDigitData(std::string file, int dataSize);
+//    std::string fileBinData = file;
+//    std::ifstream inFile;
+//    inFile.open(fileBinData.c_str());
 //
-///**
-// * Reads the digits pixel values (784 values for a digit)
-// *
-// * @param file to read, and the number of digits to read
-// * @return a 2D array of digits with their pixel values 2D[dataSize][784]
-// */
-//int **readBinData(std::string file, int dataSize);
+//    if (inFile.is_open()) {
+//        for(int i = 0 ; i < dataSize; i++) {
+//            trainDataBin[i] = new int[inputLayer];
 //
-////@returns an array with the correct firing output nodes for each digit (0-9)
-///**
-// * Gives the correct firing output nodes for each digit so we can find the errorRate*
-// * Example when comparing the output nodes in the end, the correct prediction for
-// * number 2 lets say is : {0,0,1,0,0,0,0,0,0,0,0}
-// *
-// * @param the output digits value (10)
-// * @return an array of numbers filled with 0's for input 'x' excepted with a single 1 in the index[x].
-// */
-//int **resultPredictions(int outputDigits);
-
-
+//            for (int j = 0; j < inputLayer; j++) {
+//                inFile >> trainDataBin[i][j];
+//            }
+//        }
+//        inFile.close();
+//    }
+//    return trainDataBin;
+//}
