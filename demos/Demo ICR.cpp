@@ -96,7 +96,6 @@ int main() {
                 float sigmoid = 1 / (1 + exp(vpHiddenLayer[i]->getNodeValue()));
                 float inverse = 1 - sigmoid;
                 DeltaJ[i] = DeltaIn_j[i] * sigmoid * inverse;
-
             }
 
             //updates weights between [inputLayer][hiddenLayer]
@@ -176,7 +175,6 @@ int main() {
          if (number == testDataDigit[z]) {
              correct ++;
              //std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
-
          } else{
              uncorrect++;
              //std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<"  [x]"<<std::endl;
