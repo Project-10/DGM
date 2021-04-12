@@ -80,26 +80,6 @@ int **readImgData(std::string file, int dataSize)
 	return trainDataBin;
 }
 
-/**
- * Gives the correct firing output nodes for each digit so we can find the errorRate*
- * Example when comparing the output nodes in the end, the correct prediction for
- * number 2 lets say is : {0,0,1,0,0,0,0,0,0,0,0}
- *
- * @param the output digits value (10)
- * @return an array of numbers filled with 0's for input 'x' excepted with a single 1 in the index[x].
- */
-int **resultPredictions(int outputLayer)
-{
-	int **result = new int*[outputLayer];
-	
-	for(int i = 0; i < outputLayer; i++) {
-		result[i] = new int[outputLayer];
-		for(int j = 0; j < outputLayer; j++) {
-			result[i][j] = (i == j) ?  1 :  0;
-		}
-	}
-	return result;
-}
 
 /**
  * Reads the digits pixel value in a decimal notation
@@ -149,7 +129,9 @@ int main() {
 
     int **trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize);
     auto trainDataDigit  = readGroundTruth("../../../data/digits/train_gt.txt");
-    int **resultsArray   = resultPredictions(numNeuronsOutputLayer);
+    
+	Mat resultsArray = Mat::eye(numNeuronsOutputLayer, numNeuronsOutputLayer, CV_32SC1);
+	
 	assert(trainDataDigit.size() == dataSize);
 	
 	
@@ -170,9 +152,9 @@ int main() {
         dotProd(vpHiddenLayer, vpOutputLayer);
     
         double *resultErrorRate = new double[numNeuronsOutputLayer];
-        for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-            resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
-        }
+        for(size_t i = 0 ;i < vpOutputLayer.size(); i++)
+            resultErrorRate[i] = resultsArray.at<int>(trainDataDigit[k], i) - vpOutputLayer[i]->getNodeValue();
+
 
         backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
     }
