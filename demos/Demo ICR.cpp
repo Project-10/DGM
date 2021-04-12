@@ -3,6 +3,10 @@
 
 namespace dgm = DirectGraphicalModels;
 
+void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
+                   std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB,
+                   std::vector<dgm::dnn::ptr_neuron_t>& vpLayerC,
+                   double resultErrorRate[]);
 
 void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB);
 
@@ -167,36 +171,8 @@ int main() {
                 resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
             }
 
-        // ==================== BACKPROPAGATION ====================
-            float (*DeltaWjk)[numNeuronsOutputLayer]  = new float[numNeuronsHiddenLayer][numNeuronsOutputLayer];
-            float (*DeltaWik)[numNeuronsHiddenLayer]  = new float[numNeuronsInputLayer][numNeuronsHiddenLayer];
-            float *DeltaJ                             = new float[numNeuronsHiddenLayer];
-            float learningRate                        = 0.1;
+            backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
 
-            for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-                double nodeVal = 0;
-                for(size_t j = 0; j < vpOutputLayer.size(); j++) {
-                    nodeVal += vpHiddenLayer[i]->getWeight(j) * resultErrorRate[j];
-                    DeltaWjk[i][j] = learningRate * resultErrorRate[j] * vpHiddenLayer[i]->getNodeValue();
-                }
-                float sigmoid = applySigmoidFunction(vpHiddenLayer[i]->getNodeValue());
-                DeltaJ[i] = nodeVal * sigmoid * (1-sigmoid);
-            }
-
-            for(size_t i = 0; i < vpInputLayer.size(); i++) {
-                for(size_t j = 0; j < vpHiddenLayer.size(); j++) {
-                    DeltaWik[i][j] = learningRate * DeltaJ[j] * vpInputLayer[i]->getNodeValue();
-                    float oldWeight = vpInputLayer[i]->getWeight(j);
-                    vpInputLayer[i]->setWeight(j, oldWeight + DeltaWik[i][j]);
-                }
-            }
-
-            for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-                for(size_t j = 0; j < vpOutputLayer.size(); j++) {
-                    float oldWeight = vpHiddenLayer[i]->getWeight(j);
-                    vpHiddenLayer[i]->setWeight(j, oldWeight + DeltaWjk[i][j]);
-                }
-            }
     }
 	dgm::Timer::stop();
 
@@ -231,7 +207,7 @@ int main() {
 			 }
 		 }
 
-		 std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
+//		 std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
 		 number == testDataDigit[z] ? correct++ : uncorrect++;
 	}
 	dgm::Timer::stop();
@@ -242,7 +218,6 @@ int main() {
 }
 
 void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB) {
-   
 	for(size_t i = 0 ; i < vpLayerB.size(); i++) {
         float value = 0;
         for(const auto& a : vpLayerA)
@@ -251,8 +226,49 @@ void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn
         value = applySigmoidFunction(value);
         vpLayerB[i]->setNodeValue(value);
     }
-
 }
+
+void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
+                   std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB,
+                   std::vector<dgm::dnn::ptr_neuron_t>& vpLayerC,
+                   double resultErrorRate[])
+{
+    const int numNeuronsOutputLayer = 10;
+    const int numNeuronsHiddenLayer = 60;
+    const int numNeuronsInputLayer = 784;
+    
+    float (*DeltaWjk)[numNeuronsOutputLayer]  = new float[numNeuronsHiddenLayer][numNeuronsOutputLayer];
+    float (*DeltaWik)[numNeuronsHiddenLayer]  = new float[numNeuronsInputLayer][numNeuronsHiddenLayer];
+    float *DeltaJ                             = new float[numNeuronsHiddenLayer];
+    float learningRate                        = 0.1;
+
+    for(size_t i = 0; i < vpLayerB.size(); i++) {
+        double nodeVal = 0;
+        for(size_t j = 0; j < vpLayerC.size(); j++) {
+            nodeVal += vpLayerB[i]->getWeight(j) * resultErrorRate[j];
+            DeltaWjk[i][j] = learningRate * resultErrorRate[j]* vpLayerB[i]->getNodeValue();
+        }
+        float sigmoid = applySigmoidFunction(vpLayerB[i]->getNodeValue());
+        DeltaJ[i] = nodeVal * sigmoid * (1-sigmoid);
+    }
+
+    for(size_t i = 0; i < vpLayerA.size(); i++) {
+        for(size_t j = 0; j < vpLayerB.size(); j++) {
+            DeltaWik[i][j] = learningRate * DeltaJ[j] * vpLayerA[i]->getNodeValue();
+            float oldWeight = vpLayerA[i]->getWeight(j);
+            vpLayerA[i]->setWeight(j, oldWeight + DeltaWik[i][j]);
+        }
+    }
+
+    for(size_t i = 0; i < vpLayerB.size(); i++) {
+        for(size_t j = 0; j < vpLayerC.size(); j++) {
+            float oldWeight = vpLayerB[i]->getWeight(j);
+            vpLayerB[i]->setWeight(j, oldWeight + DeltaWjk[i][j]);
+        }
+    }
+}
+
+
 
 
 //    ==== READ IMAGE DATA FROM PIXELS ====
