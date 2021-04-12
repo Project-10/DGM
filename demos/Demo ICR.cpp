@@ -51,33 +51,31 @@ std::vector<byte> readGroundTruth(const std::string& fileName)
  * @param image to read, and the number of images to read
  * @return an array of pixel values for each image
  */
-int **readImgData(std::string file, int dataSize)
+Mat readImgData(const std::string& fileName, size_t dataSize, size_t numNeurons)
 {
-	const int inputLayer = 784;
-	static int **trainDataBin = new int*[dataSize];
-	
-	for(int m = 0; m < dataSize; m++)
+	Mat res(dataSize, numNeurons, CV_32SC1);
+		
+	for(int m = 0; m < res.rows; m++)
 	{
-		trainDataBin[m] = new int[inputLayer];
 		std::stringstream ss;
 		ss << std::setfill('0') << std::setw(4);
 		ss << m;
 		std::string number = ss.str();
-		std::string path = file + number + ".png";
+		std::string path = fileName + number + ".png";
 		std::string image_path = samples::findFile(path);
 
 		Mat img = imread(image_path, 0);
 		
-		int l=0;
+		int l = 0;
 		for(int i = 0; i < img.rows; i++) {
 			for(int j = 0; j < img.cols; j++) {
 				int value = abs((int)img.at<uchar>(i,j) - 255);
-				trainDataBin[m][l] = value;
+				res.at<int>(m, l) = value;
 				l++;
 			}
 		}
 	}
-	return trainDataBin;
+	return res;
 }
 
 
@@ -100,7 +98,7 @@ int main() {
     for (size_t i = 0; i < numNeuronsOutputLayer; i++)
         vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
 
-    int **trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize);
+    Mat trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize, numNeuronsInputLayer);
     auto trainDataDigit  = readGroundTruth("../../../data/digits/train_gt.txt");
 	assert(trainDataDigit.size() == dataSize);
 	
@@ -113,7 +111,7 @@ int main() {
 	dgm::Timer::start("Training...");
 	for(int k = 0; k < dataSize; k++) {
         for(size_t i = 0; i < vpInputLayer.size(); i++) {
-            float val = (float)trainDataBin[k][i]/255;
+            float val = static_cast<float>(trainDataBin.at<int>(k ,i)) / 255;
             vpInputLayer[i]->setNodeValue(val);
         }
 
@@ -135,7 +133,7 @@ int main() {
     int testDataSize    = 2000;
     int correct         = 0;
     int uncorrect       = 0;
-    int **testDataBin   = readImgData("../../../data/digits/test/digit_", testDataSize);
+    Mat testDataBin   	= readImgData("../../../data/digits/test/digit_", testDataSize, numNeuronsInputLayer );
     auto testDataDigit  = readGroundTruth("../../../data/digits/test_gt.txt");
 
     
@@ -146,7 +144,7 @@ int main() {
 	dgm::Timer::start("Testing...");
 	for(size_t z = 0; z < testDataSize; z++) {
 		 for(size_t i = 0; i < vpInputLayer.size(); i++) {
-			 float val = (float)testDataBin[z][i]/255;
+			 float val = static_cast<float>(testDataBin.at<int>(z, i)) / 255;
 			 vpInputLayer[i]->setNodeValue(val);
 		 }
 
