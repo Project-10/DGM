@@ -168,14 +168,13 @@ int main() {
 
             dotProd(vpInputLayer, vpHiddenLayer);
             dotProd(vpHiddenLayer, vpOutputLayer);
-
+        
             double *resultErrorRate = new double[numNeuronsOutputLayer];
             for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
                 resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
             }
 
             backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
-
     }
 	dgm::Timer::stop();
 
@@ -209,7 +208,6 @@ int main() {
 				 number = i;
 			 }
 		 }
-
 //		 std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
 		 number == testDataDigit[z] ? correct++ : uncorrect++;
 	}
@@ -236,9 +234,10 @@ void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
                    std::vector<dgm::dnn::ptr_neuron_t>& vpLayerC,
                    double resultErrorRate[])
 {
-    const int numNeuronsOutputLayer = 10;
-    const int numNeuronsHiddenLayer = 60;
+
     const int numNeuronsInputLayer = 784;
+    const int numNeuronsHiddenLayer = 60;
+    const int numNeuronsOutputLayer = 10;
     
     float (*DeltaWjk)[numNeuronsOutputLayer]  = new float[numNeuronsHiddenLayer][numNeuronsOutputLayer];
     float (*DeltaWik)[numNeuronsHiddenLayer]  = new float[numNeuronsInputLayer][numNeuronsHiddenLayer];
