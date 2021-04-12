@@ -81,33 +81,6 @@ int **readImgData(std::string file, int dataSize)
 }
 
 
-/**
- * Reads the digits pixel value in a decimal notation
- *
- * @param file to read, and the number of digits to read
- * @return an array of digits
- */
-//int **readBinData(std::string file, int dataSize) {
-//    const int inputLayer = 784;
-//    int **trainDataBin = new int*[dataSize];
-//
-//    std::string fileBinData = file;
-//    std::ifstream inFile;
-//    inFile.open(fileBinData.c_str());
-//
-//    if (inFile.is_open()) {
-//        for(int i = 0 ; i < dataSize; i++) {
-//            trainDataBin[i] = new int[inputLayer];
-//
-//            for (int j = 0; j < inputLayer; j++) {
-//                inFile >> trainDataBin[i][j];
-//            }
-//        }
-//        inFile.close();
-//    }
-//    return trainDataBin;
-//}
-
 int main() {
     const size_t     numNeuronsInputLayer   = 784;
     const size_t     numNeuronsHiddenLayer  = 60;
@@ -129,11 +102,7 @@ int main() {
 
     int **trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize);
     auto trainDataDigit  = readGroundTruth("../../../data/digits/train_gt.txt");
-    
-	Mat resultsArray = Mat::eye(numNeuronsOutputLayer, numNeuronsOutputLayer, CV_32SC1);
-	
 	assert(trainDataDigit.size() == dataSize);
-	
 	
     for (size_t i = 0; i < vpHiddenLayer.size(); i++)
         vpHiddenLayer[i]->generateRandomWeights();
@@ -152,8 +121,10 @@ int main() {
         dotProd(vpHiddenLayer, vpOutputLayer);
     
         double *resultErrorRate = new double[numNeuronsOutputLayer];
-        for(size_t i = 0 ;i < vpOutputLayer.size(); i++)
-            resultErrorRate[i] = resultsArray.at<int>(trainDataDigit[k], i) - vpOutputLayer[i]->getNodeValue();
+		for(size_t i = 0; i < vpOutputLayer.size(); i++) {
+			resultErrorRate[i] = (trainDataDigit[k] == i) ? 1 : 0;
+			resultErrorRate[i] -= vpOutputLayer[i]->getNodeValue();
+		}
 
 
         backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
@@ -256,84 +227,3 @@ void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
         }
     }
 }
-
-
-
-//    ==== READ IMAGE DATA FROM PIXELS ====
-//    int **trainDataBin = readImgData(200);
-//    static int testDataBin[2000][784];
-//
-//    for(int m=0; m<25; m++) {
-//        int num = m;
-//        std::string number = std::to_string(num);
-//        std::string path = "/Users/diond/Desktop/train_images_4000/digit_" + number + ".png";
-//        std::string image_path = samples::findFile(path);
-//
-//        Mat img = imread(image_path, 0);
-//
-//        if(img.empty()) {
-//            std::cout << "Could not read the image: " << image_path << std::endl;
-//            return 1;
-//        }
-//
-//        int l=0;
-//        for(int i = 0; i < 28; i++)
-//        {
-//            for(int j = 0; j < 28; j++)
-//            {
-//                int value = abs((int)img.at<uchar>(i,j) - 255);
-//                testDataBin[m][l] = value;
-//                l++;
-//            }
-//        }
-//    }
-    
-    
-//    ==== CREATE IMAGES FROM DATA ====
-//     int testDataSize    = 2000;
-//     int *testDataDigit  = readDigitData("/Users/diond/Desktop/b_digit.txt", testDataSize);
-//     int **testDataBin   = readBinData("/Users/diond/Desktop/b_data.txt", testDataSize);
-//
-//    for(int z=0; z<2000; z++){
-//        Mat img(Size(28,28), CV_8UC3, Scalar(255,255,255));
-//
-//        //sprintf(filename, "digit_%04i.png", i);
-//
-//        std::stringstream ss;
-//        ss << std::setfill('0') << std::setw(4);
-//        ss << z;
-//        std::string number = ss.str();
-//
-//        std::string path = "/Users/diond/Desktop/test_images/digit_" + number + ".png";
-//
-//            int arr2[28][28];
-//            int l=0;
-//            for(int i=0; i<28; i++){
-//                for(int j=0; j<28; j++){
-//                    arr2[i][j]=testDataBin[z][l];
-//                    l++;
-//                }
-//            }
-//            cv::Vec3b color = img.at<Vec3b>(Point(0,0));
-//            for(int i = 0; i < 28; i++)
-//            {
-//                for(int j = 0; j < 28; j++)
-//                {
-//                    Vec3b bgrPixel = img.at<Vec3b>(j, i);
-//                    //img.at<Vec3b>(i+100, j+20) = 255;
-//                    if(arr2[i][j] == 0){
-//                        color[0]=255;
-//                        color[1]=255;
-//                        color[2]=255;
-//                    }
-//                    else {
-//                        color[0]= 255 - arr2[i][j];
-//                        color[1]= 255 - arr2[i][j];
-//                        color[2]= 255 - arr2[i][j];
-//                    }
-//                    img.at<Vec3b>(Point(j,i)) = color;
-//                }
-//            }
-//            imwrite(path, img);
-//        }
-
