@@ -270,7 +270,6 @@ void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
 
 
 
-
 //    ==== READ IMAGE DATA FROM PIXELS ====
 //    int **trainDataBin = readImgData(200);
 //    static int testDataBin[2000][784];
