@@ -1,6 +1,8 @@
 #include "DNN.h"
+#include "DGM/timer.h"
+
 namespace dgm = DirectGraphicalModels;
-using namespace std::chrono;
+
 
 void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB);
 
@@ -150,8 +152,8 @@ int main() {
     for(size_t i = 0; i < vpInputLayer.size(); i++)
         vpInputLayer[i]->generateRandomWeights();
 
-    auto startTraining = high_resolution_clock::now();
-    for(int k = 0; k < dataSize; k++) {
+	dgm::Timer::start("Training...");
+	for(int k = 0; k < dataSize; k++) {
             for(size_t i = 0; i < vpInputLayer.size(); i++) {
                 float val = (float)trainDataBin[k][i]/255;
                 vpInputLayer[i]->setNodeValue(val);
@@ -196,7 +198,7 @@ int main() {
                 }
             }
     }
-    auto stopTraining = high_resolution_clock::now();
+	dgm::Timer::stop();
 
 //     ==================== TEST DIGITS ====================
     int testDataSize    = 2000;
@@ -205,47 +207,43 @@ int main() {
     int **testDataBin   = readImgData("../../../data/digits/test/digit_", testDataSize);
     int *testDataDigit  = readDigitData("../../../data/digits/test_gt.txt", testDataSize);
 
-     auto startTesting = high_resolution_clock::now();
-     for(size_t z = 0; z < testDataSize; z++) {
-         for(size_t i = 0; i < vpInputLayer.size(); i++) {
-             float val = (float)testDataBin[z][i]/255;
-             vpInputLayer[i]->setNodeValue(val);
-         }
+	dgm::Timer::start("Testing...");
+	for(size_t z = 0; z < testDataSize; z++) {
+		 for(size_t i = 0; i < vpInputLayer.size(); i++) {
+			 float val = (float)testDataBin[z][i]/255;
+			 vpInputLayer[i]->setNodeValue(val);
+		 }
 
-         dotProd(vpInputLayer, vpHiddenLayer);
-         dotProd(vpHiddenLayer, vpOutputLayer);
+		 dotProd(vpInputLayer, vpHiddenLayer);
+		 dotProd(vpHiddenLayer, vpOutputLayer);
 
-         double *allPredictionsforDigits = new double[numNeuronsOutputLayer];
-         for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-             allPredictionsforDigits[i] = vpOutputLayer[i]->getNodeValue();
-         }
+		 double *allPredictionsforDigits = new double[numNeuronsOutputLayer];
+		 for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
+			 allPredictionsforDigits[i] = vpOutputLayer[i]->getNodeValue();
+		 }
 
-         float maxAccuracy = 0;
-         int   number;
-         for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-             if(allPredictionsforDigits[i] >= maxAccuracy) {
-                 maxAccuracy = allPredictionsforDigits[i];
-                 number = i;
-             }
-         }
+		 float maxAccuracy = 0;
+		 int   number;
+		 for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
+			 if(allPredictionsforDigits[i] >= maxAccuracy) {
+				 maxAccuracy = allPredictionsforDigits[i];
+				 number = i;
+			 }
+		 }
 
-         std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
-         number == testDataDigit[z] ? correct++ : uncorrect++;
-     }
-     auto stopTesting    = high_resolution_clock::now();
+		 std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
+		 number == testDataDigit[z] ? correct++ : uncorrect++;
+	}
+	dgm::Timer::stop();
 
-     auto durationTest   = duration_cast<milliseconds>(stopTesting - startTesting);
-     auto durationTrain  = duration_cast<milliseconds>(stopTraining - startTraining);
-
-     std::cout << "Time taken to train data: "<< durationTrain.count() << " miliseconds" << std::endl;
-     std::cout << "Time taken to test data: " << durationTest.count()  << " miliseconds" << std::endl;
-     std::cout << "poz: " << correct << std::endl << "neg: " << uncorrect << std::endl;
-     std::cout << "average: " << (float)correct/(correct+uncorrect)*100 << "%" << std::endl;
-    return 0;
+	std::cout << "poz: " << correct << std::endl << "neg: " << uncorrect << std::endl;
+	std::cout << "average: " << (float)correct/(correct+uncorrect)*100 << "%" << std::endl;
+	return 0;
 }
 
 void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB) {
-    for(size_t i = 0 ; i < vpLayerB.size(); i++) {
+   
+	for(size_t i = 0 ; i < vpLayerB.size(); i++) {
         float value = 0;
         for(const auto& a : vpLayerA)
             value += a->getWeight(i) * a->getNodeValue();
@@ -253,6 +251,7 @@ void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn
         value = applySigmoidFunction(value);
         vpLayerB[i]->setNodeValue(value);
     }
+
 }
 
 
