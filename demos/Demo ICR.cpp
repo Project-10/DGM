@@ -161,20 +161,20 @@ int main() {
 
 	dgm::Timer::start("Training...");
 	for(int k = 0; k < dataSize; k++) {
-            for(size_t i = 0; i < vpInputLayer.size(); i++) {
-                float val = (float)trainDataBin[k][i]/255;
-                vpInputLayer[i]->setNodeValue(val);
-            }
+        for(size_t i = 0; i < vpInputLayer.size(); i++) {
+            float val = (float)trainDataBin[k][i]/255;
+            vpInputLayer[i]->setNodeValue(val);
+        }
 
-            dotProd(vpInputLayer, vpHiddenLayer);
-            dotProd(vpHiddenLayer, vpOutputLayer);
-        
-            double *resultErrorRate = new double[numNeuronsOutputLayer];
-            for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-                resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
-            }
+        dotProd(vpInputLayer, vpHiddenLayer);
+        dotProd(vpHiddenLayer, vpOutputLayer);
+    
+        double *resultErrorRate = new double[numNeuronsOutputLayer];
+        for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
+            resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
+        }
 
-            backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
+        backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, resultErrorRate);
     }
 	dgm::Timer::stop();
 
@@ -185,6 +185,11 @@ int main() {
     int **testDataBin   = readImgData("../../../data/digits/test/digit_", testDataSize);
     auto testDataDigit  = readGroundTruth("../../../data/digits/test_gt.txt");
 
+    
+//    for (auto i: testDataDigit)
+//        printf("%d ", i);
+    
+    
 	dgm::Timer::start("Testing...");
 	for(size_t z = 0; z < testDataSize; z++) {
 		 for(size_t i = 0; i < vpInputLayer.size(); i++) {
@@ -208,13 +213,13 @@ int main() {
 				 number = i;
 			 }
 		 }
-//		 std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
-		 number == testDataDigit[z] ? correct++ : uncorrect++;
+        //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
+        number == testDataDigit[z] ? correct++ : uncorrect++;
 	}
 	dgm::Timer::stop();
 
-	std::cout << "poz: " << correct << std::endl << "neg: " << uncorrect << std::endl;
-	std::cout << "average: " << (float)correct/(correct+uncorrect)*100 << "%" << std::endl;
+    printf("poz: %d\nneg: %d\n", correct, uncorrect);
+    printf("average: %.2f%s\n", (float)correct/(correct+uncorrect)*100, "%");
 	return 0;
 }
 
