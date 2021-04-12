@@ -86,7 +86,10 @@ int **readImgData(std::string file, int dataSize)
     for(int m = 0; m < dataSize; m++)
     {
         trainDataBin[m] = new int[inputLayer];
-        std::string number = std::to_string(m);
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(4);
+        ss << m;
+        std::string number = ss.str();
         std::string path = file + number + ".png";
         std::string image_path = samples::findFile(path);
 
