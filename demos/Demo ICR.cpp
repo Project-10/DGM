@@ -28,20 +28,21 @@ float applySigmoidFunction(float val)
  * @param file to read, and the number of digits to read
  * @return an array of digit labels
  */
-int *readDigitData(std::string file, int dataSize)
+std::vector<byte> readGroundTruth(const std::string& fileName)
 {
-	int *trainDataDigit = new int[dataSize];
-	std::string fileDigitData = file;
+	std::vector<byte> res;
 	std::ifstream inFile;
-	inFile.open(fileDigitData.c_str());
+	inFile.open(fileName.c_str());
 
 	if (inFile.is_open()) {
-		for (int i = 0; i < dataSize; i++) {
-			inFile >> trainDataDigit[i];
+		int val;
+		while (!inFile.eof()) {
+			inFile >> val;
+			res.push_back(static_cast<byte>(val));
 		}
 		inFile.close();
 	}
-	return trainDataDigit;
+	return res;
 }
 
 /**
@@ -147,9 +148,11 @@ int main() {
         vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
 
     int **trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize);
-    int *trainDataDigit  = readDigitData("../../../data/digits/train_gt.txt", dataSize);
+    auto trainDataDigit  = readGroundTruth("../../../data/digits/train_gt.txt");
     int **resultsArray   = resultPredictions(numNeuronsOutputLayer);
-
+	assert(trainDataDigit.size() == dataSize);
+	
+	
     for (size_t i = 0; i < vpHiddenLayer.size(); i++)
         vpHiddenLayer[i]->generateRandomWeights();
 
@@ -181,7 +184,7 @@ int main() {
     int correct         = 0;
     int uncorrect       = 0;
     int **testDataBin   = readImgData("../../../data/digits/test/digit_", testDataSize);
-    int *testDataDigit  = readDigitData("../../../data/digits/test_gt.txt", testDataSize);
+    auto testDataDigit  = readGroundTruth("../../../data/digits/test_gt.txt");
 
 	dgm::Timer::start("Testing...");
 	for(size_t z = 0; z < testDataSize; z++) {
