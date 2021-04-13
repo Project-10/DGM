@@ -1,4 +1,6 @@
 #include "DNN.h"
+#include "DGM.h"
+#include "VIS.h"
 #include "DGM/timer.h"
 
 namespace dgm = DirectGraphicalModels;
@@ -119,11 +121,24 @@ Mat readImgData(const std::string& fileName, size_t dataSize, size_t numNeurons)
 }
 
 
-int main() {
-    const size_t     numNeuronsInputLayer   = 784;
-    const size_t     numNeuronsHiddenLayer  = 60;
-    const size_t     numNeuronsOutputLayer  = 10;
-    const size_t                  dataSize  = 4000;
+int main()
+{
+	const word 		nStates					= 10; 	// 10 digits
+	const size_t    numNeuronsInputLayer   	= 784;
+    const size_t    numNeuronsHiddenLayer	= 60;
+    const size_t    numNeuronsOutputLayer  	= 10;
+    const size_t	numTrainSamples  		= 4000;
+	const size_t 	numTestSamples    		= 2000;
+
+	
+	Mat		trainDataBin   	= readImgData("../../../data/digits/train/digit_", numTrainSamples, numNeuronsInputLayer);
+	auto	trainDataDigit 	= readGroundTruth("../../../data/digits/train_gt.txt");
+	assert(trainDataDigit.size() == numTrainSamples);
+	
+	Mat 	testDataBin   	= readImgData("../../../data/digits/test/digit_", numTestSamples, numNeuronsInputLayer );
+	auto 	testDataDigit  	= readGroundTruth("../../../data/digits/test_gt.txt");
+	assert(testDataDigit.size() == numTestSamples);
+
 
     std::vector<dgm::dnn::ptr_neuron_t> vpInputLayer;
     std::vector<dgm::dnn::ptr_neuron_t> vpHiddenLayer;
@@ -138,21 +153,19 @@ int main() {
     for (size_t i = 0; i < numNeuronsOutputLayer; i++)
         vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
 
-    Mat  trainDataBin   = readImgData("../../../data/digits/train/digit_", dataSize, numNeuronsInputLayer);
-    auto trainDataDigit = readGroundTruth("../../../data/digits/train_gt.txt");
-	assert(trainDataDigit.size() == dataSize);
-	
+
     for (size_t i = 0; i < vpHiddenLayer.size(); i++)
         vpHiddenLayer[i]->generateRandomWeights();
 
     for(size_t i = 0; i < vpInputLayer.size(); i++)
         vpInputLayer[i]->generateRandomWeights();
 
+	// ==================== TRAINING DIGITS ====================
 	dgm::Timer::start("Training...");
-	for(int k = 0; k < dataSize; k++) {
+	for(int s = 0; s < numTrainSamples; s++) {
         
 		for(size_t i = 0; i < vpInputLayer.size(); i++) {
-            float val = static_cast<float>(trainDataBin.at<int>(k ,i)) / 255;
+            float val = static_cast<float>(trainDataBin.at<int>(s ,i)) / 255;
             vpInputLayer[i]->setNodeValue(val);
         }
 
@@ -161,30 +174,21 @@ int main() {
     
         std::vector<float> vResultErrorRate(numNeuronsOutputLayer);
 		for(size_t i = 0; i < vResultErrorRate.size(); i++) {
-			vResultErrorRate[i] = (trainDataDigit[k] == i) ? 1 : 0;
+			vResultErrorRate[i] = (trainDataDigit[s] == i) ? 1 : 0;
 			vResultErrorRate[i] -= vpOutputLayer[i]->getNodeValue();
 		}
 
         backPropagate(vpInputLayer, vpHiddenLayer, vpOutputLayer, vResultErrorRate, 0.1f);
-    }
+    } // samples
 	dgm::Timer::stop();
 
-//     ==================== TEST DIGITS ====================
-    int testDataSize    = 2000;
-    int correct         = 0;
-    int uncorrect       = 0;
-    Mat testDataBin   	= readImgData("../../../data/digits/test/digit_", testDataSize, numNeuronsInputLayer );
-    auto testDataDigit  = readGroundTruth("../../../data/digits/test_gt.txt");
-
-    
-//    for (auto i: testDataDigit)
-//        printf("%d ", i);
-    
-    
+	// ==================== TESTING DIGITS ====================
+	dgm::CCMat confMat(nStates);
+	dgm::vis::CMarker marker;
 	dgm::Timer::start("Testing...");
-	for(size_t z = 0; z < testDataSize; z++) {
+	for(size_t s = 0; s < numTestSamples; s++) {
 		 for(size_t i = 0; i < vpInputLayer.size(); i++) {
-			 float val = static_cast<float>(testDataBin.at<int>(z, i)) / 255;
+			 float val = static_cast<float>(testDataBin.at<int>(s, i)) / 255;
 			 vpInputLayer[i]->setNodeValue(val);
 		 }
 
@@ -197,20 +201,27 @@ int main() {
 		 }
 
 		 float maxAccuracy = 0;
-		 int   number;
+		 byte   number;
 		 for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
 			 if(allPredictionsforDigits[i] >= maxAccuracy) {
 				 maxAccuracy = allPredictionsforDigits[i];
-				 number = i;
+				 number = static_cast<byte>(i);
 			 }
 		 }
+		confMat.estimate(number, testDataDigit[s]);
         //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
-        number == testDataDigit[z] ? correct++ : uncorrect++;
-	}
+	} // samples
 	dgm::Timer::stop();
-
-    printf("poz: %d\nneg: %d\n", correct, uncorrect);
-    printf("average: %.2f%s\n", (float)correct/(correct+uncorrect)*100, "%");
+	printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
+	
+	// Confusion matrix
+	Mat cMat    = confMat.getConfusionMatrix();
+	Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
+	imshow("Confusion Matrix", cMatImg);
+	
+	waitKey();
+	
+	
 	return 0;
 }
 
