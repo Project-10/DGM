@@ -45,11 +45,11 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	dgm::dnn::CNeuronLayer layerInput(numNeuronsInputLayer, numNeuronsHiddenLayer);
-	dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, numNeuronsOutputLayer);
-	dgm::dnn::CNeuronLayer layerOutput(numNeuronsOutputLayer, 0);
+    dgm::dnn::CNeuronLayer layerInput(numNeuronsInputLayer, numNeuronsHiddenLayer);
+    dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, numNeuronsOutputLayer);
+    dgm::dnn::CNeuronLayer layerOutput(numNeuronsOutputLayer, 0);
 
-	layerInput.generateRandomWeights();
+    layerInput.generateRandomWeights();
 	layerHidden.generateRandomWeights();
 
 	Mat fv;
@@ -100,18 +100,12 @@ int main()
 		layerInput.setValues(fv);
 		layerHidden.dotProd(layerInput);
 		layerOutput.dotProd(layerHidden);
+        
+        std::vector<double>pot = layerOutput.getValues();
 
-		Mat pot = layerOutput.getValues();			// potential vector
-
-		// TODO: use minmaxloc here
-		float maxPot = 0;
-		byte   number;
-		for(int i = 0 ; i < pot.rows; i++) {
-			if(pot.at<float>(i, 0) > maxPot) {
-				maxPot = pot.at<float>(i, 0);
-				number = static_cast<byte>(i);
-			}
-		}
+        auto maxAccuracy = max_element(std::begin(pot), std::end(pot));
+        int number = std::distance(pot.begin(), maxAccuracy);
+        
 		confMat.estimate(number, testGT[s]);
         //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
 	} // samples
@@ -129,5 +123,3 @@ int main()
 	
 	return 0;
 }
-
-
