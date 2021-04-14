@@ -51,8 +51,8 @@ namespace DirectGraphicalModels { namespace dnn
 		return res;
 	}
 
-	void CNeuronLayer::dotProd(const CNeuronLayer& layer) {
-		
+	void CNeuronLayer::dotProd(const CNeuronLayer& layer) 
+	{	
 		for (size_t i = 0; i < m_vpNeurons.size(); i++) {
 			float value = 0;
 			
