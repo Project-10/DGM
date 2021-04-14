@@ -11,10 +11,10 @@ namespace dgm = DirectGraphicalModels;
  * @param the value at each node
  * @return a number between 0 and 1.
  */
-float applySigmoidFunction(float val)
+float applySigmoidFunction(float x)
 {
-	float sigmoid = 1 / (1 + exp(-val));
-	return sigmoid;
+	return 1.0f / (1.0f + expf(-x));
+
 }
 
 void backPropagate(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA,
@@ -87,40 +87,6 @@ std::vector<byte> readGroundTruth(const std::string& fileName)
 	return res;
 }
 
-/**
- * Reads the image pixel value
- *
- * @param image to read, and the number of images to read
- * @return an array of pixel values for each image
- */
-Mat readImgData(const std::string& fileName, size_t dataSize, size_t numNeurons)
-{
-	Mat res(dataSize, numNeurons, CV_32SC1);
-		
-	for(int m = 0; m < res.rows; m++)
-	{
-		std::stringstream ss;
-		ss << std::setfill('0') << std::setw(4);
-		ss << m;
-		std::string number = ss.str();
-		std::string path = fileName + number + ".png";
-		std::string image_path = samples::findFile(path);
-
-		Mat img = imread(image_path, 0);
-		
-		int l = 0;
-		for(int i = 0; i < img.rows; i++) {
-			for(int j = 0; j < img.cols; j++) {
-				int value = abs((int)img.at<uchar>(i,j) - 255);
-				res.at<int>(m, l) = value;
-				l++;
-			}
-		}
-	}
-	return res;
-}
-
-
 int main()
 {
 	const word 		nStates					= 10; 	// 10 digits
@@ -130,14 +96,11 @@ int main()
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 
-	
-	Mat		trainDataBin   	= readImgData("../../../data/digits/train/digit_", numTrainSamples, numNeuronsInputLayer);
-	auto	trainDataDigit 	= readGroundTruth("../../../data/digits/train_gt.txt");
-	assert(trainDataDigit.size() == numTrainSamples);
-	
-	Mat 	testDataBin   	= readImgData("../../../data/digits/test/digit_", numTestSamples, numNeuronsInputLayer );
-	auto 	testDataDigit  	= readGroundTruth("../../../data/digits/test_gt.txt");
-	assert(testDataDigit.size() == numTestSamples);
+#ifdef WIN32
+	const std::string dataPath = "../../data/digits/";
+#else
+	const std::string dataPath = "../../../data/digits/";
+#endif
 
 
     std::vector<dgm::dnn::ptr_neuron_t> vpInputLayer;
@@ -160,21 +123,30 @@ int main()
     for(size_t i = 0; i < vpInputLayer.size(); i++)
         vpInputLayer[i]->generateRandomWeights();
 
+	Mat fv;
+
 	// ==================== TRAINING DIGITS ====================
 	dgm::Timer::start("Training...");
+	auto	trainGT = readGroundTruth(dataPath + "train_gt.txt");
+	assert(trainGT.size() == numTrainSamples);
 	for(int s = 0; s < numTrainSamples; s++) {
-        
-		for(size_t i = 0; i < vpInputLayer.size(); i++) {
-            float val = static_cast<float>(trainDataBin.at<int>(s ,i)) / 255;
-            vpInputLayer[i]->setNodeValue(val);
-        }
+
+		std::stringstream ss;
+		ss << dataPath << "train/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
+		std::string fileName = samples::findFile(ss.str());
+		Mat img = imread(fileName, 0);
+		img = img.reshape(1, img.cols * img.rows);
+		img.convertTo(fv, CV_32FC1, 1.0 / 255);
+
+		for (size_t i = 0; i < fv.rows; i++)
+			vpInputLayer[i]->setNodeValue(1.0f - fv.at<float>(i, 0));
 
         dotProd(vpInputLayer, vpHiddenLayer);
         dotProd(vpHiddenLayer, vpOutputLayer);
     
         std::vector<float> vResultErrorRate(numNeuronsOutputLayer);
 		for(size_t i = 0; i < vResultErrorRate.size(); i++) {
-			vResultErrorRate[i] = (trainDataDigit[s] == i) ? 1 : 0;
+			vResultErrorRate[i] = (trainGT[s] == i) ? 1 : 0;
 			vResultErrorRate[i] -= vpOutputLayer[i]->getNodeValue();
 		}
 
@@ -184,37 +156,45 @@ int main()
 
 	// ==================== TESTING DIGITS ====================
 	dgm::CCMat confMat(nStates);
-	dgm::vis::CMarker marker;
 	dgm::Timer::start("Testing...");
+	auto 	testGT = readGroundTruth(dataPath + "test_gt.txt");
+	assert(testGT.size() == numTestSamples);
 	for(size_t s = 0; s < numTestSamples; s++) {
-		 for(size_t i = 0; i < vpInputLayer.size(); i++) {
-			 float val = static_cast<float>(testDataBin.at<int>(s, i)) / 255;
-			 vpInputLayer[i]->setNodeValue(val);
-		 }
+		std::stringstream ss;
+		ss << dataPath << "test/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
+		std::string fileName = samples::findFile(ss.str());
+		Mat img = imread(fileName, 0);
+		img = img.reshape(1, img.cols * img.rows);
+		img.convertTo(fv, CV_32FC1, 1.0 / 255);
 
-		 dotProd(vpInputLayer, vpHiddenLayer);
-		 dotProd(vpHiddenLayer, vpOutputLayer);
+		for (size_t i = 0; i < fv.rows; i++)
+			vpInputLayer[i]->setNodeValue(1.0f - fv.at<float>(i, 0));
 
-		 double *allPredictionsforDigits = new double[numNeuronsOutputLayer];
-		 for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-			 allPredictionsforDigits[i] = vpOutputLayer[i]->getNodeValue();
-		 }
+		
+		dotProd(vpInputLayer, vpHiddenLayer);
+		dotProd(vpHiddenLayer, vpOutputLayer);
 
-		 float maxAccuracy = 0;
-		 byte   number;
-		 for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-			 if(allPredictionsforDigits[i] >= maxAccuracy) {
-				 maxAccuracy = allPredictionsforDigits[i];
-				 number = static_cast<byte>(i);
-			 }
-		 }
-		confMat.estimate(number, testDataDigit[s]);
+		std::vector<float> pot(numNeuronsOutputLayer);	// potential vector
+		for(size_t i = 0; i < vpOutputLayer.size(); i++) {
+			pot[i] = vpOutputLayer[i]->getNodeValue();
+		}
+
+		float maxPot = 0;
+		byte   number;
+		for(size_t i = 0 ; i < vpOutputLayer.size(); i++) {
+			if(pot[i] > maxPot) {
+				maxPot = pot[i];
+				number = static_cast<byte>(i);
+			}
+		}
+		confMat.estimate(number, testGT[s]);
         //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
 	} // samples
 	dgm::Timer::stop();
 	printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
 	
 	// Confusion matrix
+	dgm::vis::CMarker marker;
 	Mat cMat    = confMat.getConfusionMatrix();
 	Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
 	imshow("Confusion Matrix", cMatImg);
