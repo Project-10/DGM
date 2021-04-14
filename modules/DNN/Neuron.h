@@ -1,6 +1,5 @@
 #pragma once
 #include "types.h"
-#include <fstream>
 
 namespace DirectGraphicalModels {
     namespace dnn
@@ -23,8 +22,8 @@ namespace DirectGraphicalModels {
             DllExport void         generateRandomWeights(void);
             
             // Accessors
-            DllExport void        setNodeValue(float value) { m_value = value; }
-            DllExport float       getNodeValue(void) const { return m_value; }
+            DllExport void        setValue(float value) { m_value = value; }
+            DllExport float       getValue(void) const { return m_value; }
             DllExport void        setWeight(size_t index, float weight);
             DllExport float       getWeight(size_t index) const;
             DllExport size_t      getSize(void) const { return m_vWeights.size(); }

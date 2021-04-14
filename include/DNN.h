@@ -1,5 +1,6 @@
 #pragma once
 #include "DNN/Neuron.h"
+#include "DNN/NeuronLayer.h"
 // #include "DNN/Functions.hpp"
 
 /**
