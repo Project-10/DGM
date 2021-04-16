@@ -65,7 +65,7 @@ namespace DirectGraphicalModels { namespace dnn
 		}
 	}
 
-	void CNeuronLayer::backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, std::vector<float>& vResultErrorRate, float learningRate)
+	void CNeuronLayer::backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate)
 	{
 		Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
 		std::vector<float> DeltaJ(layerB.getNumNeurons());
@@ -73,8 +73,8 @@ namespace DirectGraphicalModels { namespace dnn
 		for (size_t i = 0; i < layerB.getNumNeurons(); i++) {
 			float nodeVal = 0;
 			for (size_t j = 0; j < layerC.getNumNeurons(); j++) {
-				nodeVal += layerB.m_vpNeurons[i]->getWeight(j) * vResultErrorRate[j];
-				DeltaWjk.at<float>(i, j) = learningRate * vResultErrorRate[j] * layerB.m_vpNeurons[i]->getValue();
+				nodeVal += layerB.m_vpNeurons[i]->getWeight(j) * resultErrorRate.at<float>(j, 0);
+				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_vpNeurons[i]->getValue();
 			}
 			float sigmoid = sigmoidFunction(layerB.m_vpNeurons[i]->getValue());
 			DeltaJ[i] = nodeVal * sigmoid * (1 - sigmoid);

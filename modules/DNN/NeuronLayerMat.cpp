@@ -1,9 +1,10 @@
 #include "NeuronLayerMat.h"
+#include "DGM/random.h"
+#include "DGM/parallel.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels { namespace dnn
 {
-	
 	namespace {
 		/**
 		 * Applies the Sigmoid Activation function
@@ -17,84 +18,49 @@ namespace DirectGraphicalModels { namespace dnn
 		}
 	}
 	
-	
-	
-	// Constructor
-	CNeuronLayerMat::CNeuronLayerMat(size_t numNeurons, size_t numConnection)
-	{
-		for (size_t i = 0; i < numNeurons; i++)
-			m_vpNeurons.push_back(std::make_shared<CNeuron>(numConnection));
-	}
-
 	void CNeuronLayerMat::generateRandomWeights(void)
 	{
-		for(auto n : m_vpNeurons)
-			n->generateRandomWeights();
+		m_weights = random::U(m_weights.size(), m_weights.type(), -0.5f, 0.5f);
+	}
+
+
+	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
+	{
+		for (int y = 0; y < m_values.rows; y++) {
+			float value = 0;
+			for (int x = 0; x < layer.m_values.rows; x++)
+				value += layer.m_weights.at<float>(x, y) * layer.m_values.at<float>(x, 0);
+			m_values.at<float>(y, 0) = sigmoidFunction(value);
+		}
 	}
 
 	void CNeuronLayerMat::setValues(const Mat& values)
 	{
 		// Assertions
-		DGM_ASSERT(values.type() == CV_32FC1);
-		DGM_ASSERT(values.cols == 1);
-		DGM_ASSERT(values.rows == m_vpNeurons.size());
-		
-		for (size_t i = 0; i < m_vpNeurons.size(); i++)
-			m_vpNeurons[i]->setValue(values.at<float>(static_cast<int>(i), 0));
+		DGM_ASSERT(values.type() == m_values.type());
+		DGM_ASSERT(values.size() == m_values.size());
+		values.copyTo(m_values);
 	}
 
-	Mat CNeuronLayerMat::getValues(void) const
-	{
-		Mat res(m_vpNeurons.size(), 1, CV_32FC1);
-		for (size_t i = 0; i < m_vpNeurons.size(); i++)
-			res.at<float>(i, 0) = m_vpNeurons[i]->getValue();
-		return res;
-	}
-
-	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
-	{
-		for (size_t i = 0; i < m_vpNeurons.size(); i++) {
-			float value = 0;
-			
-			for (const auto& n : layer.m_vpNeurons)
-				value += n->getWeight(i) * n->getValue();
-
-			value = sigmoidFunction(value);
-			
-			m_vpNeurons[i]->setValue(value);
-		}
-	}
-
-	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, std::vector<float>& vResultErrorRate, float learningRate)
+	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
 	{
 		Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
-		std::vector<float> DeltaJ(layerB.getNumNeurons());
+		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1);
 
-		for (size_t i = 0; i < layerB.getNumNeurons(); i++) {
+		for (int i = 0; i < layerB.getNumNeurons(); i++) {
 			float nodeVal = 0;
-			for (size_t j = 0; j < layerC.getNumNeurons(); j++) {
-				nodeVal += layerB.m_vpNeurons[i]->getWeight(j) * vResultErrorRate[j];
-				DeltaWjk.at<float>(i, j) = learningRate * vResultErrorRate[j] * layerB.m_vpNeurons[i]->getValue();
+			for (int j = 0; j < layerC.getNumNeurons(); j++) {
+				nodeVal += layerB.m_weights.at<float>(i, j) * resultErrorRate.at<float>(j, 0);
+				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_values.at<float>(i, 0);
 			}
-			float sigmoid = sigmoidFunction(layerB.m_vpNeurons[i]->getValue());
-			DeltaJ[i] = nodeVal * sigmoid * (1 - sigmoid);
+			float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
+			DeltaJ.at<float>(i, 0) = nodeVal * sigmoid * (1 - sigmoid);
 		}
 
-		for (size_t i = 0; i < layerA.getNumNeurons(); i++) {
-			for (size_t j = 0; j < layerB.getNumNeurons(); j++) {
-				float Delta = learningRate * DeltaJ[j] * layerA.m_vpNeurons[i]->getValue();
-				float oldWeight = layerA.m_vpNeurons[i]->getWeight(j);
-				layerA.m_vpNeurons[i]->setWeight(j, oldWeight + Delta);
-			}
-		}
+		for (int i = 0; i < layerA.getNumNeurons(); i++) 
+			for (int j = 0; j < layerB.getNumNeurons(); j++) 
+				layerA.m_weights.at<float>(i, j) += learningRate * DeltaJ.at<float>(j, 0) * layerA.m_values.at<float>(i, 0);;
 
-		for (size_t i = 0; i < layerB.getNumNeurons(); i++) {
-			for (size_t j = 0; j < layerC.getNumNeurons(); j++) {
-				float oldWeight = layerB.m_vpNeurons[i]->getWeight(j);
-				layerB.m_vpNeurons[i]->setWeight(j, oldWeight + DeltaWjk.at<float>(i, j));
-			}
-		}
+		layerB.m_weights += DeltaWjk;
 	}
-
-
 }}

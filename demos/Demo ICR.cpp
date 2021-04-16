@@ -73,13 +73,12 @@ int main()
 
 		Mat outputValues = layerOutput.getValues();
 
-        std::vector<float> vResultErrorRate(nStates);
-		for(size_t i = 0; i < vResultErrorRate.size(); i++) {
-			vResultErrorRate[i] = (trainGT[s] == i) ? 1 : 0;
-			vResultErrorRate[i] -= outputValues.at<float>(static_cast<int>(i), 0);
-		}
+        Mat resultErrorRate(nStates, 1, CV_32FC1);
+		for(int i = 0; i < resultErrorRate.rows; i++) 
+			resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
+		resultErrorRate -= outputValues;
 
-        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, vResultErrorRate, 0.1f);
+        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
     } // samples
 	dgm::Timer::stop();
 

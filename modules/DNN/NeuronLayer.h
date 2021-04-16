@@ -20,7 +20,7 @@ namespace DirectGraphicalModels {
             DllExport void      dotProd(const CNeuronLayer& layer);
 
             // TODO: move this method to a proper place
-            DllExport static void      backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, std::vector<float>& vResultErrorRate, float learningRate);
+            DllExport static void      backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate);
 
 
             // Accessors
