@@ -1,221 +1,123 @@
 #include "DNN.h"
+#include "DGM.h"
+#include "VIS.h"
+#include "DGM/timer.h"
+#include <fstream>
+
 namespace dgm = DirectGraphicalModels;
-using namespace std::chrono;
-//
-//void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB);
 
-int main() {
-    const size_t     numNeuronsInputLayer   = 784;
-    const size_t     numNeuronsHiddenLayer  = 60;
-    const size_t     numNeuronsOutputLayer  = 10;
-    const size_t                  dataSize  = 4000;
 
-    std::vector<dgm::dnn::ptr_neuron_t> vpInputLayer;
-    std::vector<dgm::dnn::ptr_neuron_t> vpHiddenLayer;
-    std::vector<dgm::dnn::ptr_neuron_t> vpOutputLayer;
+/**
+ * Reads the digits numerical value in a decimal notation
+ *
+ * @param file to read, and the number of digits to read
+ * @return an array of digit labels
+ */
+std::vector<byte> readGroundTruth(const std::string& fileName)
+{
+	std::vector<byte> res;
+	std::ifstream inFile;
+	inFile.open(fileName.c_str());
 
-    for (size_t i = 0; i < numNeuronsInputLayer; i++)
-        vpInputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(numNeuronsHiddenLayer, 0) );
-
-    for (size_t i = 0; i < numNeuronsHiddenLayer; i++)
-        vpHiddenLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(numNeuronsOutputLayer) );
-
-    for (size_t i = 0; i < numNeuronsOutputLayer; i++)
-        vpOutputLayer.push_back( std::make_shared<dgm::dnn::CNeuron>(0) );
-    
-    
-    
-    
-    
-    
-    
-
-//    int **trainDataBin   = readImgData("../../../train_images_4000/digit_", dataSize);
-//    int *trainDataDigit  = readDigitData("../../../a_digit.txt", dataSize);
-//    int **resultsArray   = resultPredictions(numNeuronsOutputLayer);
-//
-//    for (size_t i = 0; i < vpHiddenLayer.size(); i++)
-//        vpHiddenLayer[i]->generateRandomWeights();
-//
-//    for(size_t i = 0; i < vpInputLayer.size(); i++)
-//        vpInputLayer[i]->generateRandomWeights();
-//
-//    auto startTraining = high_resolution_clock::now();
-//    for(int k = 0; k < dataSize; k++) {
-//            for(size_t i = 0; i < vpInputLayer.size(); i++) {
-//                float val = (float)trainDataBin[k][i]/255;
-//                vpInputLayer[i]->setNodeValue(val);
-//            }
-//
-//            dotProd(vpInputLayer, vpHiddenLayer);
-//            dotProd(vpHiddenLayer, vpOutputLayer);
-//
-//            double *resultErrorRate = new double[numNeuronsOutputLayer];
-//            for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-//                resultErrorRate[i] = resultsArray[trainDataDigit[k]][i] - vpOutputLayer[i]->getNodeValue();
-//            }
-//
-//        // ==================== BACKPROPAGATION ====================
-//            float (*DeltaWjk)[numNeuronsOutputLayer]  = new float[numNeuronsHiddenLayer][numNeuronsOutputLayer];
-//            float (*DeltaWik)[numNeuronsHiddenLayer]  = new float[numNeuronsInputLayer][numNeuronsHiddenLayer];
-//            float *DeltaJ                             = new float[numNeuronsHiddenLayer];
-//            float learningRate                        = 0.1;
-//
-//            for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-//                double nodeVal = 0;
-//                for(size_t j = 0; j < vpOutputLayer.size(); j++) {
-//                    nodeVal += vpHiddenLayer[i]->getWeight(j) * resultErrorRate[j];
-//                    DeltaWjk[i][j] = learningRate * resultErrorRate[j] * vpHiddenLayer[i]->getNodeValue();
-//                }
-//                float sigmoid = applySigmoidFunction(vpHiddenLayer[i]->getNodeValue());
-//                DeltaJ[i] = nodeVal * sigmoid * (1-sigmoid);
-//            }
-//
-//            for(size_t i = 0; i < vpInputLayer.size(); i++) {
-//                for(size_t j = 0; j < vpHiddenLayer.size(); j++) {
-//                    DeltaWik[i][j] = learningRate * DeltaJ[j] * vpInputLayer[i]->getNodeValue();
-//                    float oldWeight = vpInputLayer[i]->getWeight(j);
-//                    vpInputLayer[i]->setWeight(j, oldWeight + DeltaWik[i][j]);
-//                }
-//            }
-//
-//            for(size_t i = 0; i < vpHiddenLayer.size(); i++) {
-//                for(size_t j = 0; j < vpOutputLayer.size(); j++) {
-//                    float oldWeight = vpHiddenLayer[i]->getWeight(j);
-//                    vpHiddenLayer[i]->setWeight(j, oldWeight + DeltaWjk[i][j]);
-//                }
-//            }
-//    }
-//    auto stopTraining = high_resolution_clock::now();
-//
-////     ==================== TEST DIGITS ====================
-//    int testDataSize    = 2000;
-//    int correct         = 0;
-//    int uncorrect       = 0;
-//    int *testDataDigit  = readDigitData("../../../b_digit.txt", testDataSize);
-//    int **testDataBin   = readImgData("../../../test_images_2000/digit_", testDataSize);
-//
-//     auto startTesting = high_resolution_clock::now();
-//     for(size_t z = 0; z < testDataSize; z++) {
-//         for(size_t i = 0; i < vpInputLayer.size(); i++) {
-//             float val = (float)testDataBin[z][i]/255;
-//             vpInputLayer[i]->setNodeValue(val);
-//         }
-//
-//         dotProd(vpInputLayer, vpHiddenLayer);
-//         dotProd(vpHiddenLayer, vpOutputLayer);
-//
-//         double *allPredictionsforDigits = new double[numNeuronsOutputLayer];
-//         for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-//             allPredictionsforDigits[i] = vpOutputLayer[i]->getNodeValue();
-//         }
-//
-//         float maxAccuracy = 0;
-//         int   number;
-//         for(size_t i=0 ; i < vpOutputLayer.size(); i++) {
-//             if(allPredictionsforDigits[i] >= maxAccuracy) {
-//                 maxAccuracy = allPredictionsforDigits[i];
-//                 number = i;
-//             }
-//         }
-//
-//         std::cout<<"prediction "<<"["<<number<<"] for digit " <<testDataDigit[z] <<" with "<<maxAccuracy<<"% at position: "<<z<<std::endl;
-//         number == testDataDigit[z] ? correct++ : uncorrect++;
-//     }
-//     auto stopTesting    = high_resolution_clock::now();
-//
-//     auto durationTest   = duration_cast<milliseconds>(stopTesting - startTesting);
-//     auto durationTrain  = duration_cast<milliseconds>(stopTraining - startTraining);
-//
-//     std::cout << "Time taken to train data: "<< durationTrain.count() << " miliseconds" << std::endl;
-//     std::cout << "Time taken to test data: " << durationTest.count()  << " miliseconds" << std::endl;
-//     std::cout << "poz: " << correct << std::endl << "neg: " << uncorrect << std::endl;
-//     std::cout << "average: " << (float)correct/(correct+uncorrect)*100 << "%" << std::endl;
-    return 0;
+	if (inFile.is_open()) {
+		int val;
+		while (!inFile.eof()) {
+			inFile >> val;
+			res.push_back(static_cast<byte>(val));
+		}
+		inFile.close();
+	}
+	return res;
 }
 
-//void dotProd(std::vector<dgm::dnn::ptr_neuron_t>& vpLayerA, std::vector<dgm::dnn::ptr_neuron_t>& vpLayerB) {
-//    for(size_t i = 0 ; i < vpLayerB.size(); i++) {
-//        float value = 0;
-//        for(const auto& a : vpLayerA)
-//            value += a->getWeight(i) * a->getNodeValue();
-//
-//        value = applySigmoidFunction(value);
-//        vpLayerB[i]->setNodeValue(value);
-//    }
-//}
+int main()
+{
+	const byte		nStates					= 10;				// 10 digits (number of output nodes)
+	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
+    const size_t    numNeuronsHiddenLayer	= 60;
+    const size_t	numTrainSamples  		= 4000;
+	const size_t 	numTestSamples    		= 2000;
 
+#ifdef WIN32
+	const std::string dataPath = "../../data/digits/";
+#else
+	const std::string dataPath = "../../../data/digits/";
+#endif
 
-//    ==== READ IMAGE DATA FROM PIXELS ====
-    
-//    int **trainDataBin = readImgData(200);
-//    static int testDataBin[2000][784];
-//
-//    for(int m=0; m<25; m++) {
-//        int num = m;
-//        std::string number = std::to_string(num);
-//        std::string path = "/Users/diond/Desktop/train_images_4000/digit_" + number + ".png";
-//        std::string image_path = samples::findFile(path);
-//
-//        Mat img = imread(image_path, 0);
-//
-//        if(img.empty()) {
-//            std::cout << "Could not read the image: " << image_path << std::endl;
-//            return 1;
-//        }
+    dgm::dnn::CNeuronLayerMat layerInput(nFeatures, numNeuronsHiddenLayer);
+    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
+    dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
+ 
+    layerInput.generateRandomWeights();
+	layerHidden.generateRandomWeights();
 
-//        int l=0;
-//        for(int i = 0; i < 28; i++)
-//        {
-//            for(int j = 0; j < 28; j++)
-//            {
-//                int value = abs((int)img.at<uchar>(i,j) - 255);
-//                testDataBin[m][l] = value;
-//                l++;
-//            }
-//        }
-//    }
-    
-    
-//    ==== WRITE IMAGE DATA TO PIXELS ====
+	Mat fv;
 
-// int testDataSize    = 2000;
-// int *testDataDigit  = readDigitData("../../../train_digit.txt", testDataSize);
-// int **testDataBin   = readBinData("/Users/diond/Desktop/b_data.txt", testDataSize);
+	// ==================== TRAINING DIGITS ====================
+	dgm::Timer::start("Training...");
+	auto	trainGT = readGroundTruth(dataPath + "train_gt.txt");
+	for(int s = 0; s < numTrainSamples; s++) {
 
-//for(int z=0; z<testDataSize; z++){
-//    Mat img(Size(28,28), CV_8UC3, Scalar(255,255,255));
-//    int num = z;
-//    std::string number = std::to_string(num);
-//    std::string path = "/Users/diond/Desktop/test_images_2000/digit_" + number + ".png";
-//
-//        int arr2[28][28];
-//        int l=0;
-//        for(int i=0; i<28; i++){
-//            for(int j=0; j<28; j++){
-//                arr2[i][j]=testDataBin[z][l];
-//                l++;
-//            }
-//        }
-//        cv::Vec3b color = img.at<Vec3b>(Point(0,0));
-//        for(int i = 0; i < 28; i++)
-//        {
-//            for(int j = 0; j < 28; j++)
-//            {
-//                Vec3b bgrPixel = img.at<Vec3b>(j, i);
-//                //img.at<Vec3b>(i+100, j+20) = 255;
-//                if(arr2[i][j] == 0){
-//                    color[0]=255;
-//                    color[1]=255;
-//                    color[2]=255;
-//                }
-//                else {
-//                    color[0]= 255 - arr2[i][j];
-//                    color[1]= 255 - arr2[i][j];
-//                    color[2]= 255 - arr2[i][j];
-//                }
-//                img.at<Vec3b>(Point(j,i)) = color;
-//            }
-//        }
-//        imwrite(path, img);
-//    }
+		std::stringstream ss;
+		ss << dataPath << "train/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
+		std::string fileName = samples::findFile(ss.str());
+		Mat img = imread(fileName, 0);
+		img = img.reshape(1, img.cols * img.rows);
+		img.convertTo(fv, CV_32FC1, 1.0 / 255);
+		fv = Scalar(1.0f) - fv;
+
+		layerInput.setValues(fv);
+
+		layerHidden.dotProd(layerInput);
+		layerOutput.dotProd(layerHidden);
+
+		Mat outputValues = layerOutput.getValues();
+
+        Mat resultErrorRate(nStates, 1, CV_32FC1);
+		for(int i = 0; i < resultErrorRate.rows; i++) 
+			resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
+		resultErrorRate -= outputValues;
+
+        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
+    } // samples
+	dgm::Timer::stop();
+
+	// ==================== TESTING DIGITS ====================
+	dgm::CCMat confMat(nStates);
+	dgm::Timer::start("Testing...");
+	auto 	testGT = readGroundTruth(dataPath + "test_gt.txt");
+	for(size_t s = 0; s < numTestSamples; s++) {
+		std::stringstream ss;
+		ss << dataPath << "test/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
+		std::string fileName = samples::findFile(ss.str());
+		Mat img = imread(fileName, 0);
+		img = img.reshape(1, img.cols * img.rows);
+		img.convertTo(fv, CV_32FC1, 1.0 / 255);
+		fv = Scalar(1.0f) - fv;
+
+		layerInput.setValues(fv);
+		layerHidden.dotProd(layerInput);
+		layerOutput.dotProd(layerHidden);
+        
+        std::vector<double>pot = layerOutput.getValues();
+
+        auto maxAccuracy = max_element(std::begin(pot), std::end(pot));
+        int number = std::distance(pot.begin(), maxAccuracy);
+        
+		confMat.estimate(number, testGT[s]);
+        //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
+	} // samples
+	dgm::Timer::stop();
+	printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
+	
+	// Confusion matrix
+	dgm::vis::CMarker marker;
+	Mat cMat    = confMat.getConfusionMatrix();
+	Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
+	imshow("Confusion Matrix", cMatImg);
+	
+	waitKey();
+	
+	
+	return 0;
+}

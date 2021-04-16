@@ -12,7 +12,7 @@ namespace DirectGraphicalModels { namespace dnn
     void CNeuron::generateRandomWeights(void)
     {
         for (float &weight : m_vWeights)
-            weight = random::U<float>(-1, 1);
+            weight = random::U<float>(-0.5, 0.5);
     }
 
     void CNeuron::setWeight(size_t index, float weight)

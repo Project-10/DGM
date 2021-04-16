@@ -1,15 +1,15 @@
 file(GLOB DNN_INCLUDE	${PROJECT_SOURCE_DIR}/include/DNN.h)
 file(GLOB DNN_SOURCES	"*.cpp")
 file(GLOB DNN_HEADERS	"*.h")
-file(GLOB DNN_SOURCES	${DNN_SOURCES} "./Trackball Camera/*.cpp")
-file(GLOB DNN_HEADERS	${DNN_HEADERS} "./Trackball Camera/*.h")
-
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
 source_group("Include" FILES ${DNN_INCLUDE})
 source_group("" FILES ${DNN_SOURCES} ${DNN_HEADERS}) 
 source_group("Source Files\\Neuron" FILES	"Neuron.h" "Neuron.cpp")
+source_group("Source Files\\Neuron Layer" FILES	"NeuronLayer.h" "NeuronLayer.cpp")
+source_group("Source Files\\Neuron Layer Mat" FILES	"NeuronLayerMat.h" "NeuronLayerMat.cpp")
+source_group("Source Files\\Perceptron" FILES	"Perceptron.h")
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include

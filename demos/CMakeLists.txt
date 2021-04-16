@@ -71,4 +71,4 @@ create_demo(Demo_Vis "Demo Visualization" "DGM;VIS")
 create_demo(Demo_Stereo "Demo Stereo" "DGM")
 
 # ================================================ DEMO ICR =================================================
-create_demo(Demo_ICR "Demo ICR" "DGM;DNN")
+create_demo(Demo_ICR "Demo ICR" "DGM;DNN;VIS")
