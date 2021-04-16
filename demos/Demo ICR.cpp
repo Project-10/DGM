@@ -32,10 +32,9 @@ std::vector<byte> readGroundTruth(const std::string& fileName)
 
 int main()
 {
-	const word 		nStates					= 10; 	// 10 digits
-	const size_t    numNeuronsInputLayer   	= 784;
+	const byte		nStates					= 10;				// 10 digits (number of output nodes)
+	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
     const size_t    numNeuronsHiddenLayer	= 60;
-    const size_t    numNeuronsOutputLayer  	= 10;
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 
@@ -45,10 +44,10 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-    dgm::dnn::CNeuronLayer layerInput(numNeuronsInputLayer, numNeuronsHiddenLayer);
-    dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, numNeuronsOutputLayer);
-    dgm::dnn::CNeuronLayer layerOutput(numNeuronsOutputLayer, 0);
-
+    dgm::dnn::CNeuronLayerMat layerInput(nFeatures, numNeuronsHiddenLayer);
+    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
+    dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
+ 
     layerInput.generateRandomWeights();
 	layerHidden.generateRandomWeights();
 
@@ -74,13 +73,13 @@ int main()
 
 		Mat outputValues = layerOutput.getValues();
 
-        std::vector<float> vResultErrorRate(numNeuronsOutputLayer);
+        std::vector<float> vResultErrorRate(nStates);
 		for(size_t i = 0; i < vResultErrorRate.size(); i++) {
 			vResultErrorRate[i] = (trainGT[s] == i) ? 1 : 0;
 			vResultErrorRate[i] -= outputValues.at<float>(static_cast<int>(i), 0);
 		}
 
-        dgm::dnn::CNeuronLayer::backPropagate(layerInput, layerHidden, layerOutput, vResultErrorRate, 0.1f);
+        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, vResultErrorRate, 0.1f);
     } // samples
 	dgm::Timer::stop();
 
