@@ -45,23 +45,37 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
 	{
-		Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
-		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1);
+        //  Mat layerB_weights = layerB.getWeights(); // 60 x 10
+        //  Mat layerB_values = layerB.getValues();   // 60 x 1
+        //  Mat layerA_weights = layerA.getValues();  // 784 x 1
 
-		for (int i = 0; i < layerB.getNumNeurons(); i++) {
-			float nodeVal = 0;
-			for (int j = 0; j < layerC.getNumNeurons(); j++) {
-				nodeVal += layerB.m_weights.at<float>(i, j) * resultErrorRate.at<float>(j, 0);
-				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_values.at<float>(i, 0);
-			}
+        Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
+        Mat DeltaVjk(layerA.getNumNeurons(), layerB.getNumNeurons(), CV_32FC1);
+        Mat DeltaIn_j(layerB.getNumNeurons(), 1, CV_32FC1);
+        Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1);
+        
+        DeltaWjk  = learningRate * layerB.getValues() * resultErrorRate.t(); // 60 x 10
+        DeltaIn_j = layerB.getWeights() * resultErrorRate;
+         
+        for(int i=0; i < layerB.getNumNeurons(); i++){
             float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
-			DeltaJ.at<float>(i, 0) = nodeVal * sigmoid * (1 - sigmoid);
-		}
-
-		for (int i = 0; i < layerA.getNumNeurons(); i++) 
-			for (int j = 0; j < layerB.getNumNeurons(); j++) 
-				layerA.m_weights.at<float>(i, j) += learningRate * DeltaJ.at<float>(j, 0) * layerA.m_values.at<float>(i, 0);;
-
-		layerB.m_weights += DeltaWjk;
+            DeltaJ.at<float>(i,0) = DeltaIn_j.at<float>(i,0) * sigmoid * (1-sigmoid);
+        }
+        
+        DeltaVjk = learningRate * layerA.getValues() * DeltaJ.t();
+        
+        for(int i = 0; i < layerA.getNumNeurons(); i++) {
+            for(int j = 0; j < layerB.getNumNeurons(); j++) {
+                float oldWeight = layerA.m_weights.at<float>(i, j);
+                layerA.m_weights.at<float>(i, j) = oldWeight + DeltaVjk.at<float>(i,j);
+            }
+        }
+        
+        for(int i = 0; i < layerB.getNumNeurons(); i++) {
+            for(int j = 0; j < layerC.getNumNeurons(); j++) {
+                float oldWeight = layerB.m_weights.at<float>(i, j);
+                layerB.m_weights.at<float>(i, j) = oldWeight + DeltaWjk.at<float>(i,j);
+            }
+        }
 	}
 }}
