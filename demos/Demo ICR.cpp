@@ -56,7 +56,6 @@ int main()
 	dgm::Timer::start("Training...");
 	auto	trainGT = readGroundTruth(dataPath + "train_gt.txt");
 	for(int s = 0; s < 4000; s++) {
-
 		std::stringstream ss;
 		ss << dataPath << "train/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
 		std::string fileName = samples::findFile(ss.str());
