@@ -33,8 +33,8 @@ int main()
 {
 	const byte		nStates					= 10;				// 10 digits (number of output nodes)
 	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
-    const size_t    numNeuronsHiddenLayer	= 60;
-    const size_t	numTrainSamples  		= 4000;
+  const size_t    numNeuronsHiddenLayer	= 60;
+  const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 
 #ifdef WIN32
@@ -43,12 +43,12 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-    dgm::dnn::CNeuronLayerMat layerInput(nFeatures, numNeuronsHiddenLayer);
-    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
-    dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
+  dgm::dnn::CNeuronLayerMat layerInput(nFeatures, numNeuronsHiddenLayer);
+  dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
+  dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
 
-    layerInput.generateRandomWeights();
-	layerHidden.generateRandomWeights();
+  layerInput.generateRandomWeights();
+  layerHidden.generateRandomWeights();
 
 	Mat fv;
 
@@ -66,17 +66,17 @@ int main()
 
 		layerInput.setValues(fv);
         
-        layerHidden.dotProd(layerInput);
-        layerOutput.dotProd(layerHidden);
+    layerHidden.dotProd(layerInput);
+    layerOutput.dotProd(layerHidden);
 
 		Mat outputValues = layerOutput.getValues();
 
-        Mat resultErrorRate(nStates, 1, CV_32FC1);
+    Mat resultErrorRate(nStates, 1, CV_32FC1);
 		for(int i = 0; i < resultErrorRate.rows; i++)
 			resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
 		resultErrorRate -= outputValues;
 
-        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
+    dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
     } // samples
 	dgm::Timer::stop();
 
@@ -95,13 +95,13 @@ int main()
 
 		layerInput.setValues(fv);
         
-        layerHidden.dotProd(layerInput);
-        layerOutput.dotProd(layerHidden);
+    layerHidden.dotProd(layerInput);
+    layerOutput.dotProd(layerHidden);
 
-        std::vector<double>pot = layerOutput.getValues();
+    std::vector<double>pot = layerOutput.getValues();
 
-        auto maxAccuracy = max_element(std::begin(pot), std::end(pot));
-        int number = std::distance(pot.begin(), maxAccuracy);
+    auto maxAccuracy = max_element(std::begin(pot), std::end(pot));
+    int number = std::distance(pot.begin(), maxAccuracy);
 
 		confMat.estimate(number, testGT[s]);
         //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
