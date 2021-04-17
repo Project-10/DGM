@@ -26,12 +26,13 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
 	{
-		for (int y = 0; y < m_values.rows; y++) {
-			float value = 0;
-			for (int x = 0; x < layer.m_values.rows; x++)
-				value += layer.m_weights.at<float>(x, y) * layer.m_values.at<float>(x, 0);
-			m_values.at<float>(y, 0) = sigmoidFunction(value);
-		}
+        Mat AA = layer.getValues();
+        Mat BB = layer.getWeights();
+        Mat res = BB.t() * AA;
+        for(int i=0; i < m_values.rows; i++){
+            float x = sigmoidFunction(res.at<float>(0,i));
+            m_values.at<float>(0,i) = x;
+        }
 	}
 
 	void CNeuronLayerMat::setValues(const Mat& values)
@@ -53,7 +54,7 @@ namespace DirectGraphicalModels { namespace dnn
 				nodeVal += layerB.m_weights.at<float>(i, j) * resultErrorRate.at<float>(j, 0);
 				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_values.at<float>(i, 0);
 			}
-			float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
+            float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
 			DeltaJ.at<float>(i, 0) = nodeVal * sigmoid * (1 - sigmoid);
 		}
 

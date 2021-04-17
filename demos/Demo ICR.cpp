@@ -6,7 +6,6 @@
 
 namespace dgm = DirectGraphicalModels;
 
-
 /**
  * Reads the digits numerical value in a decimal notation
  *
@@ -47,7 +46,7 @@ int main()
     dgm::dnn::CNeuronLayerMat layerInput(nFeatures, numNeuronsHiddenLayer);
     dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
     dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
- 
+
     layerInput.generateRandomWeights();
 	layerHidden.generateRandomWeights();
 
@@ -56,7 +55,7 @@ int main()
 	// ==================== TRAINING DIGITS ====================
 	dgm::Timer::start("Training...");
 	auto	trainGT = readGroundTruth(dataPath + "train_gt.txt");
-	for(int s = 0; s < numTrainSamples; s++) {
+	for(int s = 0; s < 4000; s++) {
 
 		std::stringstream ss;
 		ss << dataPath << "train/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
@@ -67,14 +66,14 @@ int main()
 		fv = Scalar(1.0f) - fv;
 
 		layerInput.setValues(fv);
-
-		layerHidden.dotProd(layerInput);
-		layerOutput.dotProd(layerHidden);
+        
+        layerHidden.dotProd(layerInput);
+        layerOutput.dotProd(layerHidden);
 
 		Mat outputValues = layerOutput.getValues();
 
         Mat resultErrorRate(nStates, 1, CV_32FC1);
-		for(int i = 0; i < resultErrorRate.rows; i++) 
+		for(int i = 0; i < resultErrorRate.rows; i++)
 			resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
 		resultErrorRate -= outputValues;
 
@@ -96,28 +95,28 @@ int main()
 		fv = Scalar(1.0f) - fv;
 
 		layerInput.setValues(fv);
-		layerHidden.dotProd(layerInput);
-		layerOutput.dotProd(layerHidden);
         
+        layerHidden.dotProd(layerInput);
+        layerOutput.dotProd(layerHidden);
+
         std::vector<double>pot = layerOutput.getValues();
 
         auto maxAccuracy = max_element(std::begin(pot), std::end(pot));
         int number = std::distance(pot.begin(), maxAccuracy);
-        
+
 		confMat.estimate(number, testGT[s]);
         //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
 	} // samples
 	dgm::Timer::stop();
 	printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
-	
+
 	// Confusion matrix
 	dgm::vis::CMarker marker;
 	Mat cMat    = confMat.getConfusionMatrix();
 	Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
 	imshow("Confusion Matrix", cMatImg);
-	
+
 	waitKey();
-	
-	
+
 	return 0;
 }
