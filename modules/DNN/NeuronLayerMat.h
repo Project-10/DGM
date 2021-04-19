@@ -29,7 +29,6 @@ namespace DirectGraphicalModels {
 			DllExport void	setValues(const Mat& values);
 			DllExport Mat   getValues(void) const { return m_values; }
 			DllExport int   getNumNeurons(void) const { return m_values.rows; }
-            DllExport Mat   getWeights(void) const { return m_weights; }
 
 
 		private:
