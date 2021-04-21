@@ -19,7 +19,6 @@ namespace DirectGraphicalModels {
 
 			DllExport void      generateRandomWeights(void);
 			DllExport void      dotProd(const CNeuronLayerMat& layer);
-            
 
 			// TODO: move this method to a proper place
 			DllExport static void      backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
