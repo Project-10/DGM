@@ -55,43 +55,40 @@ namespace DirectGraphicalModels { namespace dnn
 	{	
 		for (size_t i = 0; i < m_vpNeurons.size(); i++) {
 			float value = 0;
-			
-			for (const auto& n : layer.m_vpNeurons)
-				value += n->getWeight(i) * n->getValue();
-
+			for (size_t j = 0; j < layer.getNumNeurons(); j++)
+				value += m_vpNeurons[i]->getWeight(j) * layer.m_vpNeurons[j]->getValue();
 			value = sigmoidFunction(value);
-			
 			m_vpNeurons[i]->setValue(value);
 		}
 	}
 
 	void CNeuronLayer::backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate)
 	{
-		Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
+		Mat DeltaWjk(layerC.getNumNeurons(), layerB.getNumNeurons(), CV_32FC1);
 		std::vector<float> DeltaJ(layerB.getNumNeurons());
 
-		for (size_t i = 0; i < layerB.getNumNeurons(); i++) {
+		for (size_t j = 0; j < layerB.getNumNeurons(); j++) {
 			float nodeVal = 0;
-			for (size_t j = 0; j < layerC.getNumNeurons(); j++) {
-				nodeVal += layerB.m_vpNeurons[i]->getWeight(j) * resultErrorRate.at<float>(j, 0);
-				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_vpNeurons[i]->getValue();
+			for (size_t i = 0; i < layerC.getNumNeurons(); i++) {
+				nodeVal += layerC.m_vpNeurons[i]->getWeight(j) * resultErrorRate.at<float>(i, 0);
+				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(i, 0) * layerB.m_vpNeurons[j]->getValue();
 			}
-			float sigmoid = sigmoidFunction(layerB.m_vpNeurons[i]->getValue());
-			DeltaJ[i] = nodeVal * sigmoid * (1 - sigmoid);
-		}
-
-		for (size_t i = 0; i < layerA.getNumNeurons(); i++) {
-			for (size_t j = 0; j < layerB.getNumNeurons(); j++) {
-				float Delta = learningRate * DeltaJ[j] * layerA.m_vpNeurons[i]->getValue();
-				float oldWeight = layerA.m_vpNeurons[i]->getWeight(j);
-				layerA.m_vpNeurons[i]->setWeight(j, oldWeight + Delta);
-			}
+			float sigmoid = sigmoidFunction(layerB.m_vpNeurons[j]->getValue());
+			DeltaJ[j] = nodeVal * sigmoid * ( 1 - sigmoid);
 		}
 
 		for (size_t i = 0; i < layerB.getNumNeurons(); i++) {
-			for (size_t j = 0; j < layerC.getNumNeurons(); j++) {
+			for (size_t j = 0; j < layerA.getNumNeurons(); j++) {
+				float Delta = learningRate * DeltaJ[i] * layerA.m_vpNeurons[j]->getValue();
 				float oldWeight = layerB.m_vpNeurons[i]->getWeight(j);
-				layerB.m_vpNeurons[i]->setWeight(j, oldWeight + DeltaWjk.at<float>(i, j));
+				layerB.m_vpNeurons[i]->setWeight(j, oldWeight + Delta);
+			}
+		}
+
+		for (size_t i = 0; i < layerC.getNumNeurons(); i++) {
+			for (size_t j = 0; j < layerB.getNumNeurons(); j++) {
+				float oldWeight = layerC.m_vpNeurons[i]->getWeight(j);
+				layerC.m_vpNeurons[i]->setWeight(j, oldWeight + DeltaWjk.at<float>(i, j));
 			}
 		}
 	}

@@ -5,8 +5,8 @@
 namespace DirectGraphicalModels { namespace dnn
 {
     // Constructor
-    CNeuron::CNeuron(size_t size, float value) : m_value(value) {
-        m_vWeights.resize(size);
+    CNeuron::CNeuron(size_t numConnections) {
+        m_vWeights.resize(numConnections);
     }
 
     void CNeuron::generateRandomWeights(void)

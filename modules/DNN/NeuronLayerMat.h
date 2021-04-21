@@ -8,9 +8,15 @@ namespace DirectGraphicalModels {
 		class CNeuronLayerMat
 		{
 		public:
+			/**
+			 * @brief Constructor
+			 * @param numNeurons The number of neurons in the layer
+			 * @param numConnections The number of incoming connections for every neuron
+			 * @note In feed-forward networks \b numConnections is usually equal to the number of neurons on the previouse layer
+			 */
 			DllExport CNeuronLayerMat(size_t numNeurons, size_t numConnections)
 				: m_values(numNeurons, 1, CV_32FC1)
-				, m_weights(numNeurons, numConnections, CV_32FC1)
+				, m_weights(numConnections, numNeurons, CV_32FC1)
 			{}
 			DllExport CNeuronLayerMat(const CNeuronLayerMat&) = delete;
 			DllExport ~CNeuronLayerMat(void) = default;
