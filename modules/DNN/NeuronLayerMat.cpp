@@ -14,7 +14,22 @@ namespace DirectGraphicalModels { namespace dnn
 		 */
 		float sigmoidFunction(float x)
 		{
-			return 1.0f / (1.0f + expf(-x));
+            return 1.0f / (1.0f + expf(-x));
+		}
+	
+		float sigmoidFunction_derivative(float x)
+		{
+			float s = sigmoidFunction(x);
+			return s * (1 - s);
+		}
+	
+		void sigmoidFunction(Mat& X)
+		{
+			for (int y = 0; y < X.rows; y++){
+				float* pX = X.ptr<float>(y);
+				for (int x = 0; x < X.cols; x++)
+					pX[x] = sigmoidFunction(pX[x]);
+			}
 		}
 	}
 	
@@ -26,12 +41,8 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
 	{
-		for (int y = 0; y < m_values.rows; y++) {
-			float value = 0;
-			for (int x = 0; x < layer.m_values.rows; x++)
-				value += layer.m_weights.at<float>(x, y) * layer.m_values.at<float>(x, 0);
-			m_values.at<float>(y, 0) = sigmoidFunction(value);
-		}
+        gemm(layer.m_weights.t(), layer.m_values, 1, Mat(), 0, m_values); //  this->m_values = layer.m_weights * layer.m_values;
+		sigmoidFunction(m_values);
 	}
 
 	void CNeuronLayerMat::setValues(const Mat& values)
@@ -44,23 +55,29 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
 	{
-		Mat DeltaWjk(layerB.getNumNeurons(), layerC.getNumNeurons(), CV_32FC1);
-		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1);
+		Mat DeltaIn_j; // = layerB.getWeights() x resultErrorRate;
+		gemm(layerB.m_weights, resultErrorRate, 1, Mat(), 0, DeltaIn_j);
 
-		for (int i = 0; i < layerB.getNumNeurons(); i++) {
-			float nodeVal = 0;
-			for (int j = 0; j < layerC.getNumNeurons(); j++) {
-				nodeVal += layerB.m_weights.at<float>(i, j) * resultErrorRate.at<float>(j, 0);
-				DeltaWjk.at<float>(i, j) = learningRate * resultErrorRate.at<float>(j, 0) * layerB.m_values.at<float>(i, 0);
-			}
-			float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
-			DeltaJ.at<float>(i, 0) = nodeVal * sigmoid * (1 - sigmoid);
+		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1); // 60 x 1
+		for(int i=0; i < layerB.getNumNeurons(); i++){
+			DeltaJ.at<float>(i,0) = DeltaIn_j.at<float>(i,0) * sigmoidFunction_derivative(layerB.m_values.at<float>(i, 0));
 		}
+		
+//		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1);
+//		for (int i = 0; i < layerB.getNumNeurons(); i++) {
+//			float nodeVal = 0;
+//			for (int j = 0; j < layerC.getNumNeurons(); j++)
+//				nodeVal += layerB.m_weights.at<float>(i, j) * resultErrorRate.at<float>(j, 0);
+//
+//			float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
+//			DeltaJ.at<float>(i, 0) = nodeVal * sigmoidFunction_derivative(sigmoid);
+//		}
 
-		for (int i = 0; i < layerA.getNumNeurons(); i++) 
-			for (int j = 0; j < layerB.getNumNeurons(); j++) 
-				layerA.m_weights.at<float>(i, j) += learningRate * DeltaJ.at<float>(j, 0) * layerA.m_values.at<float>(i, 0);;
+		// layerB.m_weights += learningRate * layerB.m_values x resultErrorRate.t()
+		gemm(layerB.m_values, resultErrorRate.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
+		
+		//layerA.m_weights += learningRate * layerA.m_values x DeltaJ.t();
+		gemm(layerA.m_values, DeltaJ.t(), learningRate, layerA.m_weights, 1, layerA.m_weights);
 
-		layerB.m_weights += DeltaWjk;
 	}
 }}
