@@ -16,6 +16,15 @@ namespace DirectGraphicalModels { namespace dnn
 		{
             return 1.0f / (1.0f + expf(-x));
 		}
+	
+		void sigmoidFunction(Mat& X)
+		{
+			for (int y = 0; y < X.rows; y++){
+				float* pX = X.ptr<float>(y);
+				for (int x = 0; x < X.cols; x++)
+					pX[x] = sigmoidFunction(pX[x]);
+			}
+		}
 	}
 	
 	void CNeuronLayerMat::generateRandomWeights(void)
@@ -26,15 +35,8 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
 	{
-        Mat AA = layer.m_values;
-        Mat BB = layer.m_weights;
-        Mat res;
-        gemm(BB.t(), AA, 1, Mat(), 0, res); //  Mat res = BB.t() * AA;
-        
-        for(int i=0; i < m_values.rows; i++){
-            float x = sigmoidFunction(res.at<float>(0,i));
-            m_values.at<float>(0,i) = x;
-        }
+        gemm(layer.m_weights.t(), layer.m_values, 1, Mat(), 0, m_values); //  this->m_values = layer.m_weights * layer.m_values;
+		sigmoidFunction(m_values);
 	}
 
 	void CNeuronLayerMat::setValues(const Mat& values)
