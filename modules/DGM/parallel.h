@@ -193,7 +193,7 @@ namespace DirectGraphicalModels { namespace parallel {
 					while (m.at<T>(_begin, x) < pivot) _begin++;
 					while (m.at<T>(_end,   x) > pivot) _end--;
 					if (_begin <= _end) {
-						Swap(m.row(_begin), m.row(_end));
+						Swap(lvalue_cast(m.row(_begin)), lvalue_cast(m.row(_end)));
 						_begin++;
 						_end--;
 					}
