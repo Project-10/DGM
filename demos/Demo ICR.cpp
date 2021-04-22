@@ -44,9 +44,9 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-    dgm::dnn::CNeuronLayer layerInput(nFeatures, 0);
-    dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, nFeatures);
-    dgm::dnn::CNeuronLayer layerOutput(nStates, numNeuronsHiddenLayer);
+    dgm::dnn::CNeuronLayerMat layerInput(nFeatures, 0);
+    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nFeatures);
+    dgm::dnn::CNeuronLayerMat layerOutput(nStates, numNeuronsHiddenLayer);
  
 	layerHidden.generateRandomWeights();
 	layerOutput.generateRandomWeights();
@@ -78,7 +78,7 @@ int main()
 			resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
 		resultErrorRate -= outputValues;
 
-        dgm::dnn::CNeuronLayer::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
+        dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
     } // samples
 	dgm::Timer::stop();
 

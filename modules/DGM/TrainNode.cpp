@@ -51,7 +51,7 @@ namespace DirectGraphicalModels
 		DGM_VECTORWISE1<CTrainNode, &CTrainNode::addFeatureVec>(*this, featureVectors, gt);
 	}
 
-	Mat	CTrainNode::getNodePotentials(const Mat &featureVectors, const Mat &weights, float Z) const
+	Mat	CTrainNode::getNodePotentials(const Mat& featureVectors, const Mat& weights, float Z) const
 	{
 		// Assertions
 		DGM_ASSERT_MSG(featureVectors.channels() == getNumFeatures(), "Number of features in the <featureVectors> (%d) does not correspond to the specified (%d)", featureVectors.channels(), getNumFeatures());
@@ -62,18 +62,18 @@ namespace DirectGraphicalModels
 		}
 
 		Mat res(featureVectors.size(), CV_32FC(m_nStates));
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, res.rows, [&] (int y) {
-			Mat pot;
-			Mat vec(getNumFeatures(), 1, CV_8UC1);
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, res.rows), [&](const Range& range) {
 #else
+		const Range range(0, res.rows);
+#endif
 		Mat pot;
 		Mat vec(getNumFeatures(), 1, CV_8UC1);
-		for (int y = 0; y < res.rows; y++) {
-#endif
-			const byte  *pFv = featureVectors.ptr<byte>(y);
-			const float *pW = weights.empty() ? NULL : weights.ptr<float>(y);
-			float		*pRes = res.ptr<float>(y);
+
+		for (int y =  range.start; y < range.end; y++) {
+			const byte* pFv = featureVectors.ptr<byte>(y);
+			const float* pW = weights.empty() ? NULL : weights.ptr<float>(y);
+			float* pRes = res.ptr<float>(y);
 			for (int x = 0; x < res.cols; x++) {
 				float weight = pW ? pW[x] : 1.0f;
 				for (int f = 0; f < getNumFeatures(); f++) vec.at<byte>(f, 0) = pFv[getNumFeatures() * x + f];
@@ -81,8 +81,8 @@ namespace DirectGraphicalModels
 				for (int s = 0; s < m_nStates; s++) pRes[m_nStates * x + s] = pot.at<float>(s, 0);
 			} // x
 		} // y	
-#ifdef ENABLE_PPL
-		);
+#ifdef ENABLE_PDP
+		});
 #endif
 
 		return res;
@@ -98,15 +98,14 @@ namespace DirectGraphicalModels
 		}
 
 		Mat res(featureVectors[0].size(), CV_32FC(m_nStates));
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, res.rows, [&](int y) {
-			Mat pot;
-			Mat vec(getNumFeatures(), 1, CV_8UC1);
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, res.rows), [&](const Range& range) {
 #else
+		const Range range(0, res.rows);
+#endif
 		Mat pot;
 		Mat vec(getNumFeatures(), 1, CV_8UC1);
-		for (int y = 0; y < res.rows; y++) {
-#endif
+		for (int y = range.start; y < range.end; y++) {
 			const byte  **pFv = new const byte *[getNumFeatures()];
 			for (word f = 0; f < getNumFeatures(); f++) pFv[f] = featureVectors[f].ptr<byte>(y);
 			const float *pW = weights.empty() ? NULL : weights.ptr<float>(y);
@@ -119,8 +118,8 @@ namespace DirectGraphicalModels
 			} // x
 			delete[] pFv;
 		} // y	
-#ifdef ENABLE_PPL
-		);
+#ifdef ENABLE_PDP
+		});
 #endif
 
 		return res;

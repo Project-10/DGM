@@ -36,21 +36,22 @@ namespace DirectGraphicalModels {
 	{
 		m_pLattice->compute(src, dst);				// dst = Lattice.compute(src)
 
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, dst.rows, [&](int n) {
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, dst.rows), [&](const Range& range) {
 #else
-		for (int n = 0; n < dst.rows; n++) {	// nodes
+		const Range range(0, dst.rows); 
 #endif
+		for (int n = range.start; n < range.end; n++) {	// nodes
 			if (m_function) m_function(dst.row(n), lvalue_cast(dst.row(n)));		// With the SemiMetric function
 
 			// dst.row(n) *= m_weight * m_norm.at<float>(n, 0);
 			// Using expressive notation for sake of efficiency
-			float*	pDst = dst.ptr<float>(n);
+			float* pDst = dst.ptr<float>(n);
 			float	k = m_weight * m_norm.at<float>(n, 0);
 			for (int s = 0; s < dst.cols; s++) pDst[s] *= k;
 		}
-#ifdef ENABLE_PPL
-		);
+#ifdef ENABLE_PDP
+		});
 #endif
 		exp(dst, dst);
 	}

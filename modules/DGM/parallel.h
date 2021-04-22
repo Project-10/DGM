@@ -54,7 +54,7 @@ namespace DirectGraphicalModels { namespace parallel {
 			r.synchronize();
 		}
 #endif
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 		inline void ppl_gemm(const Mat &A, const Mat &B, float alpha, Mat &res)
 		{
 			DGM_ASSERT(A.cols == B.rows);
@@ -63,16 +63,18 @@ namespace DirectGraphicalModels { namespace parallel {
 			DGM_ASSERT(res.cols == B.cols);
 
 			const Mat _B = B.t();
-			concurrency::parallel_for(0, res.rows, [&](int y) {
-				float * pRes = res.ptr<float>(y);
-				const float * pA = A.ptr<float>(y);
-				for (int x = 0; x < res.cols; x++) {
-					const float * pB = _B.ptr<float>(x);
-					float sum = 0.0f;
-					for (int k = 0; k < A.cols; k++)
-						sum += pA[k] * pB[k];
-					pRes[x] = alpha * sum;
-				}
+			parallel_for_(Range(0, res.rows), [&](const Range& range) {
+				for (int y = range.start; y < range.end; y++) {
+					float* pRes = res.ptr<float>(y);
+					const float* pA = A.ptr<float>(y);
+					for (int x = 0; x < res.cols; x++) {
+						const float* pB = _B.ptr<float>(x);
+						float sum = 0.0f;
+						for (int k = 0; k < A.cols; k++)
+							sum += pA[k] * pB[k];
+						pRes[x] = alpha * sum;
+					} // x
+				} // y
 			});
 		}
 
@@ -84,17 +86,19 @@ namespace DirectGraphicalModels { namespace parallel {
 			DGM_ASSERT(res.cols == B.cols && res.cols == C.cols);
 
 			const Mat _B = B.t();
-			concurrency::parallel_for(0, res.rows, [&](int y) {
-				float * pRes = res.ptr<float>(y);
-				const float * pA = A.ptr<float>(y);
-				const float * pC = C.ptr<float>(y);
-				for (int x = 0; x < res.cols; x++) {
-					const float * pB = _B.ptr<float>(x);
-					float sum = 0.0f;
-					for (int k = 0; k < A.cols; k++)
-						sum += pA[k] * pB[k];
-					pRes[x] = alpha * sum + beta * pC[x];
-				}
+			parallel_for_(Range(0, res.rows), [&](const Range& range) {
+				for (int y = range.start; y < range.end; y++) {
+					float* pRes = res.ptr<float>(y);
+					const float* pA = A.ptr<float>(y);
+					const float* pC = C.ptr<float>(y);
+					for (int x = 0; x < res.cols; x++) {
+						const float* pB = _B.ptr<float>(x);
+						float sum = 0.0f;
+						for (int k = 0; k < A.cols; k++)
+							sum += pA[k] * pB[k];
+						pRes[x] = alpha * sum + beta * pC[x];
+					} // x
+				} // y
 			});
 		}
 #endif 
@@ -115,7 +119,7 @@ namespace DirectGraphicalModels { namespace parallel {
 		if (C.empty()) impl::amp_gemm(A, B, alpha, res);
 		else impl::amp_gemm(A, B, alpha, C, beta, res);
 #else 
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 		if (C.empty()) impl::ppl_gemm(A, B, alpha, res);
 		else impl::ppl_gemm(A, B, alpha, C, beta, res);
 #else
@@ -174,7 +178,7 @@ namespace DirectGraphicalModels { namespace parallel {
 			}
 		}
 
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 		template <typename T>
 		inline void parallel_quick_sort(Mat &m, int x, int begin, int end, int threshold, int depthRemaining)
 		{
@@ -196,12 +200,10 @@ namespace DirectGraphicalModels { namespace parallel {
 				};
 
 				// recursion 
-				if (depthRemaining > 0)
-					concurrency::parallel_invoke(
-						[&, x, begin, _end] { if (begin < _end)	parallel_quick_sort<T>(m, x, begin, _end, threshold, depthRemaining - 1); },
-						[&, x, end, _begin] { if (_begin < end)	parallel_quick_sort<T>(m, x, _begin, end, threshold, depthRemaining - 1); }
-				);
-				else {
+				if (depthRemaining > 0) {
+					if (begin < _end)	parallel_quick_sort<T>(m, x, begin, _end, threshold, depthRemaining - 1);
+					if (_begin < end)	parallel_quick_sort<T>(m, x, _begin, end, threshold, depthRemaining - 1);
+				} else {
 					if (begin < _end)	sequential_quick_sort<T>(m, x, begin, _end, threshold);
 					if (_begin < end)	sequential_quick_sort<T>(m, x, _begin, end, threshold);
 				}
@@ -222,9 +224,8 @@ namespace DirectGraphicalModels { namespace parallel {
 	DllExport inline void sortRows(Mat &m, int x)
 	{
 		DGM_ASSERT(x < m.cols);
-#ifdef ENABLE_PPL
-		const int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
-		parallel_quick_sort<T>(m, x, 0, m.rows - 1, 200, static_cast<int>(log2f(float(nCores))) + 4);
+#ifdef ENABLE_PDP
+		parallel_quick_sort<T>(m, x, 0, m.rows - 1, 200, 16);
 #else 
 		sequential_quick_sort<T>(m, x, 0, m.rows - 1, 200);
 #endif
@@ -237,9 +238,8 @@ namespace DirectGraphicalModels { namespace parallel {
 			if (depth == m.cols) return;				// we are too deep
 			if (begin == end)    return;				// do not sort one element
 
-#ifdef ENABLE_PPL
-			const int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
-			parallel_quick_sort<T>(m, depth, begin, end, 200, static_cast<int>(log2f(float(nCores))) + 4);
+#ifdef ENABLE_PDP
+			parallel_quick_sort<T>(m, depth, begin, end, 200, 16);
 #else 
 			sequential_quick_sort<T>(m, depth, begin, end, 200);
 #endif
@@ -281,16 +281,12 @@ namespace DirectGraphicalModels { namespace parallel {
 	*/
 	DllExport inline void shuffleRows(Mat &m)
 	{
-#ifdef ENABLE_PPL
-		// int nCores = MAX(1, std::thread::hardware_concurrency());
-		int nCores = MAX(1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors());
-		int step = MAX(2, m.rows / (nCores * 10));
-		concurrency::parallel_for(0, m.rows, step, [step, &m](int S) {
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, m.rows), [&m](const Range& range) {
 			Mat tmp;
-			int last = MIN(S + step, m.rows);
-			for (int s = last - 1; s > S; s--) {									// s = [last - 1; S + 1]
-				dword r = DirectGraphicalModels::random::u<dword>(S, s);			// r = [S; s] = [S; S + 1] -> [S; last - 1]
-				if (r != s) Swap(m.row(s), m.row(r), tmp);
+			for (int s = range.end; s > range.start; s--) {								// s = [n - 1; 1]
+				dword r = DirectGraphicalModels::random::u<dword>(range.start, s);		// r = [S; s] = [S; S + 1] -> [S; last - 1]
+				if (r != s) Swap(lvalue_cast(m.row(s)), lvalue_cast(m.row(r)), tmp);
 			}
 		});
 #else	

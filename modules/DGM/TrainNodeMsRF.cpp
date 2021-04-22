@@ -4,7 +4,7 @@
 
 #include "sherwood/Sherwood.h"
 
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 #include "sherwood/ParallelForestTrainer.h"				// for parallle computing
 #endif
 
@@ -96,7 +96,7 @@ void CTrainNodeMsRF::train(bool doClean)
 	// Training
 	sw::Random random;
 	sw::ClassificationTrainingContext classificationContext(m_nStates, getNumFeatures());
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 	// Use this function with cautions - it is not verifiied!
 	m_pRF = sw::ParallelForestTrainer<sw::LinearFeatureResponse, sw::HistogramAggregator>::TrainForest(random, *m_pParams, classificationContext, *pData);
 #else
