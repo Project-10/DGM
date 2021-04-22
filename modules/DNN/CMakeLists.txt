@@ -9,7 +9,8 @@ source_group("" FILES ${DNN_SOURCES} ${DNN_HEADERS})
 source_group("Source Files\\Neuron" FILES	"Neuron.h" "Neuron.cpp")
 source_group("Source Files\\Neuron Layer" FILES	"NeuronLayer.h" "NeuronLayer.cpp")
 source_group("Source Files\\Neuron Layer Mat" FILES	"NeuronLayerMat.h" "NeuronLayerMat.cpp")
-source_group("Source Files\\Perceptron" FILES	"Perceptron.h")
+source_group("Source Files\\Neuron Layer Bias" FILES	"NeuronLayerBias.h" "NeuronLayerBias.cpp")
+source_group("Source Files\\Perceptron" FILES	"Perceptron.h" "Perceptron.cpp")
 
 # Properties -> C/C++ -> General -> Additional Include Directories
 include_directories(${PROJECT_SOURCE_DIR}/include
