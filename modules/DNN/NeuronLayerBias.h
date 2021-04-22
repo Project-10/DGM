@@ -16,7 +16,7 @@ namespace DirectGraphicalModels {
 			 */
 			DllExport CNeuronLayerBias(size_t numNeurons, size_t numConnections)
 				: m_values(numNeurons, 1, CV_32FC1)
-				, m_weights(numConnections, numNeurons, CV_32FC1)
+				, m_weights(numConnections + 1, numNeurons, CV_32FC1)
 			{}
 			DllExport CNeuronLayerBias(const CNeuronLayerBias&) = delete;
 			DllExport ~CNeuronLayerBias(void) = default;
@@ -24,10 +24,16 @@ namespace DirectGraphicalModels {
 			DllExport bool      operator=(const CNeuronLayerBias&) = delete;
 
 			DllExport void      generateRandomWeights(void);
+			/**
+			 * @note This method updates only the node values
+			 */
 			DllExport void      dotProd(const CNeuronLayerBias& layer);
 
-			// TODO: move this method to a proper place
-			DllExport static void      backPropagate(CNeuronLayerBias& layerA, CNeuronLayerBias& layerB, CNeuronLayerBias& layerC, const Mat& resultErrorRate, float learningRate);
+			/**
+			 * @note This method updates only weights of layerB and layerC
+			 * @todo move this method to a proper place
+			 */
+			DllExport static void backPropagate(const CNeuronLayerBias& layerA, CNeuronLayerBias& layerB, CNeuronLayerBias& layerC, const Mat& resultErrorRate, float learningRate);
 
 
 			// Accessors

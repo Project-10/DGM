@@ -38,14 +38,15 @@ namespace DirectGraphicalModels { namespace dnn
 		m_weights = random::U(m_weights.size(), m_weights.type(), -0.5f, 0.5f);
 	}
 
-
 	void CNeuronLayerBias::dotProd(const CNeuronLayerBias& layer)
 	{
 		// this->m_values = this->m_weights * layer.m_values;
-		parallel::gemm(m_weights.t(), layer.m_values, 1, Mat(), 0, m_values);
+		Mat temp(1, 1, CV_32FC1, Scalar(1));
+		temp.push_back(layer.m_values);
+		parallel::gemm(m_weights.t(), temp /*layer.m_values*/, 1, Mat(), 0, m_values);
 		sigmoidFunction(m_values);
 	}
-
+	
 	void CNeuronLayerBias::setValues(const Mat& values)
 	{
 		// Assertions
@@ -54,13 +55,13 @@ namespace DirectGraphicalModels { namespace dnn
 		values.copyTo(m_values);
 	}
 
-	void CNeuronLayerBias::backPropagate(CNeuronLayerBias& layerA, CNeuronLayerBias& layerB, CNeuronLayerBias& layerC, const Mat& resultErrorRate, float learningRate)
+	void CNeuronLayerBias::backPropagate(const CNeuronLayerBias& layerA, CNeuronLayerBias& layerB, CNeuronLayerBias& layerC, const Mat& resultErrorRate, float learningRate)
 	{
 		Mat DeltaIn_j; // = layerB.getWeights() x resultErrorRate;
 		parallel::gemm(layerC.m_weights, resultErrorRate, 1, Mat(), 0, DeltaIn_j);
 
 		Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1); // 60 x 1
-		for(int i=0; i < layerB.getNumNeurons(); i++){
+		for(int i = 0; i < layerB.getNumNeurons(); i++){
 			DeltaJ.at<float>(i,0) = DeltaIn_j.at<float>(i,0) * sigmoidFunction_derivative(layerB.m_values.at<float>(i, 0));
 		}
 		
@@ -73,13 +74,16 @@ namespace DirectGraphicalModels { namespace dnn
 //			float sigmoid = sigmoidFunction(layerB.m_values.at<float>(i, 0));
 //			DeltaJ.at<float>(i, 0) = nodeVal * sigmoidFunction_derivative(sigmoid);
 //		}
-
+		
 		// layerC.m_weights += learningRate * layerB.m_values x resultErrorRate.t()
-		parallel::gemm(layerB.m_values, resultErrorRate.t(), learningRate, layerC.m_weights, 1, layerC.m_weights);
+		Mat tempB(1, 1, CV_32FC1, Scalar(1));
+		tempB.push_back(layerB.m_values);
+		parallel::gemm(tempB /*layerB.m_values*/, resultErrorRate.t(), learningRate, layerC.m_weights, 1, layerC.m_weights);
 		
 		//layerB.m_weights += learningRate * layerA.m_values x DeltaJ.t();
-		parallel::gemm(layerA.m_values, DeltaJ.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
-
+		Mat tempA(1, 1, CV_32FC1, Scalar(1));
+		tempA.push_back(layerA.m_values);
+		parallel::gemm(tempA /*layerA.m_values*/, DeltaJ.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
 	}
 }}
 
