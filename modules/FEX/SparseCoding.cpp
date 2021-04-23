@@ -16,7 +16,7 @@ Mat CSparseCoding::get(const Mat &img, const Mat &D, SqNeighbourhood nbhd)
 	return res;
 }
 
-vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbhd)
+vec_mat_t CSparseCoding::get_v(const Mat& img, const Mat& D, SqNeighbourhood nbhd)
 {
 	DGM_ASSERT_MSG(!D.empty(), "The dictionary must me trained or loaded before using this function");
 
@@ -35,11 +35,12 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 	for (word w = 0; w < nWords; w++)
 		res[w] = Mat(img.size(), CV_8UC1, cv::Scalar(0));
 
-#ifdef ENABLE_PPL
-	concurrency::parallel_for(0, dataHeight, 1, [&](int y) {
+#ifdef ENABLE_PDP
+	parallel_for_(Range(0, dataHeight), [&](const Range& range) {
 #else
-	for (int y = 0; y < dataHeight; y++) {
+	const Range range(0, dataHeight);
 #endif
+	for (int y = range.start; y < range.end; y++) {
 		Mat _W, W;
 		for (int x = 0; x < dataWidth; x += 1) {
 			int s = y * dataWidth + x;										// sample index
@@ -53,12 +54,12 @@ vec_mat_t CSparseCoding::get_v(const Mat &img, const Mat &D, SqNeighbourhood nbh
 
 			calculate_W(sample, D, W, SC_LAMBDA, SC_EPSILON, 200, SC_LRATE_W);
 
-			for (word w = 0; w < nWords; w++) 
+			for (word w = 0; w < nWords; w++)
 				res[w].at<byte>(y + nbhd.upperGap, x + nbhd.leftGap) = linear_mapper<byte>(W.at<float>(0, w), -1.0f, 1.0f);
-		}
-	}
-#ifdef ENABLE_PPL
-	);
+		} // x
+	} // y
+#ifdef ENABLE_PDP
+	});
 #endif
 	return res;
 }

@@ -6,7 +6,7 @@ using namespace DirectGraphicalModels;
 
 TEST_F(CTests, parallel_gemm) 
 {
-#if defined(ENABLE_PPL) && defined(ENABLE_AMP)	
+#if defined(ENABLE_PDP) && defined(ENABLE_AMP)	
 	int width   = random::u<int>(10, 1000);
 	int height  = random::u<int>(10, 1000);
 	float alpha = random::U<float>(0.0f, 1.0f);

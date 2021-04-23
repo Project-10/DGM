@@ -120,7 +120,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, cv::Size imgSize) const
 	Mat res(imgSize, CV_32FC1, Scalar(0));
 	Mat cover(imgSize, CV_32FC1, Scalar(0));
 
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 	concurrency::parallel_for(0, dataHeight, blockSize, [&](int y) {
 #else
 	for (int y = 0; y < dataHeight; y += blockSize) {
@@ -147,7 +147,7 @@ Mat CSparseDictionary::TEST_decode(const Mat &X, cv::Size imgSize) const
 			cover(Rect(x, y, blockSize, blockSize)) += 1.0;
 		}
 	}
-#ifdef ENABLE_PPL
+#ifdef ENABLE_PDP
 	);
 #endif
 	res /= cover;

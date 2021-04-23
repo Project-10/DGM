@@ -1,5 +1,5 @@
 @echo off
-SET version=420
+SET version=451
 SET OpenCV_src=%OPENCVDIR%\build\x64\vc16\bin
 
 @echo on

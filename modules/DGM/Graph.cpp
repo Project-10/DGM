@@ -12,18 +12,15 @@ namespace DirectGraphicalModels
 		// Assertions
 		DGM_ASSERT_MSG(start_node + pots.rows <= getNumNodes(), "The given ranges exceed the number of nodes(%zu)", getNumNodes());
 
-#ifdef ENABLE_PPL
-		int size = pots.rows;
-		int rangeSize = size / (concurrency::GetProcessorCount() * 10);
-		rangeSize = MAX(1, rangeSize);
-		//printf("Processors: %d\n", concurrency::GetProcessorCount());
-		concurrency::parallel_for(0, size, rangeSize, [start_node, size, rangeSize, &pots, this](int i) {
-			for (int j = 0; (j < rangeSize) && (i + j < size); j++)
-				setNode(start_node + i + j, pots.row(i + j).t());
-		});
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, pots.rows), [start_node, &pots, this](const Range& range) {
 #else
-		for (int n = 0; n < pots.rows; n++)
+		const Range range(0, pots.rows);
+#endif
+		for (int n = range.start; n < range.end; n++)
 			setNode(start_node + n, pots.row(n).t());
+#ifdef ENABLE_PDP
+		});
 #endif
 	}
 
@@ -38,19 +35,15 @@ namespace DirectGraphicalModels
 		
 		transpose(pots, pots);
 
-#ifdef ENABLE_PPL
-		int size = pots.cols;
-		int rangeSize = size / (concurrency::GetProcessorCount() * 10);
-		rangeSize = MAX(1, rangeSize);
-		//printf("Processors: %d\n", concurrency::GetProcessorCount());
-		concurrency::parallel_for(0, size, rangeSize, [start_node, size, rangeSize, &pots, this](int i) {
-			Mat pot;
-			for (int j = 0; (j  < rangeSize) && (i + j < size); j++)
-				getNode(start_node + i + j, lvalue_cast(pots.col(i + j)));
-		});
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, pots.cols), [start_node, &pots, this](const Range& range) {
 #else
-		for (int n = 0; n < pots.cols; n++)
+		const Range range(0, pots.cols);
+#endif
+		for (int n = range.start; n < range.end; n++)
 			getNode(start_node + n, lvalue_cast(pots.col(n)));
+#ifdef ENABLE_PDP
+		});
 #endif
 		transpose(pots, pots);
 	}

@@ -1,6 +1,8 @@
 //
 // Created by ahambasan on 22.02.20.
+// Impelemented by sabyrrakhim06 on 19.04.21.
 //
+
 #include "ParamEstimationPSO.h"
 #include "random.h"
 
@@ -75,13 +77,13 @@ namespace DirectGraphicalModels {
 
 
         // Update vVelocity and vParams of every boid
-        for (Boid &boid : m_vBoids) {
-            float r1 = random::U<float>();
-            float r2 = random::U<float>();
+        for (Boid& boid : m_vBoids) {
             for (auto d = 0; d < m_vParams.size(); d++) {
-                boid.vVelocity[d] = m_w * boid.vVelocity[d] + m_c1 * r1 * (boid.vArgBest[d] - boid.vArgCurrent[d]) +
-                                    m_c2 * r2 * (m_vParams[d] - boid.vArgCurrent[d]);
-                boid.vArgCurrent[d] += boid.vVelocity[d];
+                // initialize random variables 
+                float r1 = random::U<float>();
+                float r2 = random::U<float>();
+                boid.vVelocity[d] = m_w * boid.vVelocity[d] + m_c1 * r1 * (boid.vArgBest[d] - boid.vArgCurrent[d]) + m_c2 * r2 * (m_vGlobalArgBest[d] - boid.vArgCurrent[d]);
+                boid.vArgCurrent[d] += boid.vVelocity[d];	        // I think velocity is the same as deltas in Powell. Maybe re-use the corresponding container
             }
             boid.valCurrent = std::make_pair(UNINITIALIZED, true);
         }
