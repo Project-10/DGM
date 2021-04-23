@@ -67,5 +67,8 @@ create_demo(Demo_ParamEstimation "Demo Param Estimation" "DGM;VIS")
 # =========================================== DEMO VISUALIZATION ============================================
 create_demo(Demo_Vis "Demo Visualization" "DGM;VIS")
 
-# ============================================== DEMO STEREO ===============================================
+# ============================================== DEMO STEREO ================================================
 create_demo(Demo_Stereo "Demo Stereo" "DGM")
+
+# ================================================ DEMO ICR =================================================
+create_demo(Demo_ICR "Demo ICR" "DGM;DNN;VIS")

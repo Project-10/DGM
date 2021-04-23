@@ -8,7 +8,6 @@
 #pragma once
 
 #include <assert.h>
-#include <ppl.h>
 
 #include <vector>
 #include <string>
@@ -138,54 +137,55 @@ namespace MicrosoftResearch { namespace Cambridge { namespace Sherwood
 				return;
 			}
 
-					
 			//for (int threadIndex = 0; threadIndex < maxThreads_; threadIndex++) {
-			concurrency::parallel_for(0, maxThreads_, [&](int threadIndex) {
-				ThreadLocalData &tl = threadLocalData_[threadIndex]; // shorthand
+			parallel_for_(Range(0, maxThreads_), [&](const Range& range) {
+				for (int threadIndex = range.start; threadIndex < range.end; threadIndex++) {
+					ThreadLocalData &tl = threadLocalData_[threadIndex]; // shorthand
 
-				tl.Clear();
+					tl.Clear();
 
-				// Iterate over candidate features
-				std::vector<float> thresholds;
-				int fMax = (int) std::ceil((double) parameters_.NumberOfCandidateFeatures / maxThreads_);
-				for (int f = 0; f < fMax; f++) {
-					F feature = trainingContext_.GetRandomFeature(tl.random_);
+					// Iterate over candidate features
+					std::vector<float> thresholds;
+					int fMax = (int) std::ceil((double) parameters_.NumberOfCandidateFeatures / maxThreads_);
+					for (int f = 0; f < fMax; f++) {
+						F feature = trainingContext_.GetRandomFeature(tl.random_);
 
-					// reset statistics
-					for (unsigned int b = 0; b < parameters_.NumberOfCandidateThresholdsPerFeature + 1; b++) tl.partitionStatistics_[b].Clear();
+						// reset statistics
+						for (unsigned int b = 0; b < parameters_.NumberOfCandidateThresholdsPerFeature + 1; b++) tl.partitionStatistics_[b].Clear();
 
-					// Compute feature response per samples at this node
-					for (DataPointIndex i = i0; i < i1; i++) tl.responses_[i] = feature.GetResponse(data_, indices_[i]);
+						// Compute feature response per samples at this node
+						for (DataPointIndex i = i0; i < i1; i++) tl.responses_[i] = feature.GetResponse(data_, indices_[i]);
 
-					int nThresholds;
-					if ((nThresholds = ChooseCandidateThresholds(tl.random_, &indices_[0], i0, i1, &tl.responses_[0], tl.thresholds)) == 0) continue;
+						int nThresholds;
+						if ((nThresholds = ChooseCandidateThresholds(tl.random_, &indices_[0], i0, i1, &tl.responses_[0], tl.thresholds)) == 0) continue;
 
-					// Aggregate statistics over sample partitions
-					for (DataPointIndex i = i0; i < i1; i++) {
-						int b = 0;
-						while (b < nThresholds && tl.responses_[i] >= tl.thresholds[b]) b++;
-						tl.partitionStatistics_[b].Aggregate(data_, indices_[i]);
-					}
-
-					for (int t = 0; t < nThresholds; t++) {
-						tl.leftChildStatistics_.Clear();
-						tl.rightChildStatistics_.Clear();
-						for (int p = 0; p < nThresholds + 1 /*i.e. nBins*/; p++) {
-							if (p <= t) tl.leftChildStatistics_.Aggregate(tl.partitionStatistics_[p]);
-							else		tl.rightChildStatistics_.Aggregate(tl.partitionStatistics_[p]);
+						// Aggregate statistics over sample partitions
+						for (DataPointIndex i = i0; i < i1; i++) {
+							int b = 0;
+							while (b < nThresholds && tl.responses_[i] >= tl.thresholds[b]) b++;
+							tl.partitionStatistics_[b].Aggregate(data_, indices_[i]);
 						}
 
-						// Compute gain over sample partitions
-						double gain = trainingContext_.ComputeInformationGain(tl.parentStatistics_, tl.leftChildStatistics_, tl.rightChildStatistics_);
+						for (int t = 0; t < nThresholds; t++) {
+							tl.leftChildStatistics_.Clear();
+							tl.rightChildStatistics_.Clear();
+							for (int p = 0; p < nThresholds + 1 /*i.e. nBins*/; p++) {
+								if (p <= t) tl.leftChildStatistics_.Aggregate(tl.partitionStatistics_[p]);
+								else		tl.rightChildStatistics_.Aggregate(tl.partitionStatistics_[p]);
+							}
 
-						if (gain >= tl.maxGain) {
-							tl.maxGain = gain;
-							tl.bestFeature = feature;
-							tl.bestThreshold = tl.thresholds[t];
-						}
-					} // t
-				} // f
-			}); // threadIndex
+							// Compute gain over sample partitions
+							double gain = trainingContext_.ComputeInformationGain(tl.parentStatistics_, tl.leftChildStatistics_, tl.rightChildStatistics_);
+
+							if (gain >= tl.maxGain) {
+								tl.maxGain = gain;
+								tl.bestFeature = feature;
+								tl.bestThreshold = tl.thresholds[t];
+							}
+						} // t
+					} // f
+				}// threadIndex
+			});
 					
 
 			// Now merge over threads.

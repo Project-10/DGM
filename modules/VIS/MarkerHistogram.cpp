@@ -22,14 +22,15 @@ Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 	rectangle(res, Point(margin.height, margin.height), Point(256 + margin.height, 256 + margin.height), CV_RGB(0, 0, 0), -1);
 
 	if (nFeatures == 2) {
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, 256, [&](int y) {
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, 256), [&](const Range& range) {
 #else
-		for (int y = 0; y < 256; y++) {
+		const Range range(0, 256);
 #endif
+		for (int y = range.start; y < range.end; y++) {
 			Mat fv(2, 1, CV_8UC1);
 			fv.at<byte>(1, 0) = static_cast<byte>(y);
-			Vec3b *pRes = res.ptr<Vec3b>(margin.height + 255 - y);
+			Vec3b* pRes = res.ptr<Vec3b>(margin.height + 255 - y);
 			for (int x = 0; x < 256; x++) {
 				fv.at<byte>(0, 0) = static_cast<byte>(x);
 				Mat pot = m_nodeTrainer.getNodePotentials(fv, 1.0f, Z);
@@ -41,8 +42,8 @@ Mat	CMarkerHistogram::drawClassificationMap2D(float Z) const
 				}
 			} // x
 		} // y
-#ifdef ENABLE_PPL
-		);
+#ifdef ENABLE_PDP
+		});
 #endif
 	}
 	else DGM_WARNING("The number of features (%d) is not 2", nFeatures);

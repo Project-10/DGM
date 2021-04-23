@@ -109,42 +109,38 @@ namespace DirectGraphicalModels
 		if (m_nLayers >= 2) DGM_ASSERT(nStatesOccl);
 		DGM_ASSERT(nStatesBase + nStatesOccl == m_graph.getNumStates());
 
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, m_size.height, [&, nStatesBase, nStatesOccl](int y) {
-			Mat nPotBase(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
-			Mat nPotOccl(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
-			Mat nPotIntr(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
-			for (byte s = 0; s < nStatesOccl; s++)
-				nPotIntr.at<float>(m_graph.getNumStates() - nStatesOccl + s, 0) = 100.0f / nStatesOccl;
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, m_size.height), [&, nStatesBase, nStatesOccl](const Range& range) {
 #else
+		const Range range(0, m_size.height);
+#endif
 		Mat nPotBase(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotOccl(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
 		Mat nPotIntr(m_graph.getNumStates(), 1, CV_32FC1, Scalar(0.0f));
-		for (byte s = 0; s < nStatesOccl; s++) 
+		for (byte s = 0; s < nStatesOccl; s++)
 			nPotIntr.at<float>(m_graph.getNumStates() - nStatesOccl + s, 0) = 100.0f / nStatesOccl;
-		for (int y = 0; y < m_size.height; y++) {
-#endif
-			const float *pPotBase = potBase.ptr<float>(y);
-			const float *pPotOccl = potOccl.empty() ? NULL : potOccl.ptr<float>(y);
+		for (int y = range.start; y < range.end; y++) {
+			const float* pPotBase = potBase.ptr<float>(y);
+			const float* pPotOccl = potOccl.empty() ? NULL : potOccl.ptr<float>(y);
 			for (int x = 0; x < m_size.width; x++) {
 				size_t idx = (y * m_size.width + x) * m_nLayers;
-				
-				for (byte s = 0; s < nStatesBase; s++) 
+
+				for (byte s = 0; s < nStatesBase; s++)
 					nPotBase.at<float>(s, 0) = pPotBase[nStatesBase * x + s];
 				m_graph.setNode(idx, nPotBase);
-				
+
 				if (m_nLayers >= 2) {
-					for (byte s = 0; s < nStatesOccl; s++) 
+					for (byte s = 0; s < nStatesOccl; s++)
 						nPotOccl.at<float>(m_graph.getNumStates() - nStatesOccl + s, 0) = pPotOccl[nStatesOccl * x + s];
 					m_graph.setNode(idx + 1, nPotOccl);
 				}
-				
+
 				for (word l = 2; l < m_nLayers; l++)
 					m_graph.setNode(idx + l, nPotIntr);
 			} // x
 		} // y
-#ifdef ENABLE_PPL	
-		);
+#ifdef ENABLE_PDP	
+		});
 #endif
 	}
 
@@ -261,25 +257,23 @@ namespace DirectGraphicalModels
 		if (linkTrainer) DGM_ASSERT(nFeatures == linkTrainer->getNumFeatures());
 		DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());
 
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, m_size.height, [&, nFeatures](int y) {
-			Mat featureVector1(nFeatures, 1, CV_8UC1);
-			Mat featureVector2(nFeatures, 1, CV_8UC1);
-			Mat ePot;
-			word l;
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, m_size.height), [&, nFeatures](const Range& range) {
+
 #else 
+		const Range range(0, m_size.height);
+#endif
 		Mat featureVector1(nFeatures, 1, CV_8UC1);
 		Mat featureVector2(nFeatures, 1, CV_8UC1);
 		Mat ePot;
 		word l;
-		for (int y = 0; y < m_size.height; y++) {
-#endif
-			const byte *pFv1 = featureVectors.ptr<byte>(y);
-			const byte *pFv2 = (y > 0) ? featureVectors.ptr<byte>(y - 1) : NULL;
+		for (int y = range.start; y < range.end; y++) {
+			const byte* pFv1 = featureVectors.ptr<byte>(y);
+			const byte* pFv2 = (y > 0) ? featureVectors.ptr<byte>(y - 1) : NULL;
 			for (int x = 0; x < m_size.width; x++) {
 				size_t idx = (y * m_size.width + x) * m_nLayers;
 				for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[nFeatures * x + f];				// featureVectors[x][y]
-				
+
 				if (m_gType & GRAPH_EDGES_LINK) {
 					ePot = linkTrainer->getLinkPotentials(featureVector1, linkWeight);
 					add(ePot, ePot.t(), ePot);
@@ -318,10 +312,9 @@ namespace DirectGraphicalModels
 					} // x, y
 				} // edges_diag
 			} // x
-#ifdef ENABLE_PPL
-		}); // y
-#else
 		} // y
+#ifdef ENABLE_PDP
+		});
 #endif
 	}
 
@@ -336,30 +329,27 @@ namespace DirectGraphicalModels
 		if (linkTrainer) DGM_ASSERT(nFeatures == linkTrainer->getNumFeatures());
 		DGM_ASSERT(m_size.width * m_size.height * m_nLayers == m_graph.getNumNodes());
 
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, m_size.height, [&, nFeatures](int y) {
-			Mat featureVector1(nFeatures, 1, CV_8UC1);
-			Mat featureVector2(nFeatures, 1, CV_8UC1);
-			Mat ePot;
-			word l;
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, m_size.height), [&, nFeatures](const Range& range) {
 #else 
+		const Range range(0, m_size.height);
+#endif
 		Mat featureVector1(nFeatures, 1, CV_8UC1);
 		Mat featureVector2(nFeatures, 1, CV_8UC1);
 		Mat ePot;
 		word l;
-		for (int y = 0; y < m_size.height; y++) {
-#endif
-			byte const **pFv1 = new const byte * [nFeatures];
+		for (int y = range.start; y < range.end; y++) {
+			byte const** pFv1 = new const byte * [nFeatures];
 			for (word f = 0; f < nFeatures; f++) pFv1[f] = featureVectors[f].ptr<byte>(y);
-			byte const **pFv2 = NULL;
+			byte const** pFv2 = NULL;
 			if (y > 0) {
-				pFv2 = new const byte *[nFeatures];
-				for (word f = 0; f < nFeatures; f++) pFv2[f] = featureVectors[f].ptr<byte>(y-1);
+				pFv2 = new const byte * [nFeatures];
+				for (word f = 0; f < nFeatures; f++) pFv2[f] = featureVectors[f].ptr<byte>(y - 1);
 			}
-			
+
 			for (int x = 0; x < m_size.width; x++) {
 				size_t idx = (y * m_size.width + x) * m_nLayers;
-				
+
 				for (word f = 0; f < nFeatures; f++) featureVector1.at<byte>(f, 0) = pFv1[f][x];				// featureVectors[x][y]
 
 				if (m_gType & GRAPH_EDGES_LINK) {
@@ -400,10 +390,9 @@ namespace DirectGraphicalModels
 					} // x, y
 				} // edges_diag
 			} // x
-#ifdef ENABLE_PPL
-		}); // y
-#else
 		} // y
+#ifdef ENABLE_PDP
+		}); 
 #endif
 	}
 
@@ -412,11 +401,12 @@ namespace DirectGraphicalModels
 		// Assertion
 		DGM_ASSERT_MSG(A != 0 || B != 0, "Wrong arguments");
 
-#ifdef ENABLE_PPL
-		concurrency::parallel_for(0, m_size.height, [&](int y) {
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, m_size.height), [&](const Range& range) {
 #else
-		for (int y = 0; y < m_size.height; y++) {
+		const Range range(0, m_size.height);
 #endif
+		for (int y = range.start; y < range.end; y++) {
 			for (int x = 0; x < m_size.width; x++) {
 				int i = (y * m_size.width + x) * m_nLayers;							// index of the current node from the base layer	
 				int s = SIGN(A * x + B * y + C);									// sign of the current pixel according to the given line
@@ -452,8 +442,8 @@ namespace DirectGraphicalModels
 				}
 			} // x
 		} // y
-#ifdef ENABLE_PPL
-		);
+#ifdef ENABLE_PDP
+		});
 #endif
 	}
 

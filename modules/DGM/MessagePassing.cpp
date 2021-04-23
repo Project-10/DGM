@@ -15,20 +15,22 @@ namespace DirectGraphicalModels
 		calculateMessages(nIt);
 
 		// =================================== Calculating beliefs ===================================
-#ifdef ENABLE_PPL
-		concurrency::parallel_for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&, nStates](ptr_node_t &node) {
+#ifdef ENABLE_PDP
+		parallel_for_(Range(0, getGraphPairwise().m_vNodes.size()), [&, nStates](const Range& range) {
 #else
-		std::for_each(getGraphPairwise().m_vNodes.begin(), getGraphPairwise().m_vNodes.end(), [&,nStates](ptr_node_t &node) {
+		const Range range(0, getGraphPairwise().m_vNodes.size());
 #endif
+		for (int i = range.start; i < range.end; i++) {
+			auto& node = getGraphPairwise().m_vNodes[i];
 			for (size_t e_f : node->from) {
-				float *msg = getMessage(e_f);				// message of current incoming edge
+				float* msg = getMessage(e_f);				// message of current incoming edge
 				float epsilon = FLT_EPSILON;
 				for (byte s = 0; s < nStates; s++) { 		// states
 					// node->Pot.at<float>(s,0) *= msg[s];
 					node->Pot.at<float>(s, 0) = (epsilon + node->Pot.at<float>(s, 0)) * (epsilon + msg[s]);		// Soft multiplication
 				} //s
 			} // e_f
-			
+
 			// Normalization
 			float SUM_pot = 0;
 			for (byte s = 0; s < nStates; s++)				// states
@@ -38,8 +40,10 @@ namespace DirectGraphicalModels
 				DGM_ASSERT_MSG(!std::isnan(node->Pot.at<float>(s, 0)), "The lower precision boundary for the potential of the node %zu is reached.\n \
 						SUM_pot = %f\n", node->id, SUM_pot);
 			}
+		}
+#ifdef ENABLE_PDP
 		});
-
+#endif
 		deleteMessages();
 	}
 

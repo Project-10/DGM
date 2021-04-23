@@ -208,14 +208,14 @@ Mat CMarker::drawMatrix(const Mat &potential, byte flag) const
 	for (byte x = 1; x < nStates + 1; x++) {
 		if (m_vPalette.at((x - 1) % n).second.empty()) sprintf(str, "W%d", x - 1);
 		else sprintf(str, "%s",m_vPalette.at((x - 1) % n).second.c_str()); 
-		if (x == 1) sprintf(str, "Bkgrd.");
+		//if (x == 1) sprintf(str, "Bkgrd.");
 		drawSquare(res, x, 0, frgColor, str, 0.45, TP_BOTTOM);
 	} // x
 		
 	for (byte y = 1; y < nStates + 1; y++) {
 		if (m_vPalette.at((y - 1) % n).second.empty()) sprintf(str, "W%d", y - 1);
 		else sprintf(str, "%s", m_vPalette.at((y - 1) % n).second.c_str()); 
-		if (y == 1) sprintf(str, "Bkgrd.");
+		//if (y == 1) sprintf(str, "Bkgrd.");
 		drawSquare(res, 0, y, frgColor, str, 0.45, TP_RIGHT);
 
 		const float *pPot = potential.ptr<float>(y - 1);

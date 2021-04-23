@@ -88,6 +88,7 @@ DGM library consists of three modules:
 	- @ref sec_main_decode
 	- @ref sec_main_paramest
 	- @ref moduleEva
+- Deep Neural Network @ref moduleDNN, which allows for building basic deep learning applications.
 - Feature extraction @ref moduleFEX, which allows for extracting the main data features, used nowadays in image classification.
 	- @ref moduleLFEX for pixel-level features.
 	- @ref moduleGFEX for image-level features.
