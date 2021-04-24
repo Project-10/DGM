@@ -55,7 +55,6 @@ namespace DirectGraphicalModels {
 		float				m_c2;                   // social component parameter
 		float				m_w;                    // inertia parameter
 
-		vec_float_t 		m_vGlobalArgBest;       // global best parameters
 		float				m_globalValBest;	    // Value of the objective function for global best parameters
 
 		const float         UNINITIALIZED = -INFINITY;

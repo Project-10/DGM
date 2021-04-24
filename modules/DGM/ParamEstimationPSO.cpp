@@ -82,7 +82,7 @@ namespace DirectGraphicalModels {
                 // initialize random variables 
                 float r1 = random::U<float>();
                 float r2 = random::U<float>();
-                boid.vVelocity[d] = m_w * boid.vVelocity[d] + m_c1 * r1 * (boid.vArgBest[d] - boid.vArgCurrent[d]) + m_c2 * r2 * (m_vGlobalArgBest[d] - boid.vArgCurrent[d]);
+                boid.vVelocity[d] = m_w * boid.vVelocity[d] + m_c1 * r1 * (boid.vArgBest[d] - boid.vArgCurrent[d]) + m_c2 * r2 * (m_vParams[d] - boid.vArgCurrent[d]);
                 boid.vArgCurrent[d] += boid.vVelocity[d];	        // I think velocity is the same as deltas in Powell. Maybe re-use the corresponding container
             }
             boid.valCurrent = std::make_pair(UNINITIALIZED, true);
