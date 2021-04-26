@@ -23,18 +23,20 @@ CCommonFeatureExtractor CCommonFeatureExtractor::autoContrast(void) const
 	Mat res;
 	vec_mat_t vChannels;
 	split(m_img, vChannels);
-#ifdef ENABLE_PPL
-	concurrency::parallel_for_each(vChannels.begin(), vChannels.end(), [](Mat &c) {
+#ifdef ENABLE_PDP
+	parallel_for_(Range(0, static_cast<int>(vChannels.size())), [&vChannels](const Range& range) {
 #else
-	for (Mat &c : vChannels) {
+	const Range range(0, static_cast<int>(vChannels.size()));
 #endif
+	for (int i = range.start; i < range.end; i++) {
 		double minVal, maxVal;
+		auto c = vChannels[i];
 		minMaxLoc(c, &minVal, &maxVal);
 		double k = (maxVal > minVal) ? k = 255.0 / (maxVal - minVal) : 1.0;
 		c.convertTo(c, c.type(), k, -minVal * k);
 	}
-#ifdef ENABLE_PPL
-	);
+#ifdef ENABLE_PDP
+	});
 #endif
 	merge(vChannels, res);
 	return CCommonFeatureExtractor(res);

@@ -5,7 +5,7 @@
 namespace DirectGraphicalModels {
 	namespace dnn
 	{
-		class CNeuronLayerMat
+		class CNeuronLayerBias
 		{
 		public:
 			/**
@@ -14,21 +14,26 @@ namespace DirectGraphicalModels {
 			 * @param numConnections The number of incoming connections for every neuron
 			 * @note In feed-forward networks \b numConnections is usually equal to the number of neurons on the previouse layer
 			 */
-			DllExport CNeuronLayerMat(size_t numNeurons, size_t numConnections)
+			DllExport CNeuronLayerBias(size_t numNeurons, size_t numConnections)
 				: m_values(numNeurons, 1, CV_32FC1)
-				, m_weights(numConnections, numNeurons, CV_32FC1)
+				, m_weights(numConnections + 1, numNeurons, CV_32FC1)
 			{}
-			DllExport CNeuronLayerMat(const CNeuronLayerMat&) = delete;
-			DllExport ~CNeuronLayerMat(void) = default;
+			DllExport CNeuronLayerBias(const CNeuronLayerBias&) = delete;
+			DllExport ~CNeuronLayerBias(void) = default;
 
-			DllExport bool      operator=(const CNeuronLayerMat&) = delete;
+			DllExport bool      operator=(const CNeuronLayerBias&) = delete;
 
 			DllExport void      generateRandomWeights(void);
-			DllExport void      dotProd(const CNeuronLayerMat& layer);
-            DllExport void      applySigmoid(void);
+			/**
+			 * @note This method updates only the node values
+			 */
+			DllExport void      dotProd(const CNeuronLayerBias& layer);
 
-			// TODO: move this method to a proper place
-			DllExport static void      backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
+			/**
+			 * @note This method updates only weights of layerB and layerC
+			 * @todo move this method to a proper place
+			 */
+			DllExport static void backPropagate(const CNeuronLayerBias& layerA, CNeuronLayerBias& layerB, CNeuronLayerBias& layerC, const Mat& resultErrorRate, float learningRate);
 
 
 			// Accessors
@@ -40,7 +45,8 @@ namespace DirectGraphicalModels {
 		private:
 			Mat	m_values;	///< The values of the neurons at the layer (1d matrix)
 			Mat m_weights;	///< The weight of the neurons (2d matrix )
-        };
+		};
 	}
 }
+
 
