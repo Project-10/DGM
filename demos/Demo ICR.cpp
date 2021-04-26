@@ -53,7 +53,6 @@ int main()
     dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nStates);
     dgm::dnn::CNeuronLayerMat layerOutput(nStates, 0);
 
-
     layerInput.generateRandomWeights();
     layerHidden.generateRandomWeights();
 
@@ -88,9 +87,7 @@ int main()
                 resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1 : 0;
                 resultErrorRate.at<float>(i, 0) = (resultErrorRate.at<float>(i, 0) - outputValues.at<float>(i,0)) * sigmoidFunction_derivative(outputValues.at<float>(i,0));
             }
-
             dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
-            
         }
     }
     dgm::Timer::stop();
