@@ -14,7 +14,7 @@ namespace DirectGraphicalModels {
 			 * @param numConnections The number of incoming connections for every neuron
 			 * @note In feed-forward networks \b numConnections is usually equal to the number of neurons on the previouse layer
 			 */
-			DllExport CNeuronLayerMat(size_t numNeurons, size_t numConnections)
+			DllExport CNeuronLayerMat(int numNeurons, int numConnections)
 				: m_values(numNeurons, 1, CV_32FC1)
 				, m_weights(numConnections, numNeurons, CV_32FC1)
 			{}
@@ -25,6 +25,7 @@ namespace DirectGraphicalModels {
 
 			DllExport void      generateRandomWeights(void);
 			DllExport void      dotProd(const CNeuronLayerMat& layer);
+			DllExport void		applyActivationFunction(void);
 
 			// TODO: move this method to a proper place
 			DllExport static void      backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
