@@ -5,57 +5,34 @@
 
 namespace DirectGraphicalModels { namespace dnn
 {
-	namespace {
-		/**
-		 * Applies the Sigmoid Activation function
-		 *
-		 * @param the value at each node
-		 * @return a number between 0 and 1.
-		 */
-		float sigmoidFunction(float x)
-		{
-            return 1.0f / (1.0f + expf(-x));
-		}
-	
-		float sigmoidFunction_derivative(float x)
-		{
-			float s = sigmoidFunction(x);
-			return s * (1 - s);
-		}
-	
-		void sigmoidFunction(Mat& X)
-		{
-			for (int y = 0; y < X.rows; y++){
-				float* pX = X.ptr<float>(y);
-				for (int x = 0; x < X.cols; x++)
-					pX[x] = sigmoidFunction(pX[x]);
-			}
-		}
-	}
-	
 	void CNeuronLayerMat::generateRandomWeights(void)
 	{
 		m_weights = random::U(m_weights.size(), m_weights.type(), -0.5f, 0.5f);
 	}
 
-
 	void CNeuronLayerMat::dotProd(const Mat& values)
 	{
-		// this->m_values = this->m_weights * values;
-		gemm(m_weights.t(), values, 1, Mat(), 0, m_values);
+		// this->m_netValues = this->m_weights * values;
+		gemm(m_weights.t(), values, 1, Mat(), 0, m_netValues);
 	}
 
-	void CNeuronLayerMat::applyActivationFunction(void)
-	{
-		sigmoidFunction(m_values);
-	}
-
-	void CNeuronLayerMat::setValues(const Mat& values)
+	void CNeuronLayerMat::setNetValues(const Mat& values)
 	{
 		// Assertions
-		DGM_ASSERT(values.type() == m_values.type());
-		DGM_ASSERT(values.size() == m_values.size());
-		values.copyTo(m_values);
+		DGM_ASSERT(values.type() == m_netValues.type());
+		DGM_ASSERT(values.size() == m_netValues.size());
+		values.copyTo(m_netValues);
+	}
+
+	Mat CNeuronLayerMat::getValues(void) const 
+	{ 
+		Mat res(m_netValues.clone());
+		for (int y = 0; y < res.rows; y++) {
+			float* pRes = res.ptr<float>(y);
+			for (int x = 0; x < res.cols; x++)
+				pRes[x] = m_activationFunction(pRes[x]);
+		}
+		return res; 
 	}
 
 	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)

@@ -30,6 +30,12 @@ std::vector<byte> readGroundTruth(const std::string& fileName)
 	return res;
 }
 
+/**
+ * Applies the Sigmoid Activation function
+ *
+ * @param the value at each node
+ * @return a number between 0 and 1.
+ */
 float sigmoidFunction(float x)
 {
 	return 1.0f / (1.0f + expf(-x));
@@ -56,9 +62,9 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-    dgm::dnn::CNeuronLayerMat layerInput(nFeatures, 0);
-    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nFeatures);
-    dgm::dnn::CNeuronLayerMat layerOutput(nStates, numNeuronsHiddenLayer);
+	dgm::dnn::CNeuronLayerMat layerInput(nFeatures, 0, [](float x){ return x; });
+    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction);
+    dgm::dnn::CNeuronLayerMat layerOutput(nStates, numNeuronsHiddenLayer, &sigmoidFunction);
  
 	layerHidden.generateRandomWeights();
 	layerOutput.generateRandomWeights();
@@ -78,12 +84,10 @@ int main()
 			img.convertTo(fv, CV_32FC1, 1.0 / 255);
 			fv = Scalar(1.0f) - fv;
 
-			layerInput.setValues(fv);
+			layerInput.setNetValues(fv);
 			layerHidden.dotProd(layerInput.getValues());
-			layerHidden.applyActivationFunction();
 			layerOutput.dotProd(layerHidden.getValues());
 			Mat outputValues = layerOutput.getValues();
-			layerOutput.applyActivationFunction();
 
 			Mat resultErrorRate(nStates, 1, CV_32FC1);
 			for (int i = 0; i < resultErrorRate.rows; i++) {
@@ -108,12 +112,10 @@ int main()
 		img.convertTo(fv, CV_32FC1, 1.0 / 255);
 		fv = Scalar(1.0f) - fv;
 
-		layerInput.setValues(fv);
+		layerInput.setNetValues(fv);
 		layerHidden.dotProd(layerInput.getValues());
-		layerHidden.applyActivationFunction();
 		layerOutput.dotProd(layerHidden.getValues());
 		Mat pot = layerOutput.getValues();
-		layerOutput.applyActivationFunction();
         
        
 

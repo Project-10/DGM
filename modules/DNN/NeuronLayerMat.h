@@ -14,9 +14,10 @@ namespace DirectGraphicalModels {
 			 * @param numConnections The number of incoming connections for every neuron
 			 * @note In feed-forward networks \b numConnections is usually equal to the number of neurons on the previouse layer
 			 */
-			DllExport CNeuronLayerMat(int numNeurons, int numConnections)
-				: m_values(numNeurons, 1, CV_32FC1)
+			DllExport CNeuronLayerMat(int numNeurons, int numConnections, const std::function<float(float x)>& activationFunction)
+				: m_netValues(numNeurons, 1, CV_32FC1)
 				, m_weights(numConnections, numNeurons, CV_32FC1)
+				, m_activationFunction(activationFunction)
 			{}
 			DllExport CNeuronLayerMat(const CNeuronLayerMat&) = delete;
 			DllExport ~CNeuronLayerMat(void) = default;
@@ -25,21 +26,23 @@ namespace DirectGraphicalModels {
 
 			DllExport void      generateRandomWeights(void);
 			DllExport void      dotProd(const Mat& values);
-			DllExport void		applyActivationFunction(void);
+			DllExport Mat		getValues(void) const;
 
 			// TODO: move this method to a proper place
 			DllExport static void      backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
 
 
+
 			// Accessors
-			DllExport void	setValues(const Mat& values);
-			DllExport Mat   getValues(void) const { return m_values; }
-			DllExport int   getNumNeurons(void) const { return m_values.rows; }
+			DllExport void	setNetValues(const Mat& values);
+			DllExport Mat	getNetValues(void) const { return m_netValues; }
+			DllExport int   getNumNeurons(void) const { return m_netValues.rows; }
 
 
 		private:
-			Mat	m_values;	///< The values of the neurons at the layer (1d matrix)
-			Mat m_weights;	///< The weight of the neurons (2d matrix )
+			Mat								m_netValues;			///< The values of the neurons at the layer (1d matrix)
+			Mat								m_weights;				///< The weight of the neurons (2d matrix )
+			std::function<float(float y)>	m_activationFunction;	///< The activation function
 		};
 	}
 }
