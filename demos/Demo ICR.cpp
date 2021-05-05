@@ -79,9 +79,9 @@ int main()
 			fv = Scalar(1.0f) - fv;
 
 			layerInput.setValues(fv);
-			layerHidden.dotProd(layerInput);
+			layerHidden.dotProd(layerInput.getValues());
 			layerHidden.applyActivationFunction();
-			layerOutput.dotProd(layerHidden);
+			layerOutput.dotProd(layerHidden.getValues());
 			Mat outputValues = layerOutput.getValues();
 			layerOutput.applyActivationFunction();
 
@@ -109,12 +109,13 @@ int main()
 		fv = Scalar(1.0f) - fv;
 
 		layerInput.setValues(fv);
-		layerHidden.dotProd(layerInput);
+		layerHidden.dotProd(layerInput.getValues());
 		layerHidden.applyActivationFunction();
-		layerOutput.dotProd(layerHidden);
+		layerOutput.dotProd(layerHidden.getValues());
+		Mat pot = layerOutput.getValues();
 		layerOutput.applyActivationFunction();
         
-        Mat pot = layerOutput.getValues();
+       
 
 		Point maxclass;
 		minMaxLoc(pot, NULL, NULL, NULL, &maxclass);
@@ -133,7 +134,6 @@ int main()
 	imshow("Confusion Matrix", cMatImg);
 	
 	waitKey();
-	
-	
+
 	return 0;
 }

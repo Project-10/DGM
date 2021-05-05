@@ -39,10 +39,10 @@ namespace DirectGraphicalModels { namespace dnn
 	}
 
 
-	void CNeuronLayerMat::dotProd(const CNeuronLayerMat& layer)
+	void CNeuronLayerMat::dotProd(const Mat& values)
 	{
-		// this->m_values = this->m_weights * layer.m_values;
-		gemm(m_weights.t(), layer.m_values, 1, Mat(), 0, m_values);
+		// this->m_values = this->m_weights * values;
+		gemm(m_weights.t(), values, 1, Mat(), 0, m_values);
 	}
 
 	void CNeuronLayerMat::applyActivationFunction(void)
@@ -60,19 +60,14 @@ namespace DirectGraphicalModels { namespace dnn
 
 	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
 	{
-		Mat DeltaIn_j; // = layerB.getWeights() x resultErrorRate;
+		Mat DeltaIn_j; // = layerC.getWeights() x resultErrorRate;
 		gemm(layerC.m_weights, resultErrorRate, 1, Mat(), 0, DeltaIn_j);
 
-		//Mat DeltaJ(layerB.getNumNeurons(), 1, CV_32FC1); // 60 x 1
-		//for(int i=0; i < layerB.getNumNeurons(); i++){
-		//	DeltaJ.at<float>(i,0) = DeltaIn_j.at<float>(i,0) * sigmoidFunction_derivative(layerB.m_values.at<float>(i, 0));
-		//}
-
 		// layerC.m_weights += learningRate * layerB.m_values x resultErrorRate.t()
-		gemm(layerB.m_values, resultErrorRate.t(), learningRate, layerC.m_weights, 1, layerC.m_weights);
+		gemm(layerB.getValues(), resultErrorRate.t(), learningRate, layerC.m_weights, 1, layerC.m_weights);
 		
 		//layerB.m_weights += learningRate * layerA.m_values x DeltaJ.t();
-		gemm(layerA.m_values, DeltaIn_j.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
+		gemm(layerA.getValues(), DeltaIn_j.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
 
 	}
 }}

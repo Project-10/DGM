@@ -24,7 +24,7 @@ namespace DirectGraphicalModels {
 			DllExport bool      operator=(const CNeuronLayerMat&) = delete;
 
 			DllExport void      generateRandomWeights(void);
-			DllExport void      dotProd(const CNeuronLayerMat& layer);
+			DllExport void      dotProd(const Mat& values);
 			DllExport void		applyActivationFunction(void);
 
 			// TODO: move this method to a proper place
