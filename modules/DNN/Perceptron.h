@@ -4,11 +4,11 @@
 
 namespace DirectGraphicalModels {
 	namespace dnn {
-		class CNeuronLayerMat;
+		class CNeuronLayer;
 
 		class CPerceptron {
 		public:
-			DllExport static void backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
+			DllExport static void backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate);
 		};
 	}
 }

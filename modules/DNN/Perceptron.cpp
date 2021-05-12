@@ -1,9 +1,9 @@
 #include "Perceptron.h"
-#include "NeuronLayerMat.h"
+#include "NeuronLayer.h"
 
 namespace DirectGraphicalModels {
 	namespace dnn {
-		void CPerceptron::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
+		void CPerceptron::backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate)
 		{
 			Mat DeltaIn_j; // = layerC.getWeights() x resultErrorRate;
 			gemm(layerC.getWeights(), resultErrorRate, 1, Mat(), 0, DeltaIn_j);

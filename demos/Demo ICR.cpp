@@ -62,9 +62,9 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	dgm::dnn::CNeuronLayerMat layerInput(nFeatures, 0, [](float x){ return x; });
-    dgm::dnn::CNeuronLayerMat layerHidden(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction);
-    dgm::dnn::CNeuronLayerMat layerOutput(nStates, numNeuronsHiddenLayer, &sigmoidFunction);
+	dgm::dnn::CNeuronLayer layerInput(nFeatures, 0, [](float x){ return x; });
+    dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction);
+    dgm::dnn::CNeuronLayer layerOutput(nStates, numNeuronsHiddenLayer, &sigmoidFunction);
  
 	layerHidden.generateRandomWeights();
 	layerOutput.generateRandomWeights();
