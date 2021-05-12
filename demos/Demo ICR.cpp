@@ -89,13 +89,10 @@ int main()
 			layerOutput.dotProd(layerHidden.getValues());
 			Mat outputValues = layerOutput.getValues();
 
-			Mat resultErrorRate(nStates, 1, CV_32FC1);
-			for (int i = 0; i < resultErrorRate.rows; i++) {
-				resultErrorRate.at<float>(i, 0) = (trainGT[s] == i) ? 1.0f : 0.0f;
-				resultErrorRate.at<float>(i, 0) = (resultErrorRate.at<float>(i, 0) - outputValues.at<float>(i, 0)) * sigmoidFunction_derivative(outputValues.at<float>(i, 0));
-			}
+			Mat outputGroundtruth(nStates, 1, CV_32FC1, Scalar(0));
+			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f;
 
-			dgm::dnn::CPerceptron::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
+			dgm::dnn::CPerceptron::backPropagate(layerInput, layerHidden, layerOutput, outputValues, outputGroundtruth, 0.05f);
 		} // samples
 	dgm::Timer::stop();
 
@@ -115,12 +112,10 @@ int main()
 		layerInput.setNetValues(fv);
 		layerHidden.dotProd(layerInput.getValues());
 		layerOutput.dotProd(layerHidden.getValues());
-		Mat pot = layerOutput.getValues();
-        
-       
-
+		Mat outputValues = layerOutput.getValues();
+ 
 		Point maxclass;
-		minMaxLoc(pot, NULL, NULL, NULL, &maxclass);
+		minMaxLoc(outputValues, NULL, NULL, NULL, &maxclass);
 		int number = maxclass.y;
         
 		confMat.estimate(number, testGT[s]);

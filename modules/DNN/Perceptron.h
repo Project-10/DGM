@@ -8,7 +8,7 @@ namespace DirectGraphicalModels {
 
 		class CPerceptron {
 		public:
-			DllExport static void backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& resultErrorRate, float learningRate);
+			DllExport static void backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& solution, const Mat& gt, float learningRate);
 		};
 	}
 }
