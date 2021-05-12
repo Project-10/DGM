@@ -28,14 +28,10 @@ namespace DirectGraphicalModels {
 			DllExport void      dotProd(const Mat& values);
 			DllExport Mat		getValues(void) const;
 
-			// TODO: move this method to a proper place
-			DllExport static void      backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate);
-
-
-
 			// Accessors
 			DllExport void	setNetValues(const Mat& values);
 			DllExport Mat	getNetValues(void) const { return m_netValues; }
+			DllExport Mat	getWeights(void) const { return m_weights; }
 			DllExport int   getNumNeurons(void) const { return m_netValues.rows; }
 
 

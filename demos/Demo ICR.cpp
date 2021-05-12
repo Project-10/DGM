@@ -95,7 +95,7 @@ int main()
 				resultErrorRate.at<float>(i, 0) = (resultErrorRate.at<float>(i, 0) - outputValues.at<float>(i, 0)) * sigmoidFunction_derivative(outputValues.at<float>(i, 0));
 			}
 
-			dgm::dnn::CNeuronLayerMat::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
+			dgm::dnn::CPerceptron::backPropagate(layerInput, layerHidden, layerOutput, resultErrorRate, 0.1f);
 		} // samples
 	dgm::Timer::stop();
 

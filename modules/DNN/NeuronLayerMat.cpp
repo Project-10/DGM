@@ -35,16 +35,4 @@ namespace DirectGraphicalModels { namespace dnn
 		return res; 
 	}
 
-	void CNeuronLayerMat::backPropagate(CNeuronLayerMat& layerA, CNeuronLayerMat& layerB, CNeuronLayerMat& layerC, const Mat& resultErrorRate, float learningRate)
-	{
-		Mat DeltaIn_j; // = layerC.getWeights() x resultErrorRate;
-		gemm(layerC.m_weights, resultErrorRate, 1, Mat(), 0, DeltaIn_j);
-
-		// layerC.m_weights += learningRate * layerB.m_values x resultErrorRate.t()
-		gemm(layerB.getValues(), resultErrorRate.t(), learningRate, layerC.m_weights, 1, layerC.m_weights);
-		
-		//layerB.m_weights += learningRate * layerA.m_values x DeltaJ.t();
-		gemm(layerA.getValues(), DeltaIn_j.t(), learningRate, layerB.m_weights, 1, layerB.m_weights);
-
-	}
 }}
