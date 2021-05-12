@@ -62,12 +62,13 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	dgm::dnn::CNeuronLayer layerInput(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
-    dgm::dnn::CNeuronLayer layerHidden(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
-    dgm::dnn::CNeuronLayer layerOutput(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
- 
-	layerHidden.generateRandomWeights();
-	layerOutput.generateRandomWeights();
+	auto pLayerInput  = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
+    auto pLayerHidden = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
+    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
+	pLayerHidden->generateRandomWeights();
+	pLayerOutput->generateRandomWeights();
+
+	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden, pLayerOutput });
 
 	Mat fv;
 
@@ -84,15 +85,12 @@ int main()
 			img.convertTo(fv, CV_32FC1, 1.0 / 255);
 			fv = Scalar(1.0f) - fv;
 
-			layerInput.setNetValues(fv);
-			layerHidden.dotProd(layerInput.getValues());
-			layerOutput.dotProd(layerHidden.getValues());
-			Mat outputValues = layerOutput.getValues();
+			Mat outputValues = perceptron.getPrediction(fv);
 
 			Mat outputGroundtruth(nStates, 1, CV_32FC1, Scalar(0));
 			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f;
 
-			dgm::dnn::CPerceptron::backPropagate(layerInput, layerHidden, layerOutput, outputValues, outputGroundtruth, 0.05f);
+			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f);
 		} // samples
 	dgm::Timer::stop();
 
@@ -109,10 +107,7 @@ int main()
 		img.convertTo(fv, CV_32FC1, 1.0 / 255);
 		fv = Scalar(1.0f) - fv;
 
-		layerInput.setNetValues(fv);
-		layerHidden.dotProd(layerInput.getValues());
-		layerOutput.dotProd(layerHidden.getValues());
-		Mat outputValues = layerOutput.getValues();
+		Mat outputValues = perceptron.getPrediction(fv);
  
 		Point maxclass;
 		minMaxLoc(outputValues, NULL, NULL, NULL, &maxclass);

@@ -1,22 +1,57 @@
 #include "Perceptron.h"
-#include "NeuronLayer.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels {
 	namespace dnn {
-		void CPerceptron::backPropagate(CNeuronLayer& layerA, CNeuronLayer& layerB, CNeuronLayer& layerC, const Mat& solution, const Mat& gt, float learningRate)
+		// Constructor
+		CPerceptron::CPerceptron(const std::vector<int>& vNumNeurons) {
+			// TODO: imp,lement this constructor in the future
+			for (size_t i = 0; i < vNumNeurons.size(); i++) {
+				int numNeurons = vNumNeurons[i];
+				int numConnections = (i == 0) ? 0 : vNumNeurons[i - 1];
+				ptr_nl_t pNeuronLayer = std::make_shared<CNeuronLayer>(numNeurons, numConnections, [](float x) {return x; }, [](float x) { return 1; });
+				m_vpNeuronLayers.push_back(pNeuronLayer);
+			}
+		}
+		
+		// Constructor
+		CPerceptron::CPerceptron(const std::vector<ptr_nl_t>& vpLayers) 
+		{
+			for (auto& nl : vpLayers)
+				m_vpNeuronLayers.push_back(nl);
+		}
+
+		Mat	CPerceptron::getPrediction(const Mat& inputValues) 
+		{
+			// Asserions
+			DGM_ASSERT(m_vpNeuronLayers.size() > 1);
+			
+			// Initialize the values of the input layer
+			m_vpNeuronLayers[0]->setNetValues(inputValues);
+
+			// Calculate values of the nodes on all other layers
+			for (size_t i = 1; i < m_vpNeuronLayers.size(); i++)
+				m_vpNeuronLayers[i]->dotProd(m_vpNeuronLayers[i - 1]->getValues());
+
+			// Return the node values from the output layer
+			return m_vpNeuronLayers.back()->getValues();
+		}
+
+		// TODO: this method works only for 3 layers
+		void CPerceptron::backPropagate(const Mat& solution, const Mat& gt, float learningRate)
 		{
 			Mat error = gt - solution;
 			for (int i = 0; i < error.rows; i++)
-				error.at<float>(i, 0) *= layerC.getActivationFunctionDeriateve()(solution.at<float>(i, 0));
+				error.at<float>(i, 0) *= m_vpNeuronLayers[2]->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
 			
-			Mat DeltaIn_j; // = layerC.getWeights() x resultErrorRate;
-			gemm(layerC.getWeights(), error, 1, Mat(), 0, DeltaIn_j);
+			Mat DeltaIn_j; // = layerC.getWeights() x error;
+			gemm(m_vpNeuronLayers[2]->getWeights(), error, 1, Mat(), 0, DeltaIn_j);
 
-			// layerC.m_weights += learningRate * layerB.m_values x resultErrorRate.t()
-			gemm(layerB.getValues(), error.t(), learningRate, layerC.getWeights(), 1, layerC.getWeights());
+			// layerC.m_weights += learningRate * layerB.m_values x error.t()
+			gemm(m_vpNeuronLayers[1]->getValues(), error.t(), learningRate, m_vpNeuronLayers[2]->getWeights(), 1, m_vpNeuronLayers[2]->getWeights());
 
 			//layerB.m_weights += learningRate * layerA.m_values x DeltaJ.t();
-			gemm(layerA.getValues(), DeltaIn_j.t(), learningRate, layerB.getWeights(), 1, layerB.getWeights());
+			gemm(m_vpNeuronLayers[0]->getValues(), DeltaIn_j.t(), learningRate, m_vpNeuronLayers[1]->getWeights(), 1, m_vpNeuronLayers[1]->getWeights());
 		}
 	}
 }

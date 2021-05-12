@@ -43,6 +43,8 @@ namespace DirectGraphicalModels {
 			std::function<float(float y)>	m_activationFunction;			///< The activation function
 			std::function<float(float y)>	m_activationFunctionDerivative;	///< The derivative of the activation function
 		};
+
+		using ptr_nl_t = std::shared_ptr<CNeuronLayer>;
 	}
 }
 
