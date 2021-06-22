@@ -1,7 +1,8 @@
-//
-// Created by ahambasan on 26.02.20.
-//
 #include "ParamEstimation.h"
+
+#include "ParamEstimationPowell.h"
+#include "ParamEstimationPSO.h"
+
 #include "macroses.h"
 
 namespace DirectGraphicalModels 
@@ -12,6 +13,16 @@ namespace DirectGraphicalModels
         , m_vMin(nParams)
         , m_vMax(nParams)
     {}
+
+	// Factory method
+	std::shared_ptr<CParamEstimation> CParamEstimation::create(byte paramEstimationModel, size_t nParams) {
+		switch (paramEstimationModel) {
+			case ParamEstimationModel::Powell:	return std::make_shared<CParamEstimationPowell>(nParams);
+			case ParamEstimationModel::PSO:		return std::make_shared<CParamEstimationPSO>(nParams);
+			default:
+				DGM_ASSERT_MSG(false, "Unknown type of the parameter estimation model");
+		}
+	}
 
     void CParamEstimation::setInitParams(const vec_float_t& vParams) {
         DGM_ASSERT_MSG(vParams.size() == m_vParams.size(),

@@ -7,7 +7,12 @@ using namespace DirectGraphicalModels::vis;
 
 void print_help(char *argv0)
 {
-	printf("Usage: %s training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image\n", argv0);
+	printf("Usage: %s param_estimation_model training_image_features training_groundtruth_image testing_image_features testing_groundtruth_image original_image\n", argv0);
+	
+	printf("\nParameters estimation models:\n");
+	printf("0: Powell optimization\n");
+	printf("1: Particle Swarm Optimization\n");
+
 }
 
 int main(int argc, char *argv[])
@@ -16,17 +21,18 @@ int main(int argc, char *argv[])
 	const byte	nStates		= 6;				// {road, traffic island, grass, agriculture, tree, car} 	
 	const word	nFeatures	= 3;
 
-	if (argc != 6) {
+	if (argc != 7) {
 		print_help(argv[0]);
 		return 0;
 	}
 
 	// Reading parameters and images
-    Mat train_fv = imread(argv[1], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
-	Mat train_gt = imread(argv[2], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
-	Mat test_fv  = imread(argv[3], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
-	Mat test_gt  = imread(argv[4], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
-	Mat test_img = imread(argv[5], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
+	int paramEstimatinModel = atoi(argv[1]);
+	Mat train_fv 			= imread(argv[2], 1); resize(train_fv, train_fv, imgSize, 0, 0, INTER_LANCZOS4);	// training image feature vector
+	Mat train_gt 			= imread(argv[3], 0); resize(train_gt, train_gt, imgSize, 0, 0, INTER_NEAREST);	// groundtruth for training
+	Mat test_fv  			= imread(argv[4], 1); resize(test_fv,  test_fv,  imgSize, 0, 0, INTER_LANCZOS4);	// testing image feature vector
+	Mat test_gt  			= imread(argv[5], 0); resize(test_gt,  test_gt,  imgSize, 0, 0, INTER_NEAREST);	// groundtruth for evaluation
+	Mat test_img 			= imread(argv[6], 1); resize(test_img, test_img, imgSize, 0, 0, INTER_LANCZOS4);	// testing image
 
 	auto	nodeTrainer = CTrainNode::create(Bayes, nStates, nFeatures);
 	auto	graphKit	= CGraphKit::create(GraphType::dense, nStates);
@@ -38,9 +44,9 @@ int main(int argc, char *argv[])
 	const vec_float_t vInitDeltas  = {  10.0f,  10.0f, 1.0f,  1.0f };
 	vec_float_t vParams = vInitParams;									// Actual model parameters
 
-	CParamEstimationPowell powell(vParams.size());
-	powell.setInitParams(vInitParams);
-	powell.setDeltas(vInitDeltas);
+	auto paramEstimator = CParamEstimation::create(paramEstimatinModel, vParams.size());
+	paramEstimator->setInitParams(vInitParams);
+	paramEstimator->setDeltas(vInitDeltas);
 
 	// ========================= Training Node Potentials=========================
 	nodeTrainer->addFeatureVecs(train_fv, train_gt);
@@ -65,13 +71,13 @@ int main(int argc, char *argv[])
 		for (const float& param : vParams) printf("%.1f ", param);
 		printf("}, accuracy: %.2f%%\n", confMat.getAccuracy());
 
-		if (powell.isConverged()) break;
-		vParams = powell.getParams(confMat.getAccuracy());
+		if (paramEstimator->isConverged()) break;
+		vParams = paramEstimator->getParams(confMat.getAccuracy());
 		graphKit->getGraph().reset();
 		confMat.reset();
 	}
 
-	vParams = powell.getParams(1);
+	vParams = paramEstimator->getParams(1);
 	printf("Resulting parameters: {");
 	for (const float& param : vParams) printf("%.1f ", param);
 	printf("}\n");

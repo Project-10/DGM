@@ -6,7 +6,7 @@
 
 namespace DirectGraphicalModels
 {
-	/// Types of the node potential finction 
+	/// Types of the node potential function 
 	enum NodeRandomModel : byte { 
 		Bayes = 0,				///< Bayes Model
 		GMM, 					///< Gaussian Mixture Model

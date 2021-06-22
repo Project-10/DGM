@@ -144,8 +144,9 @@ All of the inference classes may be also used for approximate decoding via funct
 The corresponding classes are @b CDecode* (where @b * is the name of the method above). 
 
 @subsection sec_main_paramest Parameter Estimation
-DGM implements the following parameter estimation method:
+DGM implements the following parameter estimation methods:
 - <b>CParamEstimationPowell:</b> CParamEstimationPowell search method @ref DirectGraphicalModels::CParamEstimationPowell
+- <b>CParamEstimationPSO:</b> Particle Swarm Optimization method @ref DirectGraphicalModels::CParamEstimationPSO
 
 @subsection sec_main_sampling Sampling
 DGM implements the following sampling method:

@@ -7,6 +7,12 @@
 
 namespace DirectGraphicalModels 
 {
+	/// Types of the parameter estimation model
+	enum ParamEstimationModel : byte {
+		Powell = 0,				///< Powell parameter optimization
+		PSO						///< Particle Swarm optimization
+	 };
+
 	/**
 	 *
 	 */
@@ -22,6 +28,13 @@ namespace DirectGraphicalModels
 		DllExport virtual ~CParamEstimation() = default;
 		DllExport const CParamEstimation& operator=(const CParamEstimation&) = delete;
 
+		/**
+		 * @brief Factory method retuning parameter estimation object
+		 * @param paramEstimationModel Type of desired parameter estimation technique (Ref. @ref ParamEstimationModel)
+		 * @param nParams Number of parameters (arguments) of the objective function
+		 * @return Tne pointer to the concrete implementation of the parameter estimation class
+		 */
+		DllExport static std::shared_ptr<CParamEstimation> create(byte paramEstimationModel, size_t nParams);
 		/**
 		 * @brief Resets class variables
 		 */
