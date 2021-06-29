@@ -49,12 +49,13 @@ float sigmoidFunction_derivative(float x)
 
 int main()
 {
-	const byte		nStates					= 10;				// 10 digits (number of output nodes)
-	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
-    const size_t    numNeuronsHiddenLayer	= 100;
-    const size_t	numTrainSamples  		= 4000;
-	const size_t 	numTestSamples    		= 2000;
-	const size_t	numEpochs				= 3;
+	const byte		nStates = 10;				// 10 digits (number of output nodes)
+	const word		nFeatures = 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
+	const size_t    numNeuronsHiddenLayer = 100;
+	const size_t	numTrainSamples = 4000;
+	const size_t 	numTestSamples = 2000;
+	const size_t	numEpochs = 3;
+	const int       numHiddenLayer = 2;         //number of hidden layers -- DEFAULT = 1
 
 #ifdef WIN32
 	const std::string dataPath = "../../data/digits/";
@@ -62,21 +63,34 @@ int main()
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	auto pLayerInput  = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
-    auto pLayerHidden = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
-    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
-	pLayerHidden->generateRandomWeights();
+	auto pLayerInput = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
+	auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
+
+	std::vector<decltype(pLayerInput)> pLayerHidden;
+
+
+	for(int i = 0; i < numHiddenLayer; i++) //Hidden layers stored in vector
+		if(pLayerHidden.size() == 0)
+			pLayerHidden.emplace_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative)); // 1st Hidden Layer
+		else
+			pLayerHidden.emplace_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative)); // 2-n hidden layers
+
+
+	if (numHiddenLayer!=0)
+		for (int i = 0; i < numHiddenLayer; i++)
+			pLayerHidden[i]->generateRandomWeights();
+
 	pLayerOutput->generateRandomWeights();
 
-	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden, pLayerOutput });
-
+	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerOutput }, pLayerHidden);
+	
 	Mat fv;
 
 	// ==================== TRAINING DIGITS ====================
 	dgm::Timer::start("Training...");
 	auto	trainGT = readGroundTruth(dataPath + "train_gt.txt");
 	for (size_t e = 0; e < numEpochs; e++)
-		for(int s = 0; s < numTrainSamples; s++) {
+		for (int s = 0; s < numTrainSamples; s++) {
 			std::stringstream ss;
 			ss << dataPath << "train/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
 			std::string fileName = samples::findFile(ss.str());
@@ -85,12 +99,12 @@ int main()
 			img.convertTo(fv, CV_32FC1, 1.0 / 255);
 			fv = Scalar(1.0f) - fv;
 
-			Mat outputValues = perceptron.getPrediction(fv);
+			Mat outputValues = perceptron.getPrediction(fv); //                            prediction
 
 			Mat outputGroundtruth(nStates, 1, CV_32FC1, Scalar(0));
-			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f;
+			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f; //                          answer
 
-			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f);
+			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f, numHiddenLayer);
 		} // samples
 	dgm::Timer::stop();
 
@@ -98,7 +112,7 @@ int main()
 	dgm::CCMat confMat(nStates);
 	dgm::Timer::start("Testing...");
 	auto 	testGT = readGroundTruth(dataPath + "test_gt.txt");
-	for(size_t s = 0; s < numTestSamples; s++) {
+	for (size_t s = 0; s < numTestSamples; s++) {
 		std::stringstream ss;
 		ss << dataPath << "test/digit_" << std::setfill('0') << std::setw(4) << s << ".png";
 		std::string fileName = samples::findFile(ss.str());
@@ -108,23 +122,23 @@ int main()
 		fv = Scalar(1.0f) - fv;
 
 		Mat outputValues = perceptron.getPrediction(fv);
- 
+
 		Point maxclass;
 		minMaxLoc(outputValues, NULL, NULL, NULL, &maxclass);
 		int number = maxclass.y;
-        
+
 		confMat.estimate(number, testGT[s]);
-        //printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
+		//printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
 	} // samples
 	dgm::Timer::stop();
 	printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
-	
+
 	// Confusion matrix
 	dgm::vis::CMarker marker;
-	Mat cMat    = confMat.getConfusionMatrix();
+	Mat cMat = confMat.getConfusionMatrix();
 	Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
 	imshow("Confusion Matrix", cMatImg);
-	
+
 	waitKey();
 
 	return 0;
