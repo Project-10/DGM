@@ -55,20 +55,33 @@ int main()
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 	const size_t	numEpochs				= 3;
-
+	const int       numHiddenLayer = 2;         //number of hidden layers -- DEFAULT = 1
 #ifdef WIN32
 	const std::string dataPath = "../../data/digits/";
 #else
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	auto pLayerInput  = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
-    auto pLayerHidden = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
-    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
-	pLayerHidden->generateRandomWeights();
+	auto pLayerInput = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
+	auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
+
+	std::vector<decltype(pLayerInput)> pLayerHidden;
+
+
+	for (int i = 0; i < numHiddenLayer; i++) //Hidden layers stored in vector
+		if (pLayerHidden.size() == 0)
+			pLayerHidden.emplace_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative)); // 1st Hidden Layer
+		else
+			pLayerHidden.emplace_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative)); // 2-n hidden layers
+
+
+	if (numHiddenLayer != 0)
+		for (int i = 0; i < numHiddenLayer; i++)
+			pLayerHidden[i]->generateRandomWeights();
+
 	pLayerOutput->generateRandomWeights();
 
-	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden, pLayerOutput });
+	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerOutput }, pLayerHidden);
 
 	Mat fv;
 
@@ -90,7 +103,7 @@ int main()
 			Mat outputGroundtruth(nStates, 1, CV_32FC1, Scalar(0));
 			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f;
 
-			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f);
+			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f, numHiddenLayer);
 		} // samples
 	dgm::Timer::stop();
 
