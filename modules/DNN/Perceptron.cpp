@@ -17,15 +17,6 @@ namespace DirectGraphicalModels {
 		// Constructor
 		CPerceptron::CPerceptron(const std::vector<ptr_nl_t>& vpLayers)
 		{
-			/*
-			m_vpNeuronLayers.push_back(vpLayers[0]); //input
-
-			for (int i = 1; i < vpLayers.size() - 1; i++) 
-				m_vpNeuronLayers.push_back(vpLayers[i]);
-
-			m_vpNeuronLayers.push_back(vpLayers[vpLayers.size()-1]); // output
-			*/
-
 			for (auto& nl : vpLayers)
 				m_vpNeuronLayers.push_back(nl);
 		}
