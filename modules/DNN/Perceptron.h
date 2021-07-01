@@ -8,7 +8,7 @@ namespace DirectGraphicalModels {
 		class CPerceptron {
 		public:
 			DllExport CPerceptron(const std::vector<int>& vNumNeurons);
-			DllExport CPerceptron(const std::vector<ptr_nl_t>& vpLayers, const std::vector<ptr_nl_t>& numHiddenLayer); // added numHiddenLayer for passing
+			DllExport CPerceptron(const std::vector<ptr_nl_t>& vpLayers); // added numHiddenLayer for passing
 			DllExport CPerceptron(const CPerceptron&) = delete;                                                        // vector of hidden layers
 			DllExport ~CPerceptron(void) = default;
 			
