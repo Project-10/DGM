@@ -15,8 +15,17 @@ namespace DirectGraphicalModels {
 		}
 		
 		// Constructor
-		CPerceptron::CPerceptron(const std::vector<ptr_nl_t>& vpLayers) 
+		CPerceptron::CPerceptron(const std::vector<ptr_nl_t>& vpLayers)
 		{
+			/*
+			m_vpNeuronLayers.push_back(vpLayers[0]); //input
+
+			for (int i = 1; i < vpLayers.size() - 1; i++) 
+				m_vpNeuronLayers.push_back(vpLayers[i]);
+
+			m_vpNeuronLayers.push_back(vpLayers[vpLayers.size()-1]); // output
+			*/
+
 			for (auto& nl : vpLayers)
 				m_vpNeuronLayers.push_back(nl);
 		}
@@ -43,15 +52,23 @@ namespace DirectGraphicalModels {
 			Mat error = gt - solution;
 			for (int i = 0; i < error.rows; i++)
 				error.at<float>(i, 0) *= m_vpNeuronLayers[2]->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
+
+			int numLayers = m_vpNeuronLayers.size() - 1; // number of layers [0, 1, 2 ... n]
+			int numHiddenLayers = numLayers - 1;
 			
-			Mat DeltaIn_j; // = layerC.getWeights() x error;
-			gemm(m_vpNeuronLayers[2]->getWeights(), error, 1, Mat(), 0, DeltaIn_j);
+			std::vector<Mat> Error; //Vector containing errors for each of the layers neurons
+			Error.push_back(error);
 
-			// layerC.m_weights += learningRate * layerB.m_values x error.t()
-			gemm(m_vpNeuronLayers[1]->getValues(), error.t(), learningRate, m_vpNeuronLayers[2]->getWeights(), 1, m_vpNeuronLayers[2]->getWeights());
+			for (int i = 0; i < numHiddenLayers; i++)
+			{
+				Mat temp = m_vpNeuronLayers[numLayers - i]->getWeights() * Error[i]; // weights * error
+				Error.push_back(temp);
+			}
 
-			//layerB.m_weights += learningRate * layerA.m_values x DeltaJ.t();
-			gemm(m_vpNeuronLayers[0]->getValues(), DeltaIn_j.t(), learningRate, m_vpNeuronLayers[1]->getWeights(), 1, m_vpNeuronLayers[1]->getWeights());
+			for (int i = 1; i < m_vpNeuronLayers.size(); i++)
+			{
+				gemm(m_vpNeuronLayers[numLayers - i]->getValues(), Error[i - 1].t(), learningRate, m_vpNeuronLayers[m_vpNeuronLayers.size() - i]->getWeights(), 1, m_vpNeuronLayers[m_vpNeuronLayers.size() - i]->getWeights());
+			}
 		}
 	}
 }
