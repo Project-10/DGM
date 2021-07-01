@@ -47,18 +47,19 @@ namespace DirectGraphicalModels {
 		}
 
 		// TODO: this method works only for 3 layers
-		void CPerceptron::backPropagate(const Mat& solution, const Mat& gt, float learningRate, int numHiddenLayer)
+		void CPerceptron::backPropagate(const Mat& solution, const Mat& gt, float learningRate)
 		{
 			Mat error = gt - solution;
 			for (int i = 0; i < error.rows; i++)
 				error.at<float>(i, 0) *= m_vpNeuronLayers[2]->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
 
 			int numLayers = m_vpNeuronLayers.size() - 1; // number of layers [0, 1, 2 ... n]
+			int numHiddenLayers = numLayers - 1;
 			
 			std::vector<Mat> Error; //Vector containing errors for each of the layers neurons
 			Error.push_back(error);
 
-			for (int i = 0; i < numHiddenLayer; i++)
+			for (int i = 0; i < numHiddenLayers; i++)
 			{
 				Mat temp = m_vpNeuronLayers[numLayers - i]->getWeights() * Error[i]; // weights * error
 				Error.push_back(temp);
