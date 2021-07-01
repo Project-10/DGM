@@ -8,8 +8,8 @@ namespace DirectGraphicalModels {
 		class CPerceptron {
 		public:
 			DllExport CPerceptron(const std::vector<int>& vNumNeurons);
-			DllExport CPerceptron(const std::vector<ptr_nl_t>& vpLayers); 
-			DllExport CPerceptron(const CPerceptron&) = delete;                                                        
+			DllExport CPerceptron(const std::vector<ptr_nl_t>& vpLayers);
+			DllExport CPerceptron(const CPerceptron&) = delete;
 			DllExport ~CPerceptron(void) = default;
 			
 			DllExport bool operator=(const CPerceptron&) = delete;
