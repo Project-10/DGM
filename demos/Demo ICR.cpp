@@ -55,32 +55,20 @@ int main()
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 	const size_t	numEpochs				= 3;
-	const int       numHiddenLayer          = 1;         //number of hidden layers -- DEFAULT = 1
+
 #ifdef WIN32
 	const std::string dataPath = "../../data/digits/";
 #else
 	const std::string dataPath = "../../../data/digits/";
 #endif
 
-	auto pLayerInput = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
-	auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
+	auto pLayerInput  = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
+    auto pLayerHidden = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
+    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
+	pLayerHidden->generateRandomWeights();
+	pLayerOutput->generateRandomWeights();
 
-	std::vector<decltype(pLayerInput)> pLayers;
-
-	pLayers.push_back(pLayerInput);
-
-	for (int i = 0; i < numHiddenLayer; i++) //Hidden layers stored in vector
-		if (pLayers.size() == 1)
-			pLayers.push_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative)); // 1st Hidden Layer
-		else
-			pLayers.push_back(std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative)); // 2-n hidden layers
-
-	pLayers.push_back(pLayerOutput);
-
-	for (int i = 1; i < pLayers.size(); i++)
-		pLayers[i]->generateRandomWeights();
-
-	dgm::dnn::CPerceptron perceptron(pLayers);
+	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden, pLayerOutput });
 
 	Mat fv;
 
