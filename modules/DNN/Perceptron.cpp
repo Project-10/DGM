@@ -42,7 +42,7 @@ namespace DirectGraphicalModels {
 		{
 			Mat error = gt - solution;
 			for (int i = 0; i < error.rows; i++)
-				error.at<float>(i, 0) *= m_vpNeuronLayers[2]->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
+				error.at<float>(i, 0) *= m_vpNeuronLayers.back()->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
 
 			int numLayers = m_vpNeuronLayers.size() - 1; // number of layers [0, 1, 2 ... n]
 			int numHiddenLayers = numLayers - 1;
