@@ -40,7 +40,7 @@ namespace DirectGraphicalModels {
 		// TODO: this method works only for 3 layers
 		// dCost/dw = dCost/dNode.Value * dNode.Value/dNode.NetValue * dNode.NetValue/dNode.Weight
 		// dCost/dw = 2(solution - gt) * ActivationFunctionDeriateve(nodeNetValue) * Node_i-1.Value
-		void CPerceptron::backPropagate(const Mat& solution, const Mat& gt, float learningRate)
+		void CPerceptron::backPropagate(const Mat& gt, float learningRate)
 		{
 			const int nLayers = static_cast<int>(m_vpNeuronLayers.size());
 			

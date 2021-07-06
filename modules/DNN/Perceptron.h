@@ -15,7 +15,7 @@ namespace DirectGraphicalModels {
 			DllExport bool operator=(const CPerceptron&) = delete;
 
 			DllExport Mat	getPrediction(const Mat& inputValues);
-			DllExport void	backPropagate(const Mat& solution, const Mat& gt, float learningRate);
+			DllExport void	backPropagate(const Mat& gt, float learningRate);
 		
 
 		private:
