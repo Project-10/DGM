@@ -38,28 +38,33 @@ namespace DirectGraphicalModels {
 		}
 
 		// TODO: this method works only for 3 layers
+		// dCost/dw = dCost/dNode.Value * dNode.Value/dNode.NetValue * dNode.NetValue/dNode.Weight
+		// dCost/dw = 2(solution - gt) * ActivationFunctionDeriateve(nodeNetValue) * Node_i-1.Value
 		void CPerceptron::backPropagate(const Mat& solution, const Mat& gt, float learningRate)
 		{
-			Mat error = gt - solution;
-			for (int i = 0; i < error.rows; i++)
-				error.at<float>(i, 0) *= m_vpNeuronLayers.back()->getActivationFunctionDeriateve()(solution.at<float>(i, 0));
-
-			int numLayers = m_vpNeuronLayers.size() - 1; // number of layers [0, 1, 2 ... n]
-			int numHiddenLayers = numLayers - 1;
+			const int nLayers = static_cast<int>(m_vpNeuronLayers.size());
 			
-			std::vector<Mat> Error; //Vector containing errors for each of the layers neurons
-			Error.push_back(error);
-
-			for (int i = 0; i < numHiddenLayers; i++)
-			{
-				Mat temp = m_vpNeuronLayers[numLayers - i]->getWeights() * Error[i]; // weights * error
-				Error.push_back(temp);
+			// Assertion
+			DGM_ASSERT_MSG(nLayers >= 3, "Percepton must contain at least 3 layers");
+			
+			vec_mat_t vDeltas(nLayers - 1);
+			
+			// compute init delta
+			vDeltas.back() = m_vpNeuronLayers.back()->getValues() - gt;
+			for (int i = 0; i < vDeltas.back().rows; i++)
+				vDeltas.back().at<float>(i, 0) *= m_vpNeuronLayers.back()->getActivationFunctionDeriateve()(m_vpNeuronLayers.back()->getNetValues().at<float>(i, 0));
+			
+			// compute deltas
+			for (int l = nLayers - 3; l >= 0; l--) {
+				vDeltas[l] = m_vpNeuronLayers[l + 2]->getWeights() * vDeltas[l + 1];
+				for (int i = 0; i < vDeltas[l].rows; i++)
+					vDeltas[l].at<float>(i, 0) *= m_vpNeuronLayers[l + 1]->getActivationFunctionDeriateve()(m_vpNeuronLayers[l + 1]->getNetValues().at<float>(i, 0));
 			}
-
-			for (int i = 1; i < m_vpNeuronLayers.size(); i++)
-			{
-				gemm(m_vpNeuronLayers[numLayers - i]->getValues(), Error[i - 1].t(), learningRate, m_vpNeuronLayers[m_vpNeuronLayers.size() - i]->getWeights(), 1, m_vpNeuronLayers[m_vpNeuronLayers.size() - i]->getWeights());
-			}
+		
+			// compute gradient descen
+			for (int l =  1; l < nLayers; l++)
+				// Wi -= learningRate * x_(i-1) x delta_(i - 1).t();
+				gemm(m_vpNeuronLayers[l - 1]->getValues(), vDeltas[l - 1].t(), -learningRate, m_vpNeuronLayers[l]->getWeights(), 1, m_vpNeuronLayers[l]->getWeights());
 		}
 	}
 }
