@@ -51,7 +51,8 @@ int main()
 {
 	const byte		nStates					= 10;				// 10 digits (number of output nodes)
 	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
-    const size_t    numNeuronsHiddenLayer	= 100;
+    const size_t    numNeuronsHiddenLayer1	= 16;
+	const size_t    numNeuronsHiddenLayer2	= 16;
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
 	const size_t	numEpochs				= 3;
@@ -63,12 +64,14 @@ int main()
 #endif
 
 	auto pLayerInput  = std::make_shared<dgm::dnn::CNeuronLayer>(nFeatures, 0, [](float x) { return x; }, [](float x) { return 1.0f; });
-    auto pLayerHidden = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
-    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer, &sigmoidFunction, &sigmoidFunction_derivative);
-	pLayerHidden->generateRandomWeights();
+    auto pLayerHidden1 = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer1, nFeatures, &sigmoidFunction, &sigmoidFunction_derivative);
+	auto pLayerHidden2 = std::make_shared<dgm::dnn::CNeuronLayer>(numNeuronsHiddenLayer2, numNeuronsHiddenLayer1, &sigmoidFunction, &sigmoidFunction_derivative);
+    auto pLayerOutput = std::make_shared<dgm::dnn::CNeuronLayer>(nStates, numNeuronsHiddenLayer2, &sigmoidFunction, &sigmoidFunction_derivative);
+	pLayerHidden1->generateRandomWeights();
+	pLayerHidden2->generateRandomWeights();
 	pLayerOutput->generateRandomWeights();
 
-	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden, pLayerOutput });
+	dgm::dnn::CPerceptron perceptron({ pLayerInput, pLayerHidden1, pLayerHidden2, pLayerOutput });
 
 	Mat fv;
 
@@ -90,7 +93,7 @@ int main()
 			Mat outputGroundtruth(nStates, 1, CV_32FC1, Scalar(0));
 			outputGroundtruth.at<float>(trainGT[s], 0) = 1.0f;
 
-			perceptron.backPropagate(outputValues, outputGroundtruth, 0.05f);
+			perceptron.backPropagate(outputGroundtruth, 0.05f);
 		} // samples
 	dgm::Timer::stop();
 
