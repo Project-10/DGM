@@ -54,3 +54,9 @@ TEST_F(CTestParamEstimation, PSO)
 	CParamEstimationPSO pso(nParams);
   testParamEstimation(pso);
 }
+
+TEST_F(CTestParamEstimation, GSO)
+{
+    CParamEstimationGSO gso(nParams);
+  testParamEstimation(gso);
+}
