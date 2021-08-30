@@ -73,6 +73,7 @@
 #include "DGM/ParamEstimationPSO.h"
 #include "DGM/ParamEstimation.h"
 #include "DGM/ParamEstimationPowell.h"
+#include "DGM/ParamEstimationGSO.h"
 
 /**
 @mainpage Introduction
