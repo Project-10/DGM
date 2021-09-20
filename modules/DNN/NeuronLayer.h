@@ -32,6 +32,8 @@ namespace DirectGraphicalModels {
 			// Accessors
 			DllExport void	setNetValues(const Mat& values);
 			DllExport Mat	getNetValues(void) const { return m_netValues; }
+
+			DllExport void  copyWeights(const Mat& weight) { weight.copyTo(m_weights); } // copying weights of hidden layer to visible layer
 			DllExport Mat	getWeights(void) const { return m_weights; }
 			DllExport int   getNumNeurons(void) const { return m_netValues.rows; }
 			DllExport std::function<float(float y)> getActivationFunctionDeriateve(void) const { return m_activationFunctionDerivative; }
