@@ -5,11 +5,11 @@ namespace DirectGraphicalModels {
 	namespace dnn {
 		// Constructor
 		CPerceptron::CPerceptron(const std::vector<int>& vNumNeurons) {
-			// TODO: imp,lement this constructor in the future
+			// TODO: implement this constructor in the future
 			for (size_t i = 0; i < vNumNeurons.size(); i++) {
 				int numNeurons = vNumNeurons[i];
 				int numConnections = (i == 0) ? 0 : vNumNeurons[i - 1];
-				ptr_nl_t pNeuronLayer = std::make_shared<CNeuronLayer>(numNeurons, numConnections, [](float x) {return x; }, [](float x) { return 1; });
+				ptr_nl_t pNeuronLayer = std::make_shared<CNeuronLayer>(numNeurons, numConnections, [](float x) { return x; }, [](float x) { return 1.0f; });
 				m_vpNeuronLayers.push_back(pNeuronLayer);
 			}
 		}

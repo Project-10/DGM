@@ -8,12 +8,13 @@ namespace DirectGraphicalModels { namespace dnn
 	void CNeuronLayer::generateRandomWeights(void)
 	{
 		m_weights = random::U(m_weights.size(), m_weights.type(), -0.5f, 0.5f);
+		m_biases = random::U(m_biases.size(), m_biases.type(), -0.5f, 0.5f);
 	}
 
 	void CNeuronLayer::dotProd(const Mat& values)
 	{
-		// this->m_netValues = this->m_weights * values;
-		gemm(m_weights.t(), values, 1, Mat(), 0, m_netValues);
+		// this->m_netValues = this->m_weights * values + m_biases;
+		gemm(m_weights.t(), values, 1, m_biases, 1, m_netValues);
 	}
 
 	void CNeuronLayer::setNetValues(const Mat& values)
