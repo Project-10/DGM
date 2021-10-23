@@ -86,7 +86,7 @@ namespace DirectGraphicalModels
 	void CGraphPairwise::setEdges(std::optional<byte> group, const Mat& pot)
 	{
 #ifdef ENABLE_PDP
-		parallel_for_(Range(0, m_vEdges.size()), [group, &pot, this](const Range& range) {
+		parallel_for_(Range(0, static_cast<int>(m_vEdges.size())), [group, &pot, this](const Range& range) {
 			for (int i = range.start; i < range.end; i++) {
 				ptr_edge_t& pEdge = m_vEdges[i];
 				if (!group || pEdge->group_id == group.value())

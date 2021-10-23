@@ -14,7 +14,7 @@ namespace DirectGraphicalModels
 			if (i % 5 == 0) printf("--- It: %d ---\n", i);
 #endif
 #ifdef ENABLE_PDP
-			parallel_for_(Range(0, getGraphPairwise().m_vNodes.size()), [&, nStates](const Range& range) {		// all nodes
+			parallel_for_(Range(0, static_cast<int>(getGraphPairwise().m_vNodes.size())), [&, nStates](const Range& range) {		// all nodes
 #else
 			const Range range(0, getGraphPairwise().m_vNodes.size());
 #endif

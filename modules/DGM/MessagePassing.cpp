@@ -16,7 +16,7 @@ namespace DirectGraphicalModels
 
 		// =================================== Calculating beliefs ===================================
 #ifdef ENABLE_PDP
-		parallel_for_(Range(0, getGraphPairwise().m_vNodes.size()), [&, nStates](const Range& range) {
+		parallel_for_(Range(0, static_cast<int>(getGraphPairwise().m_vNodes.size())), [&, nStates](const Range& range) {
 #else
 		const Range range(0, getGraphPairwise().m_vNodes.size());
 #endif
