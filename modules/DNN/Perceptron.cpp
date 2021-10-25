@@ -62,9 +62,12 @@ namespace DirectGraphicalModels {
 			}
 		
 			// compute gradient descen
-			for (int l =  1; l < nLayers; l++)
+			for (int l =  1; l < nLayers; l++) {
 				// Wi -= learningRate * x_(i-1) x delta_(i - 1).t();
 				gemm(m_vpNeuronLayers[l - 1]->getValues(), vDeltas[l - 1].t(), -learningRate, m_vpNeuronLayers[l]->getWeights(), 1, m_vpNeuronLayers[l]->getWeights());
+				// bi -= learningRate * delta_(i - 1);
+				m_vpNeuronLayers[l]->getBiases() -= vDeltas[l - 1] * learningRate;
+			}
 		}
 	}
 }

@@ -51,11 +51,11 @@ int main()
 {
 	const byte		nStates					= 10;				// 10 digits (number of output nodes)
 	const word		nFeatures				= 28 * 28;			// every pixel of 28x28 digit image is a distinct feature (number of input nodes)
-    const size_t    numNeuronsHiddenLayer1	= 100;
-	const size_t    numNeuronsHiddenLayer2	= 100;
+    const size_t    numNeuronsHiddenLayer1	= 16;
+	const size_t    numNeuronsHiddenLayer2	= 16;
     const size_t	numTrainSamples  		= 4000;
 	const size_t 	numTestSamples    		= 2000;
-	const size_t	numEpochs				= 3;
+	const size_t	numEpochs				= 20;
 
 #ifdef WIN32
 	const std::string dataPath = "../../data/digits/";
