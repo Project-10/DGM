@@ -36,6 +36,7 @@ namespace DirectGraphicalModels {
 			* @details This function updates the neurons' values as \f$ netValues_{(1\times N)} = weights^{\top}_{(C\times N)}\times values_{(1\times C)} + biases_{((1\times N))}\f$
 			* @note This method updates only the nodes' net values
 			*/
+			DllExport void  dotProdVis(const Mat& values, Mat weights); //new method was added, purpose for it is to multiply visible neurons by weights of hidden layer.
 			DllExport void  dotProd(const Mat& values);
 			/**
 			* @brief Returns the values of the neurons of the layer
@@ -64,4 +65,3 @@ namespace DirectGraphicalModels {
 		using ptr_nl_t = std::shared_ptr<CNeuronLayer>;
 	}
 }
-
