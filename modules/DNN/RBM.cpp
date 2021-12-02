@@ -60,7 +60,6 @@ namespace DirectGraphicalModels {
 		void CRBM::sampleHiddenNegative(Mat values) {
 			m_negativeHMean = propagateUp(values);
 			m_negativeHSample = getBinomial(m_negativeHMean);
-
 		}
 
 		Mat CRBM::propagateUp(Mat values) {
@@ -80,18 +79,17 @@ namespace DirectGraphicalModels {
 		void CRBM::gibbsHVH(Mat hiddenSample) {
 			sampleVisible(hiddenSample);
 			sampleHiddenNegative(m_negativeVSample);
-
 		}
 		/* This implementation of RBM uses single step contrastive divergence algorithm, called CD-1  */
 		void CRBM::contrastiveDivergence(const Mat& values, float learningRate) {
 			//-------POSITIVE PHASE--------------------
-			/*In the positive phase, the input sample ìvî from the visible layer is ìclampedî to the input layer, 
+			/*In the positive phase, the input sample ‚Äúv‚Äù from the visible layer is ‚Äúclamped‚Äù to the input layer, 
 			and then is propagated to the hidden layer. The result of the hidden layer activation is h.    */
 			sampleHiddenPositive(values);
 
 			//------NEGATIVE PHASE---------------------
-			/*In the negative phase, ìhî from the hidden layer is propagated back to the visible layer with the 
-			new v, say ví. This is then propagated back to the hidden layer with activation result ìhî    */
+			/*In the negative phase, ‚Äúh‚Äù from the hidden layer is propagated back to the visible layer with the 
+			new v, say v‚Äô. This is then propagated back to the hidden layer with activation result ‚Äúh‚Äù    */
 			gibbsHVH(m_positiveHMean);
 
 			std::vector<double> test = m_negativeHSample;
