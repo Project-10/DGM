@@ -101,9 +101,9 @@ int main()
 
 		Mat outputValues = rbm.reconstruct(fv);
 
-		Point maxclass;
-		minMaxLoc(outputValues, NULL, NULL, NULL, &maxclass);
-		int number = maxclass.y;
+		//Point maxclass;
+		//minMaxLoc(outputValues, NULL, NULL, NULL, &maxclass);
+		//int number = maxclass.y;
 
 		//confMat.estimate(number, testGT[s]);
 		//printf("prediction [%d] for digit %d with %.3f%s at position %zu \n", number, testDataDigit[z], maxAccuracy, "%", z);
@@ -112,7 +112,7 @@ int main()
 	//printf("Accuracy = %.2f%%\n", confMat.getAccuracy());
 
 	// Confusion matrix
-	dgm::vis::CMarker marker;
+	//dgm::vis::CMarker marker;
 	//Mat cMat = confMat.getConfusionMatrix();
 	//Mat cMatImg = marker.drawConfusionMatrix(cMat, dgm::vis::MARK_BW);
 	//imshow("Confusion Matrix", cMatImg);
