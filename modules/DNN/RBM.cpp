@@ -39,16 +39,11 @@ namespace DirectGraphicalModels {
 			std::cout << "Negative H sample - rows: " << m_negativeHSample.rows << " cols: " << m_negativeHSample.cols << std::endl;
 			std::cout << "Negative V mean - rows: " << m_negativeVMean.rows << " cols: " << m_negativeVMean.cols << std::endl;
 			std::cout << "Negative V sample - rows: " << m_negativeVSample.rows << " cols: " << m_negativeVSample.cols << std::endl;    
-
-			//m_vpNeuronLayers[0]->getWeights() = m_vpNeuronLayers[1]->getWeights();
-
-			//std::cout << "Weight visible layer - rows: " << m_vpNeuronLayers[0]->getWeights().rows << " cols: " << m_vpNeuronLayers[0]->getWeights().cols << std::endl;
 		}
 
 		void CRBM::sampleVisible(Mat values) {
 			m_negativeVMean = propagateDown(values);
 			m_negativeVSample = getBinomial(m_negativeVMean);
-			
 		}
 
 		void CRBM::sampleHiddenPositive(Mat values) {
