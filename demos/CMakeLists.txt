@@ -72,3 +72,6 @@ create_demo(Demo_Stereo "Demo Stereo" "DGM")
 
 # ================================================ DEMO ICR =================================================
 create_demo(Demo_ICR "Demo ICR" "DGM;DNN;VIS")
+
+# ================================================ DEMO RBM =================================================
+create_demo(Demo_RBM "Demo RBM" "DGM;DNN;VIS")
