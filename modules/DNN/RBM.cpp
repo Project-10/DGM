@@ -7,8 +7,8 @@ namespace DirectGraphicalModels {
 			for (auto& nl : vpLayers)
 				m_vpNeuronLayers.push_back(nl);
 		}
-		Mat CRBM::getBinomial(Mat mean) {
 
+		Mat CRBM::getBinomial(Mat mean) {
 			Mat res(mean.clone());
 			for (int y = 0; y < res.rows; y++) {
 				float* pRes = res.ptr<float>(y);
@@ -43,7 +43,6 @@ namespace DirectGraphicalModels {
 			//m_vpNeuronLayers[0]->getWeights() = m_vpNeuronLayers[1]->getWeights();
 
 			//std::cout << "Weight visible layer - rows: " << m_vpNeuronLayers[0]->getWeights().rows << " cols: " << m_vpNeuronLayers[0]->getWeights().cols << std::endl;
-
 		}
 
 		void CRBM::sampleVisible(Mat values) {
@@ -53,7 +52,6 @@ namespace DirectGraphicalModels {
 		}
 
 		void CRBM::sampleHiddenPositive(Mat values) {
-	
 			m_positiveHMean = propagateUp(values);		
 			m_positiveHSample = getBinomial(m_positiveHMean);
 
@@ -63,6 +61,7 @@ namespace DirectGraphicalModels {
 					std::cout << pRess[x] << std::endl;
 			}*/
 		}
+
 		void CRBM::sampleHiddenNegative(Mat values) {
 			m_negativeHMean = propagateUp(values);
 			m_negativeHSample = getBinomial(m_negativeHMean);
@@ -84,12 +83,10 @@ namespace DirectGraphicalModels {
 		}
 
 		void CRBM::gibbsHVH(Mat hiddenSample) {
-			
 			sampleVisible(hiddenSample);
 			sampleHiddenNegative(m_negativeVSample);
 
 		}
-
 		/* This implementation of RBM uses single step contrastive divergence algorithm, called CD-1  */
 		void CRBM::contrastiveDivergence(const Mat& values, float learningRate) {
 			//-------POSITIVE PHASE--------------------
@@ -101,7 +98,6 @@ namespace DirectGraphicalModels {
 			/*In the negative phase, “h” from the hidden layer is propagated back to the visible layer with the 
 			new v, say v’. This is then propagated back to the hidden layer with activation result “h”    */
 			gibbsHVH(m_positiveHMean);
-
 
 			std::vector<double> test = m_negativeHSample;
 			for (int i = 0; i < m_vpNeuronLayers[1]->getNumNeurons(); i++) {
@@ -118,7 +114,6 @@ namespace DirectGraphicalModels {
 				//std::cout << i << std::endl;
 				m_vpNeuronLayers[0]->getBiases().at<float>(i, 0) += learningRate * (values.at<float>(i, 0) * m_negativeVSample.at<float>(i, 0))/4000; //divide
 			}
-
 		}
 
 		Mat CRBM::reconstruct(Mat values) {

@@ -3,8 +3,7 @@
 #include "DGM/parallel.h"
 #include "macroses.h"
 
-namespace DirectGraphicalModels {
-	namespace dnn
+namespace DirectGraphicalModels { namespace dnn
 	{
 		void CNeuronLayer::generateRandomWeights(void)
 		{

@@ -29,8 +29,6 @@ namespace DirectGraphicalModels {
 				//DllExport void gibbsHVH()
 
 			private:
-
-
 				std::vector<ptr_nl_t>    m_vpNeuronLayers;
 
 				Mat						 m_positiveHMean;
@@ -41,7 +39,6 @@ namespace DirectGraphicalModels {
 
 				Mat						 m_negativeVMean;
 				Mat						 m_negativeVSample;
-
 		};
 	}
 }
