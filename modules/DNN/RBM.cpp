@@ -1,4 +1,5 @@
 #include "RBM.h"
+#include "DGM/random.h"
 #include "macroses.h"
 
 namespace DirectGraphicalModels {
@@ -16,7 +17,7 @@ namespace DirectGraphicalModels {
 					if (pRes[x] < 0 || pRes[x]>1) {
 						pRes[x] = 0;
 					}
-					double r = rand() / (RAND_MAX + 1.0);
+					double r = random::U<double>();	// uniformly distributed random number betwee 0 and 1
 					if (r < pRes[x])
 					{
 						pRes[x] = 1;
