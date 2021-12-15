@@ -2,6 +2,7 @@
 #include "DNN/Neuron.h"
 #include "DNN/NeuronLayer.h"
 #include "DNN/Perceptron.h"
+#include "DNN/RBM.h"
 // #include "DNN/Functions.hpp"
 
 /**
