@@ -16,7 +16,7 @@ namespace DirectGraphicalModels { namespace dnn
 			// this->m_netValues = this->m_weights * values + m_biases;
 			gemm(m_weights.t(), values, 1, m_biases, 1, m_netValues);		
 		}
-		void CNeuronLayer::dotProdVis(const Mat& values, Mat weights)
+		void CNeuronLayer::dotProdVis(const Mat& values, const Mat& weights)
 		{
 			gemm(weights, values, 1, m_biases, 1, m_netValues);
 

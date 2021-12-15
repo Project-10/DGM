@@ -36,8 +36,14 @@ namespace DirectGraphicalModels {
 			* @details This function updates the neurons' values as \f$ netValues_{(1\times N)} = weights^{\top}_{(C\times N)}\times values_{(1\times C)} + biases_{((1\times N))}\f$
 			* @note This method updates only the nodes' net values
 			*/
-			DllExport void  dotProdVis(const Mat& values, Mat weights); //new method was added, purpose for it is to multiply visible neurons by weights of hidden layer.
 			DllExport void  dotProd(const Mat& values);
+			/**
+			* In the dotProd method, we cant multiply hidden neuron values by hidden neuron weights, so dotProdVis is created
+			* which we can input by which weights neuron are multiplied by. 
+			* in dotProd ->     this->m_netValues = this->m_weights * values + this->m_biases;
+			* in dotProdVis ->  this->m_netValues = m_weights * values + this->m_biases;
+			*/
+			DllExport void  dotProdVis(const Mat& values, const Mat& weights); 
 			/**
 			* @brief Returns the values of the neurons of the layer
 			* @note This method returns the result of per-element application of the activation function to the neurons' net values, i.e. activationFunction(netValues)
