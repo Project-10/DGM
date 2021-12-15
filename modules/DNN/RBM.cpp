@@ -61,7 +61,6 @@ namespace DirectGraphicalModels {
 		void CRBM::sampleHiddenNegative(const Mat& values) {
 			m_negativeHMean = propagateUp(values);
 			m_negativeHSample = getBinomial(m_negativeHMean);
-
 		}
 
 		Mat CRBM::propagateUp(const Mat& values) {
@@ -81,7 +80,6 @@ namespace DirectGraphicalModels {
 		void CRBM::gibbsHVH(const Mat& hiddenSample) {
 			sampleVisible(hiddenSample);
 			sampleHiddenNegative(m_negativeVSample);
-
 		}
 		/* This implementation of RBM uses single step contrastive divergence algorithm, called CD-1  */
 		void CRBM::contrastiveDivergence(const Mat& values, float learningRate) {
