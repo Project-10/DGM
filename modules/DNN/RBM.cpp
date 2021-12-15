@@ -9,7 +9,7 @@ namespace DirectGraphicalModels {
 				m_vpNeuronLayers.push_back(nl);
 		}
 
-		Mat CRBM::getBinomial(Mat mean) {
+		Mat CRBM::getBinomial(const Mat& mean) {
 			Mat res(mean.clone());
 			for (int y = 0; y < res.rows; y++) {
 				float* pRes = res.ptr<float>(y);
@@ -42,12 +42,12 @@ namespace DirectGraphicalModels {
 			std::cout << "Negative V sample - rows: " << m_negativeVSample.rows << " cols: " << m_negativeVSample.cols << std::endl;    
 		}
 
-		void CRBM::sampleVisible(Mat values) {
+		void CRBM::sampleVisible(const Mat& values) {
 			m_negativeVMean = propagateDown(values);
 			m_negativeVSample = getBinomial(m_negativeVMean);
 		}
 
-		void CRBM::sampleHiddenPositive(Mat values) {
+		void CRBM::sampleHiddenPositive(const Mat& values) {
 			m_positiveHMean = propagateUp(values);		
 			m_positiveHSample = getBinomial(m_positiveHMean);
 
@@ -58,12 +58,13 @@ namespace DirectGraphicalModels {
 			}*/
 		}
 
-		void CRBM::sampleHiddenNegative(Mat values) {
+		void CRBM::sampleHiddenNegative(const Mat& values) {
 			m_negativeHMean = propagateUp(values);
 			m_negativeHSample = getBinomial(m_negativeHMean);
+
 		}
 
-		Mat CRBM::propagateUp(Mat values) {
+		Mat CRBM::propagateUp(const Mat& values) {
 			m_vpNeuronLayers[0]->setNetValues(values); //set the visible layer values
 
 			m_vpNeuronLayers[1]->dotProd(m_vpNeuronLayers[0]->getValues()); //sigmoid(sum(visible * weights)+bias)
@@ -71,26 +72,27 @@ namespace DirectGraphicalModels {
 			return m_vpNeuronLayers.back()->getValues();
 		}
 
-		Mat CRBM::propagateDown(Mat values){
+		Mat CRBM::propagateDown(const Mat& values){
 			m_vpNeuronLayers[0]->dotProdVis(values, m_vpNeuronLayers[1]->getWeights()); 
 
 			return m_vpNeuronLayers[0]->getValues();
 		}
 
-		void CRBM::gibbsHVH(Mat hiddenSample) {
+		void CRBM::gibbsHVH(const Mat& hiddenSample) {
 			sampleVisible(hiddenSample);
 			sampleHiddenNegative(m_negativeVSample);
+
 		}
 		/* This implementation of RBM uses single step contrastive divergence algorithm, called CD-1  */
 		void CRBM::contrastiveDivergence(const Mat& values, float learningRate) {
 			//-------POSITIVE PHASE--------------------
-			/*In the positive phase, the input sample ‚Äúv‚Äù from the visible layer is ‚Äúclamped‚Äù to the input layer, 
+			/*In the positive phase, the input sample ìvî from the visible layer is ìclampedî to the input layer, 
 			and then is propagated to the hidden layer. The result of the hidden layer activation is h.    */
 			sampleHiddenPositive(values);
 
 			//------NEGATIVE PHASE---------------------
-			/*In the negative phase, ‚Äúh‚Äù from the hidden layer is propagated back to the visible layer with the 
-			new v, say v‚Äô. This is then propagated back to the hidden layer with activation result ‚Äúh‚Äù    */
+			/*In the negative phase, ìhî from the hidden layer is propagated back to the visible layer with the 
+			new v, say ví. This is then propagated back to the hidden layer with activation result ìhî    */
 			gibbsHVH(m_positiveHMean);
 
 			std::vector<double> test = m_negativeHSample;
@@ -110,7 +112,7 @@ namespace DirectGraphicalModels {
 			}
 		}
 
-		Mat CRBM::reconstruct(Mat values) {
+		Mat CRBM::reconstruct(const Mat& values) {
 			Mat h, temp;
 
 			h = propagateUp(values);
